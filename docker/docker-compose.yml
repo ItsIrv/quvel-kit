@@ -1,24 +1,32 @@
 version: '3.8'
 
 services:
+  # 🚀 Reverse Proxy and Load Balancer (Traefik)
   traefik:
     image: traefik:v2.10
     container_name: quvel-traefik
     command:
-      - '--api.insecure=true' # Enable Traefik dashboard (http://localhost:8080)
-      - '--providers.docker=true' # Enable Docker integration
-      - '--providers.docker.exposedbydefault=false' # Require explicit label exposure
-      - '--entrypoints.web.address=:80' # HTTP Entrypoint
-      - '--entrypoints.websecure.address=:443' # HTTPS Entrypoint
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.websecure.address=:443'
+      - '--entrypoints.websecure.http.tls=true'
+      - '--providers.file.directory=/certs'
+      - '--providers.file.watch=true'
+
     ports:
-      - '80:80' # HTTP
-      - '443:443' # HTTPS
-      - '8080:8080' # Traefik Dashboard
+      - '80:80' # Expose HTTP for domain routing
+      - '443:443' # Expose HTTPS (TLS/SSL)
+      - '8080:8080' # Expose Traefik dashboard
     volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock:ro' # Allow Traefik to manage containers
+      - '/var/run/docker.sock:/var/run/docker.sock:ro' # Allow Traefik to read Docker container data
+      - '${PWD}/docker/certs:/certs' # Use absolute path to prevent mount issues
+
     networks:
       - quvel-network
 
+  # 🌐 Backend (Laravel API)
   app:
     build:
       context: ../backend
@@ -26,8 +34,8 @@ services:
     container_name: quvel-app
     working_dir: /var/www
     volumes:
-      - ../backend:/var/www
-      - /var/www/vendor
+      - ../backend:/var/www # Sync backend files for live development
+      - /var/www/vendor # Keep vendor dependencies inside the container
     depends_on:
       - mysql
       - redis
@@ -40,11 +48,15 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.api.rule=Host(`api.quvel.127.0.0.1.nip.io`)'
-      - 'traefik.http.routers.api.entrypoints=web'
+      - 'traefik.http.routers.api.entrypoints=websecure'
+      - 'traefik.http.routers.api.tls=true'
+      - 'traefik.http.routers.api.tls.certresolver=selfsigned'
       - 'traefik.http.services.api.loadbalancer.server.port=8000'
+
     networks:
       - quvel-network
 
+  # 🖥️ Frontend (Quasar SSR)
   frontend:
     build:
       context: ../frontend
@@ -52,17 +64,20 @@ services:
     container_name: quvel-frontend
     working_dir: /frontend
     volumes:
-      - ../frontend:/frontend
-      - /frontend/node_modules
+      - ../frontend:/frontend # Sync frontend files for live development
+      - /frontend/node_modules # Keep node_modules inside the container
     command: ['/bin/sh', '-c', 'yarn install && yarn run dev:ssr']
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.web.rule=Host(`quvel.127.0.0.1.nip.io`)'
-      - 'traefik.http.routers.web.entrypoints=web'
+      - 'traefik.http.routers.web.entrypoints=websecure'
+      - 'traefik.http.routers.web.tls=true'
+      - 'traefik.http.routers.web.tls.certresolver=selfsigned'
       - 'traefik.http.services.web.loadbalancer.server.port=9000'
     networks:
       - quvel-network
 
+  # 🗄️ Database (MySQL)
   mysql:
     image: mysql:8
     container_name: quvel-mysql
@@ -72,22 +87,25 @@ services:
       MYSQL_USER: quvel_user
       MYSQL_PASSWORD: quvel_password
     ports:
-      - '3306:3306'
+      - '3306:3306' # Expose MySQL for local development
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql # Persistent storage for database data
     networks:
       - quvel-network
 
+  # ⚡ In-Memory Cache (Redis)
   redis:
     image: redis:latest
     container_name: quvel-redis
     ports:
-      - '6379:6379'
+      - '6379:6379' # Expose Redis for session caching, queues, etc.
     networks:
       - quvel-network
 
+# 🌐 Docker Network
 networks:
   quvel-network:
 
+# 📂 Persistent Volume for MySQL
 volumes:
   mysql_data:
