@@ -41,12 +41,6 @@ tls:
   certificates:
     - certFile: "/certs/selfsigned.crt"
       keyFile: "/certs/selfsigned.key"
-      stores:
-        - default
-      domains:
-        - main: "quvel.127.0.0.1.nip.io"
-          sans:
-            - "api.quvel.127.0.0.1.nip.io"
 EOF
 fi
 
