@@ -17,22 +17,13 @@ if [ ! -f frontend/.env ]; then
   cp frontend/.env.example frontend/.env
 fi
 
-# Install backend dependencies
-echo "📦 Installing Laravel dependencies..."
-cd backend
-composer install
-php artisan key:generate
-cd ..
-
-# Install frontend dependencies
-echo "📦 Installing Quasar dependencies..."
-cd frontend
-yarn install
-cd ..
-
 # Start Docker
 echo "🐳 Starting Docker containers..."
 docker-compose -f docker/docker-compose.yml up -d --build
+
+# Wait for containers to be ready
+echo "⏳ Waiting for containers to be ready..."
+sleep 5  # Small delay to ensure services start
 
 # Run Laravel migrations
 echo "📌 Running Laravel migrations..."

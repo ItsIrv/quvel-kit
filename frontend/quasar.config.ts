@@ -60,7 +60,19 @@ export default defineConfig((ctx) => {
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      extendViteConf(viteConf) {
+        viteConf.server = {
+          ...viteConf.server,
+          strictPort: true,
+          hmr: {
+            clientPort: 9000,
+          },
+          watch: {
+            usePolling: true,
+          },
+          allowedHosts: ['localhost', '127.0.0.1', 'quvel.127.0.0.1.nip.io'],
+        }
+      },
       // viteVuePluginOptions: {},
 
       vitePlugins: [

@@ -1,6 +1,24 @@
 version: '3.8'
 
 services:
+  traefik:
+    image: traefik:v2.10
+    container_name: quvel-traefik
+    command:
+      - '--api.insecure=true' # Enable Traefik dashboard (http://localhost:8080)
+      - '--providers.docker=true' # Enable Docker integration
+      - '--providers.docker.exposedbydefault=false' # Require explicit label exposure
+      - '--entrypoints.web.address=:80' # HTTP Entrypoint
+      - '--entrypoints.websecure.address=:443' # HTTPS Entrypoint
+    ports:
+      - '80:80' # HTTP
+      - '443:443' # HTTPS
+      - '8080:8080' # Traefik Dashboard
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro' # Allow Traefik to manage containers
+    networks:
+      - quvel-network
+
   app:
     build:
       context: ../backend
@@ -9,16 +27,21 @@ services:
     working_dir: /var/www
     volumes:
       - ../backend:/var/www
-    environment:
-      - APP_ENV=local
-      - APP_DEBUG=true
-      - APP_KEY=
+      - /var/www/vendor
     depends_on:
       - mysql
       - redis
-    command: ['php', 'artisan', 'serve', '--host=0.0.0.0', '--port=8000']
-    ports:
-      - '8000:8000'
+    command:
+      [
+        '/bin/sh',
+        '-c',
+        'composer install && php artisan serve --host=0.0.0.0 --port=8000',
+      ]
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.api.rule=Host(`api.quvel.127.0.0.1.nip.io`)'
+      - 'traefik.http.routers.api.entrypoints=web'
+      - 'traefik.http.services.api.loadbalancer.server.port=8000'
     networks:
       - quvel-network
 
@@ -32,8 +55,11 @@ services:
       - ../frontend:/frontend
       - /frontend/node_modules
     command: ['/bin/sh', '-c', 'yarn install && yarn run dev:ssr']
-    ports:
-      - '9000:9000'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.web.rule=Host(`quvel.127.0.0.1.nip.io`)'
+      - 'traefik.http.routers.web.entrypoints=web'
+      - 'traefik.http.services.web.loadbalancer.server.port=9000'
     networks:
       - quvel-network
 
