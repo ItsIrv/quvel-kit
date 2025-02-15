@@ -17,14 +17,22 @@ if [ ! -f frontend/.env ]; then
   cp frontend/.env.example frontend/.env
 fi
 
+# Check if npm is installed
+if ! command -v npm &> /dev/null; then
+  echo "❌ npm is not installed. Please install Node.js and npm before running this script."
+  exit 1
+fi
+
 # Install mkcert using npm globally if not already installed
 if ! command -v mkcert &> /dev/null; then
   echo "📦 Installing mkcert via npm..."
   npm install -g mkcert
 fi
 
-# Ensure mkcert local CA is set up
-mkcert -install
+# Ensure mkcert local CA is set up (run only if needed)
+if [ ! -f "$(mkcert -CAROOT)/rootCA.pem" ]; then
+  mkcert -install
+fi
 
 # Generate SSL certificates using mkcert
 mkdir -p "$(dirname "$0")/../docker/certs"
@@ -60,6 +68,17 @@ docker-compose -f "$DOCKER_COMPOSE_FILE" down
 # Start Docker containers
 echo "🐳 Starting Docker containers..."
 docker-compose -f "$DOCKER_COMPOSE_FILE" up -d --build
+
+# ✅ **Wait for Laravel container to be ready**
+echo "⏳ Waiting for Laravel container to be ready..."
+while ! docker exec -it quvel-app test -f /var/www/vendor/autoload.php; do
+  echo "   🔄 Laravel is still booting... retrying in 3s"
+  sleep 3
+done
+
+# **Ensure APP_KEY is generated**
+echo "🔑 Generating Laravel APP_KEY..."
+docker exec -it quvel-app php artisan key:generate
 
 # Run Laravel migrations
 echo "📌 Running Laravel migrations..."
