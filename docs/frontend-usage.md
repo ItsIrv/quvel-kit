@@ -17,8 +17,8 @@ docker exec -it quvel-frontend sh
 Once inside, you can use:
 
 ```bash
-quasar dev  # Start Quasar in development mode (hot-reload enabled)
-quasar build  # Build the production frontend
+yarn build:ssr  # Build the production frontend
+quasar # Quasar CLI
 exit  # Exit the container
 ```
 
@@ -64,9 +64,26 @@ QuVel Kit supports **hot reloading**, meaning changes to Vue components are appl
 
 ---
 
-## 🏐 Future Improvements
+## 🧪 Testing the Frontend
 
-- Automate hot-reloading for Docker volumes.
-- Provide a GUI for managing frontend settings.
+QuVel Kit uses **Vitest** for unit testing.
 
-🚀 **You're now set up to develop with the Quasar frontend!**
+### Running Unit Tests
+
+To execute unit tests:
+
+```bash
+yarn test:unit  # Run unit tests
+```
+
+To run tests with a UI for debugging:
+
+```bash
+yarn test:unit:ui  # Open Vitest UI
+```
+
+For CI environments:
+
+```bash
+yarn test:unit:ci  # Run unit tests in CI mode
+```
