@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ../backend
+      dockerfile: ../docker/backend.Dockerfile
+    container_name: quvel-app
+    working_dir: /var/www
+    volumes:
+      - ../backend:/var/www
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY=
+    depends_on:
+      - mysql
+      - redis
+    command: ['php', 'artisan', 'serve', '--host=0.0.0.0', '--port=8000']
+    ports:
+      - '8000:8000'
+    networks:
+      - quvel-network
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../docker/frontend.Dockerfile
+    container_name: quvel-frontend
+    working_dir: /frontend
+    volumes:
+      - ../frontend:/frontend
+      - /frontend/node_modules
+    command: ['/bin/sh', '-c', 'yarn install && yarn run dev:ssr']
+    ports:
+      - '9000:9000'
+    networks:
+      - quvel-network
+
+  mysql:
+    image: mysql:8
+    container_name: quvel-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: quvel
+      MYSQL_USER: quvel_user
+      MYSQL_PASSWORD: quvel_password
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - quvel-network
+
+  redis:
+    image: redis:latest
+    container_name: quvel-redis
+    ports:
+      - '6379:6379'
+    networks:
+      - quvel-network
+
+networks:
+  quvel-network:
+
+volumes:
+  mysql_data:
