@@ -6,22 +6,22 @@ services:
     image: traefik:v2.10
     container_name: quvel-traefik
     command:
-      - '--api.insecure=true'
-      - '--providers.docker=true'
-      - '--providers.docker.exposedbydefault=false'
-      - '--entrypoints.web.address=:80'
-      - '--entrypoints.websecure.address=:443'
-      - '--entrypoints.websecure.http.tls=true'
-      - '--providers.file.directory=/certs'
-      - '--providers.file.watch=true'
+      - '--api.insecure=true' # Enable Traefik dashboard (http://localhost:8080)
+      - '--providers.docker=true' # Enable Docker provider to detect running containers
+      - '--providers.docker.exposedbydefault=false' # Require explicit label exposure for security
+      - '--entrypoints.web.address=:80' # HTTP Entrypoint (unencrypted)
+      - '--entrypoints.websecure.address=:443' # HTTPS Entrypoint (encrypted)
+      - '--entrypoints.websecure.http.tls=true' # Enable TLS on the HTTPS entrypoint
+      - '--providers.file.directory=/certs' # Load TLS certificates from a directory
+      - '--providers.file.watch=true' # Auto-reload if certificate files change
 
     ports:
       - '80:80' # Expose HTTP for domain routing
       - '443:443' # Expose HTTPS (TLS/SSL)
-      - '8080:8080' # Expose Traefik dashboard
+      - '8080:8080' # Expose Traefik dashboard for monitoring
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock:ro' # Allow Traefik to read Docker container data
-      - '${PWD}/docker/certs:/certs' # Use absolute path to prevent mount issues
+      - '${PWD}/docker/certs:/certs' # Mount local certificates folder into the container
 
     networks:
       - quvel-network
@@ -29,29 +29,28 @@ services:
   # 🌐 Backend (Laravel API)
   app:
     build:
-      context: ../backend
-      dockerfile: ../docker/backend.Dockerfile
+      context: ../backend # Point to Laravel backend source
+      dockerfile: ../docker/backend.Dockerfile # Use custom backend Dockerfile
     container_name: quvel-app
-    working_dir: /var/www
+    working_dir: /var/www # Set working directory for Laravel
     volumes:
       - ../backend:/var/www # Sync backend files for live development
-      - /var/www/vendor # Keep vendor dependencies inside the container
+      - /var/www/vendor # Keep vendor dependencies inside the container for performance
     depends_on:
-      - mysql
-      - redis
-    command:
-      [
+      - mysql # Ensure MySQL is started before this container
+      - redis # Ensure Redis is started before this container
+    command: [
         '/bin/sh',
         '-c',
         'composer install && php artisan serve --host=0.0.0.0 --port=8000',
-      ]
+      ] # Run Laravel API server after installing dependencies
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.api.rule=Host(`api.quvel.127.0.0.1.nip.io`)'
-      - 'traefik.http.routers.api.entrypoints=websecure'
-      - 'traefik.http.routers.api.tls=true'
-      - 'traefik.http.routers.api.tls.certresolver=selfsigned'
-      - 'traefik.http.services.api.loadbalancer.server.port=8000'
+      - 'traefik.enable=true' # Enable Traefik proxy for this service
+      - 'traefik.http.routers.api.rule=Host(`api.quvel.127.0.0.1.nip.io`)' # Route requests matching this domain to the API
+      - 'traefik.http.routers.api.entrypoints=websecure' # Enforce HTTPS for API
+      - 'traefik.http.routers.api.tls=true' # Enable TLS for this route
+      - 'traefik.http.routers.api.tls.certresolver=selfsigned' # Use self-signed certs
+      - 'traefik.http.services.api.loadbalancer.server.port=8000' # Route traffic to Laravel on port 8000
 
     networks:
       - quvel-network
@@ -59,21 +58,22 @@ services:
   # 🖥️ Frontend (Quasar SSR)
   frontend:
     build:
-      context: ../frontend
-      dockerfile: ../docker/frontend.Dockerfile
+      context: ../frontend # Point to frontend source
+      dockerfile: ../docker/frontend.Dockerfile # Use custom frontend Dockerfile
     container_name: quvel-frontend
-    working_dir: /frontend
+    working_dir: /frontend # Set working directory for Quasar
     volumes:
       - ../frontend:/frontend # Sync frontend files for live development
-      - /frontend/node_modules # Keep node_modules inside the container
-    command: ['/bin/sh', '-c', 'yarn install && yarn run dev:ssr']
+      - /frontend/node_modules # Keep node_modules inside the container for performance
+    command: ['/bin/sh', '-c', 'yarn install && yarn run dev:ssr'] # Start Quasar in SSR mode
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.web.rule=Host(`quvel.127.0.0.1.nip.io`)'
-      - 'traefik.http.routers.web.entrypoints=websecure'
-      - 'traefik.http.routers.web.tls=true'
-      - 'traefik.http.routers.web.tls.certresolver=selfsigned'
-      - 'traefik.http.services.web.loadbalancer.server.port=9000'
+      - 'traefik.enable=true' # Enable Traefik proxy for this service
+      - 'traefik.http.routers.web.rule=Host(`quvel.127.0.0.1.nip.io`)' # Route requests matching this domain to the frontend
+      - 'traefik.http.routers.web.entrypoints=websecure' # Enforce HTTPS for frontend
+      - 'traefik.http.routers.web.tls=true' # Enable TLS for this route
+      - 'traefik.http.routers.web.tls.certresolver=selfsigned' # Use self-signed certs
+      - 'traefik.http.services.web.loadbalancer.server.port=9000' # Route traffic to Quasar on port 9000
+
     networks:
       - quvel-network
 
@@ -82,12 +82,12 @@ services:
     image: mysql:8
     container_name: quvel-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: quvel
-      MYSQL_USER: quvel_user
-      MYSQL_PASSWORD: quvel_password
+      MYSQL_ROOT_PASSWORD: root # Root password for MySQL
+      MYSQL_DATABASE: quvel # Default database name
+      MYSQL_USER: quvel_user # Database username
+      MYSQL_PASSWORD: quvel_password # Database password
     ports:
-      - '3306:3306' # Expose MySQL for local development
+      - '3306:3306' # Expose MySQL on default port for external connections
     volumes:
       - mysql_data:/var/lib/mysql # Persistent storage for database data
     networks:
@@ -108,4 +108,4 @@ networks:
 
 # 📂 Persistent Volume for MySQL
 volumes:
-  mysql_data:
+  mysql_data: # Persistent storage for MySQL database
