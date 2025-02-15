@@ -39,3 +39,7 @@
 - **Notifications System**  
 
 ---
+
+## 📖 Documentation  
+
+For detailed guides on project setup, usage, and troubleshooting, check out the [📚 Docs](docs/README.md).
