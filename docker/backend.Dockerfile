@@ -21,8 +21,5 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Expose port
-EXPOSE 9000
-
 # Set permissions and entrypoint
 CMD ["php-fpm"]

@@ -7,8 +7,5 @@ WORKDIR /frontend
 # Install Quasar CLI globally
 RUN yarn global add @quasar/cli
 
-# Expose Quasar dev server port
-EXPOSE 9000
-
 # Default command to start Quasar
 CMD ["yarn", "dev"]
