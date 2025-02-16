@@ -1,25 +1,18 @@
-// Quasar SCSS (& Sass) Variables
-// --------------------------------------------------
-// To customize the look and feel of this app, you can override
-// the Sass/SCSS variables found in Quasar's source Sass/SCSS files.
+// QuVel Kit Branding Colors for Quasar SCSS
+// ------------------------------------------
+// These colors are customized to align with the brand identity of QuVel Kit.
 
-// Check documentation for full list of Quasar variables
+// Primary Branding Colors
+$primary   : #4f46e5; // Electric Blue (Main Brand Color)
+$secondary : #0f172a; // Deep Navy (Background & Dark Mode Accent)
+$accent    : #9333ea; // Vibrant Purple (For Highlights & Calls to Action)
 
-// Your own variables (that are declared here) and Quasar's own
-// ones will be available out of the box in your .vue/.scss/.sass files
+// Background & Dark Mode
+$dark      : #1d1d1d;  // Standard Dark Theme
+$dark-page : #121212;  // Background for Full Dark Mode
 
-// It's highly recommended to change the default colors
-// to match your app's branding.
-// Tip: Use the "Theme Builder" on Quasar's documentation website.
-
-$primary   : #1976D2;
-$secondary : #26A69A;
-$accent    : #9C27B0;
-
-$dark      : #1D1D1D;
-$dark-page : #121212;
-
-$positive  : #21BA45;
-$negative  : #C10015;
-$info      : #31CCEC;
-$warning   : #F2C037;
+// Feedback Colors
+$positive  : #22c55e; // Success (Bright Green)
+$negative  : #dc2626; // Error (Strong Red)
+$info      : #3b82f6; // Informational Blue
+$warning   : #f59e0b; // Attention (Warm Yellow)
