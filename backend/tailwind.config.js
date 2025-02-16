@@ -12,7 +12,18 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Roboto', ...defaultTheme.fontFamily.sans], // Match Quasar
+            },
+            colors: {
+                primary: '#4f46e5', // Match Quasar Primary Color
+                secondary: '#26A69A', // Match Quasar Secondary Color
+                accent: '#9C27B0',
+                dark: '#1D1D1D',
+                'dark-page': '#121212',
+                positive: '#21BA45',
+                negative: '#C10015',
+                info: '#31CCEC',
+                warning: '#F2C037',
             },
         },
     },
