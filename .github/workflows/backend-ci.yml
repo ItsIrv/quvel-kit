@@ -47,12 +47,21 @@ jobs:
           extensions: mbstring, pdo, pdo_mysql
           coverage: xdebug
 
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ runner.os }}-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
       - name: Install Dependencies
-        run: composer install --no-progress --no-suggest --dev
+        run: composer install --prefer-dist --no-progress --no-interaction --no-suggest --no-scripts
         working-directory: backend
 
       - name: Set Up Environment
-        run: cp .env.example .env && php artisan key:generate
+        run: |
+          cp .env.example .env
+          php artisan key:generate
         working-directory: backend
 
       - name: Run Security & Dependency Audit
@@ -62,7 +71,7 @@ jobs:
 
       - name: Run PHPStan Static Analysis
         continue-on-error: true
-        run: vendor/bin/phpstan analyse app
+        run: vendor/bin/phpstan analyse app --level=max
         working-directory: backend
 
       - name: Run Code Style Check
