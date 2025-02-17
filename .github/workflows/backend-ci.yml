@@ -22,20 +22,6 @@ jobs:
       run:
         working-directory: backend
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: testing_db
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -43,16 +29,16 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
-          extensions: mbstring, pdo, pdo_mysql
+          php-version: '8.3'
+          extensions: mbstring, pdo, sqlite3
           coverage: xdebug
 
       - name: Cache Composer Dependencies
         uses: actions/cache@v4
         with:
-          path: ~/.composer/cache
-          key: composer-${{ runner.os }}-${{ hashFiles('backend/composer.lock') }}
-          restore-keys: composer-${{ runner.os }}-
+          path: backend/vendor
+          key: vendor-${{ runner.os }}-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: vendor-${{ runner.os }}-
 
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --no-interaction --no-suggest --no-scripts
@@ -62,6 +48,8 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
+          echo "DB_CONNECTION=sqlite" >> .env
+          touch database/database.sqlite
         working-directory: backend
 
       - name: Run Security & Dependency Audit
@@ -82,12 +70,8 @@ jobs:
       - name: Run Tests with Coverage
         continue-on-error: true
         env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: testing_db
-          DB_USERNAME: root
-          DB_PASSWORD: root
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
         run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
         working-directory: backend
 
