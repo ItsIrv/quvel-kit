@@ -14,7 +14,6 @@ services:
       - '--entrypoints.websecure.http.tls=true' # Enable TLS on the HTTPS entrypoint
       - '--providers.file.directory=/certs' # Load TLS certificates from a directory
       - '--providers.file.watch=true' # Auto-reload if certificate files change
-
     ports:
       - '80:80' # Expose HTTP for domain routing
       - '443:443' # Expose HTTPS (TLS/SSL)
@@ -22,7 +21,6 @@ services:
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock:ro' # Allow Traefik to read Docker container data
       - '${PWD}/docker/certs:/certs' # Mount local certificates folder into the container
-
     networks:
       - quvel-network
 
@@ -37,7 +35,6 @@ services:
       - ../backend:/var/www # Sync backend files for live development
       - /var/www/vendor # Keep vendor dependencies inside the container for performance
       - ../backend/storage/debug:/var/www/storage/debug # Expose coverage reports
-
     depends_on:
       - mysql # Ensure MySQL is started before this container
       - redis # Ensure Redis is started before this container
@@ -53,7 +50,6 @@ services:
       - 'traefik.http.routers.api.tls=true' # Enable TLS for this route
       - 'traefik.http.routers.api.tls.certresolver=selfsigned' # Use self-signed certs
       - 'traefik.http.services.api.loadbalancer.server.port=8000' # Route traffic to Laravel on port 8000
-
     networks:
       - quvel-network
 

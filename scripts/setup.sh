@@ -102,7 +102,7 @@ docker exec -it quvel-app vendor/bin/phpunit --coverage-html=storage/debug/cover
 
 # Completion message
 echo "✅ Setup complete! Access your app at:"
-echo "   🌐 Frontend: https://quvel.127.0.0.1.nip.io"
-echo "   🌐 API: https://api.quvel.127.0.0.1.nip.io"
-echo "   🌐 Backend Coverage Report: https://coverage.api.127.0.0.1.nip.io"
-echo "   🌐 Traefik Dashboard: http://localhost:8080"
+echo "🌐 Frontend: https://quvel.127.0.0.1.nip.io"
+echo "🌐 API: https://api.quvel.127.0.0.1.nip.io"
+echo "🌐 Backend Coverage Report: https://coverage.api.127.0.0.1.nip.io"
+echo "🌐 Traefik Dashboard: http://localhost:8080"
