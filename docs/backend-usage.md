@@ -1,12 +1,12 @@
 # Backend Usage
 
-## 🖥️ Accessing the Laravel Backend
+## Accessing the Laravel Backend
 
 The backend of QuVel Kit is powered by **Laravel** and runs inside a Docker container. Below are the steps to interact with the backend for development, migrations, and debugging.
 
 ---
 
-## 🚀 Laravel Service Overview
+## Laravel Service Overview
 
 - The backend runs inside a **Docker container**.
 - It uses **PHP 8+**, **MySQL**, and **Redis**.
@@ -24,9 +24,9 @@ The backend of QuVel Kit is powered by **Laravel** and runs inside a Docker cont
 
 ---
 
-## 🔧 Running Migrations & Database Commands
+## Running Migrations & Database Commands
 
-### **1️⃣ Open a Terminal in the Laravel Container**
+### **1️. Open a Terminal in the Laravel Container**
 
 To run artisan commands inside the backend container:
 
@@ -50,7 +50,7 @@ exit
 
 ---
 
-## 🔄 Resetting the Database
+## Resetting the Database
 
 If you need to reset the database, run:
 
@@ -62,7 +62,7 @@ This will stop all containers, remove volumes, and restart everything fresh.
 
 ---
 
-## 📂 Storage & Linking
+## Storage & Linking
 
 If you encounter issues with file uploads or missing storage links, run:
 
@@ -72,7 +72,7 @@ docker exec -it quvel-app php artisan storage:link
 
 ---
 
-## 🔍 Debugging Backend Issues
+## Debugging Backend Issues
 
 ### View Backend Logs
 
@@ -87,3 +87,15 @@ docker restart quvel-app
 ```
 
 ---
+
+**PHPStan (Static Analysis)**  
+
+```sh
+vendor/bin/phpstan analyse app
+```
+
+**PHP-CS-Fixer (Code Style)**  
+
+```sh
+vendor/bin/php-cs-fixer fix app --dry-run --diff
+```

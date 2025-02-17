@@ -1,12 +1,12 @@
 # Frontend Usage
 
-## 🖥️ Accessing the Quasar Frontend
+## Accessing the Quasar Frontend
 
 The frontend of QuVel Kit is powered by **Quasar SSR**, running an **Express server** inside a Docker container. By default, it operates in **SSR mode with a SPA fallback**.
 
 ---
 
-## 🛠️ Running Quasar Commands
+## Running Quasar Commands
 
 To access the Quasar container and run commands:
 
@@ -24,7 +24,7 @@ exit  # Exit the container
 
 ---
 
-## 🔍 Debugging Frontend Issues
+## Debugging Frontend Issues
 
 ### View Frontend Logs
 
@@ -42,7 +42,7 @@ If hot reload does not work as expected, restart the container.
 
 ---
 
-## 🎨 Customizing the Frontend
+## Customizing the Frontend
 
 ### **Modifying Environment Variables**
 
@@ -64,7 +64,7 @@ QuVel Kit supports **hot reloading**, meaning changes to Vue components are appl
 
 ---
 
-## 🧪 Testing the Frontend
+## Testing the Frontend
 
 QuVel Kit uses **Vitest** for unit testing.
 

@@ -8,4 +8,4 @@ Route::get('/', function (): mixed {
     }
 
     return redirect()->to(env('VITE_APP_URL'));
-});
+})->name('welcome');

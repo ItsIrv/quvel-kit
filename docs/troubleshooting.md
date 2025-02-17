@@ -1,8 +1,8 @@
 # Troubleshooting
 
-## 🔴 Common Issues & Fixes
+## Common Issues & Fixes
 
-### **1️⃣ SSL Warnings**
+### **SSL Warnings**
 
 If you encounter browser warnings about SSL certificates:
 
@@ -24,7 +24,7 @@ If you encounter browser warnings about SSL certificates:
   ./scripts/restart.sh
   ```
 
-### **2️⃣ Containers Not Starting**
+### **Containers Not Starting**
 
 If Docker services fail to start:
 
@@ -32,7 +32,7 @@ If Docker services fail to start:
 ./scripts/start.sh
 ```
 
-### **3️⃣ Database Issues**
+### **Database Issues**
 
 - If MySQL isn't responding:
 
@@ -46,7 +46,7 @@ If Docker services fail to start:
   docker exec -it quvel-app php artisan migrate --force
   ```
 
-### **4️⃣ Reset Everything**
+### **Reset Everything**
 
 If issues persist, try a full reset:
 
@@ -54,7 +54,7 @@ If issues persist, try a full reset:
 ./scripts/reset.sh
 ```
 
-### **5️⃣ Clear Docker Cache**
+### **Clear Docker Cache**
 
 If issues persist, try clearing Docker cache:
 

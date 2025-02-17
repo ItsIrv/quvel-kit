@@ -4,7 +4,7 @@
 
 The **QuVel Kit** repository follows a structured layout to ensure clarity and maintainability. Below is an overview of the key directories and files within the project.
 
-## 📂 Directory Layout
+## Directory Layout
 
 ```bash
 ├── backend/          # Laravel API (PHP)
@@ -30,12 +30,10 @@ The **QuVel Kit** repository follows a structured layout to ensure clarity and m
 ├── README.md         # Main project README
 ```
 
-## 📝 Explanation of Key Directories
+## Explanation of Key Directories
 
 - **backend/**: Houses the Laravel application, including routes, models, controllers, and middleware.
 - **frontend/**: Contains the Quasar SSR app with Vue.js components and pages.
 - **docker/**: Holds configurations for Docker and Traefik, including certificates.
 - **docs/**: Documentation files for developers.
 - **scripts/**: Utility scripts for automation and environment management.
-
-Ensure you're familiar with the structure to navigate efficiently. 🚀

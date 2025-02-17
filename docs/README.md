@@ -1,8 +1,8 @@
-# 📚 QuVel Kit Documentation  
+# QuVel Kit Documentation  
 
 Welcome to the **QuVel Kit** documentation. This section contains guides and references for working with the project.
 
-## 📂 Available Guides  
+## Available Docs  
 
 - **[Getting Started](getting-started.md)** – Step-by-step setup guide.  
 - **[Folder Structure](folder-structure.md)** – Overview of the project organization.  
@@ -12,4 +12,4 @@ Welcome to the **QuVel Kit** documentation. This section contains guides and ref
 
 ---
 
-🚀 **For additional help, refer to the main** [README](../README.md).
+**For additional help, refer to the main** [README](../README.md).

@@ -21,3 +21,11 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/.phpstorm.meta.php
+/_ide_helper.php
+/_ide_helper_models.php
+.php-cs-fixer.cache
+
+# PHPUnit Code Coverage Reports
+storage/debug
+coverage.xml
