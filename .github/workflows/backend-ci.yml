@@ -62,12 +62,12 @@ jobs:
 
       - name: Run PHPStan Static Analysis
         continue-on-error: true
-        run: vendor/bin/phpstan analyse --memory-limit=512M
+        run: vendor/bin/phpstan analyse app
         working-directory: backend
 
       - name: Run Code Style Check
         continue-on-error: true
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+        run: vendor/bin/php-cs-fixer fix app --dry-run --diff
         working-directory: backend
 
       - name: Run Tests with Coverage

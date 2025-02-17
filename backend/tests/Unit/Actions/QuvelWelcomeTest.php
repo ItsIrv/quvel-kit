@@ -3,8 +3,8 @@
 namespace Tests\Unit\Actions;
 
 use App\Actions\QuvelWelcome;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Tests\TestCase;
 

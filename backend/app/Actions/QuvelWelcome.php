@@ -3,7 +3,7 @@
 namespace App\Actions;
 
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use Illuminate\Contracts\View\View;
 
 /**
  * Returns the welcome view in local, or redirects to the frontend URL in production.

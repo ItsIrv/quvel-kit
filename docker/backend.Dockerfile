@@ -1,5 +1,5 @@
 # Base image
-FROM php:8.4-fpm
+FROM php:8.3-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
