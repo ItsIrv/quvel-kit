@@ -20,7 +20,9 @@ class QuvelWelcomeFeatureTest extends TestCase
     {
         $this->app->detectEnvironment(fn () => 'local');
 
-        $response = $this->get(route('welcome'));
+        $response = $this->get(
+            route('welcome'),
+        );
 
         $response->assertStatus(Response::HTTP_OK);
         $response->assertViewIs('welcome');
@@ -33,8 +35,12 @@ class QuvelWelcomeFeatureTest extends TestCase
     {
         $this->app->detectEnvironment(fn () => 'production');
 
-        $response = $this->get(route('welcome'));
+        $response = $this->get(
+            route('welcome'),
+        );
 
-        $response->assertRedirect(config('quvel.frontend_url'));
+        $response->assertRedirect(
+            config('quvel.frontend_url'),
+        );
     }
 }

@@ -18,6 +18,13 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Install Xdebug
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
+# Copy custom PHP configuration -- add it to backend folder, or run the setup script
+COPY php.ini /usr/local/etc/php/php.ini
+
 # Set working directory
 WORKDIR /var/www
 

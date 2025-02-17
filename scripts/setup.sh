@@ -38,7 +38,7 @@ fi
 mkdir -p "$(dirname "$0")/../docker/certs"
 if [ ! -f docker/certs/selfsigned.crt ] || [ ! -f docker/certs/selfsigned.key ]; then
   echo "🔐 Generating mkcert SSL certificates..."
-  mkcert -cert-file docker/certs/selfsigned.crt -key-file docker/certs/selfsigned.key quvel.127.0.0.1.nip.io api.quvel.127.0.0.1.nip.io
+  mkcert -cert-file docker/certs/selfsigned.crt -key-file docker/certs/selfsigned.key quvel.127.0.0.1.nip.io api.quvel.127.0.0.1.nip.io coverage.api.127.0.0.1.nip.io
 fi
 
 # Ensure certificates.yaml exists for Traefik
@@ -61,6 +61,10 @@ if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
   exit 1
 fi
 
+# ✅ **Copy php.ini into backend before building**
+echo "📄 Copying php.ini for build..."
+cp docker/php.ini backend/php.ini
+
 # Stop any existing containers
 echo "🐳 Stopping existing Docker containers..."
 docker-compose -f "$DOCKER_COMPOSE_FILE" down
@@ -68,6 +72,10 @@ docker-compose -f "$DOCKER_COMPOSE_FILE" down
 # Start Docker containers
 echo "🐳 Starting Docker containers..."
 docker-compose -f "$DOCKER_COMPOSE_FILE" up -d --build
+
+# ✅ **Remove php.ini after build**
+echo "🧹 Cleaning up php.ini..."
+rm -f backend/php.ini
 
 # ✅ **Wait for Laravel container to be ready**
 echo "⏳ Waiting for Laravel container to be ready..."
@@ -88,8 +96,13 @@ docker exec -it quvel-app php artisan migrate --force
 echo "🔗 Linking storage..."
 docker exec -it quvel-app php artisan storage:link
 
+# Generate initial PHPUnit coverage report
+echo "📊 Generating initial PHPUnit coverage report..."
+docker exec -it quvel-app vendor/bin/phpunit --coverage-html=storage/debug/coverage
+
 # Completion message
 echo "✅ Setup complete! Access your app at:"
 echo "   🌐 Frontend: https://quvel.127.0.0.1.nip.io"
-echo "   ⚙️  API: https://api.quvel.127.0.0.1.nip.io"
-echo "   📊 Traefik Dashboard: http://localhost:8080"
+echo "   🌐 API: https://api.quvel.127.0.0.1.nip.io"
+echo "   🌐 Backend Coverage Report: https://coverage.api.127.0.0.1.nip.io"
+echo "   🌐 Traefik Dashboard: http://localhost:8080"

@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # 🚀 Reverse Proxy and Load Balancer (Traefik)
+  # Reverse Proxy and Load Balancer (Traefik)
   traefik:
     image: traefik:v2.10
     container_name: quvel-traefik
@@ -26,7 +26,7 @@ services:
     networks:
       - quvel-network
 
-  # 🌐 Backend (Laravel API)
+  # Backend (Laravel API)
   app:
     build:
       context: ../backend # Point to Laravel backend source
@@ -36,6 +36,8 @@ services:
     volumes:
       - ../backend:/var/www # Sync backend files for live development
       - /var/www/vendor # Keep vendor dependencies inside the container for performance
+      - ../backend/storage/debug:/var/www/storage/debug # Expose coverage reports
+
     depends_on:
       - mysql # Ensure MySQL is started before this container
       - redis # Ensure Redis is started before this container
@@ -55,7 +57,7 @@ services:
     networks:
       - quvel-network
 
-  # 🖥️ Frontend (Quasar SSR)
+  # Frontend (Quasar SSR)
   frontend:
     build:
       context: ../frontend # Point to frontend source
@@ -77,7 +79,23 @@ services:
     networks:
       - quvel-network
 
-  # 🗄️ Database (MySQL)
+  # PHPUnit Coverage Reports (Nginx)
+  coverage:
+    image: nginx:latest
+    container_name: quvel-coverage
+    volumes:
+      - ../backend/storage/debug/coverage:/usr/share/nginx/html:ro # Serve PHPUnit reports as static files
+    labels:
+      - 'traefik.enable=true' # Enable Traefik proxy for this service
+      - 'traefik.http.routers.coverage.rule=Host(`coverage.api.127.0.0.1.nip.io`)' # Route requests to coverage
+      - 'traefik.http.routers.coverage.entrypoints=websecure' # Enforce HTTPS for coverage
+      - 'traefik.http.routers.coverage.tls=true' # Enable TLS for this route
+      - 'traefik.http.services.coverage.loadbalancer.server.port=80' # Route traffic to Nginx on port 80
+
+    networks:
+      - quvel-network
+
+  # Database (MySQL)
   mysql:
     image: mysql:8
     container_name: quvel-mysql
@@ -93,7 +111,7 @@ services:
     networks:
       - quvel-network
 
-  # ⚡ In-Memory Cache (Redis)
+  # In-Memory Cache (Redis)
   redis:
     image: redis:latest
     container_name: quvel-redis
@@ -102,10 +120,10 @@ services:
     networks:
       - quvel-network
 
-# 🌐 Docker Network
+# Docker Network
 networks:
   quvel-network:
 
-# 📂 Persistent Volume for MySQL
+# Persistent Volume for MySQL
 volumes:
   mysql_data: # Persistent storage for MySQL database

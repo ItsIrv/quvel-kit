@@ -31,13 +31,23 @@ class QuvelWelcomeTest extends TestCase
     public function testRedirectsToFrontendUrlInProduction(): void
     {
         $this->app->detectEnvironment(fn () => 'production');
-        config(['quvel.frontend_url' => 'https://quvel.app']);
 
         $action   = new QuvelWelcome();
         $response = $action();
 
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('https://quvel.app', $response->getTargetUrl());
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertInstanceOf(
+            RedirectResponse::class,
+            $response,
+        );
+
+        $this->assertEquals(
+            config('quvel.frontend_url'),
+            $response->getTargetUrl(),
+        );
+
+        $this->assertEquals(
+            302,
+            $response->getStatusCode(),
+        );
     }
 }
