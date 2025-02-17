@@ -16,8 +16,11 @@ class QuvelWelcome
             return view('welcome');
         }
 
-        return redirect()->away(
-            config('quvel.frontend_url'),
-        );
+        /**
+         * @var string
+         */
+        $frontendUrl = config('quvel.frontend_url');
+
+        return redirect()->away($frontendUrl);
     }
 }
