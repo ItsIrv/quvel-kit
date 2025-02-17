@@ -38,7 +38,7 @@ fi
 mkdir -p "$(dirname "$0")/../docker/certs"
 if [ ! -f docker/certs/selfsigned.crt ] || [ ! -f docker/certs/selfsigned.key ]; then
   echo "🔐 Generating mkcert SSL certificates..."
-  mkcert -cert-file docker/certs/selfsigned.crt -key-file docker/certs/selfsigned.key quvel.127.0.0.1.nip.io api.quvel.127.0.0.1.nip.io coverage.api.127.0.0.1.nip.io
+  # mkcert -cert-file docker/certs/selfsigned.crt -key-file docker/certs/selfsigned.key quvel.127.0.0.1.nip.io api.quvel.127.0.0.1.nip.io coverage-api.quvel.127.0.0.1.nip.io coverage.quvel.127.0.0.1.nip.io
 fi
 
 # Ensure certificates.yaml exists for Traefik
@@ -88,6 +88,20 @@ done
 echo "🔑 Generating Laravel APP_KEY..."
 docker exec -it quvel-app php artisan key:generate
 
+# ✅ **Wait for MySQL to be ready**
+echo "⏳ Waiting for MySQL to be ready..."
+until docker exec -it quvel-mysql mysqladmin ping -h"localhost" --silent; do
+  echo "   🔄 MySQL is still starting... retrying in 3s"
+  sleep 3
+done
+
+# ✅ **Ensure Laravel can connect to MySQL**
+echo "🔍 Verifying database connection..."
+if ! docker exec -it quvel-app php -r "new PDO('mysql:host=mysql;dbname=quvel', 'quvel_user', 'quvel_password');"; then
+  echo "❌ Database connection failed! Ensure MySQL is configured correctly."
+  exit 1
+fi
+
 # Run Laravel migrations
 echo "📌 Running Laravel migrations..."
 docker exec -it quvel-app php artisan migrate --force
@@ -103,6 +117,7 @@ docker exec -it quvel-app vendor/bin/phpunit --coverage-html=storage/debug/cover
 # Completion message
 echo "✅ Setup complete! Access your app at:"
 echo "🌐 Frontend: https://quvel.127.0.0.1.nip.io"
+echo "🌐 Frontend ViTest UI https://coverage.quvel.127.0.0.1.nip.io/__vitest__/"
 echo "🌐 API: https://api.quvel.127.0.0.1.nip.io"
-echo "🌐 Backend Coverage Report: https://coverage.api.127.0.0.1.nip.io"
+echo "🌐 Backend Coverage Report: https://coverage-api.quvel.127.0.0.1.nip.io"
 echo "🌐 Traefik Dashboard: http://localhost:8080"

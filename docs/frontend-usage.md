@@ -87,3 +87,9 @@ For CI environments:
 ```bash
 yarn test:unit:ci  # Run unit tests in CI mode
 ```
+
+### **Viewing the Vitest Coverage Report (Vitest UI)**
+
+```bash
+https://coverage.quvel.127.0.0.1.nip.io/__vitest__/
+```
