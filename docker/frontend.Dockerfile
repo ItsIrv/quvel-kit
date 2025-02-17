@@ -8,4 +8,4 @@ WORKDIR /frontend
 RUN yarn global add @quasar/cli
 
 # Default command to start Quasar
-CMD ["yarn", "dev"]
+CMD ["yarn", "dev:ssr"]

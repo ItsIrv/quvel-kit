@@ -38,7 +38,7 @@ fi
 mkdir -p "$(dirname "$0")/../docker/certs"
 if [ ! -f docker/certs/selfsigned.crt ] || [ ! -f docker/certs/selfsigned.key ]; then
   echo "🔐 Generating mkcert SSL certificates..."
-  mkcert -cert-file docker/certs/selfsigned.crt -key-file docker/certs/selfsigned.key quvel.127.0.0.1.nip.io api.quvel.127.0.0.1.nip.io coverage.api.127.0.0.1.nip.io
+  # mkcert -cert-file docker/certs/selfsigned.crt -key-file docker/certs/selfsigned.key quvel.127.0.0.1.nip.io api.quvel.127.0.0.1.nip.io coverage-api.quvel.127.0.0.1.nip.io coverage.quvel.127.0.0.1.nip.io
 fi
 
 # Ensure certificates.yaml exists for Traefik
@@ -103,6 +103,7 @@ docker exec -it quvel-app vendor/bin/phpunit --coverage-html=storage/debug/cover
 # Completion message
 echo "✅ Setup complete! Access your app at:"
 echo "🌐 Frontend: https://quvel.127.0.0.1.nip.io"
+echo "🌐 Frontend ViTest UI https://coverage.quvel.127.0.0.1.nip.io/__vitest__/"
 echo "🌐 API: https://api.quvel.127.0.0.1.nip.io"
-echo "🌐 Backend Coverage Report: https://coverage.api.127.0.0.1.nip.io"
+echo "🌐 Backend Coverage Report: https://coverage-api.quvel.127.0.0.1.nip.io"
 echo "🌐 Traefik Dashboard: http://localhost:8080"
