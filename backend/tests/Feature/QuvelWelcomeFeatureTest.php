@@ -2,12 +2,13 @@
 
 namespace Tests\Feature\Actions;
 
+use App\Actions\QuvelWelcome;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Tests\TestCase;
 
-#[CoversClass(\App\Actions\QuvelWelcome::class)]
+#[CoversClass(QuvelWelcome::class)]
 class QuvelWelcomeFeatureTest extends TestCase
 {
     use RefreshDatabase;
