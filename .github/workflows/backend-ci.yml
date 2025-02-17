@@ -49,18 +49,26 @@ jobs:
 
       - name: Install Dependencies
         run: composer install --no-progress --no-suggest
+        working-directory: backend
+
+      - name: Set Up Environment
+        run: cp .env.example .env && php artisan key:generate
+        working-directory: backend
 
       - name: Run Security & Dependency Audit
         continue-on-error: true
         run: composer audit || true
+        working-directory: backend
 
       - name: Run PHPStan Static Analysis
         continue-on-error: true
         run: vendor/bin/phpstan analyse --memory-limit=512M
+        working-directory: backend
 
       - name: Run Code Style Check
         continue-on-error: true
         run: vendor/bin/php-cs-fixer fix --dry-run --diff
+        working-directory: backend
 
       - name: Run Tests with Coverage
         continue-on-error: true
@@ -72,6 +80,7 @@ jobs:
           DB_USERNAME: root
           DB_PASSWORD: root
         run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+        working-directory: backend
 
       - name: Upload Coverage Report
         if: always()
