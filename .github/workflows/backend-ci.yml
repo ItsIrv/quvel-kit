@@ -48,7 +48,7 @@ jobs:
           coverage: xdebug
 
       - name: Install Dependencies
-        run: composer install --no-progress --no-suggest
+        run: composer install --no-progress --no-suggest --dev
         working-directory: backend
 
       - name: Set Up Environment
