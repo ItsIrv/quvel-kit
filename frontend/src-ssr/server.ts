@@ -9,8 +9,12 @@
  * Make sure to yarn add / npm install (in your project root)
  * anything you import here (except for express and compression).
  */
-import express from 'express'
-// import compression from 'compression'
+import Fastify from 'fastify'
+import type { FastifyInstance } from 'fastify'
+import fastifyStatic from '@fastify/static'
+import fastifyCompress from '@fastify/compress'
+import middie from '@fastify/middie'
+
 import {
   defineSsrCreate,
   defineSsrListen,
@@ -19,6 +23,8 @@ import {
   defineSsrRenderPreloadTag,
 } from '#q-app/wrappers'
 
+let fastifyInstance: FastifyInstance | null = null
+
 /**
  * Create your webserver and return its instance.
  * If needed, prepare your webserver to receive
@@ -26,20 +32,22 @@ import {
  *
  * Can be async: defineSsrCreate(async ({ ... }) => { ... })
  */
-export const create = defineSsrCreate((/* { ... } */) => {
-  const app = express()
+export const create = defineSsrCreate(async () => {
+  fastifyInstance = Fastify()
 
-  // attackers can use this header to detect apps running Express
-  // and then launch specifically-targeted attacks
-  app.disable('x-powered-by')
+  await fastifyInstance.register(middie)
 
-  // place here any middlewares that
-  // absolutely need to run before anything else
+  fastifyInstance.addHook('onRequest', (request, reply, done) => {
+    reply.header('X-Powered-By', '')
+
+    done()
+  })
+
   if (process.env.PROD) {
-    // app.use(compression());
+    fastifyInstance.register(fastifyCompress)
   }
 
-  return app
+  return fastifyInstance
 })
 
 /**
@@ -55,13 +63,19 @@ export const create = defineSsrCreate((/* { ... } */) => {
  *
  * Can be async: defineSsrListen(async ({ app, devHttpsApp, port }) => { ... })
  */
-export const listen = defineSsrListen(({ app, devHttpsApp, port }) => {
+export const listen = defineSsrListen(async ({ app, devHttpsApp, port }) => {
   const server = devHttpsApp || app
-  return server.listen(port, () => {
+  try {
+    await server.listen({ port: Number(port), host: '0.0.0.0' })
+
     if (process.env.PROD) {
       console.log('Server listening at port ' + port)
     }
-  })
+  } catch (err) {
+    console.error(err)
+
+    process.exit(1)
+  }
 })
 
 /**
@@ -72,10 +86,14 @@ export const listen = defineSsrListen(({ app, devHttpsApp, port }) => {
  * Should you need the result of the "listen()" call above,
  * you can use the "listenResult" param.
  *
- * Can be async: defineSsrClose(async ({ listenResult }) => { ... }))
+ * Can be async: defineSsrClose(async () => { ... }))
  */
-export const close = defineSsrClose(({ listenResult }) => {
-  return listenResult.close()
+export const close = defineSsrClose(async () => {
+  if (fastifyInstance) {
+    await fastifyInstance.close()
+
+    fastifyInstance = null
+  }
 })
 
 const maxAge = process.env.DEV ? 0 : 1000 * 60 * 60 * 24 * 30
@@ -91,24 +109,28 @@ const maxAge = process.env.DEV ? 0 : 1000 * 60 * 60 * 24 * 30
  */
 export const serveStaticContent = defineSsrServeStaticContent(({ app, resolve }) => {
   return ({ urlPath = '/', pathToServe = '.', opts = {} }) => {
-    const serveFn = express.static(resolve.public(pathToServe), { maxAge, ...opts })
-    app.use(resolve.urlPath(urlPath), serveFn)
+    app.register(fastifyStatic, {
+      root: resolve.public(pathToServe),
+      prefix: resolve.urlPath(urlPath),
+      maxAge,
+      ...opts,
+    })
   }
 })
 
-const jsRE = /\.js$/
-const cssRE = /\.css$/
-const woffRE = /\.woff$/
-const woff2RE = /\.woff2$/
-const gifRE = /\.gif$/
-const jpgRE = /\.jpe?g$/
-const pngRE = /\.png$/
+const jsRE = /.js$/
+const cssRE = /.css$/
+const woffRE = /.woff$/
+const woff2RE = /.woff2$/
+const gifRE = /.gif$/
+const jpgRE = /.jpe?g$/
+const pngRE = /.png$/
 
 /**
  * Should return a String with HTML output
  * (if any) for preloading indicated file
  */
-export const renderPreloadTag = defineSsrRenderPreloadTag((file /* , { ssrContext } */) => {
+export const renderPreloadTag = defineSsrRenderPreloadTag((file) => {
   if (jsRE.test(file) === true) {
     return `<link rel="modulepreload" href="${file}" crossorigin>`
   }
