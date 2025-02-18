@@ -4,6 +4,7 @@
       <h1 class="text-h3 text-weight-bold q-mb-md">
         Welcome to <span class="text-primary">QuVel Kit</span>
       </h1>
+
       <p class="text-subtitle1 text-gray-200 q-mb-lg">
         A full-stack hybrid starter kit for Laravel & Quasar, built for modern web, mobile, and desktop applications.
       </p>
@@ -71,7 +72,13 @@
   </q-page>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+defineOptions({
+  preFetch() {
+    console.log(1)
+  }
+})
+</script>
 
 <style scoped>
 .hero-container {

@@ -1,5 +1,4 @@
-import { mount } from '@vue/test-utils'
-import type { VueWrapper } from '@vue/test-utils'
+import { mount, type VueWrapper } from '@vue/test-utils'
 import { describe, it, expect, beforeEach } from 'vitest'
 import WelcomePage from '@/pages/WelcomePage.vue'
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'

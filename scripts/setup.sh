@@ -104,7 +104,7 @@ fi
 
 # Run Laravel migrations
 echo "📌 Running Laravel migrations..."
-docker exec -it quvel-app php artisan migrate --force
+docker exec -it quvel-app php artisan migrate --force --seed
 
 # Run storage linking
 echo "🔗 Linking storage..."
