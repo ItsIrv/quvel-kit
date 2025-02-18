@@ -2,37 +2,61 @@
 
 namespace Tests\Unit;
 
-use Illuminate\Foundation\Application;
 use App\Providers\AppServiceProvider;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Before;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\BackupGlobals;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
+use URL;
 
 #[CoversClass(AppServiceProvider::class)]
+#[BackupGlobals(false)]
 class AppServiceProviderTest extends TestCase
 {
+    private AppServiceProvider $provider;
+
     /**
-     * Test if register method runs.
+     * Runs before each test.
      */
-    public function testRegisterMethodRuns(): void
+    #[Before]
+    public function setupTest(): void
     {
-        $app      = $this->createMock(Application::class);
-        $provider = new AppServiceProvider($app);
+        $this->provider = new AppServiceProvider($this->app);
 
-        $provider->register(); // Actually call the method
-
-        $this->assertTrue(true); // Ensure PHPUnit does not skip this test
+        URL::spy();
     }
 
     /**
-     * Test if boot method runs.
+     * Ensures the register method executes without errors.
      */
-    public function testBootMethodRuns(): void
+    public function testRegisterMethodRuns(): void
     {
-        $app      = $this->createMock(Application::class);
-        $provider = new AppServiceProvider($app);
+        $this->provider->register();
+        $this->assertTrue(true);
+    }
 
-        $provider->boot(); // Actually call the method
+    /**
+     * Ensures boot runs without errors.
+     */
+    public function testBootRuns(): void
+    {
+        $this->provider->boot();
+        $this->assertTrue(true);
+    }
 
-        $this->assertTrue(true); // Ensure PHPUnit does not skip this test
+    /**
+     * Ensures boot forces HTTPS.
+     */
+    #[Depends('testBootRuns')]
+    #[Group('security')]
+    public function testBootForcesHttps(): void
+    {
+        URL::shouldReceive('forceScheme')
+            ->once()
+            ->with('https');
+
+        $this->provider->boot();
     }
 }

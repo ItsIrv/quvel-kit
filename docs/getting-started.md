@@ -40,5 +40,3 @@ This will install dependencies, generate SSL certificates, and start the Docker 
 | Stop services | `./scripts/stop.sh` |
 | Restart services | `./scripts/restart.sh` |
 | View logs | `./scripts/logs.sh` |
-
-Once setup is complete, you're ready to start developing with QuVel Kit! 🎉

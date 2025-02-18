@@ -99,3 +99,30 @@ vendor/bin/phpstan analyse app
 ```sh
 vendor/bin/php-cs-fixer fix app --dry-run --diff
 ```
+
+---
+
+## Testing
+
+- Coverage Reports <https://coverage-api.quvel.127.0.0.1.nip.io>
+
+### Run Tests
+
+```bash
+docker exec -it quvel-app php artisan test
+```
+
+### Refresh Coverage Report
+
+```bash
+docker exec -it quvel-app php artisan test --coverage-html=storage/debug/coverage
+```
+
+## Vite Assets
+
+Laravel assets can currently be updated by running the quvel-asset-builder container.
+An automated way will be cooked up in the future.
+
+```bash
+docker-compose -f docker/docker-compose.yml run --rm asset-builder
+```

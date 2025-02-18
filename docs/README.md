@@ -4,12 +4,9 @@ Welcome to the **QuVel Kit** documentation. This section contains guides and ref
 
 ## Available Docs  
 
-- **[Getting Started](getting-started.md)** – Step-by-step setup guide.  
-- **[Folder Structure](folder-structure.md)** – Overview of the project organization.  
-- **[Backend Usage](backend-usage.md)** – How to work with Laravel backend, migrations, etc.  
-- **[Frontend Usage](frontend-usage.md)** – How to work with Quasar frontend, commands, etc.
-- **[Troubleshooting](troubleshooting.md)** – Solutions for common issues.  
-
----
-
-**For additional help, refer to the main** [README](../README.md).
+- **[Getting Started](docs/getting-started.md)** – Step-by-step installation and setup
+- **[Folder Structure](docs/folder-structure.md)** – Overview of the project organization
+- **[Backend Usage](docs/backend-usage.md)** – Laravel API, authentication, migrations, and database setup
+- **[Frontend Usage](docs/frontend-usage.md)** – Quasar SSR, SPA, mobile builds, and UI development
+- **[Testing Guide](docs/testing.md)** – Running tests, coverage reports, and CI setup
+- **[Troubleshooting](docs/troubleshooting.md)** – Common issues and solutions

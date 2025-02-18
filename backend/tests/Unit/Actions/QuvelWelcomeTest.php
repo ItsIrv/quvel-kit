@@ -5,12 +5,23 @@ namespace Tests\Unit\Actions;
 use App\Actions\QuvelWelcome;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(QuvelWelcome::class)]
+#[Group('welcome')]
 class QuvelWelcomeTest extends TestCase
 {
+    private QuvelWelcome $action;
+
+    #[Before]
+    public function setupTest(): void
+    {
+        $this->action = new QuvelWelcome();
+    }
+
     /**
      * Test that the welcome view is returned in the local environment.
      */
@@ -18,8 +29,7 @@ class QuvelWelcomeTest extends TestCase
     {
         $this->app->detectEnvironment(fn () => 'local');
 
-        $action   = new QuvelWelcome();
-        $response = $action();
+        $response = ($this->action)();
 
         $this->assertInstanceOf(View::class, $response);
         $this->assertEquals('welcome', $response->name());
@@ -32,8 +42,7 @@ class QuvelWelcomeTest extends TestCase
     {
         $this->app->detectEnvironment(fn () => 'production');
 
-        $action   = new QuvelWelcome();
-        $response = $action();
+        $response = ($this->action)();
 
         $this->assertInstanceOf(
             RedirectResponse::class,
