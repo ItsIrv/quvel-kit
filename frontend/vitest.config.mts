@@ -20,6 +20,11 @@ export default defineConfig({
     port: 51204,
     allowedHosts: ['localhost', '127.0.0.1', 'coverage.quvel.127.0.0.1.nip.io'],
   },
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
   plugins: [
     vue({
       template: { transformAssetUrls },

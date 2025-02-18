@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect } from 'vitest'
-import Error404Page from '../../../../src/pages/ErrorNotFound.vue'
+import Error404Page from '@/pages/ErrorNotFound.vue'
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 
 // Install Quasar Plugin before running tests

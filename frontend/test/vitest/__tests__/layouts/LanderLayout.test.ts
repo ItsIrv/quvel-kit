@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, beforeEach } from 'vitest'
-import LanderLayout from '../../../../src/layouts/LanderLayout.vue'
+import LanderLayout from '@/layouts/LanderLayout.vue'
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import { defineComponent } from 'vue'
