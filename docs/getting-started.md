@@ -7,16 +7,16 @@ Before you begin, ensure you have the following installed:
 - **Docker** & **Docker Compose**
 - **Node.js** (for mkcert SSL setup)
 
-## 🚀 Setting Up the Project
+## Setting Up the Project
 
-### 1️⃣ **Clone the Repository**
+### 1️. **Clone the Repository**
 
 ```bash
 git clone https://github.com/ItsIrv/quvel-kit.git
 cd quvel-kit
 ```
 
-### 2️⃣ **Run Setup Script**
+### 2️. **Run Setup Script**
 
 This will install dependencies, generate SSL certificates, and start the Docker services.
 
@@ -24,7 +24,7 @@ This will install dependencies, generate SSL certificates, and start the Docker 
 ./scripts/setup.sh
 ```
 
-### 3️⃣ **Access the Services**
+### 3️. **Access the Services**
 
 | Service   | URL |
 |-----------|--------------------------------|
@@ -32,7 +32,7 @@ This will install dependencies, generate SSL certificates, and start the Docker 
 | **API**       | [https://api.quvel.127.0.0.1.nip.io](https://api.quvel.127.0.0.1.nip.io) |
 | **Traefik Dashboard** | [http://localhost:8080](http://localhost:8080) |
 
-## 🔧 Common Commands
+## Common Commands
 
 | Action | Command |
 |--------|---------|

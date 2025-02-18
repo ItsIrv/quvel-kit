@@ -1,28 +1,45 @@
 # Backend Usage
 
-## 🛠️ Accessing the Laravel Backend
+## Accessing the Laravel Backend
 
-The backend of QuVel Kit is powered by **Laravel** and runs in a Docker container. Below are the steps to interact with the backend for development, migrations, and debugging.
+The backend of QuVel Kit is powered by **Laravel** and runs inside a Docker container. Below are the steps to interact with the backend for development, migrations, and debugging.
 
 ---
 
-## 🔧 Running Migrations & Database Commands
+## Laravel Service Overview
 
-### **1️⃣ Open a Terminal in the Laravel Container**
+- The backend runs inside a **Docker container**.
+- It uses **PHP 8+**, **MySQL**, and **Redis**.
+- The service starts using:
+
+  ```bash
+  php artisan serve --host=0.0.0.0 --port=8000
+  ```
+
+- It is exposed on:
+
+  ```bash
+  https://api.quvel.127.0.0.1.nip.io
+  ```
+
+---
+
+## Running Migrations & Database Commands
+
+### **1️. Open a Terminal in the Laravel Container**
 
 To run artisan commands inside the backend container:
 
 ```bash
-./scripts/start.sh   # Ensure services are running
-
 docker exec -it quvel-app sh   # Access the Laravel container
 ```
 
-Once inside the container, you can run commands as you normally would:
+Once inside, you can run commands as you normally would:
 
 ```bash
 php artisan migrate --force  # Run database migrations
 php artisan db:seed  # Seed the database
+php artisan tinker  # Open interactive Laravel shell
 ```
 
 Exit the container with:
@@ -33,7 +50,7 @@ exit
 
 ---
 
-## 🔄 Resetting the Database
+## Resetting the Database
 
 If you need to reset the database, run:
 
@@ -45,7 +62,7 @@ This will stop all containers, remove volumes, and restart everything fresh.
 
 ---
 
-## 📂 Storage & Linking
+## Storage & Linking
 
 If you encounter issues with file uploads or missing storage links, run:
 
@@ -55,31 +72,30 @@ docker exec -it quvel-app php artisan storage:link
 
 ---
 
-## 🔍 Debugging Backend Issues
+## Debugging Backend Issues
 
-### View Logs
-
-```bash
-./scripts/logs.sh
-```
-
-### Open Tinker (Laravel REPL)
+### View Backend Logs
 
 ```bash
-docker exec -it quvel-app php artisan tinker
+docker logs -f quvel-app
 ```
 
 ### Restart Laravel Service
 
 ```bash
-./scripts/restart.sh
+docker restart quvel-app
 ```
 
 ---
 
-## 🏗️ Future Improvements
+**PHPStan (Static Analysis)**  
 
-- Automate migrations for fresh setups with prompts.
-- Add better error handling for database initialization.
+```sh
+vendor/bin/phpstan analyse app
+```
 
-🚀 **Now you're set up to develop with the Laravel backend!**
+**PHP-CS-Fixer (Code Style)**  
+
+```sh
+vendor/bin/php-cs-fixer fix app --dry-run --diff
+```
