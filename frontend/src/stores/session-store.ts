@@ -1,35 +1,35 @@
-import { defineStore } from 'pinia'
-import { type AxiosInstance } from 'axios'
-import { User, type IUser } from 'src/models/user-model'
+import { defineStore } from 'pinia';
+import { type AxiosInstance } from 'axios';
+import { User, type IUser } from 'src/models/user-model';
 
 /**
  * Type for the authenticated user.
  */
-type StateUser = User | null | undefined
+type StateUser = User | null | undefined;
 
 /**
  * Interface defining the structure of the session state.
  */
 interface SessionState {
-  user: StateUser
+  user: StateUser;
 }
 
 /**
  * Interface defining getters for the session store.
  */
 type SessionGetters = {
-  isAuthenticated: (state: SessionState) => boolean
-  getUser: (state: SessionState) => StateUser
-}
+  isAuthenticated: (state: SessionState) => boolean;
+  getUser: (state: SessionState) => StateUser;
+};
 
 /**
  * Interface defining actions for the session store.
  */
 interface SessionActions {
-  setSession(data: IUser): void
-  fetchSession(api: AxiosInstance): Promise<void>
-  logout(api: AxiosInstance): Promise<void>
-  login(api: AxiosInstance, email: string, password: string): Promise<void>
+  setSession(data: IUser): void;
+  fetchSession(api: AxiosInstance): Promise<void>;
+  logout(api: AxiosInstance): Promise<void>;
+  login(api: AxiosInstance, email: string, password: string): Promise<void>;
 }
 
 /**
@@ -60,7 +60,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * @param data - User data from API response.
        */
       setSession(data: IUser) {
-        this.user = User.fromApi(data)
+        this.user = User.fromApi(data);
       },
 
       /**
@@ -69,12 +69,12 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
       async fetchSession(api: AxiosInstance): Promise<void> {
         if (this.user === undefined) {
           try {
-            const { data } = await api.get<IUser>('/session')
+            const { data } = await api.get<IUser>('/session');
 
-            this.setSession(data)
+            this.setSession(data);
           } catch {
             // TODO: Handle specific error codes
-            this.user = null
+            this.user = null;
           }
         }
       },
@@ -84,9 +84,9 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        */
       async logout(api: AxiosInstance): Promise<void> {
         try {
-          await api.post('/logout')
+          await api.post('/logout');
 
-          this.$reset()
+          this.$reset();
         } catch {
           // TODO: Handle specific error codes
         }
@@ -100,13 +100,13 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        */
       async login(api: AxiosInstance, email: string, password: string): Promise<void> {
         try {
-          const { data } = await api.post<IUser>('/login', { email, password })
+          const { data } = await api.post<IUser>('/login', { email, password });
 
-          this.setSession(data)
+          this.setSession(data);
         } catch {
           // TODO: Handle specific error codes
         }
       },
     },
   },
-)
+);

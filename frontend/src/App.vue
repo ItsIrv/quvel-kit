@@ -15,7 +15,7 @@ defineOptions({
   async preFetch({ store, ssrContext }) {
     await useSessionStore(store).fetchSession(
       createApi(ssrContext)
-    )
+    );
   }
 })
 </script>

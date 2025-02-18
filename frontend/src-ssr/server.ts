@@ -9,11 +9,11 @@
  * Make sure to yarn add / npm install (in your project root)
  * anything you import here (except for express and compression).
  */
-import Fastify from 'fastify'
-import type { FastifyInstance } from 'fastify'
-import fastifyStatic from '@fastify/static'
-import fastifyCompress from '@fastify/compress'
-import middie from '@fastify/middie'
+import Fastify from 'fastify';
+import type { FastifyInstance } from 'fastify';
+import fastifyStatic from '@fastify/static';
+import fastifyCompress from '@fastify/compress';
+import middie from '@fastify/middie';
 
 import {
   defineSsrCreate,
@@ -21,9 +21,9 @@ import {
   defineSsrClose,
   defineSsrServeStaticContent,
   defineSsrRenderPreloadTag,
-} from '#q-app/wrappers'
+} from '#q-app/wrappers';
 
-let fastifyInstance: FastifyInstance | null = null
+let fastifyInstance: FastifyInstance | null = null;
 
 /**
  * Create your webserver and return its instance.
@@ -33,22 +33,22 @@ let fastifyInstance: FastifyInstance | null = null
  * Can be async: defineSsrCreate(async ({ ... }) => { ... })
  */
 export const create = defineSsrCreate(async () => {
-  fastifyInstance = Fastify()
+  fastifyInstance = Fastify();
 
-  await fastifyInstance.register(middie)
+  await fastifyInstance.register(middie);
 
   fastifyInstance.addHook('onRequest', (request, reply, done) => {
-    reply.header('X-Powered-By', '')
+    reply.header('X-Powered-By', '');
 
-    done()
-  })
+    done();
+  });
 
-  if (process.env.PROD) {
-    fastifyInstance.register(fastifyCompress)
+  if (process.env.PROD ?? '') {
+    fastifyInstance.register(fastifyCompress);
   }
 
-  return fastifyInstance
-})
+  return fastifyInstance;
+});
 
 /**
  * You need to make the server listen to the indicated port
@@ -64,19 +64,19 @@ export const create = defineSsrCreate(async () => {
  * Can be async: defineSsrListen(async ({ app, devHttpsApp, port }) => { ... })
  */
 export const listen = defineSsrListen(async ({ app, devHttpsApp, port }) => {
-  const server = devHttpsApp || app
+  const server = devHttpsApp || app;
   try {
-    await server.listen({ port: Number(port), host: '0.0.0.0' })
+    await server.listen({ port: Number(port), host: '0.0.0.0' });
 
-    if (process.env.PROD) {
-      console.log('Server listening at port ' + port)
+    if (process.env.PROD ?? '') {
+      console.log('Server listening at port ' + port);
     }
   } catch (err) {
-    console.error(err)
+    console.error(err);
 
-    process.exit(1)
+    process.exit(1);
   }
-})
+});
 
 /**
  * Should close the server and free up any resources.
@@ -90,13 +90,13 @@ export const listen = defineSsrListen(async ({ app, devHttpsApp, port }) => {
  */
 export const close = defineSsrClose(async () => {
   if (fastifyInstance) {
-    await fastifyInstance.close()
+    await fastifyInstance.close();
 
-    fastifyInstance = null
+    fastifyInstance = null;
   }
-})
+});
 
-const maxAge = process.env.DEV ? 0 : 1000 * 60 * 60 * 24 * 30
+const maxAge = (process.env.DEV ?? '') ? 0 : 1000 * 60 * 60 * 24 * 30;
 
 /**
  * Should return a function that will be used to configure the webserver
@@ -108,23 +108,23 @@ const maxAge = process.env.DEV ? 0 : 1000 * 60 * 60 * 24 * 30
  * Can return an async function: return async ({ urlPath = '/', pathToServe = '.', opts = {} }) => {
  */
 export const serveStaticContent = defineSsrServeStaticContent(({ app, resolve }) => {
-  return ({ urlPath = '/', pathToServe = '.', opts = {} }) => {
+  return ({ urlPath = '/', pathToServe = '.', opts = {} }): void => {
     app.register(fastifyStatic, {
       root: resolve.public(pathToServe),
       prefix: resolve.urlPath(urlPath),
       maxAge,
       ...opts,
-    })
-  }
-})
+    });
+  };
+});
 
-const jsRE = /.js$/
-const cssRE = /.css$/
-const woffRE = /.woff$/
-const woff2RE = /.woff2$/
-const gifRE = /.gif$/
-const jpgRE = /.jpe?g$/
-const pngRE = /.png$/
+const jsRE = /.js$/;
+const cssRE = /.css$/;
+const woffRE = /.woff$/;
+const woff2RE = /.woff2$/;
+const gifRE = /.gif$/;
+const jpgRE = /.jpe?g$/;
+const pngRE = /.png$/;
 
 /**
  * Should return a String with HTML output
@@ -132,32 +132,32 @@ const pngRE = /.png$/
  */
 export const renderPreloadTag = defineSsrRenderPreloadTag((file) => {
   if (jsRE.test(file) === true) {
-    return `<link rel="modulepreload" href="${file}" crossorigin>`
+    return `<link rel="modulepreload" href="${file}" crossorigin>`;
   }
 
   if (cssRE.test(file) === true) {
-    return `<link rel="stylesheet" href="${file}" crossorigin>`
+    return `<link rel="stylesheet" href="${file}" crossorigin>`;
   }
 
   if (woffRE.test(file) === true) {
-    return `<link rel="preload" href="${file}" as="font" type="font/woff" crossorigin>`
+    return `<link rel="preload" href="${file}" as="font" type="font/woff" crossorigin>`;
   }
 
   if (woff2RE.test(file) === true) {
-    return `<link rel="preload" href="${file}" as="font" type="font/woff2" crossorigin>`
+    return `<link rel="preload" href="${file}" as="font" type="font/woff2" crossorigin>`;
   }
 
   if (gifRE.test(file) === true) {
-    return `<link rel="preload" href="${file}" as="image" type="image/gif" crossorigin>`
+    return `<link rel="preload" href="${file}" as="image" type="image/gif" crossorigin>`;
   }
 
   if (jpgRE.test(file) === true) {
-    return `<link rel="preload" href="${file}" as="image" type="image/jpeg" crossorigin>`
+    return `<link rel="preload" href="${file}" as="image" type="image/jpeg" crossorigin>`;
   }
 
   if (pngRE.test(file) === true) {
-    return `<link rel="preload" href="${file}" as="image" type="image/png" crossorigin>`
+    return `<link rel="preload" href="${file}" as="image" type="image/png" crossorigin>`;
   }
 
-  return ''
-})
+  return '';
+});

@@ -1,16 +1,16 @@
 <template>
-  <q-page class="hero-container">
-    <div class="content q-pa-md text-center">
+  <q-page>
+    <div class="q-pa-md text-center">
       <h1 class="text-h3 text-weight-bold q-mb-xl">
         Welcome to <span class="text-primary">QuVel Kit</span>
       </h1>
 
       <div
         v-if="sessionStore.isAuthenticated"
-        class="q-mt-xl"
+        class="q-mt-xl q-max-w-lg"
       >
-        <p class="text-gray-200">Logged in as <strong>{{ sessionStore.user?.name }}</strong></p>
-        <p class="text-gray-400">Email: {{ sessionStore.user?.email }}</p>
+        <p class="text-grey-3 text-h5">Logged in as <strong>{{ sessionStore.user?.name }}</strong></p>
+        <p class="text-grey-5 text-h6">Email: {{ sessionStore.user?.email }}</p>
         <q-btn
           color="negative"
           class="q-mt-md"
@@ -65,6 +65,8 @@
   </q-page>
 </template>
 
+<style lang="scss" scoped></style>
+
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useSessionStore } from 'stores/session-store'
@@ -75,41 +77,9 @@ const sessionStore = useSessionStore()
 const email = ref('quvel@quvel.app')
 const password = ref('123456')
 
-async function login() {
+function login(): void {
   if (email.value && password.value) {
-    await sessionStore.login(api, email.value, password.value)
+    void sessionStore.login(api, email.value, password.value)
   }
 }
 </script>
-
-<style scoped>
-.hero-container {
-  background: linear-gradient(135deg, #0f172a, #1e3a8a);
-  color: white;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.content {
-  max-width: 700px;
-}
-
-.text-primary {
-  color: #4f46e5;
-}
-
-.text-gray-200 {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.text-gray-400 {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.login-box {
-  max-width: 300px;
-  margin: 0 auto;
-}
-</style>
