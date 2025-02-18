@@ -54,6 +54,17 @@ services:
     networks:
       - quvel-network
 
+  # Laravel Assets Builder
+  asset-builder:
+    image: node:22-alpine
+    container_name: quvel-asset-builder
+    working_dir: /var/www
+    volumes:
+      - ../backend:/var/www
+    command: ['/bin/sh', '-c', 'npm install && npm run build']
+    networks:
+      - quvel-network
+
   # Frontend (Quasar SSR)
   frontend:
     build:

@@ -99,3 +99,21 @@ vendor/bin/phpstan analyse app
 ```sh
 vendor/bin/php-cs-fixer fix app --dry-run --diff
 ```
+
+---
+
+## Testing
+
+- Coverage Reports <https://coverage-api.quvel.127.0.0.1.nip.io>
+
+### Run Tests
+
+```bash
+docker exec -it quvel-app php artisan test
+```
+
+### Refresh Coverage Report
+
+```bash
+docker exec -it quvel-app php artisan test --coverage-html=storage/debug/coverage
+```

@@ -112,7 +112,7 @@ docker exec -it quvel-app php artisan storage:link
 
 # Generate initial PHPUnit coverage report
 echo "📊 Generating initial PHPUnit coverage report..."
-docker exec -it quvel-app vendor/bin/phpunit --coverage-html=storage/debug/coverage
+docker exec -it quvel-app php artisan test --coverage-html=storage/debug/coverage
 
 # Completion message
 echo "✅ Setup complete! Access your app at:"

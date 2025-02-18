@@ -3,16 +3,15 @@
 namespace Tests\Feature\Actions;
 
 use App\Actions\QuvelWelcome;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(QuvelWelcome::class)]
+#[Group('welcome')]
 class QuvelWelcomeFeatureTest extends TestCase
 {
-    use RefreshDatabase;
-
     /**
      * Test that the welcome route returns the view in a local environment.
      */
