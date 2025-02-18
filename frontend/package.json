@@ -1,8 +1,8 @@
 {
-  "name": "laravel-quasar-auth",
-  "version": "0.0.1",
-  "description": "A Laravel Quasar hybrid application starter kit.",
-  "productName": "Laravel Quasar Auth Kit",
+  "name": "quvel-kit",
+  "version": "0.1.1-beta",
+  "description": "QuVel Kit: A Laravel & Quasar hybrid starter kit.",
+  "productName": "QuVel Kit",
   "author": "Irving Gomez <gomirv.work@gmail.com>",
   "type": "module",
   "private": true,
