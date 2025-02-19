@@ -1,38 +1,41 @@
 <template>
-  <q-page class="hero-container">
-    <div class="content q-pa-md text-center">
+  <q-page class="fullscreen flex flex-center text-center">
+    <div class="max-w-3xl">
       <h1 class="text-h3 text-weight-bold q-mb-md">
         Welcome to <span class="text-primary">QuVel Kit</span>
       </h1>
 
-      <p class="text-subtitle1 text-grey-5 q-mb-lg">
-        A full-stack hybrid starter kit for Laravel & Quasar, built for modern web, mobile, and desktop applications.
+      <p class="text-subtitle1 text-grey-5 q-mb-xl">
+        A full-stack hybrid starter kit for Laravel & Quasar.
+
+        <br />
+
+        Built for modern web, mobile, and desktop applications.
       </p>
 
       <div class="q-gutter-md row justify-center">
         <q-btn
-          color="primary"
-          size="lg"
+          color="secondary"
+          size="md"
           class="q-px-lg"
           unelevated
           href="https://github.com/ItsIrv/quvel-kit/"
         >
           GitHub Repository
         </q-btn>
+
         <q-btn
           color="secondary"
-          size="lg"
+          size="md"
           class="q-px-lg"
           unelevated
           href="https://github.com/ItsIrv/quvel-kit/blob/main/docs/README.md"
         >
           Documentation
         </q-btn>
-      </div>
 
-      <div class="q-mt-lg q-gutter-md row justify-center">
         <q-btn
-          color="accent"
+          color="secondary"
           size="md"
           class="q-px-md"
           unelevated
@@ -41,7 +44,7 @@
           API Playground
         </q-btn>
         <q-btn
-          color="accent"
+          color="secondary"
           size="md"
           class="q-px-md"
           unelevated
@@ -50,7 +53,7 @@
           Vitest UI
         </q-btn>
         <q-btn
-          color="accent"
+          color="secondary"
           size="md"
           class="q-px-md"
           unelevated
@@ -59,7 +62,7 @@
           Laravel Coverage
         </q-btn>
         <q-btn
-          color="accent"
+          color="secondary"
           size="md"
           class="q-px-md"
           unelevated
@@ -72,11 +75,4 @@
   </q-page>
 </template>
 
-<script lang="ts" setup>
-defineOptions({
-  preFetch() {
-    console.log(1);
-    console.log(1)
-  }
-})
-</script>
+<style lang="scss" scoped></style>

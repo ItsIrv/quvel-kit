@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="q-pa-md text-center">
+    <div class="q-pa-md text-center h-screen">
       <h1 class="text-h3 text-weight-bold q-mb-xl">
         Welcome to <span class="text-primary">QuVel Kit</span>
       </h1>
