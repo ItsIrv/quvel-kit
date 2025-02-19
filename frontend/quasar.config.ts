@@ -2,7 +2,8 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file
 
 import { defineConfig } from '#q-app/wrappers';
-import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
 
 export default defineConfig((ctx) => {
   return {
@@ -21,19 +22,6 @@ export default defineConfig((ctx) => {
         vueShim: true,
       },
       vueRouterMode: 'history',
-      extendViteConf(viteConf): void {
-        viteConf.server = {
-          ...viteConf.server,
-          strictPort: true,
-          hmr: {
-            clientPort: 9000,
-          },
-          watch: {
-            usePolling: true,
-          },
-          allowedHosts: ['localhost', '127.0.0.1', 'quvel.127.0.0.1.nip.io'],
-        };
-      },
       vitePlugins: [
         [
           '@intlify/unplugin-vue-i18n/vite',
@@ -59,9 +47,40 @@ export default defineConfig((ctx) => {
           { server: false },
         ],
       ],
+      extendViteConf(viteConf) {
+        viteConf.server = {
+          ...viteConf.server,
+          allowedHosts: ['localhost', '127.0.0.1', 'quvel.127.0.0.1.nip.io'],
+          strictPort: true,
+          port: 9000,
+          host: '0.0.0.0',
+          watch: {
+            usePolling: true,
+          },
+          hmr: {
+            protocol: 'wss',
+            host: 'quvel.127.0.0.1.nip.io',
+            port: 443,
+            clientPort: 443,
+            path: '/@vite',
+          },
+          https: {
+            key: readFileSync('/certs/selfsigned.key'),
+            cert: readFileSync('/certs/selfsigned.crt'),
+            ca: readFileSync('/certs/ca.pem'),
+          },
+        };
+      },
     },
     devServer: {
+      strictPort: true,
       port: 9000,
+      host: '0.0.0.0',
+      https: {
+        key: readFileSync('/certs/selfsigned.key'),
+        cert: readFileSync('/certs/selfsigned.crt'),
+        ca: readFileSync('/certs/ca.pem'),
+      },
     },
     framework: {
       config: {},

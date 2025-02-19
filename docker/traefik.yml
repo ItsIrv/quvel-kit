@@ -1,0 +1,41 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+log:
+  level: INFO
+
+accessLog: {}
+
+api:
+  dashboard: true
+  insecure: true # Accessible at http://localhost:8080
+
+entryPoints:
+  web:
+    address: ':80'
+
+  websecure:
+    address: ':443'
+    http:
+      tls: {}
+
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: '/certs/selfsigned.crt'
+        keyFile: '/certs/selfsigned.key'
+
+providers:
+  docker:
+    exposedByDefault: false
+
+  file:
+    directory: /certs
+    filename: /etc/traefik/dynamic_conf.yml
+    watch: true
+
+serversTransports:
+  insecureTransport:
+    insecureSkipVerify: true

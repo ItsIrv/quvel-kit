@@ -1,0 +1,35 @@
+http:
+  routers:
+    web:
+      rule: 'Host(`quvel.127.0.0.1.nip.io`)'
+      entryPoints: websecure
+      service: web
+      tls: default
+
+    web-ws:
+      rule: 'Host(`quvel.127.0.0.1.nip.io`) && PathPrefix(`/@vite`) || PathPrefix(`/sockjs-node`)'
+      entryPoints: websecure
+      service: web-ws
+      tls: default
+
+  services:
+    web:
+      loadBalancer:
+        servers:
+          - url: 'https://quvel-frontend:9000'
+        serversTransport: 'insecureTransport'
+
+    web-ws:
+      loadBalancer:
+        servers:
+          - url: 'https://quvel-frontend:9001'
+        serversTransport: 'insecureTransport'
+
+  serversTransports:
+    insecureTransport:
+      insecureSkipVerify: true
+
+  tls:
+    certificates:
+      - certFile: '/certs/selfsigned.crt'
+        keyFile: '/certs/selfsigned.key'

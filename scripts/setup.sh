@@ -38,7 +38,7 @@ fi
 mkdir -p "$(dirname "$0")/../docker/certs"
 if [ ! -f docker/certs/selfsigned.crt ] || [ ! -f docker/certs/selfsigned.key ]; then
   echo "🔐 Generating mkcert SSL certificates..."
-  # mkcert -cert-file docker/certs/selfsigned.crt -key-file docker/certs/selfsigned.key quvel.127.0.0.1.nip.io api.quvel.127.0.0.1.nip.io coverage-api.quvel.127.0.0.1.nip.io coverage.quvel.127.0.0.1.nip.io
+  mkcert -cert-file docker/certs/selfsigned.crt -key-file docker/certs/selfsigned.key quvel.127.0.0.1.nip.io api.quvel.127.0.0.1.nip.io coverage-api.quvel.127.0.0.1.nip.io coverage.quvel.127.0.0.1.nip.io
 fi
 
 # Ensure certificates.yaml exists for Traefik

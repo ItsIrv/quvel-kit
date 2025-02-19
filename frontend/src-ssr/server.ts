@@ -9,12 +9,8 @@
  * Make sure to yarn add / npm install (in your project root)
  * anything you import here (except for express and compression).
  */
-import Fastify from 'fastify';
-import type { FastifyInstance } from 'fastify';
-import fastifyStatic from '@fastify/static';
-import fastifyCompress from '@fastify/compress';
-import middie from '@fastify/middie';
-
+import express from 'express';
+// import compression from 'compression'
 import {
   defineSsrCreate,
   defineSsrListen,
@@ -23,8 +19,6 @@ import {
   defineSsrRenderPreloadTag,
 } from '#q-app/wrappers';
 
-let fastifyInstance: FastifyInstance | null = null;
-
 /**
  * Create your webserver and return its instance.
  * If needed, prepare your webserver to receive
@@ -32,22 +26,20 @@ let fastifyInstance: FastifyInstance | null = null;
  *
  * Can be async: defineSsrCreate(async ({ ... }) => { ... })
  */
-export const create = defineSsrCreate(async () => {
-  fastifyInstance = Fastify();
+export const create = defineSsrCreate((/* { ... } */) => {
+  const app = express();
 
-  await fastifyInstance.register(middie);
+  // attackers can use this header to detect apps running Express
+  // and then launch specifically-targeted attacks
+  app.disable('x-powered-by');
 
-  fastifyInstance.addHook('onRequest', (request, reply, done) => {
-    reply.header('X-Powered-By', '');
-
-    done();
-  });
-
-  if (process.env.PROD ?? '') {
-    fastifyInstance.register(fastifyCompress);
+  // place here any middlewares that
+  // absolutely need to run before anything else
+  if (process.env.PROD) {
+    // app.use(compression());
   }
 
-  return fastifyInstance;
+  return app;
 });
 
 /**
@@ -63,19 +55,13 @@ export const create = defineSsrCreate(async () => {
  *
  * Can be async: defineSsrListen(async ({ app, devHttpsApp, port }) => { ... })
  */
-export const listen = defineSsrListen(async ({ app, devHttpsApp, port }) => {
+export const listen = defineSsrListen(({ app, devHttpsApp, port }) => {
   const server = devHttpsApp || app;
-  try {
-    await server.listen({ port: Number(port), host: '0.0.0.0' });
-
-    if (process.env.PROD ?? '') {
+  return server.listen(port, () => {
+    if (process.env.PROD) {
       console.log('Server listening at port ' + port);
     }
-  } catch (err) {
-    console.error(err);
-
-    process.exit(1);
-  }
+  });
 });
 
 /**
@@ -86,17 +72,13 @@ export const listen = defineSsrListen(async ({ app, devHttpsApp, port }) => {
  * Should you need the result of the "listen()" call above,
  * you can use the "listenResult" param.
  *
- * Can be async: defineSsrClose(async () => { ... }))
+ * Can be async: defineSsrClose(async ({ listenResult }) => { ... }))
  */
-export const close = defineSsrClose(async () => {
-  if (fastifyInstance) {
-    await fastifyInstance.close();
-
-    fastifyInstance = null;
-  }
+export const close = defineSsrClose(({ listenResult }) => {
+  return listenResult.close();
 });
 
-const maxAge = (process.env.DEV ?? '') ? 0 : 1000 * 60 * 60 * 24 * 30;
+const maxAge = process.env.DEV ? 0 : 1000 * 60 * 60 * 24 * 30;
 
 /**
  * Should return a function that will be used to configure the webserver
@@ -107,30 +89,40 @@ const maxAge = (process.env.DEV ?? '') ? 0 : 1000 * 60 * 60 * 24 * 30;
  * Can be async: defineSsrServeStaticContent(async ({ app, resolve }) => {
  * Can return an async function: return async ({ urlPath = '/', pathToServe = '.', opts = {} }) => {
  */
-export const serveStaticContent = defineSsrServeStaticContent(({ app, resolve }) => {
-  return ({ urlPath = '/', pathToServe = '.', opts = {} }): void => {
-    app.register(fastifyStatic, {
-      root: resolve.public(pathToServe),
-      prefix: resolve.urlPath(urlPath),
-      maxAge,
-      ...opts,
-    });
-  };
-});
+export const serveStaticContent = defineSsrServeStaticContent(
+  ({
+    app,
+    resolve,
+  }): (({
+    urlPath,
+    pathToServe,
+    opts,
+  }: {
+    urlPath?: string;
+    pathToServe?: string;
+    opts?: object;
+  }) => void) => {
+    return ({ urlPath = '/', pathToServe = '.', opts = {} }): void => {
+      const serveFn = express.static(resolve.public(pathToServe), { maxAge, ...opts });
 
-const jsRE = /.js$/;
-const cssRE = /.css$/;
-const woffRE = /.woff$/;
-const woff2RE = /.woff2$/;
-const gifRE = /.gif$/;
-const jpgRE = /.jpe?g$/;
-const pngRE = /.png$/;
+      app.use(resolve.urlPath(urlPath), serveFn);
+    };
+  },
+);
+
+const jsRE = /\.js$/;
+const cssRE = /\.css$/;
+const woffRE = /\.woff$/;
+const woff2RE = /\.woff2$/;
+const gifRE = /\.gif$/;
+const jpgRE = /\.jpe?g$/;
+const pngRE = /\.png$/;
 
 /**
  * Should return a String with HTML output
  * (if any) for preloading indicated file
  */
-export const renderPreloadTag = defineSsrRenderPreloadTag((file) => {
+export const renderPreloadTag = defineSsrRenderPreloadTag((file /* , { ssrContext } */): string => {
   if (jsRE.test(file) === true) {
     return `<link rel="modulepreload" href="${file}" crossorigin>`;
   }

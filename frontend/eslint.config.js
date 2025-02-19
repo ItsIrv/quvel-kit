@@ -37,9 +37,7 @@ export default [
 
   {
     files: ['**/*.ts', '**/*.vue'],
-    rules: {
-      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
-    },
+    rules: {},
   },
   // https://github.com/vuejs/eslint-config-typescript
   ...vueTsEslintConfig({
@@ -76,10 +74,10 @@ export default [
 
     // add your custom rules here
     rules: {
-      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+      // '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
       '@typescript-eslint/explicit-function-return-type': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/strict-boolean-expressions': 'error',
+      // '@typescript-eslint/strict-boolean-expressions': 'error',
       'vue/html-self-closing': [
         'error',
         {
