@@ -1,8 +1,8 @@
 {
-  "name": "laravel-quasar-auth",
-  "version": "0.0.1",
-  "description": "A Laravel Quasar hybrid application starter kit.",
-  "productName": "Laravel Quasar Auth Kit",
+  "name": "quvel-kit",
+  "version": "0.1.1-beta",
+  "description": "QuVel Kit: A Laravel & Quasar hybrid starter kit.",
+  "productName": "QuVel Kit",
   "author": "Irving Gomez <gomirv.work@gmail.com>",
   "type": "module",
   "private": true,
@@ -20,8 +20,13 @@
     "test:unit:ci": "vitest run"
   },
   "dependencies": {
+    "@fastify/compress": "^8.0.1",
+    "@fastify/middie": "^9.0.3",
+    "@fastify/static": "^8.1.1",
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
+    "express": "^4.21.2",
+    "fastify": "^5.2.1",
     "pinia": "^2.0.11",
     "quasar": "^2.16.0",
     "vue": "^3.4.18",
@@ -34,8 +39,10 @@
     "@quasar/app-vite": "^2.0.0",
     "@quasar/quasar-app-extension-testing-unit-vitest": "^1.1.0",
     "@types/node": "^20.5.9",
+    "@vitest/ui": "^2.0.5",
     "@vue/eslint-config-prettier": "^10.1.0",
     "@vue/eslint-config-typescript": "^14.1.3",
+    "@vue/test-utils": "^2.4.4",
     "autoprefixer": "^10.4.2",
     "eslint": "^9.14.0",
     "eslint-plugin-vue": "^9.30.0",
@@ -43,10 +50,8 @@
     "prettier": "^3.3.3",
     "typescript": "~5.5.3",
     "vite-plugin-checker": "^0.8.0",
-    "vue-tsc": "^2.0.29",
-    "@vue/test-utils": "^2.4.4",
-    "vitest": "^2.0.5",
-    "@vitest/ui": "^2.0.5"
+    "vitest": "^3.0.0",
+    "vue-tsc": "^2.0.29"
   },
   "engines": {
     "node": "^28 || ^26 || ^24 || ^22 || ^20 || ^18",

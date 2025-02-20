@@ -22,12 +22,16 @@
       Welcome to <span class="text-primary">QuVel Kit</span>
     </h1>
     <p class="text-lg text-gray-200 mb-6">
-      A full-stack hybrid starter kit for Laravel & Quasar, built for modern web, mobile, and desktop applications.
+      A full-stack hybrid starter kit for Laravel & Quasar.
+
+      <br />
+
+      Built for modern web, mobile, and desktop applications.
     </p>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       <a href="https://github.com/ItsIrv/quvel-kit"
-        class="flex items-center justify-center bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-5 rounded-md shadow-md transition">
+        class="flex items-center justify-center bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-5 rounded-md shadow-md transition">
         <i class="ti ti-brand-github mr-2"></i> GitHub Repo
       </a>
       <a href="https://github.com/ItsIrv/quvel-kit/blob/main/docs/README.md"
@@ -39,7 +43,7 @@
         <i class="ti ti-layout mr-2"></i> Frontend Playground
       </a>
       <a href="https://coverage.quvel.127.0.0.1.nip.io/__vitest__/"
-        class="flex items-center justify-center bg-accent hover:bg-accent/90 text-white font-semibold py-3 px-5 rounded-md shadow-md transition">
+        class="flex items-center justify-center bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-5 rounded-md shadow-md transition">
         <i class="ti ti-chart-pie mr-2"></i> Vitest UI
       </a>
       <a href="https://coverage-api.quvel.127.0.0.1.nip.io"

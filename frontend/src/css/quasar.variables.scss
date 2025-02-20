@@ -1,18 +1,14 @@
-// QuVel Kit Branding Colors for Quasar SCSS
-// ------------------------------------------
-// These colors are customized to align with the brand identity of QuVel Kit.
-
 // Primary Branding Colors
-$primary   : #4f46e5; // Electric Blue (Main Brand Color)
-$secondary : #0f172a; // Deep Navy (Background & Dark Mode Accent)
-$accent    : #9333ea; // Vibrant Purple (For Highlights & Calls to Action)
+$primary: #2571eb; // Vibrant Blue - Primary actions, links, focus states
+$secondary: #64748b; // Slate - Secondary elements, subdued content
+$accent: #8b5cf6; // Purple - Accents, highlights, feature callouts
 
 // Background & Dark Mode
-$dark      : #1d1d1d;  // Standard Dark Theme
-$dark-page : #121212;  // Background for Full Dark Mode
+$dark: #071330; // Dark Blue (Rich, Deep Dark Mode Base for High Contrast)
+$dark-page: #0c4160; // Midnight Blue Background for UI Consistency
 
 // Feedback Colors
-$positive  : #22c55e; // Success (Bright Green)
-$negative  : #dc2626; // Error (Strong Red)
-$info      : #3b82f6; // Informational Blue
-$warning   : #f59e0b; // Attention (Warm Yellow)
+$positive: #27ae60; // Success Green (Bright, Visible for Confirmation Messages)
+$negative: #c0392b; // Strong Red (Better for Error Visibility)
+$info: #2980b9; // Informational Blue (Well-balanced and Noticeable)
+$warning: #f39c12; // Golden Yellow (Softer but Attention-Grabbing)

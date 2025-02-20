@@ -1,6 +1,11 @@
 import { defineBoot } from '#q-app/wrappers';
-import axios, { type AxiosInstance } from 'axios';
+import type { QSsrContext } from '@quasar/app-vite';
+import axios, { type AxiosRequestConfig, type AxiosInstance } from 'axios';
+import { Cookies } from 'quasar';
 
+/**
+ * Declares Axios instances for both client and server contexts.
+ */
 declare module 'vue' {
   interface ComponentCustomProperties {
     $axios: AxiosInstance;
@@ -8,24 +13,43 @@ declare module 'vue' {
   }
 }
 
-// Be careful when using SSR for cross-request state pollution
-// due to creating a Singleton instance here;
-// If any client changes this (global) instance, it might be a
-// good idea to move this instance creation inside of the
-// "export default () => {}" function below (which runs individually
-// for each client)
-const api = axios.create({ baseURL: 'https://api.example.com' });
+/**
+ * Determines if the execution context is the server.
+ */
+const isServer = typeof window === 'undefined';
 
-export default defineBoot(({ app }) => {
-  // for use inside Vue files (Options API) through this.$axios and this.$api
+/**
+ * Default Axios configuration.
+ */
+const axiosConfig: AxiosRequestConfig = {
+  baseURL: isServer ? (process.env.VITE_API_INTERNAL_URL ?? '') : (process.env.VITE_API_URL ?? ''),
+  withCredentials: true,
+  withXSRFToken: true,
+  headers: {
+    Accept: 'application/json',
+  },
+};
 
-  app.config.globalProperties.$axios = axios;
-  // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)
-  //       so you won't necessarily have to import axios in each vue file
+/**
+ * Creates an Axios instance with the appropriate configuration based on the execution context.
+ */
+export function createApi(ssrContext?: QSsrContext | null): AxiosInstance {
+  if (ssrContext) {
+    const cookies = Cookies.parseSSR(ssrContext);
+    const sessionToken = cookies.get('quvel_session');
 
-  app.config.globalProperties.$api = api;
-  // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
-  //       so you can easily perform requests against your app's API
+    return axios.create({
+      ...axiosConfig,
+      headers: {
+        ...axiosConfig.headers,
+        Cookie: `quvel_session=${sessionToken}`,
+      },
+    });
+  } else {
+    return axios.create(axiosConfig);
+  }
+}
+
+export default defineBoot(() => {
+  //
 });
-
-export { api };
