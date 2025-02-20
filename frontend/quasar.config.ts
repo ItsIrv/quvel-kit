@@ -46,23 +46,33 @@ export default defineConfig((ctx) => {
           },
           { server: false },
         ],
+        {
+          name: 'client-host',
+          transform(code, id) {
+            if (id.endsWith('dist/client/client.mjs') || id.endsWith('dist/client/env.mjs')) {
+              return code.replace('__HMR_HOSTNAME__', JSON.stringify('quvel.127.0.0.1.nip.io'));
+            }
+
+            return code;
+          },
+        },
       ],
       extendViteConf(viteConf) {
         viteConf.server = {
           ...viteConf.server,
           allowedHosts: ['localhost', '127.0.0.1', 'quvel.127.0.0.1.nip.io'],
           strictPort: true,
-          port: 9000,
+          port: 9001,
           host: '0.0.0.0',
           watch: {
             usePolling: true,
           },
           hmr: {
             protocol: 'wss',
-            host: 'quvel.127.0.0.1.nip.io',
-            port: 443,
+            host: '0.0.0.0',
+            port: 9001,
             clientPort: 443,
-            path: '/@vite',
+            path: '/hmr',
           },
           https: {
             key: readFileSync('/certs/selfsigned.key'),

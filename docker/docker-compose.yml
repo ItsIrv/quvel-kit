@@ -75,11 +75,8 @@ services:
     volumes:
       - ../frontend:/frontend # Sync frontend files for live development
       - /frontend/node_modules # Keep node_modules inside the container for performance
-      # - ../frontend/certs:/certs
       - '${PWD}/docker/certs:/certs' # Mount local certificates folder into the container
     command: ['/bin/sh', '-c', 'yarn install && yarn dev:ssr'] # Run Quasar dev server
-    ports:
-      - '9001:9001' # ✅ Expose the HMR WebSocket port directly
     networks:
       - quvel-network
 
