@@ -1,8 +1,12 @@
 <template>
-  <q-page>
-    <div class="q-pa-md text-center h-screen">
+  <!-- TODO: For now this is an auth page. When Auth is rolled out the final landing page 
+    should be a header signaling whether the user is logged in or not, and a mix of public
+    pre-fetched data to simulate a real products landing, not just an auth portal.
+  -->
+  <q-page class="flex flex-center text-center">
+    <div class="max-w-xl q-mx-auto">
       <h1 class="text-h3 text-weight-bold q-mb-xl">
-        Welcome to <span class="text-primary">QuVel Kit</span>
+        Login to <span class="text-primary">QuVel Kit</span>
       </h1>
 
       <div
@@ -14,7 +18,7 @@
         <q-btn
           color="negative"
           class="q-mt-md"
-          @click="() => sessionStore.logout(api)"
+          @click="() => sessionStore.logout()"
         >Logout</q-btn>
       </div>
 
@@ -54,12 +58,15 @@
       </div>
 
       <div class="q-mt-xl">
-        <RouterLink
-          to="/welcome"
-          class="text-primary"
-        >
-          Go to Welcome Page.
-        </RouterLink>
+        <p class="text-grey-5 text-subtitle2">
+          Go to
+          <RouterLink
+            to="/welcome"
+            class="text-primary"
+          >
+            Welcome</RouterLink>
+          Page.
+        </p>
       </div>
     </div>
   </q-page>
@@ -69,17 +76,15 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { useSessionStore } from 'stores/session-store'
-import { createApi } from 'boot/axios'
+import { useSessionStore } from 'src/stores/sessionStore'
 
-const api = createApi()
-const sessionStore = useSessionStore()
-const email = ref('quvel@quvel.app')
-const password = ref('123456')
+const sessionStore = useSessionStore();
+const email = ref('quvel@quvel.app');
+const password = ref('123456');
 
 function login(): void {
   if (email.value && password.value) {
-    void sessionStore.login(api, email.value, password.value)
+    void sessionStore.login(email.value, password.value)
   }
 }
 </script>

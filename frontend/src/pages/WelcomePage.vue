@@ -1,5 +1,5 @@
 <template>
-  <q-page class="fullscreen flex flex-center text-center">
+  <q-page class="flex flex-center text-center">
     <div class="max-w-3xl">
       <h1 class="text-h3 text-weight-bold q-mb-md">
         Welcome to <span class="text-primary">QuVel Kit</span>
@@ -69,6 +69,15 @@
           href="http://localhost:8080"
         >
           Traefik Dashboard
+        </q-btn>
+        <q-btn
+          color="secondary"
+          size="md"
+          class="q-px-md"
+          unelevated
+          to="/"
+        >
+          Frontend Playground
         </q-btn>
       </div>
     </div>

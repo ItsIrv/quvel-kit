@@ -1,5 +1,7 @@
 import { defineStore } from '#q-app/wrappers';
 import { createPinia } from 'pinia';
+import { piniaPlugin } from './piniaPlugin';
+import { ServiceContainer } from 'src/types/container.types';
 
 /*
  * When adding new properties to stores, you should also
@@ -7,8 +9,8 @@ import { createPinia } from 'pinia';
  * @see https://pinia.vuejs.org/core-concepts/plugins.html#typing-new-store-properties
  */
 declare module 'pinia' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface PiniaCustomProperties {
+    $container: ServiceContainer;
     // add your custom properties here, if any
   }
 }
@@ -22,11 +24,11 @@ declare module 'pinia' {
  * with the Store instance.
  */
 
-export default defineStore((/* { ssrContext } */) => {
+export default defineStore(({ ssrContext }) => {
   const pinia = createPinia();
 
   // You can add Pinia plugins here
-  // pinia.use(SomePiniaPlugin)
+  pinia.use((context) => piniaPlugin(context, ssrContext));
 
   return pinia;
 });
