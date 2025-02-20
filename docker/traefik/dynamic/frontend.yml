@@ -28,8 +28,3 @@ http:
   serversTransports:
     insecureTransport:
       insecureSkipVerify: true
-
-  tls:
-    certificates:
-      - certFile: '/certs/selfsigned.crt'
-        keyFile: '/certs/selfsigned.key'

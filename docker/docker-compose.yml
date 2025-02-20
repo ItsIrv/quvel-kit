@@ -6,14 +6,14 @@ services:
     image: traefik:v2.10
     container_name: quvel-traefik
     command:
-      # - '--api.insecure=true' # Enable Traefik dashboard (http://localhost:8080)
-      # - '--providers.docker=true' # Enable Docker provider to detect running containers
-      # - '--providers.docker.exposedbydefault=false' # Require explicit label exposure for security
-      # - '--entrypoints.web.address=:80' # HTTP Entrypoint (unencrypted)
-      # - '--entrypoints.websecure.address=:443' # HTTPS Entrypoint (encrypted)
-      # - '--entrypoints.websecure.http.tls=true' # Enable TLS on the HTTPS entrypoint
-      # - '--providers.file.directory=/certs' # Load TLS certificates from a directory
-      # - '--providers.file.watch=true' # Auto-reload if certificate files change
+      - '--api.insecure=true' # Enable Traefik dashboard (http://localhost:8080)
+      - '--providers.docker=true' # Enable Docker provider to detect running containers
+      - '--providers.docker.exposedbydefault=false' # Require explicit label exposure for security
+      - '--entrypoints.web.address=:80' # HTTP Entrypoint (unencrypted)
+      - '--entrypoints.websecure.address=:443' # HTTPS Entrypoint (encrypted)
+      - '--entrypoints.websecure.http.tls=true' # Enable TLS on the HTTPS entrypoint
+      - '--providers.file.directory=/certs' # Load TLS certificates from a directory
+      - '--providers.file.watch=true' # Auto-reload if certificate files change
     ports:
       - '80:80' # Expose HTTP for domain routing
       - '443:443' # Expose HTTPS (TLS/SSL)
@@ -21,8 +21,8 @@ services:
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock:ro' # Allow Traefik to read Docker container data
       - '${PWD}/docker/certs:/certs:ro' # Mount local certificates folder into the container
-      - '${PWD}/docker/traefik.yml:/etc/traefik/traefik.yml:ro' # Mount custom config
-      - '${PWD}/docker/dynamic_conf.yml:/etc/traefik/dynamic_conf.yml:ro'
+      - '${PWD}/docker/traefik/traefik.yml:/etc/traefik/traefik.yml:ro' # Mount custom config
+      - '${PWD}/docker/traefik/dynamic:/traefik:ro'
     networks:
       - quvel-network
 

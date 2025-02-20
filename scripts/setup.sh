@@ -41,17 +41,6 @@ if [ ! -f docker/certs/selfsigned.crt ] || [ ! -f docker/certs/selfsigned.key ];
   mkcert -cert-file docker/certs/selfsigned.crt -key-file docker/certs/selfsigned.key quvel.127.0.0.1.nip.io api.quvel.127.0.0.1.nip.io coverage-api.quvel.127.0.0.1.nip.io coverage.quvel.127.0.0.1.nip.io
 fi
 
-# Ensure certificates.yaml exists for Traefik
-if [ ! -f docker/certs/certificates.yaml ]; then
-  echo "📄 Creating certificates.yaml..."
-  cat <<EOF > docker/certs/certificates.yaml
-tls:
-  certificates:
-    - certFile: "/certs/selfsigned.crt"
-      keyFile: "/certs/selfsigned.key"
-EOF
-fi
-
 # Define the correct Docker Compose file path
 DOCKER_COMPOSE_FILE="docker/docker-compose.yml"
 

@@ -32,8 +32,7 @@ providers:
     exposedByDefault: false
 
   file:
-    directory: /certs
-    filename: /etc/traefik/dynamic_conf.yml
+    directory: /traefik
     watch: true
 
 serversTransports:
