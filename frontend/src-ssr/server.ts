@@ -20,6 +20,13 @@ import {
 } from '#q-app/wrappers';
 
 /**
+ * TODO: Investigate why SSL builds crashes the Fastify server.
+ * From the logs it had to do something with setting the certs.
+ * Quasar is calling Express-specific methods for
+ * setting up SSL on SSR.
+ */
+
+/**
  * Create your webserver and return its instance.
  * If needed, prepare your webserver to receive
  * connect-like middlewares.

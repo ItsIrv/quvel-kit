@@ -74,7 +74,6 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
             this.setSession(data);
           } catch {
-            // TODO: Handle specific error codes
             this.user = null;
           }
         }

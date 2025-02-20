@@ -1,25 +1,25 @@
 <template>
-  <!-- TODO: For now this is an auth page. When Auth is rolled out the final landing page 
-    should be a header signaling whether the user is logged in or not, and a mix of public
-    pre-fetched data to simulate a real products landing, not just an auth portal.
-  -->
   <q-page class="flex flex-center text-center">
     <div class="max-w-xl q-mx-auto">
       <h1 class="text-h3 text-weight-bold q-mb-xl">
-        Login to <span class="text-primary">QuVel Kit</span>
+        {{ $t('auth.forms.login.title') }}
       </h1>
 
       <div
         v-if="sessionStore.isAuthenticated"
         class="q-mt-xl q-max-w-lg"
       >
-        <p class="text-grey-3 text-h5">Logged in as <strong>{{ sessionStore.user?.name }}</strong></p>
-        <p class="text-grey-5 text-h6">Email: {{ sessionStore.user?.email }}</p>
+        <p class="text-grey-3 text-h5">
+          {{ $t('auth.forms.login.loggedInAs', { name: sessionStore.user?.name }) }}
+        </p>
+        <p class="text-grey-5 text-h6">{{ $t('auth.forms.common.email') }}: {{ sessionStore.user?.email }}</p>
         <q-btn
           color="negative"
           class="q-mt-md"
-          @click="() => sessionStore.logout()"
-        >Logout</q-btn>
+          @click="sessionStore.logout()"
+        >
+          {{ $t('auth.forms.login.logout') }}
+        </q-btn>
       </div>
 
       <div
@@ -32,7 +32,7 @@
             name="email"
             filled
             dark
-            label="Email"
+            :label="$t('auth.forms.common.email')"
             class="q-mb-md"
             type="email"
             autocomplete="email"
@@ -44,7 +44,7 @@
             filled
             dark
             type="password"
-            label="Password"
+            :label="$t('auth.forms.common.password')"
             class="q-mb-md"
             autocomplete="current-password"
             required
@@ -53,29 +53,37 @@
             color="primary"
             class="q-mt-md"
             type="submit"
-          >Login</q-btn>
+          >
+            {{ $t('auth.forms.login.button') }}
+          </q-btn>
         </q-form>
       </div>
 
       <div class="q-mt-xl">
         <p class="text-grey-5 text-subtitle2">
-          Go to
+          {{ $t('auth.forms.login.goTo') }}
           <RouterLink
             to="/welcome"
             class="text-primary"
           >
-            Welcome</RouterLink>
-          Page.
+            {{ $t('auth.forms.login.welcomePage') }}
+          </RouterLink>
         </p>
+      </div>
+
+      <div>
+        <LanguageSwitcher
+          dark
+          class="q-mx-auto"
+        />
       </div>
     </div>
   </q-page>
 </template>
 
-<style lang="scss" scoped></style>
-
 <script lang="ts" setup>
 import { ref } from 'vue'
+import LanguageSwitcher from 'src/components/Misc/LanguageSwitcher.vue'
 import { useSessionStore } from 'src/stores/sessionStore'
 
 const sessionStore = useSessionStore();
@@ -85,6 +93,10 @@ const password = ref('123456');
 function login(): void {
   if (email.value && password.value) {
     void sessionStore.login(email.value, password.value)
+
+    if (sessionStore.isAuthenticated) {
+      console.log(sessionStore.getUser?.name);
+    }
   }
 }
 </script>

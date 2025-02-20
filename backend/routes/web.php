@@ -4,7 +4,6 @@ use App\Actions\QuvelWelcome;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 Route::get('/', QuvelWelcome::class)->name('welcome');
 
