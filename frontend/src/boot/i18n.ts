@@ -19,7 +19,6 @@ declare module 'vue-i18n' {
   // define the number format schema
   export interface DefineNumberFormat {}
 }
-/* eslint-enable @typescript-eslint/no-empty-object-type */
 
 export default defineBoot(({ app }) => {
   const i18n = createI18n<{ message: MessageSchema }, MessageLanguages>({

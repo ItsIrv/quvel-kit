@@ -1,14 +1,4 @@
-/**
- * Interface defining the structure of a User.
- */
-export interface IUser {
-  id: number;
-  name: string;
-  email: string;
-  emailVerifiedAt: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { IUser } from 'src/types/user.types';
 
 /**
  * Class representing a User entity.
@@ -32,21 +22,5 @@ export class User implements IUser {
     this.emailVerifiedAt = data.emailVerifiedAt ?? '';
     this.createdAt = data.createdAt ?? '';
     this.updatedAt = data.updatedAt ?? '';
-  }
-
-  /**
-   * Creates a User instance from an API response.
-   * @param data - User data from the API.
-   * @returns A new User instance.
-   */
-  static fromApi(data: IUser): User {
-    return new User({
-      id: data.id,
-      name: data.name,
-      email: data.email,
-      emailVerifiedAt: data.emailVerifiedAt,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    });
   }
 }

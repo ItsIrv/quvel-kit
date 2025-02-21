@@ -1,6 +1,7 @@
-import { defineStore } from 'pinia';
-import { type AxiosInstance } from 'axios';
-import { User, type IUser } from 'src/models/user-model';
+import { acceptHMRUpdate, defineStore } from 'pinia';
+import type { User } from 'src/models/User';
+import type { IUser } from 'src/types/user.types';
+import { createUserFromApi } from 'src/factories/userFactory';
 
 /**
  * Type for the authenticated user.
@@ -27,9 +28,9 @@ type SessionGetters = {
  */
 interface SessionActions {
   setSession(data: IUser): void;
-  fetchSession(api: AxiosInstance): Promise<void>;
-  logout(api: AxiosInstance): Promise<void>;
-  login(api: AxiosInstance, email: string, password: string): Promise<void>;
+  fetchSession(): Promise<void>;
+  logout(): Promise<void>;
+  login(email: string, password: string): Promise<void>;
 }
 
 /**
@@ -60,20 +61,19 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * @param data - User data from API response.
        */
       setSession(data: IUser) {
-        this.user = User.fromApi(data);
+        this.user = createUserFromApi(data);
       },
 
       /**
        * Fetches the user session from the API if not previously attempted.
        */
-      async fetchSession(api: AxiosInstance): Promise<void> {
+      async fetchSession(): Promise<void> {
         if (this.user === undefined) {
           try {
-            const { data } = await api.get<IUser>('/session');
+            const { data } = await this.$container.api.get<IUser>('/session');
 
             this.setSession(data);
           } catch {
-            // TODO: Handle specific error codes
             this.user = null;
           }
         }
@@ -82,9 +82,9 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
       /**
        * Logs the user out and resets the session.
        */
-      async logout(api: AxiosInstance): Promise<void> {
+      async logout(): Promise<void> {
         try {
-          await api.post('/logout');
+          await this.$container.api.post('/logout');
 
           this.$reset();
         } catch {
@@ -94,13 +94,12 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
       /**
        * Logs in the user and sets the session.
-       * @param api - Axios instance for the API request.
        * @param email - User's email.
        * @param password - User's password.
        */
-      async login(api: AxiosInstance, email: string, password: string): Promise<void> {
+      async login(email: string, password: string): Promise<void> {
         try {
-          const { data } = await api.post<IUser>('/login', { email, password });
+          const { data } = await this.$container.api.post<IUser>('/login', { email, password });
 
           this.setSession(data);
         } catch {
@@ -110,3 +109,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
     },
   },
 );
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useSessionStore, import.meta.hot));
+}

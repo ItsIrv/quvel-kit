@@ -1,21 +1,27 @@
 <template>
-  <q-page>
-    <div class="q-pa-md text-center h-screen">
+  <q-page class="flex flex-center text-center">
+    <div class="max-w-xl q-mx-auto">
       <h1 class="text-h3 text-weight-bold q-mb-xl">
-        Welcome to <span class="text-primary">QuVel Kit</span>
+        {{ $t('auth.forms.login.title') }}
       </h1>
 
       <div
         v-if="sessionStore.isAuthenticated"
         class="q-mt-xl q-max-w-lg"
       >
-        <p class="text-grey-3 text-h5">Logged in as <strong>{{ sessionStore.user?.name }}</strong></p>
-        <p class="text-grey-5 text-h6">Email: {{ sessionStore.user?.email }}</p>
+        <p class="text-grey-3 text-h5">
+          {{ $t('auth.forms.login.loggedInAs', { name: sessionStore.user?.name }) }}
+        </p>
+
+        <p class="text-grey-5 text-h6">{{ $t('auth.forms.common.email') }}: {{ sessionStore.user?.email }}</p>
+
         <q-btn
           color="negative"
           class="q-mt-md"
-          @click="() => sessionStore.logout(api)"
-        >Logout</q-btn>
+          @click="sessionStore.logout()"
+        >
+          {{ $t('auth.forms.login.logout') }}
+        </q-btn>
       </div>
 
       <div
@@ -23,63 +29,54 @@
         class="q-mt-xl login-box"
       >
         <q-form @submit.prevent="login">
-          <q-input
-            v-model="email"
-            name="email"
-            filled
-            dark
-            label="Email"
-            class="q-mb-md"
-            type="email"
-            autocomplete="email"
-            required
-          />
-          <q-input
-            v-model="password"
-            name="password"
-            filled
-            dark
-            type="password"
-            label="Password"
-            class="q-mb-md"
-            autocomplete="current-password"
-            required
-          />
+          <EmailField v-model="email" />
+          <PasswordField v-model="password" />
+
           <q-btn
             color="primary"
             class="q-mt-md"
             type="submit"
-          >Login</q-btn>
+          >
+            {{ $t('auth.forms.login.button') }}
+          </q-btn>
         </q-form>
       </div>
 
       <div class="q-mt-xl">
-        <RouterLink
-          to="/welcome"
-          class="text-primary"
-        >
-          Go to Welcome Page.
-        </RouterLink>
+        <p class="text-subtitle2">
+          {{ $t('auth.forms.login.goTo') }}
+          <RouterLink
+            to="/welcome"
+            class="text-primary"
+          >
+            {{ $t('auth.forms.login.welcomePage') }}
+          </RouterLink>
+        </p>
+      </div>
+
+      <div class="row justify-center q-gutter-md">
+        <LanguageSwitcher />
+        <ThemeSwitcher />
       </div>
     </div>
   </q-page>
 </template>
 
-<style lang="scss" scoped></style>
-
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { useSessionStore } from 'stores/session-store'
-import { createApi } from 'boot/axios'
+import LanguageSwitcher from 'src/components/Misc/LanguageSwitcher.vue'
+import { useSessionStore } from 'src/stores/sessionStore'
+import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
+import EmailField from 'src/components/Form/EmailField.vue';
+import PasswordField from 'src/components/Form/PasswordField.vue';
 
-const api = createApi()
-const sessionStore = useSessionStore()
-const email = ref('quvel@quvel.app')
-const password = ref('123456')
+const sessionStore = useSessionStore();
+const email = ref('quvel@quvel.app');
+const password = ref('123456');
 
 function login(): void {
   if (email.value && password.value) {
-    void sessionStore.login(api, email.value, password.value)
+    void sessionStore.login(email.value, password.value)
   }
 }
 </script>

@@ -1,15 +1,11 @@
-// Configuration for your app
-// https://v2.quasar.dev/quasar-cli-vite/quasar-config-file
-
 import { defineConfig } from '#q-app/wrappers';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 
 export default defineConfig((ctx) => {
   return {
-    // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     preFetch: true,
-    boot: ['i18n', 'axios'],
+    boot: ['container', 'i18n'],
     css: ['app.scss'],
     extras: ['eva-icons', 'roboto-font'],
     build: {
@@ -26,11 +22,7 @@ export default defineConfig((ctx) => {
         [
           '@intlify/unplugin-vue-i18n/vite',
           {
-            // if you want to use named tokens in your Vue I18n messages, such as 'Hello {name}',
-            // you need to set `runtimeOnly: false`
-            // runtimeOnly: false,
             ssr: ctx.modeName === 'ssr',
-            // you need to set i18n resource including paths !
             include: [fileURLToPath(new URL('./src/i18n', import.meta.url))],
           },
         ],
@@ -48,7 +40,7 @@ export default defineConfig((ctx) => {
         ],
         {
           name: 'client-host',
-          transform(code, id) {
+          transform(code, id): string {
             if (id.endsWith('dist/client/client.mjs') || id.endsWith('dist/client/env.mjs')) {
               return code.replace('__HMR_HOSTNAME__', JSON.stringify('quvel.127.0.0.1.nip.io'));
             }
@@ -57,7 +49,7 @@ export default defineConfig((ctx) => {
           },
         },
       ],
-      extendViteConf(viteConf) {
+      extendViteConf(viteConf): void {
         viteConf.server = {
           ...viteConf.server,
           allowedHosts: ['localhost', '127.0.0.1', 'quvel.127.0.0.1.nip.io'],
@@ -94,7 +86,8 @@ export default defineConfig((ctx) => {
     },
     framework: {
       config: {},
-      plugins: ['Cookies'],
+      iconSet: 'eva-icons',
+      plugins: ['Cookies', 'Notify', 'LocalStorage', 'Meta'],
     },
     animations: [],
     ssr: {
