@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 export default defineConfig((ctx) => {
   return {
     preFetch: true,
-    boot: ['container', 'i18n'],
+    boot: ['container'],
     css: ['app.scss'],
     extras: ['eva-icons', 'roboto-font'],
     build: {

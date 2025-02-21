@@ -1,12 +1,12 @@
 import type { AxiosInstance } from 'axios';
-// import type { I18n } from 'vue-i18n';
+import type { I18nType } from 'src/types/i18n.types';
 
 /**
  * Defines the structure of the Dependency Injection (DI) container.
  */
 export interface ServiceContainer {
   api: AxiosInstance;
-  // Future services can be added here:
+  i18n: I18nType;
 }
 
 /**
