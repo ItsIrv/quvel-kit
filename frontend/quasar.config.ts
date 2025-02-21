@@ -85,10 +85,8 @@ export default defineConfig((ctx) => {
       },
     },
     framework: {
-      config: {
-        dark: true,
-      },
-      plugins: ['Cookies', 'Notify'],
+      config: {},
+      plugins: ['Cookies', 'Notify', 'LocalStorage', 'Meta'],
     },
     animations: [],
     ssr: {

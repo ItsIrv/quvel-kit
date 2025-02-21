@@ -14,13 +14,12 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { Dark, LocalStorage } from 'quasar';
+import { Dark } from 'quasar';
+import { toggleTheme } from 'src/composables/useTheme';
 
 const isDark = computed(() => Dark.isActive);
 
 function toggleDarkMode(): void {
-  const newMode = !Dark.isActive;
-  Dark.set(newMode);
-  LocalStorage.set('theme', newMode ? 'dark' : 'light');
+  toggleTheme();
 }
 </script>
