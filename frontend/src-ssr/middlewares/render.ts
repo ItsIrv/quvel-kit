@@ -1,60 +1,49 @@
-import { type Request, type Response } from 'express';
 import { type RenderError } from '#q-app';
 import { defineSsrMiddleware } from '#q-app/wrappers';
+import type { Request, Response } from 'express';
 
-// This middleware should execute as last one
-// since it captures everything and tries to
-// render the page with Vue
+// This middleware should execute last
+// since it captures all unmatched routes and
+// renders the page with Vue
 
 export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
-  // we capture any other Express route and hand it
-  // over to Vue and Vue Router to render our page
-  app.get(resolve.urlPath('*'), (req: Request, res: Response) => {
-    res.setHeader('Content-Type', 'text/html');
+  // Capture all unmatched routes and hand them over
+  // to Vue and Vue Router for rendering
+  app.get(resolve.urlPath('*'), async (req: Request, res: Response) => {
+    res.header('Content-Type', 'text/html');
 
-    render(/* the ssrContext: */ { req, res })
-      .then((html) => {
-        // now let's send the rendered html to the client
-        res.send(html);
-      })
-      .catch((err: RenderError) => {
-        // oops, we had an error while rendering the page
+    try {
+      // Render the page using Vue SSR
+      const html = await render({ req, res });
+      res.send(html);
+    } catch (err) {
+      const error = err as RenderError;
 
-        // we were told to redirect to another URL
-        if (err.url) {
-          if (err.code) {
-            res.redirect(err.code, err.url);
-          } else {
-            res.redirect(err.url);
-          }
-        } else if (err.code === 404) {
-          // hmm, Vue Router could not find the requested route
+      // If an error specifies a redirect URL, follow it
+      if (error.url) {
+        res.redirect(error.code ?? 302, error.url);
 
-          // Should reach here only if no "catch-all" route
-          // is defined in /src/routes
-          res.status(404).send('404 | Page Not Found');
-        } else if (process.env.DEV) {
-          // well, we treat any other code as error;
-          // if we're in dev mode, then we can use Quasar CLI
-          // to display a nice error page that contains the stack
-          // and other useful information
+        return;
+      }
 
-          // serve.error is available on dev only
-          serve.error({ err, req, res });
-        } else {
-          // we're in production, so we should have another method
-          // to display something to the client when we encounter an error
-          // (for security reasons, it's not ok to display the same wealth
-          // of information as we do in development)
+      if (error.code === 404) {
+        // If Vue Router couldn't find the requested route,
+        // return a 404 response
+        res.status(404).send('404 | Page Not Found');
+        return;
+      }
 
-          // Render Error Page on production or
-          // create a route (/src/routes) for an error page and redirect to it
-          res.status(500).send('500 | Internal Server Error');
+      if (process.env.DEV ?? '') {
+        // In development mode, use Quasar CLI's built-in error page
+        serve.error({ err: error, req, res });
+      } else {
+        // In production, return a generic error message
+        res.status(500).send('500 | Internal Server Error');
 
-          if (process.env.DEBUGGING) {
-            console.error(err.stack);
-          }
+        if (process.env.DEBUGGING ?? '') {
+          console.error(error.stack);
         }
-      });
+      }
+    }
   });
 });

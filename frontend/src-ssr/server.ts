@@ -9,7 +9,7 @@
  * Make sure to yarn add / npm install (in your project root)
  * anything you import here (except for express and compression).
  */
-import express from 'express'
+import express from 'express';
 // import compression from 'compression'
 import {
   defineSsrCreate,
@@ -17,7 +17,14 @@ import {
   defineSsrClose,
   defineSsrServeStaticContent,
   defineSsrRenderPreloadTag,
-} from '#q-app/wrappers'
+} from '#q-app/wrappers';
+
+/**
+ * TODO: Investigate why SSL builds crashes the Fastify server.
+ * From the logs it had to do something with setting the certs.
+ * Quasar is calling Express-specific methods for
+ * setting up SSL on SSR.
+ */
 
 /**
  * Create your webserver and return its instance.
@@ -27,20 +34,20 @@ import {
  * Can be async: defineSsrCreate(async ({ ... }) => { ... })
  */
 export const create = defineSsrCreate((/* { ... } */) => {
-  const app = express()
+  const app = express();
 
   // attackers can use this header to detect apps running Express
   // and then launch specifically-targeted attacks
-  app.disable('x-powered-by')
+  app.disable('x-powered-by');
 
   // place here any middlewares that
   // absolutely need to run before anything else
-  if (process.env.PROD) {
+  if (process.env.PROD ?? '') {
     // app.use(compression());
   }
 
-  return app
-})
+  return app;
+});
 
 /**
  * You need to make the server listen to the indicated port
@@ -56,13 +63,13 @@ export const create = defineSsrCreate((/* { ... } */) => {
  * Can be async: defineSsrListen(async ({ app, devHttpsApp, port }) => { ... })
  */
 export const listen = defineSsrListen(({ app, devHttpsApp, port }) => {
-  const server = devHttpsApp || app
+  const server = devHttpsApp || app;
   return server.listen(port, () => {
-    if (process.env.PROD) {
-      console.log('Server listening at port ' + port)
+    if (process.env.PROD ?? '') {
+      console.log('Server listening at port ' + port);
     }
-  })
-})
+  });
+});
 
 /**
  * Should close the server and free up any resources.
@@ -75,10 +82,10 @@ export const listen = defineSsrListen(({ app, devHttpsApp, port }) => {
  * Can be async: defineSsrClose(async ({ listenResult }) => { ... }))
  */
 export const close = defineSsrClose(({ listenResult }) => {
-  return listenResult.close()
-})
+  return listenResult.close();
+});
 
-const maxAge = process.env.DEV ? 0 : 1000 * 60 * 60 * 24 * 30
+const maxAge = (process.env.DEV ?? '') ? 0 : 1000 * 60 * 60 * 24 * 30;
 
 /**
  * Should return a function that will be used to configure the webserver
@@ -89,53 +96,67 @@ const maxAge = process.env.DEV ? 0 : 1000 * 60 * 60 * 24 * 30
  * Can be async: defineSsrServeStaticContent(async ({ app, resolve }) => {
  * Can return an async function: return async ({ urlPath = '/', pathToServe = '.', opts = {} }) => {
  */
-export const serveStaticContent = defineSsrServeStaticContent(({ app, resolve }) => {
-  return ({ urlPath = '/', pathToServe = '.', opts = {} }) => {
-    const serveFn = express.static(resolve.public(pathToServe), { maxAge, ...opts })
-    app.use(resolve.urlPath(urlPath), serveFn)
-  }
-})
+export const serveStaticContent = defineSsrServeStaticContent(
+  ({
+    app,
+    resolve,
+  }): (({
+    urlPath,
+    pathToServe,
+    opts,
+  }: {
+    urlPath?: string;
+    pathToServe?: string;
+    opts?: object;
+  }) => void) => {
+    return ({ urlPath = '/', pathToServe = '.', opts = {} }): void => {
+      const serveFn = express.static(resolve.public(pathToServe), { maxAge, ...opts });
 
-const jsRE = /\.js$/
-const cssRE = /\.css$/
-const woffRE = /\.woff$/
-const woff2RE = /\.woff2$/
-const gifRE = /\.gif$/
-const jpgRE = /\.jpe?g$/
-const pngRE = /\.png$/
+      app.use(resolve.urlPath(urlPath), serveFn);
+    };
+  },
+);
+
+const jsRE = /\.js$/;
+const cssRE = /\.css$/;
+const woffRE = /\.woff$/;
+const woff2RE = /\.woff2$/;
+const gifRE = /\.gif$/;
+const jpgRE = /\.jpe?g$/;
+const pngRE = /\.png$/;
 
 /**
  * Should return a String with HTML output
  * (if any) for preloading indicated file
  */
-export const renderPreloadTag = defineSsrRenderPreloadTag((file /* , { ssrContext } */) => {
+export const renderPreloadTag = defineSsrRenderPreloadTag((file /* , { ssrContext } */): string => {
   if (jsRE.test(file) === true) {
-    return `<link rel="modulepreload" href="${file}" crossorigin>`
+    return `<link rel="modulepreload" href="${file}" crossorigin>`;
   }
 
   if (cssRE.test(file) === true) {
-    return `<link rel="stylesheet" href="${file}" crossorigin>`
+    return `<link rel="stylesheet" href="${file}" crossorigin>`;
   }
 
   if (woffRE.test(file) === true) {
-    return `<link rel="preload" href="${file}" as="font" type="font/woff" crossorigin>`
+    return `<link rel="preload" href="${file}" as="font" type="font/woff" crossorigin>`;
   }
 
   if (woff2RE.test(file) === true) {
-    return `<link rel="preload" href="${file}" as="font" type="font/woff2" crossorigin>`
+    return `<link rel="preload" href="${file}" as="font" type="font/woff2" crossorigin>`;
   }
 
   if (gifRE.test(file) === true) {
-    return `<link rel="preload" href="${file}" as="image" type="image/gif" crossorigin>`
+    return `<link rel="preload" href="${file}" as="image" type="image/gif" crossorigin>`;
   }
 
   if (jpgRE.test(file) === true) {
-    return `<link rel="preload" href="${file}" as="image" type="image/jpeg" crossorigin>`
+    return `<link rel="preload" href="${file}" as="image" type="image/jpeg" crossorigin>`;
   }
 
   if (pngRE.test(file) === true) {
-    return `<link rel="preload" href="${file}" as="image" type="image/png" crossorigin>`
+    return `<link rel="preload" href="${file}" as="image" type="image/png" crossorigin>`;
   }
 
-  return ''
-})
+  return '';
+});
