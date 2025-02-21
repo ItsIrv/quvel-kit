@@ -40,7 +40,7 @@ export default defineConfig((ctx) => {
         ],
         {
           name: 'client-host',
-          transform(code, id) {
+          transform(code, id): string {
             if (id.endsWith('dist/client/client.mjs') || id.endsWith('dist/client/env.mjs')) {
               return code.replace('__HMR_HOSTNAME__', JSON.stringify('quvel.127.0.0.1.nip.io'));
             }
@@ -49,7 +49,7 @@ export default defineConfig((ctx) => {
           },
         },
       ],
-      extendViteConf(viteConf) {
+      extendViteConf(viteConf): void {
         viteConf.server = {
           ...viteConf.server,
           allowedHosts: ['localhost', '127.0.0.1', 'quvel.127.0.0.1.nip.io'],
@@ -85,7 +85,9 @@ export default defineConfig((ctx) => {
       },
     },
     framework: {
-      config: {},
+      config: {
+        dark: true,
+      },
       plugins: ['Cookies', 'Notify'],
     },
     animations: [],

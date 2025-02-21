@@ -4,10 +4,8 @@
 
 <script lang="ts" setup>
 import { useSessionStore } from 'src/stores/sessionStore';
-import { onMounted } from 'vue';
-import { useQuasar } from 'quasar';
-import { createApi } from './utils/axiosUtil';
-import { XsrfName } from './models/Session';
+import { useXsrf } from 'src/composables/mount/useXsrf';
+import { useTheme } from 'src/composables/mount/useTheme';
 
 defineOptions({
   /**
@@ -15,23 +13,12 @@ defineOptions({
    *
    * TODO: We want to avoid fetching the user on every page load in production.
    */
-  async preFetch({ store }) {
+  async preFetch({ store },) {
     await useSessionStore(store).fetchSession();
   }
 })
 
-/**
- * Called on browser to fetch the XSRF cookie from Laravel if we do not have it.
- */
-onMounted(() => {
-  const xsrf = useQuasar().cookies.get(XsrfName);
 
-  if (!xsrf) {
-    try {
-      void createApi().get('/');
-    } catch {
-      //
-    }
-  }
-})
+useTheme();
+useXsrf();
 </script>

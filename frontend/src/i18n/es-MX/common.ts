@@ -14,4 +14,5 @@ export default {
     success: '¡La acción fue exitosa!',
     failed: 'Error en la acción. Inténtelo de nuevo.',
   },
+  language: 'Idioma',
 };

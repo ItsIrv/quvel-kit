@@ -2,7 +2,7 @@
   <q-select
     v-model="locale"
     :options="localeOptions"
-    label="Quasar Language"
+    :label="$t('common.language')"
     dropdown-icon="eva-arrow-down-outline"
     class="LanguageSwitcher"
     dense
@@ -20,12 +20,12 @@ const { locale } = useI18n({ useScope: 'global' })
 
 const localeOptions = [
   { value: 'en-US', label: 'English' },
-  { value: 'es-MX', label: 'Spanish' }
+  { value: 'es-MX', label: 'Español' }
 ];
 </script>
 
 <style lang="scss" scoped>
 .LanguageSwitcher {
-  max-width: 150px;
+  width: 90px;
 }
 </style>

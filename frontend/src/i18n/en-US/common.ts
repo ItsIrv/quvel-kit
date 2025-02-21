@@ -14,4 +14,5 @@ export default {
     success: 'Action was successful!',
     failed: 'Action failed. Please try again.',
   },
+  language: 'Language',
 };

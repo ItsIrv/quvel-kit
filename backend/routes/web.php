@@ -2,9 +2,11 @@
 
 use App\Actions\QuvelWelcome;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 
+// TODO: Move these to individual actions.
 Route::get('/', QuvelWelcome::class)->name('welcome');
 
 Route::post('/login', function (): User {
@@ -27,6 +29,12 @@ Route::get('/session', function (): mixed {
 
 Route::get('/test', function (): Collection {
     return User::limit(5)->get();
-});
+})->middleware('auth');
 
-Route::get('_', fn () => redirect('https://quvel.127.0.0.1.nip.io'))->name('login');
+Route::get('_', function (): RedirectResponse|string {
+    if (app()->environment('production')) {
+        return redirect('https://quvel.127.0.0.1.nip.io');
+    }
+
+    return 'You are here because you are not logged in. Production will redirect you to the frontend.';
+})->name('login');

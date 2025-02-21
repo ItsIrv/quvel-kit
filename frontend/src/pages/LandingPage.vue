@@ -31,7 +31,6 @@
             v-model="email"
             name="email"
             filled
-            dark
             :label="$t('auth.forms.common.email')"
             class="q-mb-md"
             type="email"
@@ -42,7 +41,6 @@
             v-model="password"
             name="password"
             filled
-            dark
             type="password"
             :label="$t('auth.forms.common.password')"
             class="q-mb-md"
@@ -60,7 +58,7 @@
       </div>
 
       <div class="q-mt-xl">
-        <p class="text-grey-5 text-subtitle2">
+        <p class="text-subtitle2">
           {{ $t('auth.forms.login.goTo') }}
           <RouterLink
             to="/welcome"
@@ -71,11 +69,9 @@
         </p>
       </div>
 
-      <div>
-        <LanguageSwitcher
-          dark
-          class="q-mx-auto"
-        />
+      <div class="row justify-center q-gutter-md">
+        <LanguageSwitcher />
+        <ThemeSwitcher />
       </div>
     </div>
   </q-page>
@@ -85,6 +81,7 @@
 import { ref } from 'vue'
 import LanguageSwitcher from 'src/components/Misc/LanguageSwitcher.vue'
 import { useSessionStore } from 'src/stores/sessionStore'
+import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
 
 const sessionStore = useSessionStore();
 const email = ref('quvel@quvel.app');
@@ -93,10 +90,6 @@ const password = ref('123456');
 function login(): void {
   if (email.value && password.value) {
     void sessionStore.login(email.value, password.value)
-
-    if (sessionStore.isAuthenticated) {
-      console.log(sessionStore.getUser?.name);
-    }
   }
 }
 </script>
