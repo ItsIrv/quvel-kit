@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
+import axios, { type AxiosResponse, type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { Cookies } from 'quasar';
 import type { QSsrContext } from '@quasar/app-vite';
 import { SessionName } from 'src/models/Session';
@@ -34,7 +34,7 @@ export function createAxios(axiosConfig: AxiosRequestConfig): AxiosInstance {
  * @returns An axios instance configured to work with the Quvel API.
  */
 export function createApi(ssrContext?: QSsrContext | null): AxiosInstance {
-  const api = axios.create(axiosConfig);
+  const api = createAxios(axiosConfig);
 
   if (ssrContext) {
     const cookies = Cookies.parseSSR(ssrContext);
@@ -57,7 +57,7 @@ export function createApi(ssrContext?: QSsrContext | null): AxiosInstance {
     async (error) => {
       const { response } = error;
 
-      if (!response) {
+      if ((response as AxiosResponse).status === undefined) {
         showNotification('negative', 'Network error, check your connection.');
         return Promise.reject(new Error('Network error, check your connection.'));
       }
@@ -78,10 +78,10 @@ export function createApi(ssrContext?: QSsrContext | null): AxiosInstance {
           break;
 
         default:
-          showNotification('negative', response.data?.message || 'An error occurred.');
+          showNotification('negative', response.data?.message ?? 'An error occurred.');
       }
 
-      return Promise.reject(new Error(response.data?.message || 'An error occurred.'));
+      return Promise.reject(new Error(response.data?.message ?? 'An error occurred.'));
     },
   );
 

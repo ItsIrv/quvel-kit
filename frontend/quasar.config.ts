@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 export default defineConfig((ctx) => {
   return {
     preFetch: true,
-    boot: ['i18n', 'container'],
+    boot: ['container', 'i18n'],
     css: ['app.scss'],
     extras: ['eva-icons', 'roboto-font'],
     build: {
@@ -86,6 +86,7 @@ export default defineConfig((ctx) => {
     },
     framework: {
       config: {},
+      iconSet: 'eva-icons',
       plugins: ['Cookies', 'Notify', 'LocalStorage', 'Meta'],
     },
     animations: [],

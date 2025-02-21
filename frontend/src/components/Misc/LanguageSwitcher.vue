@@ -3,7 +3,6 @@
     v-model="locale"
     :options="localeOptions"
     :label="$t('common.language')"
-    dropdown-icon="eva-arrow-down-outline"
     class="LanguageSwitcher"
     dense
     borderless
@@ -26,6 +25,6 @@ const localeOptions = [
 
 <style lang="scss" scoped>
 .LanguageSwitcher {
-  width: 90px;
+  width: 80px;
 }
 </style>

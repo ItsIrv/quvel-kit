@@ -43,3 +43,8 @@
 .max-w-screen-xl {
   max-width: 960px;
 }
+
+/* Increase form error text size */
+.q-field__bottom {
+  font-size: 14px;
+}

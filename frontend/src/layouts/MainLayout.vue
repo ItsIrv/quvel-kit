@@ -12,11 +12,11 @@
 <style lang="scss" scoped>
 .MainLayout {
   body.body--light & {
-    background: linear-gradient(180deg, $light-page, #c5c9cf);
+    background: $light-page;
   }
 
   body.body--dark & {
-    // background: $dark-page;
+    background: $dark-page;
   }
 }
 </style>

@@ -2,15 +2,13 @@
   <q-page class="flex flex-center text-center">
     <div class="max-w-3xl">
       <h1 class="text-h3 text-weight-bold q-mb-md">
-        Welcome to <span class="text-primary">QuVel Kit</span>
+        {{ $t('welcome.title', { appName: 'QuVel Kit' }) }}
       </h1>
 
       <p class="text-subtitle1 text-grey-5 q-mb-xl">
-        A full-stack hybrid starter kit for Laravel & Quasar.
-
+        {{ $t('welcome.description') }}
         <br />
-
-        Built for modern web, mobile, and desktop applications.
+        {{ $t('welcome.subtitle') }}
       </p>
 
       <div class="q-gutter-md row justify-center">
@@ -21,7 +19,7 @@
           unelevated
           href="https://github.com/ItsIrv/quvel-kit/"
         >
-          GitHub Repository
+          {{ $t('welcome.links.github') }}
         </q-btn>
 
         <q-btn
@@ -31,7 +29,7 @@
           unelevated
           href="https://github.com/ItsIrv/quvel-kit/blob/main/docs/README.md"
         >
-          Documentation
+          {{ $t('welcome.links.docs') }}
         </q-btn>
 
         <q-btn
@@ -41,8 +39,9 @@
           unelevated
           href="https://api.quvel.127.0.0.1.nip.io"
         >
-          API Playground
+          {{ $t('welcome.links.api') }}
         </q-btn>
+
         <q-btn
           color="secondary"
           size="md"
@@ -50,8 +49,9 @@
           unelevated
           href="https://coverage.quvel.127.0.0.1.nip.io/__vitest__/"
         >
-          Vitest UI
+          {{ $t('welcome.links.vitest') }}
         </q-btn>
+
         <q-btn
           color="secondary"
           size="md"
@@ -59,8 +59,9 @@
           unelevated
           href="https://coverage-api.quvel.127.0.0.1.nip.io"
         >
-          Laravel Coverage
+          {{ $t('welcome.links.coverage') }}
         </q-btn>
+
         <q-btn
           color="secondary"
           size="md"
@@ -68,8 +69,9 @@
           unelevated
           href="http://localhost:8080"
         >
-          Traefik Dashboard
+          {{ $t('welcome.links.traefik') }}
         </q-btn>
+
         <q-btn
           color="secondary"
           size="md"
@@ -77,11 +79,15 @@
           unelevated
           to="/"
         >
-          Frontend Playground
+          {{ $t('welcome.links.frontend') }}
         </q-btn>
       </div>
     </div>
   </q-page>
 </template>
 
-<style lang="scss" scoped></style>
+<script setup lang="ts">
+import { useMetaConfig } from 'src/composables/useMetaConfig';
+
+useMetaConfig('Welcome');
+</script>

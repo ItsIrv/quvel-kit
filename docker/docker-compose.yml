@@ -32,7 +32,9 @@ services:
       context: ../backend # Point to Laravel backend source
       dockerfile: ../docker/backend.Dockerfile # Use custom backend Dockerfile
     container_name: quvel-app
+
     working_dir: /var/www # Set working directory for Laravel
+
     volumes:
       - ../backend:/var/www # Sync backend files for live development
       - /var/www/vendor # Keep vendor dependencies inside the container for performance
@@ -71,6 +73,7 @@ services:
       context: ../frontend # Point to frontend source
       dockerfile: ../docker/frontend.Dockerfile # Use custom frontend Dockerfile
     container_name: quvel-frontend
+    restart: unless-stopped
     working_dir: /frontend # Set working directory for Quasar
     volumes:
       - ../frontend:/frontend # Sync frontend files for live development

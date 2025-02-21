@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import { User } from 'src/models/User';
-import { IUser } from 'src/types/user.types';
+import type { User } from 'src/models/User';
+import type { IUser } from 'src/types/user.types';
 import { createUserFromApi } from 'src/factories/userFactory';
 
 /**

@@ -9,7 +9,7 @@ export function useTheme(): void {
   onMounted(() => {
     const userTheme = LocalStorage.getItem('theme');
 
-    if (userTheme) {
+    if (userTheme !== null) {
       Dark.set(userTheme === 'dark');
     } else {
       Dark.set(window.matchMedia('(prefers-color-scheme: dark)').matches);

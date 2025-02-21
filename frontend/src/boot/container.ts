@@ -1,17 +1,8 @@
 import { defineBoot } from '#q-app/wrappers';
 import { createApi } from 'src/utils/axiosUtil';
 import type { QSsrContext } from '@quasar/app-vite';
-import { ServiceContainer } from 'src/types/container.types';
+import type { ServiceContainer } from 'src/types/container.types';
 import { provideContainer } from 'src/services/containerService';
-
-/**
- * Declares the Service Container for SSR Context.
- */
-declare module '@quasar/app-vite' {
-  interface QSsrContext {
-    $container: ReturnType<typeof createContainer>;
-  }
-}
 
 /**
  * Creates the service container per request.

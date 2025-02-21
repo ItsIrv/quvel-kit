@@ -12,7 +12,9 @@
         <p class="text-grey-3 text-h5">
           {{ $t('auth.forms.login.loggedInAs', { name: sessionStore.user?.name }) }}
         </p>
+
         <p class="text-grey-5 text-h6">{{ $t('auth.forms.common.email') }}: {{ sessionStore.user?.email }}</p>
+
         <q-btn
           color="negative"
           class="q-mt-md"
@@ -27,26 +29,9 @@
         class="q-mt-xl login-box"
       >
         <q-form @submit.prevent="login">
-          <q-input
-            v-model="email"
-            name="email"
-            filled
-            :label="$t('auth.forms.common.email')"
-            class="q-mb-md"
-            type="email"
-            autocomplete="email"
-            required
-          />
-          <q-input
-            v-model="password"
-            name="password"
-            filled
-            type="password"
-            :label="$t('auth.forms.common.password')"
-            class="q-mb-md"
-            autocomplete="current-password"
-            required
-          />
+          <EmailField v-model="email" />
+          <PasswordField v-model="password" />
+
           <q-btn
             color="primary"
             class="q-mt-md"
@@ -82,6 +67,8 @@ import { ref } from 'vue'
 import LanguageSwitcher from 'src/components/Misc/LanguageSwitcher.vue'
 import { useSessionStore } from 'src/stores/sessionStore'
 import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
+import EmailField from 'src/components/Form/EmailField.vue';
+import PasswordField from 'src/components/Form/PasswordField.vue';
 
 const sessionStore = useSessionStore();
 const email = ref('quvel@quvel.app');

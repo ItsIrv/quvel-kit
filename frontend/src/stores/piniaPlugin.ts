@@ -1,6 +1,6 @@
-import { QSsrContext } from '@quasar/app-vite';
+import type { QSsrContext } from '@quasar/app-vite';
 import { type PiniaPluginContext } from 'pinia';
-import { ServiceContainer } from 'src/types/container.types';
+import type { ServiceContainer } from 'src/types/container.types';
 import { inject } from 'vue';
 
 /**

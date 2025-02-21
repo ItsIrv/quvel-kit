@@ -1,4 +1,4 @@
-import { App, inject } from 'vue';
+import { type App, inject } from 'vue';
 import type { AxiosInstance } from 'axios';
 import { createApi } from 'src/utils/axiosUtil';
 

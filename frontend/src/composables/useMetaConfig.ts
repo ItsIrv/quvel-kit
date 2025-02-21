@@ -7,7 +7,7 @@ import { useMeta } from 'quasar';
  */
 export function useMetaConfig(pageTitle?: string, overrides?: Partial<unknown>): void {
   useMeta({
-    title: pageTitle || 'A Modern Hybrid App Framework',
+    title: pageTitle ?? 'A Modern Hybrid App Framework',
     titleTemplate: (title) => `${title} - QuVel Kit`,
 
     meta: {
@@ -17,7 +17,7 @@ export function useMetaConfig(pageTitle?: string, overrides?: Partial<unknown>):
           'QuVel Kit is a Laravel & Quasar hybrid framework optimized for SSR and seamless development.',
       },
       keywords: { name: 'keywords', content: 'Quasar, Laravel, SSR, Hybrid, Framework' },
-      ogTitle: { property: 'og:title', content: pageTitle || 'QuVel Kit' },
+      ogTitle: { property: 'og:title', content: pageTitle ?? 'QuVel Kit' },
       ogDescription: {
         property: 'og:description',
         content: 'A powerful Laravel & Quasar SSR framework for building modern apps.',
@@ -25,7 +25,7 @@ export function useMetaConfig(pageTitle?: string, overrides?: Partial<unknown>):
       ogImage: { property: 'og:image', content: 'https://quvelkit.com/meta-image.jpg' },
       ogType: { property: 'og:type', content: 'website' },
       twitterCard: { name: 'twitter:card', content: 'summary_large_image' },
-      twitterTitle: { name: 'twitter:title', content: pageTitle || 'QuVel Kit' },
+      twitterTitle: { name: 'twitter:title', content: pageTitle ?? 'QuVel Kit' },
       twitterDescription: {
         name: 'twitter:description',
         content: 'A Laravel & Quasar hybrid framework optimized for SSR.',

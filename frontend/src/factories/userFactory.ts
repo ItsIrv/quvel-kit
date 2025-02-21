@@ -1,5 +1,5 @@
 import { User } from 'src/models/User';
-import { IUser } from 'src/types/user.types';
+import type { IUser } from 'src/types/user.types';
 
 /**
  * Factory function to create a User instance from API response.

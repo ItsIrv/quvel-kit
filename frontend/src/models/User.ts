@@ -1,4 +1,4 @@
-import { IUser } from 'src/types/user.types';
+import type { IUser } from 'src/types/user.types';
 
 /**
  * Class representing a User entity.

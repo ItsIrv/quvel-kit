@@ -1,6 +1,6 @@
 import { type RenderError } from '#q-app';
 import { defineSsrMiddleware } from '#q-app/wrappers';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 // This middleware should execute last
 // since it captures all unmatched routes and

@@ -12,7 +12,7 @@ export function useXsrf(): void {
   onMounted(() => {
     const xsrf = $q.cookies.get(XsrfName);
 
-    if (!xsrf) {
+    if (xsrf === null) {
       try {
         void createApi().get('/');
       } catch {
