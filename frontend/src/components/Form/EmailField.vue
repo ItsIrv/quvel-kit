@@ -38,7 +38,10 @@ const email = computed({
   <BaseField
     v-model="email"
     :label="$t('auth.forms.common.email')"
+    name="email"
     type="email"
     :schema="emailSchema()"
+    :error-message="errorMessage"
+    :error="error"
   />
 </template>

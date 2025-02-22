@@ -5,26 +5,60 @@ import { useSessionStore } from 'src/stores/sessionStore'
 import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
 import EmailField from 'src/components/Form/EmailField.vue';
 import PasswordField from 'src/components/Form/PasswordField.vue';
+import { useContainer } from 'src/services/ContainerService';
+import { LaravelErrorHandler } from 'src/utils/taskUtil';
+import type { ErrorHandler } from 'src/types/task.types';
+import type { User } from 'src/models/User';
 
 /**
  * Services
  */
+const container = useContainer();
 const sessionStore = useSessionStore();
 
 /**
  * Refs
  */
-const email = ref('quvel@quvel.app');
-const password = ref('123456');
+const email = ref('');
+const password = ref('');
+const loginForm = ref<HTMLFormElement>();
+const loginTask = container.task.newTask<User, { email: string, password: string }>({
+  shouldRun: async () => await loginForm.value?.validate(),
+  showLoading: true,
+  showNotification: {
+    error: false,
+    success: container.i18n.t('auth.success.loggedIn'),
+  },
+  taskPayload: () => ({ email: email.value, password: password.value }),
+  task({ email, password }) {
+    return sessionStore.login(email, password);
+  },
+  errorHandlers: <ErrorHandler[]>[
+    LaravelErrorHandler(),
+    {
+      key: 'status',
+      matcher: (status: number): boolean => status === 400,
+      callback(): void {
+        console.log('Bad Request')
+      }
+    }
+  ],
+  successHandlers: () => {
+    email.value = '';
+    password.value = '';
+  },
+});
 
-/**
- * Methods
- */
-function login(): void {
-  if (email.value && password.value) {
-    void sessionStore.login(email.value, password.value)
-  }
-}
+const logoutTask = container.task.newTask({
+  showLoading: true,
+  showNotification: {
+    error: false,
+    success: container.i18n.t('auth.success.loggedOut'),
+  },
+  task() {
+    return sessionStore.logout();
+  },
+});
 </script>
 
 <template>
@@ -33,6 +67,12 @@ function login(): void {
       <h1 class="text-h3 text-weight-bold q-mb-xl">
         {{ $t('auth.forms.login.title') }}
       </h1>
+
+      <p>
+        Email: quvel@quvel1.kit
+        <br />
+        Password: 12345678
+      </p>
 
       <div
         v-if="sessionStore.isAuthenticated"
@@ -47,7 +87,7 @@ function login(): void {
         <q-btn
           color="negative"
           class="q-mt-md"
-          @click="sessionStore.logout()"
+          @click="logoutTask.run()"
         >
           {{ $t('auth.forms.login.logout') }}
         </q-btn>
@@ -57,9 +97,21 @@ function login(): void {
         v-else
         class="q-mt-xl login-box"
       >
-        <q-form @submit.prevent="login">
-          <EmailField v-model="email" />
-          <PasswordField v-model="password" />
+        <q-form
+          ref="loginForm"
+          @submit.prevent="loginTask.run()"
+        >
+          <EmailField
+            v-model="email"
+            :error-message="(loginTask.errors.value.email as any)?.[0] ?? ''"
+            :error="!!loginTask.errors.value.email"
+          />
+
+          <PasswordField
+            v-model="password"
+            :error-message="(loginTask.errors.value.password as any)?.[0] ?? ''"
+            :error="!!loginTask.errors.value.password"
+          />
 
           <q-btn
             color="primary"

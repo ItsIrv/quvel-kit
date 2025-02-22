@@ -1,13 +1,16 @@
 import type { I18nType } from 'src/types/i18n.types';
 import { applyLocale } from 'src/utils/i18nUtil';
+import { Service } from './Service';
 
 /**
  * I18n Service for managing localization.
  */
-export class I18nService {
+export class I18nService extends Service {
   private readonly i18n: I18nType;
 
   constructor(i18nInstance: I18nType) {
+    super();
+
     this.i18n = i18nInstance;
   }
 

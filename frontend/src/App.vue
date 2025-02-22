@@ -11,7 +11,11 @@ defineOptions({
    * TODO: We want to avoid fetching the user on every page load in production.
    */
   async preFetch({ store },) {
-    await useSessionStore(store).fetchSession();
+    try {
+      await useSessionStore(store).fetchSession();
+    } catch {
+      // TODO: Handle flow on unauthorized.
+    }
   }
 })
 

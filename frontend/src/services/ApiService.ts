@@ -1,15 +1,16 @@
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { showNotification } from 'src/utils/notifyUtil';
+import type { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { Service } from './Service';
 
 /**
  * API Service Wrapper for Axios.
  */
-export class ApiService {
+export class ApiService extends Service {
   private readonly api: AxiosInstance;
 
   constructor(apiInstance: AxiosInstance) {
+    super();
+
     this.api = apiInstance;
-    this.setupInterceptors();
   }
 
   /**
@@ -17,51 +18,6 @@ export class ApiService {
    */
   get instance(): AxiosInstance {
     return this.api;
-  }
-
-  /**
-   * Sets up request and response interceptors.
-   */
-  private setupInterceptors(): void {
-    if (typeof window === 'undefined') return;
-
-    this.api.interceptors.request.use(
-      (config) => config,
-      (error) => Promise.reject(new Error(error)),
-    );
-
-    this.api.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const { response } = error;
-
-        if ((response as AxiosResponse).status === undefined) {
-          showNotification('negative', 'Network error, check your connection.');
-          return Promise.reject(new Error('Network error, check your connection.'));
-        }
-
-        switch (response.status) {
-          case 401: // Unauthorized (Auto-logout)
-            showNotification('negative', 'Session expired, please log in again.');
-            if (typeof window !== 'undefined') window.location.href = '/login';
-            break;
-
-          case 403: // Forbidden
-            showNotification('warning', 'You do not have permission for this action.');
-            break;
-
-          case 500: // Server Errors
-          case 503:
-            showNotification('negative', 'Server error, please try later.');
-            break;
-
-          default:
-            showNotification('negative', response.data?.message ?? 'An error occurred.');
-        }
-
-        return Promise.reject(new Error(response.data?.message ?? 'An error occurred.'));
-      },
-    );
   }
 
   /**

@@ -1,10 +1,11 @@
 import type { QSsrContext } from '@quasar/app-vite';
 import { type App, useSSRContext } from 'vue';
 import type { ServiceContainer } from 'src/types/container.types';
+import type { BootableService } from 'src/types/service.types';
 import { createApiService } from 'src/utils/axiosUtil';
 import { createI18nService } from 'src/utils/i18nUtil';
 import { createValidationService } from 'src/utils/validationUtil';
-import type { BootableService } from 'src/types/service.types';
+import { TaskService } from './TaskService';
 
 /**
  * Symbol for the service container key.
@@ -28,6 +29,7 @@ export function createContainer(ssrContext?: QSsrContext | null): ServiceContain
   container.api = createApiService(ssrContext);
   container.i18n = createI18nService(ssrContext);
   container.validation = createValidationService();
+  container.task = new TaskService();
 
   // Boot all services
   for (const key in container) {

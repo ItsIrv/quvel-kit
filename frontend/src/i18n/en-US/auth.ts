@@ -22,4 +22,8 @@ export default {
     invalidCredentials: 'Invalid email or password.',
     sessionExpired: 'Your session has expired. Please log in again.',
   },
+  success: {
+    loggedOut: 'You have been logged out.',
+    loggedIn: 'You have been logged in.',
+  },
 };

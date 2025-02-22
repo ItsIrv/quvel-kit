@@ -40,7 +40,10 @@ const password = computed({
   <BaseField
     v-model="password"
     :label="$t('auth.forms.common.password')"
+    name="password"
     type="password"
     :schema="passwordSchema()"
+    :error-message="errorMessage"
+    :error="error"
   />
 </template>

@@ -1,16 +1,25 @@
 <?php
 
 use App\Actions\QuvelWelcome;
+use Dotenv\Exception\ValidationException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 
 // TODO: Move these to individual actions.
 Route::get('/', QuvelWelcome::class)->name('welcome');
 
-Route::post('/login', function (): User {
-    $user = User::first();
+Route::post('/login', function (Request $request): User {
+    $request->validate([
+        'email'    => 'required|string|email',
+        'password' => 'required|string',
+    ]);
+
+    $email    = $request->input('email');
+    $password = $request->input('password');
+    $user     = User::first();
 
     Auth::loginUsingId($user->id);
 

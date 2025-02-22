@@ -30,7 +30,7 @@ interface SessionActions {
   setSession(data: IUser): void;
   fetchSession(): Promise<void>;
   logout(): Promise<void>;
-  login(email: string, password: string): Promise<void>;
+  login(email: string, password: string): Promise<User>;
 }
 
 /**
@@ -69,13 +69,9 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        */
       async fetchSession(): Promise<void> {
         if (this.user === undefined) {
-          try {
-            const data = await this.$container.api.get<IUser>('/session');
+          const data = await this.$container.api.get<IUser>('/session');
 
-            this.setSession(data);
-          } catch {
-            this.user = null;
-          }
+          this.setSession(data);
         }
       },
 
@@ -85,11 +81,11 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
       async logout(): Promise<void> {
         try {
           await this.$container.api.post('/logout');
-
-          this.$reset();
         } catch {
-          // TODO: Handle specific error codes
+          // ignore error
         }
+
+        this.user = null;
       },
 
       /**
@@ -97,14 +93,12 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * @param email - User's email.
        * @param password - User's password.
        */
-      async login(email: string, password: string): Promise<void> {
-        try {
-          const data = await this.$container.api.post<IUser>('/login', { email, password });
+      async login(email: string, password: string): Promise<User> {
+        const data = await this.$container.api.post<IUser>('/login', { email, password });
 
-          this.setSession(data);
-        } catch {
-          // TODO: Handle specific error codes
-        }
+        this.setSession(data);
+
+        return this.user!;
       },
     },
   },

@@ -3,11 +3,12 @@ import type { ZodSchema } from 'zod';
 import { validateOrError } from 'src/utils/validationUtil';
 import type { BootableService } from 'src/types/service.types';
 import type { I18nService } from './I18nService';
+import { Service } from './Service';
 
 /**
  * Validation service with translation support.
  */
-export class ValidationService implements BootableService {
+export class ValidationService extends Service implements BootableService {
   private i18n: I18nService | null = null;
 
   /**
@@ -19,6 +20,10 @@ export class ValidationService implements BootableService {
 
   /**
    * Validates a value with optional translation.
+   *
+   * TODO: This only supports basic validators like email, min, max, type.
+   * Zod requires setErrorMap which will be implemented at a later time.
+   * A default message will return for now. You can also pass `translate`: false.
    * @param value - The value to validate.
    * @param schema - The Zod schema.
    * @param field - The field name for translation (default: 'value').
@@ -95,7 +100,7 @@ export class ValidationService implements BootableService {
    */
   createTranslatedValidationRule<T>(
     schema: ZodSchema<T>,
-    field: string = 'value',
+    field: string = 'Field',
   ): (value: unknown) => string | true {
     return (value: unknown) => this.validate(value, schema, field);
   }

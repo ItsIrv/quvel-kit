@@ -1,8 +1,7 @@
-import axios, { type AxiosResponse, type AxiosInstance, type AxiosRequestConfig } from 'axios';
+import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { Cookies } from 'quasar';
 import type { QSsrContext } from '@quasar/app-vite';
 import { SessionName } from 'src/models/Session';
-import { showNotification } from 'src/utils/notifyUtil';
 import { ApiService } from 'src/services/ApiService';
 
 const isServer = typeof window === 'undefined';
@@ -43,48 +42,6 @@ export function createApi(ssrContext?: QSsrContext | null): AxiosInstance {
 
     api.defaults.headers.Cookie = `${SessionName}=${sessionToken}`;
   }
-
-  // Request Interceptor (Modify requests before sending)
-  api.interceptors.request.use(
-    (config) => {
-      return config;
-    },
-    (error) => Promise.reject(new Error(error)),
-  );
-
-  // Response Interceptor (Global error handling)
-  api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      const { response } = error;
-
-      if ((response as AxiosResponse).status === undefined) {
-        showNotification('negative', 'Network error, check your connection.');
-        return Promise.reject(new Error('Network error, check your connection.'));
-      }
-
-      switch (response.status) {
-        case 401: // Unauthorized (Auto-logout)
-          showNotification('negative', 'Session expired, please log in again.');
-          if (!isServer) window.location.href = '/login';
-          break;
-
-        case 403: // Forbidden
-          showNotification('warning', 'You do not have permission for this action.');
-          break;
-
-        case 500: // Server Errors
-        case 503:
-          showNotification('negative', 'Server error, please try later.');
-          break;
-
-        default:
-          showNotification('negative', response.data?.message ?? 'An error occurred.');
-      }
-
-      return Promise.reject(new Error(response.data?.message ?? 'An error occurred.'));
-    },
-  );
 
   return api;
 }
