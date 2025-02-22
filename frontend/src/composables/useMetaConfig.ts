@@ -22,7 +22,7 @@ export function useMetaConfig(pageTitle?: string, overrides?: Partial<unknown>):
         property: 'og:description',
         content: 'A powerful Laravel & Quasar SSR framework for building modern apps.',
       },
-      ogImage: { property: 'og:image', content: 'https://quvelkit.com/meta-image.jpg' },
+      // ogImage: { property: 'og:image', content: 'https://quvelkit.com/meta-image.jpg' },
       ogType: { property: 'og:type', content: 'website' },
       twitterCard: { name: 'twitter:card', content: 'summary_large_image' },
       twitterTitle: { name: 'twitter:title', content: pageTitle ?? 'QuVel Kit' },
@@ -30,7 +30,7 @@ export function useMetaConfig(pageTitle?: string, overrides?: Partial<unknown>):
         name: 'twitter:description',
         content: 'A Laravel & Quasar hybrid framework optimized for SSR.',
       },
-      twitterImage: { name: 'twitter:image', content: 'https://quvelkit.com/meta-image.jpg' },
+      // twitterImage: { name: 'twitter:image', content: 'https://quvelkit.com/meta-image.jpg' },
     },
 
     script: {

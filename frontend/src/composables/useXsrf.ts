@@ -1,7 +1,7 @@
 import { useQuasar } from 'quasar';
 import { onMounted } from 'vue';
-import { createApi } from 'src/utils/axiosUtil';
 import { XsrfName } from 'src/models/Session';
+import { useContainer } from 'src/services/ContainerService';
 
 /**
  * Sets the XSRF-TOKEN cookie if not already set.
@@ -14,7 +14,7 @@ export function useXsrf(): void {
 
     if (xsrf === null) {
       try {
-        void createApi().get('/');
+        void useContainer().api.get('/');
       } catch {
         //
       }

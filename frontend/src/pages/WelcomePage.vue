@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import { useMetaConfig } from 'src/composables/useMetaConfig';
+
+useMetaConfig('Welcome');
+</script>
+
 <template>
   <q-page class="flex flex-center text-center">
     <div class="max-w-3xl">
@@ -85,9 +91,3 @@
     </div>
   </q-page>
 </template>
-
-<script setup lang="ts">
-import { useMetaConfig } from 'src/composables/useMetaConfig';
-
-useMetaConfig('Welcome');
-</script>

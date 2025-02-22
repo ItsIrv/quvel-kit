@@ -1,34 +1,90 @@
-import { type App, inject } from 'vue';
-import type { AxiosInstance } from 'axios';
-import { createApi } from 'src/utils/axiosUtil';
+import type { QSsrContext } from '@quasar/app-vite';
+import { type App, useSSRContext } from 'vue';
+import type { ServiceContainer } from 'src/types/container.types';
+import type { BootableService } from 'src/types/service.types';
+import { createApiService } from 'src/utils/axiosUtil';
+import { createI18nService } from 'src/utils/i18nUtil';
+import { createValidationService } from 'src/utils/validationUtil';
+import { TaskService } from './TaskService';
 
-interface ServiceContainer {
-  api: AxiosInstance;
+/**
+ * Symbol for the service container key.
+ */
+export const ContainerKey = Symbol('$container');
+
+/**
+ * Holds the singleton service container in the client.
+ */
+let clientContainer: ServiceContainer | null = null;
+
+/**
+ * Creates the service container per request.
+ * @param ssrContext - The SSR context, if in SSR mode.
+ * @returns The fully initialized service container.
+ */
+export function createContainer(ssrContext?: QSsrContext | null): ServiceContainer {
+  const container: Partial<ServiceContainer> = {};
+
+  // Create service instances
+  container.api = createApiService(ssrContext);
+  container.i18n = createI18nService(ssrContext);
+  container.validation = createValidationService();
+  container.task = new TaskService();
+
+  // Boot all services
+  for (const key in container) {
+    const service = container[key as keyof ServiceContainer];
+
+    if (typeof service === 'object' && 'boot' in service) {
+      (service as BootableService).boot(container as ServiceContainer);
+    }
+  }
+
+  // Register any optional logic
+  for (const key in container) {
+    const service = container[key as keyof ServiceContainer];
+
+    if (typeof service === 'object' && 'register' in service) {
+      (service as BootableService).register?.();
+    }
+  }
+
+  return container as ServiceContainer;
 }
 
 /**
- * Provides a scoped service container to the client.
- * Inject does not work in SSR, so do not attempt to do that. Use `ssrContext.container`.
+ * Assigns a singleton container in the browser.
  * @param app - The Vue App instance.
- * @param container  - The service container.
+ * @param container - The service container.
  */
-export function provideContainer(app: App, container: ServiceContainer): void {
-  app.provide('$container', container);
+export function setClientContainer(app: App, container: ServiceContainer): void {
+  if (typeof window !== 'undefined') {
+    clientContainer = container;
+  }
 }
 
 /**
  * Retrieves the service container.
- * If available `ssrContext.container` should be used instead.
- * The container in ssrContext could have more information
- * such as a logger with a trace-id, or data that was added throughout the lifecycle.
+ * Uses `ssrContext` in SSR, singleton in the client.
  * @returns The service container.
  */
 export function useContainer(): ServiceContainer {
   if (typeof window === 'undefined') {
-    return {
-      api: createApi(),
-    };
+    const context = useSSRContext<QSsrContext>();
+
+    if (context?.$container) {
+      return context.$container;
+    } else {
+      throw new Error(
+        'SSR container not initialized. Ensure ssrContext is set in container defineBoot.',
+      );
+    }
   } else {
-    return inject('$container') as ServiceContainer;
+    if (!clientContainer) {
+      throw new Error(
+        'Client container not initialized. Ensure `provideContainer()` was called in boot.',
+      );
+    }
+    return clientContainer;
   }
 }

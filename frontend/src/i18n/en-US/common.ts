@@ -10,9 +10,9 @@ export default {
     dashboard: 'Dashboard',
     settings: 'Settings',
   },
-  messages: {
+  task: {
     success: 'Action was successful!',
-    failed: 'Action failed. Please try again.',
+    error: 'Action failed. Please try again.',
   },
   language: 'Language',
 };
