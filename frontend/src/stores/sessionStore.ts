@@ -70,7 +70,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
       async fetchSession(): Promise<void> {
         if (this.user === undefined) {
           try {
-            const { data } = await this.$container.api.get<IUser>('/session');
+            const data = await this.$container.api.get<IUser>('/session');
 
             this.setSession(data);
           } catch {
@@ -99,7 +99,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        */
       async login(email: string, password: string): Promise<void> {
         try {
-          const { data } = await this.$container.api.post<IUser>('/login', { email, password });
+          const data = await this.$container.api.post<IUser>('/login', { email, password });
 
           this.setSession(data);
         } catch {

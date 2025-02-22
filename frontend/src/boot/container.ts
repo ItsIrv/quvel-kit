@@ -1,5 +1,5 @@
 import { defineBoot } from '#q-app/wrappers';
-import { createContainer, provideContainer } from 'src/services/containerService';
+import { ContainerKey, createContainer, setClientContainer } from 'src/services/ContainerService';
 
 /**
  * Boot function to provide services globally.
@@ -10,8 +10,10 @@ export default defineBoot(({ ssrContext, app }) => {
   if (ssrContext) {
     ssrContext.$container = container;
   } else {
-    provideContainer(app, container);
+    app.provide(ContainerKey, container);
+
+    setClientContainer(app, container);
   }
 
-  app.use(container.i18n);
+  app.use(container.i18n.instance);
 });

@@ -1,12 +1,14 @@
-import type { AxiosInstance } from 'axios';
-import type { I18nType } from 'src/types/i18n.types';
+import type { ApiService } from 'src/services/ApiService';
+import type { I18nService } from 'src/services/I18nService';
+import type { ValidationService } from 'src/services/ValidationService';
 
 /**
  * Defines the structure of the Dependency Injection (DI) container.
  */
 export interface ServiceContainer {
-  api: AxiosInstance;
-  i18n: I18nType;
+  api: ApiService;
+  i18n: I18nService;
+  validation: ValidationService;
 }
 
 /**

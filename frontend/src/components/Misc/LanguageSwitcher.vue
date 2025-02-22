@@ -14,16 +14,16 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { applyLocale } from 'src/services/i18nService';
-import { useContainer } from 'src/services/containerService';
+import { useContainer } from 'src/services/ContainerService';
+import { applyLocale } from 'src/utils/i18nUtil';
 
 const container = useContainer();
 const i18n = container.i18n;
 
 const localeRef = computed({
-  get: () => i18n.global.locale.value,
+  get: () => i18n.instance.global.locale.value,
   set: (val) => {
-    applyLocale(i18n, val);
+    applyLocale(i18n.instance, val);
   }
 });
 

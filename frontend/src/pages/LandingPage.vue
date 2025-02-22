@@ -1,3 +1,32 @@
+<script lang="ts" setup>
+import { ref } from 'vue'
+import LanguageSwitcher from 'src/components/Misc/LanguageSwitcher.vue'
+import { useSessionStore } from 'src/stores/sessionStore'
+import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
+import EmailField from 'src/components/Form/EmailField.vue';
+import PasswordField from 'src/components/Form/PasswordField.vue';
+
+/**
+ * Services
+ */
+const sessionStore = useSessionStore();
+
+/**
+ * Refs
+ */
+const email = ref('quvel@quvel.app');
+const password = ref('123456');
+
+/**
+ * Methods
+ */
+function login(): void {
+  if (email.value && password.value) {
+    void sessionStore.login(email.value, password.value)
+  }
+}
+</script>
+
 <template>
   <q-page class="flex flex-center text-center">
     <div class="max-w-xl q-mx-auto">
@@ -61,22 +90,3 @@
     </div>
   </q-page>
 </template>
-
-<script lang="ts" setup>
-import { ref } from 'vue'
-import LanguageSwitcher from 'src/components/Misc/LanguageSwitcher.vue'
-import { useSessionStore } from 'src/stores/sessionStore'
-import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
-import EmailField from 'src/components/Form/EmailField.vue';
-import PasswordField from 'src/components/Form/PasswordField.vue';
-
-const sessionStore = useSessionStore();
-const email = ref('quvel@quvel.app');
-const password = ref('123456');
-
-function login(): void {
-  if (email.value && password.value) {
-    void sessionStore.login(email.value, password.value)
-  }
-}
-</script>

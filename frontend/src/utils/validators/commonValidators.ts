@@ -1,10 +1,11 @@
 import { z } from 'zod';
 
-export const emailSchema = z.string().email({ message: 'Invalid email format' });
+/**
+ * Email validation schema.
+ */
+export const emailSchema = (): z.ZodString => z.string().email();
 
-export const passwordSchema = z
-  .string()
-  .min(8, { message: 'Password must be at least 8 characters' })
-  .max(100, { message: 'Password is too long' });
-
-export const usernameSchema = z.string().min(3, { message: 'Username too short' });
+/**
+ * Password validation schema.
+ */
+export const passwordSchema = (): z.ZodString => z.string().min(2).max(5);

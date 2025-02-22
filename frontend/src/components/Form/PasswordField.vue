@@ -1,9 +1,11 @@
 <script lang="ts" setup>
-import { createValidationRule } from 'src/utils/validationUtil';
+import { computed } from 'vue';
 import { passwordSchema } from 'src/utils/validators/commonValidators';
-import { computed, defineEmits } from 'vue';
-import { useI18n } from 'vue-i18n';
+import BaseField from './BaseField.vue'
 
+/**
+ * Props
+ */
 const props = defineProps({
   modelValue: {
     type: String,
@@ -19,27 +21,26 @@ const props = defineProps({
   },
 });
 
+/**
+ * Emits
+ */
 const emits = defineEmits(['update:modelValue']);
 
+
+/**
+ * Computed
+ */
 const password = computed({
   get: () => props.modelValue,
   set: (value) => emits('update:modelValue', value),
 });
-
-const $t = useI18n().t;
 </script>
 
 <template>
-  <q-input
+  <BaseField
     v-model="password"
-    lazy-rules
-    filled
-    autocomplete="current-password"
-    type="password"
-    class="col-12 q-mt-sm"
     :label="$t('auth.forms.common.password')"
-    :rules="[createValidationRule(passwordSchema)]"
-    :error-message="errorMessage"
-    :error="error"
+    type="password"
+    :schema="passwordSchema()"
   />
 </template>

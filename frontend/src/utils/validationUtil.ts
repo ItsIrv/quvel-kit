@@ -1,6 +1,6 @@
+import { ValidationService } from 'src/services/ValidationService';
 import { type ZodSchema } from 'zod';
 
-// TODO: Validation needs to be  hooked up to i18n.
 /**
  * Validates a value against a Zod schema.
  * @param value - The value to validate.
@@ -20,4 +20,12 @@ export function validateOrError<T>(value: unknown, schema: ZodSchema<T>): string
  */
 export function createValidationRule<T>(schema: ZodSchema<T>): (value: unknown) => string | true {
   return (value: unknown) => validateOrError(value, schema);
+}
+
+/**
+ * Creates a ValidationService instance.
+ * @returns A new instance of ValidationService.
+ */
+export function createValidationService(): ValidationService {
+  return new ValidationService();
 }
