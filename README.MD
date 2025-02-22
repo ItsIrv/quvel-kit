@@ -30,12 +30,6 @@
   - Password reset & Email verification
   - Profile updates (name, password, avatar)
 
-### **Developer Tooling & Testing**
-
-- **Vitest UI** available at [`coverage.quvel.127.0.0.1.nip.io`](https://coverage.quvel.127.0.0.1.nip.io/__vitest__/)
-- **PHPUnit Coverage Reports** at [`coverage-api.quvel.127.0.0.1.nip.io`](https://coverage-api.quvel.127.0.0.1.nip.io)
-- **Live Docker logs & hot-reloading** for both frontend and backend
-
 ### **Planned Features**
 
 - **RBAC (Roles & Permissions)**
@@ -79,15 +73,3 @@ This will:
 - Vitest UI: <https://coverage.quvel.127.0.0.1.nip.io/__vitest__/>
 - PHPUnit Coverage Reports: <https://coverage-api.quvel.127.0.0.1.nip.io>
 - Traefik Dashboard: <http://localhost:8080>
-
-## Available Documentation
-
-### **Core Guides**
-
-- **[README](docs/README.md)** – Project overview
-- **[Getting Started](docs/getting-started.md)** – Step-by-step installation and setup
-- **[Folder Structure](docs/folder-structure.md)** – Overview of the project organization
-- **[Backend Usage](docs/backend-usage.md)** – Laravel API, authentication, migrations, and database setup
-- **[Frontend Usage](docs/frontend-usage.md)** – Quasar SSR, SPA, mobile builds, and UI development
-- **[Testing Guide](docs/testing.md)** – Running tests, coverage reports, and CI setup
-- **[Troubleshooting](docs/troubleshooting.md)** – Common issues and solutions

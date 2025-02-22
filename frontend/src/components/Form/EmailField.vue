@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { computed, defineEmits } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { createValidationRule } from 'src/utils/validationUtil';
+import { computed } from 'vue';
 import { emailSchema } from 'src/utils/validators/commonValidators';
-
+import BaseField from './BaseField.vue'
+/**
+ * Props
+ */
 const props = defineProps({
   modelValue: {
     type: String,
@@ -19,26 +20,27 @@ const props = defineProps({
   },
 });
 
+/**
+ * Emits
+ */
 const emits = defineEmits(['update:modelValue']);
 
+/**
+ * Computed
+ */
 const email = computed({
   get: () => props.modelValue,
   set: (value) => emits('update:modelValue', value),
 });
-
-const $t = useI18n().t;
 </script>
 
 <template>
-  <q-input
+  <BaseField
     v-model="email"
-    lazy-rules
-    filled
-    autocomplete="username"
-    type="email"
-    class="col-12"
     :label="$t('auth.forms.common.email')"
-    :rules="[createValidationRule(emailSchema)]"
+    name="email"
+    type="email"
+    :schema="emailSchema()"
     :error-message="errorMessage"
     :error="error"
   />

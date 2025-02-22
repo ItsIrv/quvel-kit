@@ -1,6 +1,6 @@
 {
     "name": "quvel-kit",
-    "version": "0.1.2-beta",
+    "version": "0.1.3-beta",
     "description": "QuVel Kit: A Laravel & Quasar hybrid starter kit.",
     "productName": "QuVel Kit",
     "author": "Irving Gomez <gomirv.work@gmail.com>",

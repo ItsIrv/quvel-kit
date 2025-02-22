@@ -14,11 +14,16 @@ export default {
     },
   },
   validation: {
-    required: '{field} is required.',
-    email: 'Enter a valid email address.',
+    passwordMismatch: 'Passwords must match.',
+    invalidCredentials: 'Invalid email or password.',
+    sessionExpired: 'Your session has expired. Please log in again.',
   },
   errors: {
     invalidCredentials: 'Invalid email or password.',
     sessionExpired: 'Your session has expired. Please log in again.',
+  },
+  success: {
+    loggedOut: 'You have been logged out.',
+    loggedIn: 'You have been logged in.',
   },
 };

@@ -1,6 +1,6 @@
 <template>
   <q-select
-    v-model="locale"
+    v-model="localeRef"
     :options="localeOptions"
     :label="$t('common.language')"
     class="LanguageSwitcher"
@@ -13,9 +13,19 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from 'vue-i18n';
+import { computed } from 'vue';
+import { useContainer } from 'src/services/ContainerService';
+import { applyLocale } from 'src/utils/i18nUtil';
 
-const { locale } = useI18n({ useScope: 'global' })
+const container = useContainer();
+const i18n = container.i18n;
+
+const localeRef = computed({
+  get: () => i18n.instance.global.locale.value,
+  set: (val) => {
+    applyLocale(i18n.instance, val);
+  }
+});
 
 const localeOptions = [
   { value: 'en-US', label: 'English' },
