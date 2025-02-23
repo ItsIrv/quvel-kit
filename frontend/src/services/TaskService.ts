@@ -26,7 +26,7 @@ export class TaskService extends Service implements BootableService {
   /**
    * Injects the service container dependencies.
    */
-  boot(container: ServiceContainer): void {
+  register(container: ServiceContainer): void {
     this.container = container;
   }
 

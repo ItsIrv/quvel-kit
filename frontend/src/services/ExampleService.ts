@@ -7,7 +7,7 @@ export class ExampleService extends Service implements BootableService {
    * Set up dependencies, or
    * @param container
    */
-  boot(container: ServiceContainer): void {
+  register(container: ServiceContainer): void {
     container.addService('exampleBoot', new ExampleService(), true);
   }
 

@@ -110,19 +110,18 @@ container.addService('exampleService', new ExampleService(), true); // Forces ov
 
 ## Preventing Circular Booting
 
-If a service adds another service in its `boot` method, ensure it does not cause a recursive loop. While internal checks exist, it is best to avoid it in practice.
+If a service adds another service in its `register` method, ensure it does not cause a recursive loop. While internal checks exist, it is best to avoid it in practice.
 
 ### **Example of Correct Usage**
 
 ```ts
 export class ExampleService extends Service implements BootableService {
-  boot(container: ServiceContainer): void {
+  register(container: ServiceContainer): void {
     if (!container.hasService('exampleBoot')) {
       container.addService('exampleBoot', new ExampleService());
     }
   }
 }
-```
 
 ---
 
