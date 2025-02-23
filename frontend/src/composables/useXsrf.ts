@@ -1,7 +1,7 @@
 import { useQuasar } from 'quasar';
 import { onMounted } from 'vue';
 import { XsrfName } from 'src/models/Session';
-import { useContainer } from 'src/services/ContainerService';
+import { useContainer } from 'src/composables/useContainer';
 
 /**
  * Sets the XSRF-TOKEN cookie if not already set.

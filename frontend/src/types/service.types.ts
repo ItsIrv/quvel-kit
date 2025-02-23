@@ -1,4 +1,4 @@
-import type { ServiceContainer } from './container.types';
+import type { ServiceContainer } from 'src/services/ServiceContainer';
 
 /**
  * Interface for all services that integrate with the DI container.

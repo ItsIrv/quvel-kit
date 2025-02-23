@@ -5,10 +5,10 @@ import { useSessionStore } from 'src/stores/sessionStore'
 import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
 import EmailField from 'src/components/Form/EmailField.vue';
 import PasswordField from 'src/components/Form/PasswordField.vue';
-import { useContainer } from 'src/services/ContainerService';
 import { LaravelErrorHandler } from 'src/utils/taskUtil';
 import type { ErrorHandler } from 'src/types/task.types';
 import type { User } from 'src/models/User';
+import { useContainer } from 'src/composables/useContainer';
 
 /**
  * Services
@@ -22,26 +22,17 @@ const sessionStore = useSessionStore();
 const email = ref('');
 const password = ref('');
 const loginForm = ref<HTMLFormElement>();
-const loginTask = container.task.newTask<User, { email: string, password: string }>({
-  shouldRun: async () => await loginForm.value?.validate(),
-  showLoading: true,
+
+/**
+ * Tasks
+ */
+const loginTask = container.task.newFrozenTask<User, { email: string, password: string }>({
   showNotification: {
-    error: false,
     success: container.i18n.t('auth.success.loggedIn'),
   },
-  taskPayload: () => ({ email: email.value, password: password.value }),
-  task({ email, password }) {
-    return sessionStore.login(email, password);
-  },
+  task: async () => await sessionStore.login(email.value, password.value),
   errorHandlers: <ErrorHandler[]>[
     LaravelErrorHandler(),
-    {
-      key: 'status',
-      matcher: (status: number): boolean => status === 400,
-      callback(): void {
-        console.log('Bad Request')
-      }
-    }
   ],
   successHandlers: () => {
     email.value = '';
@@ -49,15 +40,11 @@ const loginTask = container.task.newTask<User, { email: string, password: string
   },
 });
 
-const logoutTask = container.task.newTask({
-  showLoading: true,
+const logoutTask = container.task.newFrozenTask({
   showNotification: {
-    error: false,
     success: container.i18n.t('auth.success.loggedOut'),
   },
-  task() {
-    return sessionStore.logout();
-  },
+  task: async () => await sessionStore.logout(),
 });
 </script>
 
@@ -88,6 +75,8 @@ const logoutTask = container.task.newTask({
           color="negative"
           class="q-mt-md"
           @click="logoutTask.run()"
+          :loading="logoutTask.state.value === 'active'"
+          :disabled="logoutTask.state.value === 'active'"
         >
           {{ $t('auth.forms.login.logout') }}
         </q-btn>
@@ -117,6 +106,8 @@ const logoutTask = container.task.newTask({
             color="primary"
             class="q-mt-md"
             type="submit"
+            :loading="loginTask.state.value === 'active'"
+            :disabled="loginTask.state.value === 'active'"
           >
             {{ $t('auth.forms.login.button') }}
           </q-btn>

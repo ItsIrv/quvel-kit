@@ -1,4 +1,4 @@
-import type { ServiceContainer } from 'src/types/container.types';
+import type { ServiceContainer } from './ServiceContainer';
 import type { ZodSchema } from 'zod';
 import { validateOrError } from 'src/utils/validationUtil';
 import type { BootableService } from 'src/types/service.types';
