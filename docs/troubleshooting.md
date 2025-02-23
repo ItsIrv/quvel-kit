@@ -2,7 +2,7 @@
 
 ## Common Issues & Fixes
 
-### **SSL Warnings**
+### SSL Warnings
 
 If you encounter browser warnings about SSL certificates:
 
@@ -12,7 +12,7 @@ If you encounter browser warnings about SSL certificates:
   mkcert -install
   ```
 
-- Check if the SSL certs exist:
+- Check if the SSL certificates exist:
 
   ```bash
   ls docker/certs/
@@ -24,7 +24,7 @@ If you encounter browser warnings about SSL certificates:
   ./scripts/restart.sh
   ```
 
-### **Containers Not Starting**
+### Containers Not Starting
 
 If Docker services fail to start:
 
@@ -32,7 +32,7 @@ If Docker services fail to start:
 ./scripts/start.sh
 ```
 
-### **Database Issues**
+### Database Issues
 
 - If MySQL isn't responding:
 
@@ -46,7 +46,7 @@ If Docker services fail to start:
   docker exec -it quvel-app php artisan migrate --force
   ```
 
-### **Reset Everything**
+### Reset Everything
 
 If issues persist, try a full reset:
 
@@ -54,7 +54,7 @@ If issues persist, try a full reset:
 ./scripts/reset.sh
 ```
 
-### **Clear Docker Cache**
+### Clear Docker Cache
 
 If issues persist, try clearing Docker cache:
 
