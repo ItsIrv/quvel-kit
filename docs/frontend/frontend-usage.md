@@ -1,32 +1,34 @@
 # Frontend Usage
 
-## Accessing the Quasar Frontend
+## Overview
 
-The frontend of QuVel Kit is powered by **Quasar SSR**, running an **Express server** inside a Docker container. By default, it operates in **SSR mode with a SPA fallback**.
+QuVel Kit's frontend is built with **Quasar SSR**, offering a robust environment that supports **server-side rendering (SSR)**, **single-page application (SPA) mode**, and **mobile builds** via Capacitor. The frontend is containerized using Docker for **consistent deployment** and **easy development**.
 
 ---
 
 ## Running Quasar Commands
 
-To access the Quasar container and run commands:
+To interact with the Quasar container, open a terminal and execute:
 
 ```bash
 docker exec -it quvel-frontend sh
 ```
 
-Once inside, you can use:
+Inside the container, you can use the Quasar CLI:
 
 ```bash
 yarn build:ssr  # Build the production frontend
-quasar # Quasar CLI
-exit  # Exit the container
+quasar dev      # Start Quasar in development mode
+exit            # Exit the container
 ```
 
 ---
 
 ## Debugging Frontend Issues
 
-### View Frontend Logs
+### Viewing Frontend Logs
+
+Monitor frontend logs using:
 
 ```bash
 docker logs -f quvel-frontend  # Follow live logs
@@ -38,7 +40,7 @@ docker logs -f quvel-frontend  # Follow live logs
 docker restart quvel-frontend
 ```
 
-If hot reload does not work as expected, restart the container.
+If hot reloading fails, restart the container.
 
 ---
 
@@ -46,13 +48,13 @@ If hot reload does not work as expected, restart the container.
 
 ### **Modifying Environment Variables**
 
-The frontend uses a `.env` file. Modify it with:
+Environment variables are stored in `.env`. To edit:
 
 ```bash
 nano frontend/.env
 ```
 
-Restart the frontend to apply changes:
+Apply changes by restarting the frontend:
 
 ```bash
 docker restart quvel-frontend
@@ -60,7 +62,7 @@ docker restart quvel-frontend
 
 ### **Hot Reloading Support**
 
-QuVel Kit supports **hot reloading**, meaning changes to Vue components are applied automatically without restarting the container.
+QuVel Kit supports **hot reloading**, allowing changes to take effect without restarting the container.
 
 ---
 
@@ -70,13 +72,13 @@ QuVel Kit uses **Vitest** for unit testing.
 
 ### Running Unit Tests
 
-To execute unit tests:
+Execute unit tests with:
 
 ```bash
 yarn test:unit  # Run unit tests
 ```
 
-To run tests with a UI for debugging:
+For a UI-based debugging experience:
 
 ```bash
 yarn test:unit:ui  # Open Vitest UI
@@ -88,8 +90,18 @@ For CI environments:
 yarn test:unit:ci  # Run unit tests in CI mode
 ```
 
-### **Viewing the Vitest Coverage Report (Vitest UI)**
+### **Viewing Vitest Coverage Reports**
+
+The docker environment sets up a **coverage server** at:
+
+<https://coverage.quvel.127.0.0.1.nip.io/__vitest__/>
+
+---
+
+## Building for Production
+
+To build the frontend for production:
 
 ```bash
-https://coverage.quvel.127.0.0.1.nip.io/__vitest__/
+yarn build:ssr  # Builds the Quasar SSR version
 ```
