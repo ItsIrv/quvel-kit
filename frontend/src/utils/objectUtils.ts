@@ -16,8 +16,7 @@ export async function resolveValue<T>(
       return result instanceof Promise ? await result : result;
     }
     return value;
-  } catch (error) {
-    console.error('Error resolving value:', error);
+  } catch {
     return undefined;
   }
 }
@@ -37,7 +36,8 @@ export function getSafe<T = unknown>(obj: unknown, path: string): T | undefined 
       if (acc !== null && typeof acc === 'object' && key in acc) {
         return (acc as Record<string, unknown>)[key];
       }
-      throw new Error(`Property ${key} does not exist on ${JSON.stringify(acc)}`);
+
+      return undefined;
     }, obj) as T;
   } catch {
     return undefined;

@@ -1,6 +1,6 @@
 import type { QSsrContext } from '@quasar/app-vite';
 import { type PiniaPluginContext } from 'pinia';
-import { useContainer } from 'src/services/ContainerService';
+import { useContainer } from 'src/composables/useContainer';
 
 /**
  * Pinia Plugin to inject the entire DI container into all stores.
