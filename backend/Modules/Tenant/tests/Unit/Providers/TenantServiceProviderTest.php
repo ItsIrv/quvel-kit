@@ -14,6 +14,7 @@ use Modules\Tenant\app\Services\TenantFindService;
 use Modules\Tenant\app\Services\TenantResolverService;
 use Modules\Tenant\app\Services\TenantSessionService;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
@@ -23,11 +24,23 @@ use Tests\TestCase;
 class TenantServiceProviderTest extends TestCase
 {
     /**
+     * Creates a mock instance of TenantServiceProvider with protected methods allowed.
+     */
+    private function createMockedProvider(): Mockery\MockInterface|TenantServiceProvider
+    {
+        return Mockery::mock(TenantServiceProvider::class, [$this->app])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+    }
+
+    /**
      * Test that the service provider registers services correctly.
      */
     public function testRegistersServices(): void
     {
-        $app = $this->createMock(Application::class);
+        $app = $this->createMock(
+            Application::class,
+        );
 
         $singletons = [];
         $registers  = [];
@@ -65,14 +78,7 @@ class TenantServiceProviderTest extends TestCase
      */
     public function testBoot(): void
     {
-        $provider = Mockery::mock(
-            TenantServiceProvider::class,
-            [$this->app],
-        )->makePartial();
-
-        $provider->shouldAllowMockingProtectedMethods();
-
-        // Expect these methods to be called once
+        $provider = $this->createMockedProvider();
         $provider->shouldReceive('registerTranslations')->once();
         $provider->shouldReceive('registerConfig')->once();
         $provider->shouldReceive('registerViews')->once();
@@ -80,7 +86,6 @@ class TenantServiceProviderTest extends TestCase
         $provider->shouldReceive('loadMigrationsFrom')->once()
             ->with(module_path('Tenant', 'database/migrations'));
 
-        // Execute the boot method
         $provider->boot();
     }
 
@@ -89,27 +94,36 @@ class TenantServiceProviderTest extends TestCase
      */
     public function testRegisterMiddleware(): void
     {
-        Route::shouldReceive('aliasMiddleware')
-            ->once()
+        Route::shouldReceive('aliasMiddleware')->once()
             ->with('tenant', TenantMiddleware::class);
 
-        $provider = new TenantServiceProvider($this->app);
-        $provider->registerMiddleware();
+        $this->createMockedProvider()->registerMiddleware();
     }
 
     /**
-     * Test registering translations.
+     * Test registering translations with and without existing directories.
      */
-    public function testRegisterTranslations(): void
+    #[DataProvider('translationDirectoryProvider')]
+    public function testRegisterTranslations(bool $dirExists): void
     {
-        $provider = Mockery::mock(TenantServiceProvider::class, [$this->app])
-            ->makePartial()
-            ->shouldAllowMockingProtectedMethods();
+        $provider = $this->createMockedProvider();
+        $langPath = resource_path("lang/modules/tenant");
 
+        $provider->shouldReceive('isDir')->once()
+            ->with($langPath)
+            ->andReturn($dirExists);
         $provider->shouldReceive('loadTranslationsFrom')->once();
         $provider->shouldReceive('loadJsonTranslationsFrom')->once();
 
         $provider->registerTranslations();
+    }
+
+    public static function translationDirectoryProvider(): array
+    {
+        return [
+            'Directory exists'         => [true],
+            'Directory does not exist' => [false],
+        ];
     }
 
     /**
@@ -117,9 +131,7 @@ class TenantServiceProviderTest extends TestCase
      */
     public function testRegisterConfig(): void
     {
-        $provider = Mockery::mock(TenantServiceProvider::class, [$this->app])
-            ->makePartial()
-            ->shouldAllowMockingProtectedMethods();
+        $provider = $this->createMockedProvider();
 
         $provider->shouldReceive('mergeConfigFrom')->once();
         $provider->shouldReceive('publishes')->once();
@@ -132,16 +144,12 @@ class TenantServiceProviderTest extends TestCase
      */
     public function testRegisterViews(): void
     {
-        Blade::shouldReceive('componentNamespace')
-            ->once()
-            ->with(
-                Mockery::type('string'),
-                Mockery::type('string'),
-            );
+        Blade::shouldReceive('componentNamespace')->once()->with(
+            Mockery::type('string'),
+            Mockery::type('string'),
+        );
 
-        $provider = Mockery::mock(TenantServiceProvider::class, [$this->app])
-            ->makePartial()
-            ->shouldAllowMockingProtectedMethods();
+        $provider = $this->createMockedProvider();
 
         $provider->shouldReceive('loadViewsFrom')->once();
         $provider->shouldReceive('publishes')->once();
@@ -155,6 +163,32 @@ class TenantServiceProviderTest extends TestCase
     public function testProvides(): void
     {
         $provider = new TenantServiceProvider($this->app);
-        $this->assertEquals([], $provider->provides());
+
+        $this->assertEquals(
+            [],
+            $provider->provides(),
+        );
+    }
+
+    /**
+     * Test that `getPublishableViewPaths()` returns only existing directories.
+     */
+    public function testGetPublishableViewPaths(): void
+    {
+        config(['view.paths' => ['/path/to/valid', '/path/to/invalid']]);
+
+        $provider = $this->createMockedProvider();
+
+        $provider->shouldReceive('isDir')->once()
+            ->with('/path/to/valid/modules/tenant')
+            ->andReturn(true);
+
+        $provider->shouldReceive('isDir')->once()
+            ->with('/path/to/invalid/modules/tenant')
+            ->andReturn(false);
+
+        $result = $provider->getPublishableViewPaths();
+
+        $this->assertEquals(['/path/to/valid/modules/tenant'], $result);
     }
 }

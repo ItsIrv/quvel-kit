@@ -63,7 +63,7 @@ class TenantServiceProvider extends ServiceProvider
     {
         $langPath = resource_path("lang/modules/{$this->nameLower}");
 
-        if (is_dir($langPath)) {
+        if ($this->isDir($langPath)) {
             $this->loadTranslationsFrom($langPath, $this->nameLower);
             $this->loadJsonTranslationsFrom($langPath);
         } else {
@@ -81,12 +81,12 @@ class TenantServiceProvider extends ServiceProvider
     /**
      * Register config.
      */
-    protected function registerConfig(): void
+    public function registerConfig(): void
     {
         $relativeConfigPath = config('modules.paths.generator.config.path');
         $configPath         = module_path($this->name, $relativeConfigPath);
 
-        if (is_dir($configPath)) {
+        if ($this->isDir($configPath)) {
             $iterator = new RecursiveIteratorIterator(
                 new RecursiveDirectoryIterator($configPath),
             );
@@ -157,16 +157,23 @@ class TenantServiceProvider extends ServiceProvider
         return [];
     }
 
-    private function getPublishableViewPaths(): array
+    public function getPublishableViewPaths(): array
     {
         $paths     = [];
         $viewPaths = config('view.paths');
-        foreach (is_array($viewPaths) ? $viewPaths : [] as $path) {
-            if (is_dir("$path/modules/{$this->nameLower}")) {
+        $viewPaths = is_array($viewPaths) ? $viewPaths : [];
+
+        foreach ($viewPaths as $path) {
+            if ($this->isDir("$path/modules/{$this->nameLower}")) {
                 $paths[] = "$path/modules/{$this->nameLower}";
             }
         }
 
         return $paths;
+    }
+
+    public function isDir(string $path): bool
+    {
+        return is_dir($path);
     }
 }
