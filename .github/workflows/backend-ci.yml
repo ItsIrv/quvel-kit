@@ -59,7 +59,7 @@ jobs:
 
       - name: Run PHPStan Static Analysis
         continue-on-error: true
-        run: vendor/bin/phpstan analyse app --level=max
+        run: vendor/bin/phpstan analyse --configuration phpstan.neon
         working-directory: backend
 
       - name: Run Code Style Check

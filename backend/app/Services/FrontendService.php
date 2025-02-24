@@ -41,6 +41,7 @@ class FrontendService
 
     /**
      * Redirect to a specific frontend page with optional parameters.
+     * @param array<string, string> $payload
      */
     public function redirectPage(string $page, array $payload = []): RedirectResponse
     {
@@ -53,10 +54,14 @@ class FrontendService
 
     /**
      * Redirect to the login page with optional parameters.
+     * @param array<string, string> $payload
      */
     public function redirectLogin(array $payload = []): RedirectResponse
     {
-        return $this->redirectPage('login', $payload);
+        return $this->redirectPage(
+            'login',
+            $payload,
+        );
     }
 
     /**
@@ -64,18 +69,24 @@ class FrontendService
      */
     public function redirectLoginStatus(string $type, string $message): RedirectResponse
     {
-        return $this->redirectLogin([$type => $message]);
+        return $this->redirectLogin([
+            'type'    => $type,
+            'message' => $message,
+        ]);
     }
 
     /**
      * Get the full URL of a frontend page with optional parameters.
+     * @param array<string, string> $payload
      */
     public function getPageUrl(string $page, array $payload = []): string
     {
         $uri = "/{$page}";
+
         if (!empty($payload)) {
             $uri .= '?' . http_build_query($payload);
         }
+
         return "{$this->frontendUrl}$uri";
     }
 }

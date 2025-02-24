@@ -97,7 +97,7 @@ vendor/bin/phpstan analyse app
 **PHP-CS-Fixer (Code Style)**  
 
 ```sh
-vendor/bin/php-cs-fixer fix app --dry-run --diff
+vendor/bin/php-cs-fixer fix --dry-run --diff
 ```
 
 ---
@@ -110,7 +110,18 @@ vendor/bin/php-cs-fixer fix app --dry-run --diff
 
 ```bash
 php artisan test
+php artisan test --group=providers
 ```
+
+The following groups are available:
+
+- security
+- providers
+- tenant-module
+- actions
+- models
+- transformers
+- services
 
 ### Refresh Coverage Report
 

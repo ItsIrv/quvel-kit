@@ -121,7 +121,7 @@ class FrontendServiceTest extends TestCase
     public function testRedirectLoginStatus(): void
     {
         $this->assertRedirect(
-            "{$this->baseUrl}/login?error=" . urlencode('Invalid credentials'),
+            "{$this->baseUrl}/login?type=error&message=" . urlencode('Invalid credentials'),
             fn () => $this->frontendService->redirectLoginStatus(
                 'error',
                 'Invalid credentials',
