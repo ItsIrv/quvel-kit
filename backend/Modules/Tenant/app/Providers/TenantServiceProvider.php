@@ -2,7 +2,6 @@
 
 namespace Modules\Tenant\Providers;
 
-use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -30,12 +29,10 @@ class TenantServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
+        $this->registerMiddleware();
         $this->loadMigrationsFrom(
             module_path($this->name, 'database/migrations'),
         );
-
-        // Register middleware
-        Route::aliasMiddleware('tenant', TenantMiddleware::class);
     }
 
     /**
@@ -46,32 +43,17 @@ class TenantServiceProvider extends ServiceProvider
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
 
-        $this->app->singleton(
-            TenantSessionService::class,
-            function ($app): TenantSessionService {
-                return new TenantSessionService(
-                    $app->make(Session::class),
-                );
-            }
-        );
+        $this->app->singleton(TenantSessionService::class);
+        $this->app->singleton(TenantFindService::class);
+        $this->app->singleton(TenantResolverService::class);
+    }
 
-        // Register Tenant Services
-        $this->app->singleton(
-            TenantResolverService::class,
-            function ($app): TenantResolverService {
-                return new TenantResolverService(
-                    $app->make(TenantFindService::class),
-                    $app->make(TenantSessionService::class),
-                );
-            }
-        );
-
-        $this->app->singleton(
-            TenantFindService::class,
-            function ($app): TenantFindService {
-                return new TenantFindService();
-            }
-        );
+    /**
+     * Register the middleware.
+     */
+    public function registerMiddleware(): void
+    {
+        Route::aliasMiddleware('tenant', TenantMiddleware::class);
     }
 
     /**
@@ -79,7 +61,7 @@ class TenantServiceProvider extends ServiceProvider
      */
     public function registerTranslations(): void
     {
-        $langPath = resource_path('lang/modules/' . $this->nameLower);
+        $langPath = resource_path("lang/modules/{$this->nameLower}");
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $this->nameLower);

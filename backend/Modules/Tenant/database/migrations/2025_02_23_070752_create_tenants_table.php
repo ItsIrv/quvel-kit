@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('tenants', function (Blueprint $table): void {
             $table->id();
+            $table->char('public_id', 26)->unique();
             $table->string('name')->unique();
             $table->string('domain')->unique();
             $table->timestamps();

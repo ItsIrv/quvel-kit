@@ -23,7 +23,7 @@ class QuvelWelcomeFeatureTest extends TestCase
             route('welcome'),
         );
 
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(\Symfony\Component\HttpFoundation\Response::HTTP_OK);
         $response->assertViewIs('welcome');
     }
 

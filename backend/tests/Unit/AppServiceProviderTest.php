@@ -3,9 +3,9 @@
 namespace Tests\Unit;
 
 use App\Providers\AppServiceProvider;
+use App\Services\FrontendService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Before;
-use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -15,41 +15,30 @@ use URL;
 #[BackupGlobals(false)]
 class AppServiceProviderTest extends TestCase
 {
-    private AppServiceProvider $provider;
-
     /**
      * Runs before each test.
      */
     #[Before]
     public function setupTest(): void
     {
-        $this->provider = new AppServiceProvider($this->app);
-
         URL::spy();
     }
 
     /**
-     * Ensures the register method executes without errors.
+     * Ensures the register method binds correct services.
      */
     public function testRegisterMethodRuns(): void
     {
-        $this->provider->register();
-        $this->assertTrue(true);
-    }
-
-    /**
-     * Ensures boot runs without errors.
-     */
-    public function testBootRuns(): void
-    {
-        $this->provider->boot();
-        $this->assertTrue(true);
+        $this->assertTrue(
+            $this->app->bound(
+                FrontendService::class,
+            ),
+        );
     }
 
     /**
      * Ensures boot forces HTTPS.
      */
-    #[Depends('testBootRuns')]
     #[Group('security')]
     public function testBootForcesHttps(): void
     {
@@ -57,6 +46,10 @@ class AppServiceProviderTest extends TestCase
             ->once()
             ->with('https');
 
-        $this->provider->boot();
+        $this->app->getProvider(AppServiceProvider::class)->boot();
+
+        URL::shouldHaveReceived('forceScheme')
+            ->once()
+            ->with('https');
     }
 }

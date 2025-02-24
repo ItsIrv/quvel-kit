@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
+use Log;
 
 class FrontendService
 {
@@ -19,7 +20,7 @@ class FrontendService
      */
     public function redirect(string $to): RedirectResponse
     {
-        return Redirect::away($this->frontendUrl . $to);
+        return Redirect::away("{$this->frontendUrl}$to");
     }
 
     /**
@@ -75,6 +76,6 @@ class FrontendService
         if (!empty($payload)) {
             $uri .= '?' . http_build_query($payload);
         }
-        return $this->frontendUrl . $uri;
+        return "{$this->frontendUrl}$uri";
     }
 }

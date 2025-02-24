@@ -15,11 +15,9 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(
             FrontendService::class,
-            function (): FrontendService {
-                return new FrontendService(
-                    config('quvel.frontend_url'),
-                );
-            }
+            fn () => new FrontendService(
+                config('quvel.frontend_url'),
+            )
         );
     }
 

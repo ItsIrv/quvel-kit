@@ -4,6 +4,9 @@ namespace Modules\Tenant\app\Services;
 
 use Modules\Tenant\app\Models\Tenant;
 
+/**
+ * Service to resolve tenants.
+ */
 class TenantResolverService
 {
     public function __construct(
@@ -30,13 +33,5 @@ class TenantResolverService
         }
 
         return $tenant;
-    }
-
-    /**
-     * Clear tenant session.
-     */
-    public function clearTenant(): void
-    {
-        $this->tenantSessionService->clearTenant();
     }
 }

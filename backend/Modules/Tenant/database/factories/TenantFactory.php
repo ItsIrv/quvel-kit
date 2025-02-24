@@ -4,6 +4,7 @@ namespace Modules\Tenant\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Tenant\app\Models\Tenant;
+use Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Modules\Tenant\app\Models\Tenant>
@@ -15,8 +16,9 @@ class TenantFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'   => $this->faker->company,
-            'domain' => $this->faker->unique()->domainName,
+            'name'      => $this->faker->company,
+            'domain'    => $this->faker->unique()->domainName,
+            'public_id' => Str::ulid(),
         ];
     }
 }
