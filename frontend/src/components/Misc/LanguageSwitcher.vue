@@ -14,7 +14,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { useContainer } from 'src/services/ContainerService';
+import { useContainer } from 'src/composables/useContainer';
 import { applyLocale } from 'src/utils/i18nUtil';
 
 const container = useContainer();

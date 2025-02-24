@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { useContainer } from 'src/services/ContainerService';
+import { useContainer } from 'src/composables/useContainer';
 import type { ZodSchema } from 'zod';
 
 /**

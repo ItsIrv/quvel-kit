@@ -67,7 +67,7 @@ This will stop all containers, remove volumes, and restart everything fresh.
 If you encounter issues with file uploads or missing storage links, run:
 
 ```bash
-docker exec -it quvel-app php artisan storage:link
+php artisan storage:link
 ```
 
 ---
@@ -109,13 +109,19 @@ vendor/bin/php-cs-fixer fix app --dry-run --diff
 ### Run Tests
 
 ```bash
-docker exec -it quvel-app php artisan test
+php artisan test
 ```
 
 ### Refresh Coverage Report
 
 ```bash
-docker exec -it quvel-app php artisan test --coverage-html=storage/debug/coverage
+php artisan test --coverage-html=storage/debug/coverage
+```
+
+### To Run Groups of Tests
+
+```bash
+php artisan test --group=tenant
 ```
 
 ## Vite Assets

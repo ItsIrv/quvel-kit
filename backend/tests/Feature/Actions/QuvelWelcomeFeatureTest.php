@@ -10,6 +10,7 @@ use Tests\TestCase;
 
 #[CoversClass(QuvelWelcome::class)]
 #[Group('welcome')]
+#[Group('actions')]
 class QuvelWelcomeFeatureTest extends TestCase
 {
     /**
@@ -23,7 +24,7 @@ class QuvelWelcomeFeatureTest extends TestCase
             route('welcome'),
         );
 
-        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(\Symfony\Component\HttpFoundation\Response::HTTP_OK);
         $response->assertViewIs('welcome');
     }
 

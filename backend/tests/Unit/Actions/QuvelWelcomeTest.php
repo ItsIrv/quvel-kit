@@ -31,8 +31,15 @@ class QuvelWelcomeTest extends TestCase
 
         $response = ($this->action)();
 
-        $this->assertInstanceOf(View::class, $response);
-        $this->assertEquals('welcome', $response->name());
+        $this->assertInstanceOf(
+            View::class,
+            $response,
+        );
+
+        $this->assertEquals(
+            'welcome',
+            $response->name(),
+        );
     }
 
     /**

@@ -1,4 +1,4 @@
-import type { ServiceContainer } from 'src/types/container.types';
+import type { ServiceContainer } from './ServiceContainer';
 import type { ZodSchema } from 'zod';
 import { validateOrError } from 'src/utils/validationUtil';
 import type { BootableService } from 'src/types/service.types';
@@ -14,7 +14,7 @@ export class ValidationService extends Service implements BootableService {
   /**
    * Injects the container dependencies.
    */
-  boot(container: ServiceContainer): void {
+  register(container: ServiceContainer): void {
     this.i18n = container.i18n;
   }
 

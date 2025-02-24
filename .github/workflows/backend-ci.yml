@@ -64,7 +64,7 @@ jobs:
 
       - name: Run Code Style Check
         continue-on-error: true
-        run: vendor/bin/php-cs-fixer fix app --dry-run --diff
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
         working-directory: backend
 
       - name: Run Tests with Coverage
