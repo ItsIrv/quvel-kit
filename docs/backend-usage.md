@@ -16,30 +16,83 @@ The backend of QuVel Kit is powered by **Laravel** and runs inside a Docker cont
   php artisan serve --host=0.0.0.0 --port=8000
   ```
 
-- It is exposed on:
+- It is exposed on <https://api.quvel.127.0.0.1.nip.io>
 
-  ```bash
-  https://api.quvel.127.0.0.1.nip.io
-  ```
+---
+
+## Connecting To Docker
+
+### Open a Terminal in the Laravel Container
+
+To run artisan commands inside the backend container:
+
+```bash
+docker exec -it quvel-app sh 
+```
+
+Once inside, you can run commands as you normally would. Note that most commands work on your local machine. However, some commands require the container, such as migrations.
+
+## Testing
+
+### Tinker
+
+```bash
+php artisan tinker
+```
+
+### Run Tests
+
+```bash
+php artisan test
+php artisan test --group=providers
+```
+
+The following groups are available:
+
+- security
+- providers
+- actions
+- models
+- transformers
+- services
+- frontend
+- tenant-module
+
+---
+
+### Access Coverage Reports
+
+You can access the coverage reports at <https://coverage-api.quvel.127.0.0.1.nip.io>.
+
+### Refresh Coverage Report
+
+```bash
+php artisan test --coverage-html=storage/debug/coverage
+```
+
+---
+
+## Static Analysis
+
+**PHPStan (Static Analysis)**  
+
+```sh
+vendor/bin/phpstan analyse --configuration phpstan.neon
+```
+
+**PHP-CS-Fixer (Code Style)**  
+
+```sh
+vendor/bin/php-cs-fixer fix --dry-run --diff
+```
 
 ---
 
 ## Running Migrations & Database Commands
 
-### **1️. Open a Terminal in the Laravel Container**
-
-To run artisan commands inside the backend container:
-
 ```bash
-docker exec -it quvel-app sh   # Access the Laravel container
-```
-
-Once inside, you can run commands as you normally would:
-
-```bash
-php artisan migrate --force  # Run database migrations
-php artisan db:seed  # Seed the database
-php artisan tinker  # Open interactive Laravel shell
+php artisan migrate
+php artisan db:seed
 ```
 
 Exit the container with:
@@ -87,53 +140,6 @@ docker restart quvel-app
 ```
 
 ---
-
-**PHPStan (Static Analysis)**  
-
-```sh
-vendor/bin/phpstan analyse --configuration phpstan.neon
-```
-
-**PHP-CS-Fixer (Code Style)**  
-
-```sh
-vendor/bin/php-cs-fixer fix --dry-run --diff
-```
-
----
-
-## Testing
-
-- Coverage Reports <https://coverage-api.quvel.127.0.0.1.nip.io>
-
-### Run Tests
-
-```bash
-php artisan test
-php artisan test --group=providers
-```
-
-The following groups are available:
-
-- security
-- providers
-- actions
-- models
-- transformers
-- services
-- tenant-module
-
-### Refresh Coverage Report
-
-```bash
-php artisan test --coverage-html=storage/debug/coverage
-```
-
-### To Run Groups of Tests
-
-```bash
-php artisan test --group=tenant
-```
 
 ## Vite Assets
 
