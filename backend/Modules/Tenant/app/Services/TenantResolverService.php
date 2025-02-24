@@ -20,12 +20,10 @@ class TenantResolverService
      */
     public function resolveTenant(string $domain): ?Tenant
     {
-        // Check if tenant is already in session
         if ($this->tenantSessionService->hasTenant()) {
             return $this->tenantSessionService->getTenant();
         }
 
-        // Resolve tenant from database
         $tenant = $this->tenantFindService->findTenantByDomain($domain);
 
         if ($tenant) {

@@ -12,6 +12,7 @@ use Tests\TestCase;
 
 #[CoversClass(FrontendService::class)]
 #[Group('frontend')]
+#[Group('services')]
 class FrontendServiceTest extends TestCase
 {
     private FrontendService $frontendService;

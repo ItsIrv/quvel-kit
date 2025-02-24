@@ -15,7 +15,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  */
-class TenantTransformer extends JsonResource
+class TenantDumpTransformer extends JsonResource
 {
     /**
      * Transform the resource into an array.

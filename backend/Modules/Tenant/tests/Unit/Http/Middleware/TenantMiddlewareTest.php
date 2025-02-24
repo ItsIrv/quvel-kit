@@ -2,57 +2,111 @@
 
 namespace Modules\Tenant\Tests\Unit\Http\Middleware;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Services\FrontendService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Mockery;
+use Mockery\MockInterface;
+use Modules\Tenant\app\Http\Middleware\TenantMiddleware;
 use Modules\Tenant\app\Models\Tenant;
 use Modules\Tenant\app\Services\TenantResolverService;
-use Modules\Tenant\app\Http\Middleware\TenantMiddleware;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Modules\Tenant\Enums\TenantError;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(TenantMiddleware::class)]
-#[Group('tenant')]
+#[Group('tenant-module')]
+#[Group('middleware')]
 class TenantMiddlewareTest extends TestCase
 {
-    use RefreshDatabase;
-
+    private TenantResolverService|MockInterface $tenantResolver;
+    private FrontendService|MockInterface $frontendService;
     private TenantMiddleware $middleware;
-    private TenantResolverService $resolverMock;
+    private Request|MockInterface $request;
 
     #[Before]
     public function setupTest(): void
     {
-        $this->resolverMock = $this->createMock(TenantResolverService::class);
-        $this->middleware   = new TenantMiddleware(
-            $this->resolverMock,
-        );
+        $this->tenantResolver  = Mockery::mock(TenantResolverService::class);
+        $this->frontendService = Mockery::mock(FrontendService::class);
+        $this->middleware      = new TenantMiddleware($this->tenantResolver, $this->frontendService);
+        $this->request         = Mockery::mock(Request::class);
     }
 
-    // public function testHandlesExistingTenant(): void
-    // {
-    //     $tenant = Tenant::factory()->create();
+    /**
+     * Test middleware allows request when tenant exists.
+     */
+    public function testMiddlewarePassesWhenTenantExists(): void
+    {
+        $tenant = Tenant::factory()->create();
+        $this->request->shouldReceive('getHost')
+            ->once()
+            ->andReturn('example.com');
 
-    //     $this->resolverMock->method('resolveTenant')->willReturn($tenant);
+        $this->tenantResolver->shouldReceive('resolveTenant')
+            ->once()
+            ->with('example.com')
+            ->andReturn($tenant);
 
-    //     $request = new Request([], [], [], [], [], ['HTTP_HOST' => $tenant->domain]);
+        $next = fn ($req) => 'next-called';
 
-    //     $response = $this->middleware->handle($request, fn () => response()->json(['tenant' => $tenant->public_id]));
+        $result = $this->middleware->handle($this->request, $next);
 
-    //     $this->assertEquals(200, $response->getStatusCode());
-    //     $this->assertJson($response->getContent());
-    // }
+        $this->assertEquals('next-called', $result);
+    }
 
-    // public function testThrowsNotFoundWhenTenantDoesNotExist(): void
-    // {
-    //     $this->resolverMock->method('resolveTenant')->willReturn(null);
+    /**
+     * Test middleware throws an exception when no tenant exists in local.
+     */
+    public function testMiddlewareThrowsExceptionWhenNoTenantInLocal(): void
+    {
+        $this->request->shouldReceive('getHost')
+            ->once()
+            ->andReturn('example.com');
 
-    //     $request = new Request([], [], [], [], [], ['HTTP_HOST' => 'unknown.quvel.127.0.0.1.nip.io']);
+        $this->tenantResolver->shouldReceive('resolveTenant')
+            ->once()
+            ->with('example.com')
+            ->andReturn(null);
 
-    //     $this->expectException(NotFoundHttpException::class);
+        $this->app->detectEnvironment(fn () => 'local');
 
-    //     $this->middleware->handle($request, fn () => response()->json([]));
-    // }
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage(TenantError::NOT_FOUND->value);
+
+        $next = fn ($req) => 'next-called';
+
+        $this->middleware->handle($this->request, $next);
+    }
+
+    /**
+     * Test middleware redirects when no tenant exists in production.
+     */
+    public function testMiddlewareRedirectsWhenNoTenantInProduction(): void
+    {
+        $this->request->shouldReceive('getHost')
+            ->once()
+            ->andReturn('example.com');
+
+        $this->tenantResolver->shouldReceive('resolveTenant')
+            ->once()
+            ->with('example.com')
+            ->andReturn(null);
+
+        $this->frontendService->shouldReceive('redirectError')
+            ->once()
+            ->with(TenantError::NOT_FOUND->value)
+            ->andReturn(new RedirectResponse('redirect-response'));
+
+        $this->app->detectEnvironment(fn () => 'production');
+
+        $next = fn ($req) => 'next-called';
+
+        $result = $this->middleware->handle($this->request, $next);
+
+        $this->assertInstanceOf(RedirectResponse::class, $result);
+        $this->assertEquals('redirect-response', $result->getTargetUrl());
+    }
 }

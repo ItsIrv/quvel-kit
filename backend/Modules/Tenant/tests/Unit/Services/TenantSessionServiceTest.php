@@ -13,7 +13,8 @@ use Tests\TestCase;
 use Mockery\MockInterface;
 
 #[CoversClass(TenantSessionService::class)]
-#[Group('tenant')]
+#[Group('tenant-module')]
+#[Group('services')]
 class TenantSessionServiceTest extends TestCase
 {
     private TenantSessionService $sessionService;

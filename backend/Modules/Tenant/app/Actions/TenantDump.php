@@ -4,7 +4,7 @@ namespace Modules\Tenant\Actions;
 
 use Modules\Tenant\app\Services\TenantSessionService;
 use Modules\Tenant\Enums\TenantError;
-use Modules\Tenant\Transformers\TenantTransformer;
+use Modules\Tenant\Transformers\TenantDumpTransformer;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -17,7 +17,7 @@ class TenantDump
     ) {
     }
 
-    public function __invoke(): TenantTransformer
+    public function __invoke(): TenantDumpTransformer
     {
         $tenant = $this->sessionService->getTenant();
 
@@ -27,6 +27,6 @@ class TenantDump
             );
         }
 
-        return new TenantTransformer($tenant);
+        return new TenantDumpTransformer($tenant);
     }
 }

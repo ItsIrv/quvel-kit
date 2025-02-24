@@ -4,15 +4,16 @@ namespace Tests\Unit;
 
 use App\Providers\AppServiceProvider;
 use App\Services\FrontendService;
+use Illuminate\Support\Facades\URL;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
-use URL;
 
 #[CoversClass(AppServiceProvider::class)]
 #[BackupGlobals(false)]
+#[Group('providers')]
 class AppServiceProviderTest extends TestCase
 {
     /**

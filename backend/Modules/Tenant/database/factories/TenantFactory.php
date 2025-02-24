@@ -18,7 +18,7 @@ class TenantFactory extends Factory
         return [
             'name'      => $this->faker->company,
             'domain'    => $this->faker->unique()->domainName,
-            'public_id' => Str::ulid(),
+            'public_id' => Str::ulid()->toString(),
         ];
     }
 }

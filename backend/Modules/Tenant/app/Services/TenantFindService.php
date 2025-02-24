@@ -3,7 +3,6 @@
 namespace Modules\Tenant\app\Services;
 
 use Modules\Tenant\app\Models\Tenant;
-use Modules\Tenant\app\Models\TenantDomain;
 
 class TenantFindService
 {

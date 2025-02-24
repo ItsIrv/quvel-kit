@@ -4,9 +4,11 @@ namespace Tests\Unit;
 
 use App\Models\User;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(User::class)]
+#[Group('models')]
 class UserTest extends TestCase
 {
     /**

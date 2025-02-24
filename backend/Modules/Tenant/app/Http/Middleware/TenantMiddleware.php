@@ -5,6 +5,7 @@ namespace Modules\Tenant\app\Http\Middleware;
 use App\Services\FrontendService;
 use Closure;
 use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Modules\Tenant\app\Services\TenantResolverService;
 use Modules\Tenant\Enums\TenantError;
@@ -41,9 +42,9 @@ class TenantMiddleware
 
     /**
      * Handle missing tenant logic.
-     * @throws NotFoundHttpException
+     * @throws Exception
      */
-    protected function handleMissingTenant(): mixed
+    protected function handleMissingTenant(): RedirectResponse
     {
         if (app()->environment('local')) {
             throw new Exception(

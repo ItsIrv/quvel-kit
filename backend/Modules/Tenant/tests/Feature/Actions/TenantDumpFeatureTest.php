@@ -12,7 +12,8 @@ use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(\Modules\Tenant\Actions\TenantDump::class)]
-#[Group('tenant')]
+#[Group('tenant-module')]
+#[Group('actions')]
 class TenantDumpFeatureTest extends TestCase
 {
     use RefreshDatabase;

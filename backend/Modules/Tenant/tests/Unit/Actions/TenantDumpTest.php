@@ -8,7 +8,7 @@ use Modules\Tenant\Actions\TenantDump;
 use Modules\Tenant\app\Models\Tenant;
 use Modules\Tenant\app\Services\TenantSessionService;
 use Modules\Tenant\Enums\TenantError;
-use Modules\Tenant\Transformers\TenantTransformer;
+use Modules\Tenant\Transformers\TenantDumpTransformer;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -16,7 +16,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\TestCase;
 
 #[CoversClass(TenantDump::class)]
-#[Group('tenant')]
+#[Group('tenant-module')]
+#[Group('actions')]
+
 class TenantDumpTest extends TestCase
 {
     private TenantSessionService|MockInterface $sessionService;
@@ -42,7 +44,7 @@ class TenantDumpTest extends TestCase
 
         $result = ($this->action)();
 
-        $this->assertInstanceOf(TenantTransformer::class, $result);
+        $this->assertInstanceOf(TenantDumpTransformer::class, $result);
         $this->assertEquals($tenant->public_id, $result->resolve()['id']);
     }
 
