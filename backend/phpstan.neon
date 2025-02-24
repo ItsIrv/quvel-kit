@@ -2,4 +2,4 @@ parameters:
     paths:
         - app
         - Modules/Tenant/app
-    level: 1
+    level: 8

@@ -19,6 +19,7 @@ use Modules\Tenant\database\factories\TenantFactory;
  */
 class Tenant extends Model
 {
+    /** @use HasFactory<\Modules\Tenant\database\factories\TenantFactory> */
     use HasFactory;
 
     protected $fillable = ['name', 'domain'];

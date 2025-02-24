@@ -91,7 +91,7 @@ docker restart quvel-app
 **PHPStan (Static Analysis)**  
 
 ```sh
-vendor/bin/phpstan analyse app
+vendor/bin/phpstan analyse --configuration phpstan.neon
 ```
 
 **PHP-CS-Fixer (Code Style)**  
@@ -117,11 +117,11 @@ The following groups are available:
 
 - security
 - providers
-- tenant-module
 - actions
 - models
 - transformers
 - services
+- tenant-module
 
 ### Refresh Coverage Report
 
