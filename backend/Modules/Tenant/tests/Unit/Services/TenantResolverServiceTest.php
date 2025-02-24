@@ -6,6 +6,7 @@ use Modules\Tenant\App\Models\Tenant;
 use Modules\Tenant\App\Services\TenantFindService;
 use Modules\Tenant\App\Services\TenantResolverService;
 use Modules\Tenant\App\Services\TenantSessionService;
+use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -20,7 +21,8 @@ class TenantResolverServiceTest extends TestCase
     private TenantSessionService|MockObject $tenantSessionService;
     private TenantResolverService $tenantResolverService;
 
-    protected function setUp(): void
+    #[Before]
+    protected function setUpTest(): void
     {
         $this->tenantFindService    = $this->createMock(TenantFindService::class);
         $this->tenantSessionService = $this->createMock(TenantSessionService::class);

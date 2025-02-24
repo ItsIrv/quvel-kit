@@ -29,6 +29,7 @@ class TenantSessionService
      */
     public function getTenant(): ?Tenant
     {
+        /** @var array<string, string> $attributes */
         $attributes = $this->store->get(self::TENANT_KEY);
 
         if (empty($attributes)) {

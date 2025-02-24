@@ -91,13 +91,13 @@ docker restart quvel-app
 **PHPStan (Static Analysis)**  
 
 ```sh
-vendor/bin/phpstan analyse app
+vendor/bin/phpstan analyse --configuration phpstan.neon
 ```
 
 **PHP-CS-Fixer (Code Style)**  
 
 ```sh
-vendor/bin/php-cs-fixer fix app --dry-run --diff
+vendor/bin/php-cs-fixer fix --dry-run --diff
 ```
 
 ---
@@ -110,7 +110,18 @@ vendor/bin/php-cs-fixer fix app --dry-run --diff
 
 ```bash
 php artisan test
+php artisan test --group=providers
 ```
+
+The following groups are available:
+
+- security
+- providers
+- actions
+- models
+- transformers
+- services
+- tenant-module
 
 ### Refresh Coverage Report
 

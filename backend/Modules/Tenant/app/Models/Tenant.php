@@ -4,10 +4,22 @@ namespace Modules\Tenant\app\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Tenant\Database\Factories\TenantFactory;
+use Modules\Tenant\database\factories\TenantFactory;
 
+/**
+ * Class Tenant
+ *
+ * @property int $id
+ * @property string $public_id
+ * @property string $name
+ * @property string $domain
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ *
+ */
 class Tenant extends Model
 {
+    /** @use HasFactory<\Modules\Tenant\database\factories\TenantFactory> */
     use HasFactory;
 
     protected $fillable = ['name', 'domain'];

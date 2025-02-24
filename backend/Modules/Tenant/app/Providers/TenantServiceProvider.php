@@ -99,6 +99,7 @@ class TenantServiceProvider extends ServiceProvider
                         $file->getPathname(),
                     );
 
+                    assert(is_string($relativePath));
                     $configKey = $this->nameLower . '.' . str_replace(
                         [DIRECTORY_SEPARATOR, '.php'],
                         ['.', ''],
@@ -151,12 +152,18 @@ class TenantServiceProvider extends ServiceProvider
 
     /**
      * Get the services provided by the provider.
+     * @return array<string>
      */
     public function provides(): array
     {
         return [];
     }
 
+    /**
+     * Get the view paths for the module.
+     *
+     * @return string[]
+     */
     public function getPublishableViewPaths(): array
     {
         $paths     = [];
