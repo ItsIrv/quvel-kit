@@ -37,11 +37,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
-    protected static function booted(): void
-    {
-        static::addGlobalScope(new TenantScope());
-    }
-
     /**
      * Get the attributes that should be cast.
      *

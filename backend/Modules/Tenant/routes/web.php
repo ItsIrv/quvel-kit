@@ -7,8 +7,7 @@ use Modules\Tenant\Actions\TenantDump;
 | Tenant Web Routes
 */
 Route::group([
-    "prefix"     => "tenant",
-    "middleware" => ["tenant"],
+    "prefix" => "tenant",
 ], function (): void {
     Route::get('/', TenantDump::class)
         ->name('tenant');

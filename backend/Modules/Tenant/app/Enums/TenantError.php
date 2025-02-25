@@ -6,4 +6,5 @@ enum TenantError: string
 {
     case NOT_FOUND         = 'errors.tenant_not_found';
     case NO_CONTEXT_TENANT = 'errors.no_active_tenant';
+    case TENANT_MISMATCH   = 'errors.tenant_mismatch';
 }

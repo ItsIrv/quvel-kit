@@ -2,6 +2,10 @@
 
 namespace Modules\Tenant\Actions;
 
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Log;
 use Modules\Tenant\app\Contexts\TenantContext;
 use Modules\Tenant\Transformers\TenantDumpTransformer;
 
@@ -18,8 +22,6 @@ class TenantDump
      */
     public function __invoke(TenantContext $tenantContext): TenantDumpTransformer
     {
-        return new TenantDumpTransformer(
-            $tenantContext->get(),
-        );
+        return new TenantDumpTransformer($tenantContext->get());
     }
 }

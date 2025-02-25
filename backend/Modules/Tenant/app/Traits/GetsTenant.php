@@ -12,9 +12,8 @@ trait GetsTenant
      *
      * This method is isolated for easier testing.
      */
-    protected function getTenant(): Tenant
+    public static function getTenant(): Tenant
     {
-        /** @phpstan-ignore-next-line  TODO: */
         return app(TenantContext::class)->get();
     }
 }
