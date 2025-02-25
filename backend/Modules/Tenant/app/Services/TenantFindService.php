@@ -13,7 +13,7 @@ class TenantFindService
      */
     public function findTenantByDomain(string $domain): ?Tenant
     {
-        /** @phpstan-ignore-next-line */
-        return Tenant::where('domain', $domain)->first();
+        /** @phpstan-ignore-next-line  TODO: */
+        return Tenant::where('domain', '=', $domain)->first();
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Modules\Tenant\app\Services;
 
+use Illuminate\Http\Request;
+use Modules\Tenant\app\Exceptions\TenantNotFoundException;
 use Modules\Tenant\app\Models\Tenant;
 
 /**
@@ -9,6 +11,12 @@ use Modules\Tenant\app\Models\Tenant;
  */
 class TenantResolverService
 {
+    /**
+     * Create a new TenantResolverService instance.
+     *
+     * @param \Modules\Tenant\app\Services\TenantFindService $tenantFindService
+     * @param \Modules\Tenant\app\Services\TenantSessionService $tenantSessionService
+     */
     public function __construct(
         protected TenantFindService $tenantFindService,
         protected TenantSessionService $tenantSessionService,
@@ -17,18 +25,28 @@ class TenantResolverService
 
     /**
      * Resolve the tenant by checking the session first, then the database.
+     * If no tenant is found, throws an exception.
+     *
+     * @param Request $request
+     * @return Tenant
+     * @throws TenantNotFoundException
      */
-    public function resolveTenant(string $domain): ?Tenant
+    public function resolveTenant(Request $request): Tenant
     {
-        if ($this->tenantSessionService->hasTenant()) {
-            return $this->tenantSessionService->getTenant();
-        }
-
-        $tenant = $this->tenantFindService->findTenantByDomain($domain);
+        $tenant = $this->tenantSessionService->getTenant();
 
         if ($tenant) {
-            $this->tenantSessionService->setTenant($tenant);
+            return $tenant;
         }
+
+        $domain = $request->getHost();
+        $tenant = $this->tenantFindService->findTenantByDomain($domain);
+
+        if (!$tenant) {
+            throw new TenantNotFoundException();
+        }
+
+        $this->tenantSessionService->setTenant($tenant);
 
         return $tenant;
     }

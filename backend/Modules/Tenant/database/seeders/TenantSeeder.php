@@ -9,8 +9,13 @@ class TenantSeeder extends Seeder
 {
     public function run(): void
     {
-        $apiDomain      = parse_url(config('app.url'))['host'] ?? config('app.url');
-        $frontendDomain = parse_url(config('quvel.frontend_url'))['host'] ?? config('quvel.frontend_url');
+        $apiDomain = parse_url(
+            config('app.url'),
+        )['host'] ?? config('app.url');
+
+        $frontendDomain = parse_url(
+            config('quvel.frontend_url'),
+        )['host'] ?? config('quvel.frontend_url');
 
         Tenant::factory()->create([
             'name'   => 'API Tenant',

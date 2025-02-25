@@ -3,8 +3,8 @@
 namespace Modules\Tenant\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 use Modules\Tenant\app\Models\Tenant;
-use Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Modules\Tenant\app\Models\Tenant>

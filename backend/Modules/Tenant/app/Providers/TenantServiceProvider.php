@@ -5,6 +5,7 @@ namespace Modules\Tenant\Providers;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Modules\Tenant\app\Contexts\TenantContext;
 use Modules\Tenant\app\Http\Middleware\TenantMiddleware;
 use Modules\Tenant\app\Services\TenantFindService;
 use Modules\Tenant\app\Services\TenantResolverService;
@@ -22,10 +23,29 @@ class TenantServiceProvider extends ServiceProvider
     protected string $nameLower = 'tenant';
 
     /**
+     * Register the service provider.
+     */
+    public function register(): void
+    {
+        // Register other module providers
+        $this->app->register(EventServiceProvider::class);
+        $this->app->register(RouteServiceProvider::class);
+
+        // Bind tenant services
+        $this->app->singleton(TenantSessionService::class);
+        $this->app->singleton(TenantFindService::class);
+        $this->app->singleton(TenantResolverService::class);
+
+        // Bind TenantContext
+        $this->app->scoped(TenantContext::class);
+    }
+
+    /**
      * Boot the application events.
      */
     public function boot(): void
     {
+        // Load additional module features
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
@@ -33,19 +53,6 @@ class TenantServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(
             module_path($this->name, 'database/migrations'),
         );
-    }
-
-    /**
-     * Register the service provider.
-     */
-    public function register(): void
-    {
-        $this->app->register(EventServiceProvider::class);
-        $this->app->register(RouteServiceProvider::class);
-
-        $this->app->singleton(TenantSessionService::class);
-        $this->app->singleton(TenantFindService::class);
-        $this->app->singleton(TenantResolverService::class);
     }
 
     /**

@@ -12,6 +12,11 @@ class TenantSessionService
 {
     private const string TENANT_KEY = 'tenant';
 
+    /**
+     * Tenant session service constructor.
+     *
+     * @param Session $store
+     */
     public function __construct(protected Session $store)
     {
     }
@@ -47,12 +52,20 @@ class TenantSessionService
 
     /**
      * Store a tenant in the session.
+     *
+     * @param Tenant $tenant
      */
     public function setTenant(Tenant $tenant): void
     {
         $this->store->put(
             self::TENANT_KEY,
-            $tenant->only(['public_id', 'name', 'domain']),
+            $tenant->only([
+                'public_id',
+                'name',
+                'domain',
+                'created_at',
+                'updated_at',
+            ]),
         );
     }
 }
