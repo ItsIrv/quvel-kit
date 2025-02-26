@@ -14,7 +14,7 @@ export function useXsrf(): void {
 
     if (xsrf === null) {
       try {
-        void useContainer().api.get('/');
+        void useContainer().api.get('/sanctum/csrf-cookie');
       } catch {
         //
       }

@@ -18,6 +18,7 @@
     "require": {
         "php": "^8.",
         "laravel/framework": "^11.31",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "nwidart/laravel-modules": "^11.1"
     },
