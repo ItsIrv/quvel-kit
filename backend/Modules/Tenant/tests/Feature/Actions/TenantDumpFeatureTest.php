@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 #[CoversClass(\Modules\Tenant\Actions\TenantDump::class)]
 #[Group('tenant-module')]
-#[Group('actions')]
+#[Group('tenant-actions')]
 class TenantDumpFeatureTest extends TestCase
 {
     /**

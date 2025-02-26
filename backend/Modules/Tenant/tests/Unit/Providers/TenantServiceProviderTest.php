@@ -20,7 +20,7 @@ use Tests\TestCase;
 
 #[CoversClass(TenantServiceProvider::class)]
 #[Group('tenant-module')]
-#[Group('providers')]
+#[Group('tenant-providers')]
 class TenantServiceProviderTest extends TestCase
 {
     /**

@@ -21,6 +21,15 @@ The backend of QuVel Kit is powered by **Laravel** and runs inside a Docker cont
 
 ---
 
+## Running Commands on Local
+
+Make sure to install packages locally if you want to run commands locally. You can run commands on your local machine, so long they do not need to connect to the docker network.
+This means most analysis and test commands work on your local machine.
+
+```bash
+composer install --dev
+```
+
 ## Connecting To Docker
 
 ### Open a Terminal in the Laravel Container
@@ -31,7 +40,7 @@ To run artisan commands inside the backend container:
 docker exec -it quvel-app sh 
 ```
 
-Once inside, you can run commands as you normally would. Note that most commands work on your local machine. However, some commands require the container, such as migrations.
+Once inside, you can run commands as you normally would.
 
 ## Testing
 
@@ -44,8 +53,10 @@ php artisan tinker
 ### Run Tests
 
 ```bash
-php artisan test # -p
-php artisan test --group=providers
+php artisan test # Run tests normally
+php artisan test -p # Run test in parallel
+php artisan test --group=tenant-module # Run tests in groups
+php artisan test --testsuite=Modules # Run Test Suite
 ```
 
 The following groups are available:
@@ -58,6 +69,12 @@ The following groups are available:
 - services
 - frontend
 - tenant-module
+
+The following test suites are available:
+
+- Unit
+- Feature
+- Modules
 
 ---
 

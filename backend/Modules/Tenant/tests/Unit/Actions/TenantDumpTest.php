@@ -10,8 +10,8 @@ use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(TenantDump::class)]
-#[Group('tenant')]
-#[Group('action')]
+#[Group('tenant-module')]
+#[Group('tenant-actions')]
 class TenantDumpTest extends TestCase
 {
     /**

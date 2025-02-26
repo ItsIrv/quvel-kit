@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 #[CoversClass(TenantSessionService::class)]
 #[Group('tenant-module')]
-#[Group('services')]
+#[Group('tenant-services')]
 class TenantSessionServiceTest extends TestCase
 {
     private TenantSessionService $sessionService;

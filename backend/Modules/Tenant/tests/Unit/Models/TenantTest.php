@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 #[CoversClass(Tenant::class)]
 #[Group('tenant-module')]
-#[Group('models')]
+#[Group('tenant-models')]
 
 class TenantTest extends TestCase
 {

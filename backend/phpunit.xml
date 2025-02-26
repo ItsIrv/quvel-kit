@@ -21,6 +21,9 @@
             <directory>app</directory>
             <directory>Modules/*/app</directory>
         </include>
+        <exclude>
+        <file>app/Providers/TelescopeServiceProvider.php</file>
+        </exclude>
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>

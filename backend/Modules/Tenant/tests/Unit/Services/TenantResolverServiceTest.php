@@ -3,6 +3,8 @@
 namespace Modules\Tenant\Tests\Unit\Services;
 
 use Illuminate\Http\Request;
+use Mockery;
+use Modules\Tenant\App\Exceptions\TenantNotFoundException;
 use Modules\Tenant\App\Services\TenantFindService;
 use Modules\Tenant\App\Services\TenantResolverService;
 use Modules\Tenant\App\Services\TenantSessionService;
@@ -14,7 +16,7 @@ use Tests\TestCase;
 
 #[CoversClass(TenantResolverService::class)]
 #[Group('tenant-module')]
-#[Group('services')]
+#[Group('tenant-services')]
 class TenantResolverServiceTest extends TestCase
 {
     private TenantFindService|MockObject $tenantFindService;
@@ -33,7 +35,7 @@ class TenantResolverServiceTest extends TestCase
             TenantSessionService::class,
         );
 
-        $this->requestMock = Request::capture();
+        $this->requestMock = Mockery::mock(Request::capture());
 
         $this->tenantResolverService = new TenantResolverService(
             $this->tenantFindService,
@@ -79,5 +81,24 @@ class TenantResolverServiceTest extends TestCase
             $this->tenant,
             $this->tenantResolverService->resolveTenant($this->requestMock),
         );
+    }
+
+    /**
+     * Test that resolveTenant throws TenantNotFoundException when tenant is not found by domain.
+     */
+    public function testResolveTenantThrowsExceptionWhenTenantNotFound(): void
+    {
+        $this->tenantSessionService->expects($this->once())
+            ->method('getTenant')
+            ->willReturn(null);
+
+        $this->tenantFindService->expects($this->once())
+            ->method('findTenantByDomain')
+            ->willReturn(null);
+
+        $this->requestMock->shouldReceive('getHost')->andReturn('nonexistent.domain')->once();
+        $this->expectException(TenantNotFoundException::class);
+
+        $this->tenantResolverService->resolveTenant($this->requestMock);
     }
 }

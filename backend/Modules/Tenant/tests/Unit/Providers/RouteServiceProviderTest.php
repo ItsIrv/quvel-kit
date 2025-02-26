@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 #[CoversClass(RouteServiceProvider::class)]
 #[Group('tenant-module')]
-#[Group('providers')]
+#[Group('tenant-providers')]
 class RouteServiceProviderTest extends TestCase
 {
     /**

@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 #[CoversClass(TenantFindService::class)]
 #[Group('tenant-module')]
-#[Group('services')]
+#[Group('tenant-services')]
 class TenantFindServiceTest extends TestCase
 {
     private TenantFindService $service;

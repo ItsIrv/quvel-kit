@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 #[CoversClass(TenantMiddleware::class)]
 #[Group('tenant-module')]
-#[Group('middleware')]
+#[Group('tenant-middleware')]
 class TenantMiddlewareTest extends TestCase
 {
     private TenantResolverService|MockInterface $tenantResolver;
