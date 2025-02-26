@@ -128,11 +128,18 @@ export class TaskService extends Service implements BootableService {
     ): void {
       let handledCalls = 0;
 
+      const t = container.i18n.instance.global.t?.bind(container);
+      const te = container.i18n.instance.global.te?.bind(container);
       const errorContext: ErrorHandlerContext<unknown> = {
         error: data,
         addError,
         errors: currentErrors,
+        i18n: {
+          t,
+          te,
+        },
       };
+
       const context: SuccessHandlerContext<Payload> = { result: data as Payload };
 
       if (Array.isArray(handlers)) {
@@ -141,9 +148,9 @@ export class TaskService extends Service implements BootableService {
 
           if (handlerKey !== undefined && (!handler.matcher || handler.matcher(handlerKey))) {
             if (isError) {
-              (handler.callback as unknown as ErrorHandler).callback(handlerKey, errorContext);
+              (handler as unknown as ErrorHandler).callback(handlerKey, errorContext);
             } else {
-              (handler.callback as unknown as SuccessHandler).callback(handlerKey, context);
+              (handler as unknown as SuccessHandler).callback(handlerKey, context);
             }
 
             handledCalls++;

@@ -15,12 +15,14 @@ export default {
   },
   validation: {
     passwordMismatch: 'Passwords must match.',
-    invalidCredentials: 'Invalid email or password.',
-    sessionExpired: 'Your session has expired. Please log in again.',
   },
   errors: {
     invalidCredentials: 'Invalid email or password.',
-    sessionExpired: 'Your session has expired. Please log in again.',
+    emailAlreadyInUse: 'This email is already in use.',
+    userNotFound: 'User not found.',
+  },
+  warnings: {
+    emailNotVerified: 'This account has not been verified.',
   },
   success: {
     loggedOut: 'You have been logged out.',

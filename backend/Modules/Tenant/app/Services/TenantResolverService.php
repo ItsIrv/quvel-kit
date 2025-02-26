@@ -3,6 +3,7 @@
 namespace Modules\Tenant\app\Services;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Modules\Tenant\app\Exceptions\TenantNotFoundException;
 use Modules\Tenant\app\Models\Tenant;
 

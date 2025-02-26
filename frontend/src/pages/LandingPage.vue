@@ -1,4 +1,10 @@
 <script lang="ts" setup>
+/**
+ * LandingPage.vue
+ *
+ * This component handles the landing page of the application.
+ * TODO: For now, it's just a page to test the authentication flow.
+ */
 import { ref } from 'vue'
 import LanguageSwitcher from 'src/components/Misc/LanguageSwitcher.vue'
 import { useSessionStore } from 'src/stores/sessionStore'
@@ -9,6 +15,7 @@ import { LaravelErrorHandler } from 'src/utils/taskUtil';
 import type { ErrorHandler } from 'src/types/task.types';
 import type { User } from 'src/models/User';
 import { useContainer } from 'src/composables/useContainer';
+import TaskErrors from 'src/components/Common/TaskErrors.vue';
 
 /**
  * Services
@@ -24,7 +31,9 @@ const password = ref('');
 const loginForm = ref<HTMLFormElement>();
 
 /**
- * Tasks
+ * Login Task
+ *
+ * Handles user login and updates session state.
  */
 const loginTask = container.task.newFrozenTask<User, { email: string, password: string }>({
   showNotification: {
@@ -40,6 +49,11 @@ const loginTask = container.task.newFrozenTask<User, { email: string, password: 
   },
 });
 
+/**
+ * Logout Task
+ *
+ * Logs the user out and clears session state.
+ */
 const logoutTask = container.task.newFrozenTask({
   showNotification: {
     success: container.i18n.t('auth.success.loggedOut'),
@@ -56,11 +70,12 @@ const logoutTask = container.task.newFrozenTask({
       </h1>
 
       <p>
-        Email: quvel@quvel1.kit
+        Email: quvel@quvel.app
         <br />
         Password: 12345678
       </p>
 
+      <!-- User is already logged in -->
       <div
         v-if="sessionStore.isAuthenticated"
         class="q-mt-xl q-max-w-lg"
@@ -74,14 +89,15 @@ const logoutTask = container.task.newFrozenTask({
         <q-btn
           color="negative"
           class="q-mt-md"
-          @click="logoutTask.run()"
           :loading="logoutTask.state.value === 'active'"
           :disabled="logoutTask.state.value === 'active'"
+          @click="logoutTask.run()"
         >
           {{ $t('auth.forms.login.logout') }}
         </q-btn>
       </div>
 
+      <!-- Login Form -->
       <div
         v-else
         class="q-mt-xl login-box"
@@ -92,13 +108,13 @@ const logoutTask = container.task.newFrozenTask({
         >
           <EmailField
             v-model="email"
-            :error-message="(loginTask.errors.value.email as any)?.[0] ?? ''"
+            :error-message="(loginTask.errors.value.email as string)?.[0] ?? ''"
             :error="!!loginTask.errors.value.email"
           />
 
           <PasswordField
             v-model="password"
-            :error-message="(loginTask.errors.value.password as any)?.[0] ?? ''"
+            :error-message="(loginTask.errors.value.password as string)?.[0] ?? ''"
             :error="!!loginTask.errors.value.password"
           />
 
@@ -112,6 +128,11 @@ const logoutTask = container.task.newFrozenTask({
             {{ $t('auth.forms.login.button') }}
           </q-btn>
         </q-form>
+
+        <TaskErrors
+          class="q-mt-md"
+          :task-errors="loginTask.errors.value"
+        />
       </div>
 
       <div class="q-mt-xl">

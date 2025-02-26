@@ -69,7 +69,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        */
       async fetchSession(): Promise<void> {
         if (this.user === undefined) {
-          const data = await this.$container.api.get<IUser>('/session');
+          const { data } = await this.$container.api.get<{ data: IUser }>('/auth/session');
 
           this.setSession(data);
         }
@@ -79,11 +79,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Logs the user out and resets the session.
        */
       async logout(): Promise<void> {
-        try {
-          await this.$container.api.post('/logout');
-        } catch {
-          // ignore error
-        }
+        await this.$container.api.post('/auth/logout');
 
         this.user = null;
       },
@@ -94,7 +90,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * @param password - User's password.
        */
       async login(email: string, password: string): Promise<User> {
-        const data = await this.$container.api.post<IUser>('/login', { email, password });
+        const data = await this.$container.api.post<IUser>('/auth/login', { email, password });
 
         this.setSession(data);
 

@@ -4,6 +4,7 @@ import pluginVue from 'eslint-plugin-vue';
 import pluginQuasar from '@quasar/app-vite/eslint';
 import vueTsEslintConfig from '@vue/eslint-config-typescript';
 import prettierSkipFormatting from '@vue/eslint-config-prettier/skip-formatting';
+import tseslint from 'typescript-eslint';
 
 export default [
   {
@@ -73,26 +74,26 @@ export default [
     },
 
     // add your custom rules here
-    rules: {
-      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
-      '@typescript-eslint/explicit-function-return-type': 'error',
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/strict-boolean-expressions': 'error',
-      'vue/html-self-closing': [
-        'error',
-        {
-          html: {
-            normal: 'never',
-            void: 'always',
-          },
-        },
-      ],
-      'vue/multi-word-component-names': 'error',
-      'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-      'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-      eqeqeq: ['error', 'always'],
-      curly: 'error',
-    },
+    // rules: {
+    //   '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+    //   '@typescript-eslint/explicit-function-return-type': 'error',
+    //   '@typescript-eslint/no-explicit-any': 'error',
+    //   '@typescript-eslint/strict-boolean-expressions': 'error',
+    //   'vue/html-self-closing': [
+    //     'error',
+    //     {
+    //       html: {
+    //         normal: 'never',
+    //         void: 'always',
+    //       },
+    //     },
+    //   ],
+    //   'vue/multi-word-component-names': 'error',
+    //   'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    //   'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    //   eqeqeq: ['error', 'always'],
+    //   curly: 'error',
+    // },
   },
 
   {

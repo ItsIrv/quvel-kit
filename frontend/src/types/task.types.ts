@@ -11,6 +11,10 @@ export type TaskState = 'fresh' | 'active' | 'success' | 'error';
 export interface ErrorHandlerContext<Err = unknown> {
   error: Err;
   errors: Ref<Record<string, unknown>>;
+  i18n: {
+    t: (key: string, params?: Record<string, unknown>) => string;
+    te: (key: string) => boolean;
+  }; // Provide translation helpers for translating response messages
   addError: (key: string, value: unknown) => void;
 }
 

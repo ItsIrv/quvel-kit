@@ -2,8 +2,8 @@
 
 namespace Modules\Tenant\app\Contexts;
 
-use Modules\Tenant\app\Models\Tenant;
 use Modules\Tenant\app\Exceptions\TenantNotFoundException;
+use Modules\Tenant\app\Models\Tenant;
 use Modules\Tenant\Enums\TenantError;
 
 /**

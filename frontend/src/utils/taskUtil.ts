@@ -23,14 +23,23 @@ export function LaravelErrorHandler(
 
       // Handle `message` key
       if (responseData?.message !== undefined) {
-        context.addError('message', responseData.message);
+        if (context.i18n.te(responseData.message)) {
+          context.addError('message', context.i18n.t(responseData.message));
+        } else {
+          context.addError('message', responseData.message);
+        }
       }
 
       // Handle `errors` object
       if (responseData?.errors) {
         Object.entries(responseData.errors).forEach(([key, messages]) => {
           if (Array.isArray(messages)) {
-            context.addError(key, messages);
+            console.log(key, messages);
+            if (context.i18n.te(`${key}.${messages[0]}`)) {
+              context.addError(key, context.i18n.t(`${key}.${messages[0]}`));
+            } else {
+              context.addError(key, messages[0]);
+            }
           }
         });
       }
