@@ -28,7 +28,7 @@ class TenantServiceProviderTest extends TestCase
      */
     private function createMockedProvider(): Mockery\MockInterface|TenantServiceProvider
     {
-        return Mockery::mock(TenantServiceProvider::class, [$this->app])
+        return $this->mock(TenantServiceProvider::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
     }

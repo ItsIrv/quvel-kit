@@ -3,14 +3,13 @@
 namespace Modules\Tenant\Tests\Unit\Services;
 
 use Illuminate\Contracts\Session\Session;
-use Mockery;
 use Modules\Tenant\app\Models\Tenant;
 use Modules\Tenant\app\Services\TenantSessionService;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\MockObject\MockObject;
 use Tests\TestCase;
-use Mockery\MockInterface;
 
 #[CoversClass(TenantSessionService::class)]
 #[Group('tenant-module')]
@@ -18,12 +17,12 @@ use Mockery\MockInterface;
 class TenantSessionServiceTest extends TestCase
 {
     private TenantSessionService $sessionService;
-    private Session|MockInterface $sessionMock;
+    private Session|MockObject $sessionMock;
 
     #[Before]
     public function setupTest(): void
     {
-        $this->sessionMock    = Mockery::mock(Session::class);
+        $this->sessionMock    = $this->createMock(Session::class);
         $this->sessionService = new TenantSessionService($this->sessionMock);
     }
 
@@ -32,10 +31,10 @@ class TenantSessionServiceTest extends TestCase
      */
     public function testHasTenantReturnsTrueWhenTenantExists(): void
     {
-        $this->sessionMock->shouldReceive('has')
-            ->once()
+        $this->sessionMock->expects($this->once())
+            ->method('has')
             ->with('tenant')
-            ->andReturn(true);
+            ->willReturn(true);
 
         $this->assertTrue($this->sessionService->hasTenant());
     }
@@ -45,38 +44,38 @@ class TenantSessionServiceTest extends TestCase
      */
     public function testHasTenantReturnsFalseWhenTenantDoesNotExist(): void
     {
-        $this->sessionMock->shouldReceive('has')
-            ->once()
+        $this->sessionMock->expects($this->once())
+            ->method('has')
             ->with('tenant')
-            ->andReturn(false);
+            ->willReturn(false);
 
         $this->assertFalse($this->sessionService->hasTenant());
     }
 
     /**
-     * Test that getTenant returns the tenant from the session.
+     * Test that getTenant returns null when tenant does not exist.
      */
     public function testGetTenantReturnsNullWhenTenantDoesNotExist(): void
     {
-        $this->sessionMock->shouldReceive('get')
-            ->once()
+        $this->sessionMock->expects($this->once())
+            ->method('get')
             ->with('tenant')
-            ->andReturnNull();
+            ->willReturn(null);
 
         $this->assertNull($this->sessionService->getTenant());
     }
 
     /**
-     * Test that getTenant returns the tenant from the session.
+     * Test that getTenant returns tenant when tenant exists.
      */
-    public function testGetTenantReturnTenantWhenTenantExists(): void
+    public function testGetTenantReturnsTenantWhenTenantExists(): void
     {
         $tenant = Tenant::factory()->make();
 
-        $this->sessionMock->shouldReceive('get')
-            ->once()
+        $this->sessionMock->expects($this->once())
+            ->method('get')
             ->with('tenant')
-            ->andReturn($tenant->only(['public_id', 'name', 'domain']));
+            ->willReturn($tenant->only(['public_id', 'name', 'domain']));
 
         $this->assertEquals(
             $tenant,
@@ -91,12 +90,16 @@ class TenantSessionServiceTest extends TestCase
     {
         $tenant = Tenant::factory()->make();
 
-        $this->sessionMock->shouldReceive('put')
-            ->once()
-            ->with('tenant', $tenant->only(['public_id', 'name', 'domain']));
+        $this->sessionMock->expects($this->once())
+            ->method('put')
+            ->with('tenant', $tenant->only([
+                'public_id',
+                'name',
+                'domain',
+                'created_at',
+                'updated_at',
+            ]));
 
-        $this->sessionService->setTenant(
-            $tenant,
-        );
+        $this->sessionService->setTenant($tenant);
     }
 }

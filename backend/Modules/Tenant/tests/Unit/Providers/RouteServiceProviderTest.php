@@ -19,7 +19,7 @@ class RouteServiceProviderTest extends TestCase
      */
     private function createMockedProvider(): Mockery\MockInterface|RouteServiceProvider
     {
-        return Mockery::mock(RouteServiceProvider::class, [$this->app])
+        return $this->mock(RouteServiceProvider::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
     }

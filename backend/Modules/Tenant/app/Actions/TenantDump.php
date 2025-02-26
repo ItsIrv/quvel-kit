@@ -22,6 +22,8 @@ class TenantDump
      */
     public function __invoke(TenantContext $tenantContext): TenantDumpTransformer
     {
-        return new TenantDumpTransformer($tenantContext->get());
+        return new TenantDumpTransformer(
+            $tenantContext->get(),
+        );
     }
 }

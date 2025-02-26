@@ -3,7 +3,6 @@
 namespace Tests\Feature\Actions;
 
 use App\Actions\QuvelWelcome;
-use Illuminate\Http\Response;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;

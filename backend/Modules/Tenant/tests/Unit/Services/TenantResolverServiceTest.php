@@ -2,7 +2,7 @@
 
 namespace Modules\Tenant\Tests\Unit\Services;
 
-use Modules\Tenant\App\Models\Tenant;
+use Illuminate\Http\Request;
 use Modules\Tenant\App\Services\TenantFindService;
 use Modules\Tenant\App\Services\TenantResolverService;
 use Modules\Tenant\App\Services\TenantSessionService;
@@ -20,12 +20,20 @@ class TenantResolverServiceTest extends TestCase
     private TenantFindService|MockObject $tenantFindService;
     private TenantSessionService|MockObject $tenantSessionService;
     private TenantResolverService $tenantResolverService;
+    private Request|MockObject $requestMock;
 
     #[Before]
     protected function setUpTest(): void
     {
-        $this->tenantFindService    = $this->createMock(TenantFindService::class);
-        $this->tenantSessionService = $this->createMock(TenantSessionService::class);
+        $this->tenantFindService = $this->createMock(
+            TenantFindService::class,
+        );
+
+        $this->tenantSessionService = $this->createMock(
+            TenantSessionService::class,
+        );
+
+        $this->requestMock = Request::capture();
 
         $this->tenantResolverService = new TenantResolverService(
             $this->tenantFindService,
@@ -36,77 +44,40 @@ class TenantResolverServiceTest extends TestCase
     /**
      * Test that resolveTenant returns tenant from session if available.
      */
-    public function testResolveTenantReturnsTenantFromSession(): void
+    public function testResolveTenantReturnsTenantFromSessionIfAvailable(): void
     {
-        $tenant = new Tenant(['domain' => 'example.com']);
-
-        $this->tenantSessionService
-            ->expects($this->once())
-            ->method('hasTenant')
-            ->willReturn(true);
-
-        $this->tenantSessionService
-            ->expects($this->once())
+        $this->tenantSessionService->expects(
+            $this->once(),
+        )
             ->method('getTenant')
-            ->willReturn($tenant);
+            ->willReturn($this->tenant);
 
-        $resolvedTenant = $this->tenantResolverService->resolveTenant(
-            'example.com',
+        $this->assertSame(
+            $this->tenant,
+            $this->tenantResolverService->resolveTenant($this->requestMock),
         );
-
-        $this->assertSame($tenant, $resolvedTenant);
     }
 
     /**
-     * Test that resolveTenant queries the database if tenant is not in session.
+     * Test that resolveTenant returns tenant from find service if available.
      */
-    public function testResolveTenantQueriesDatabaseIfNotInSession(): void
+    public function testResolveTenantReturnsTenantFromFindServiceIfAvailable(): void
     {
-        $tenant = new Tenant(['domain' => 'example.com']);
-
-        $this->tenantSessionService
-            ->expects($this->once())
-            ->method('hasTenant')
-            ->willReturn(false);
-
-        $this->tenantFindService
-            ->expects($this->once())
-            ->method('findTenantByDomain')
-            ->with('example.com')
-            ->willReturn($tenant);
-
-        $this->tenantSessionService
-            ->expects($this->once())
-            ->method('setTenant')
-            ->with($tenant);
-
-        $resolvedTenant = $this->tenantResolverService->resolveTenant(
-            'example.com',
-        );
-
-        $this->assertSame($tenant, $resolvedTenant);
-    }
-
-    /**
-     * Test that resolveTenant returns null if tenant is not found.
-     */
-    public function testResolveTenantReturnsNullIfTenantNotFound(): void
-    {
-        $this->tenantSessionService
-            ->expects($this->once())
-            ->method('hasTenant')
-            ->willReturn(false);
-
-        $this->tenantFindService
-            ->expects($this->once())
-            ->method('findTenantByDomain')
-            ->with('example.com')
+        $this->tenantSessionService->expects(
+            $this->once(),
+        )
+            ->method('getTenant')
             ->willReturn(null);
 
-        $resolvedTenant = $this->tenantResolverService->resolveTenant(
-            'example.com',
-        );
+        $this->tenantFindService->expects(
+            $this->once(),
+        )->method('findTenantByDomain')
+            ->with($this->requestMock->getHost())
+            ->willReturn($this->tenant);
 
-        $this->assertNull($resolvedTenant);
+        $this->assertSame(
+            $this->tenant,
+            $this->tenantResolverService->resolveTenant($this->requestMock),
+        );
     }
 }

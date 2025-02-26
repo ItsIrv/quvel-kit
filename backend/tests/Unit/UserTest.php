@@ -3,6 +3,8 @@
 namespace Tests\Unit;
 
 use App\Models\User;
+use Modules\Tenant\app\Contexts\TenantContext;
+use Modules\Tenant\app\Models\Tenant;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -17,7 +19,10 @@ class UserTest extends TestCase
     public function testUserModelInstantiation(): void
     {
         $user = new User();
-        $this->assertInstanceOf(User::class, $user);
+        $this->assertInstanceOf(
+            User::class,
+            $user,
+        );
     }
 
     /**
@@ -32,7 +37,10 @@ class UserTest extends TestCase
             'password',
         ];
 
-        $this->assertEquals($expected, $user->getFillable());
+        $this->assertEquals(
+            $expected,
+            $user->getFillable(),
+        );
     }
 
     /**
@@ -46,7 +54,10 @@ class UserTest extends TestCase
             'remember_token',
         ];
 
-        $this->assertEquals($expected, $user->getHidden());
+        $this->assertEquals(
+            $expected,
+            $user->getHidden(),
+        );
     }
 
     /**
@@ -61,7 +72,10 @@ class UserTest extends TestCase
             'id'                => 'int',
         ];
 
-        $this->assertEquals($expected, $user->getCasts());
+        $this->assertEquals(
+            $expected,
+            $user->getCasts(),
+        );
     }
 
     /**
@@ -69,6 +83,7 @@ class UserTest extends TestCase
      */
     public function testUserFactoryCreatesAUser(): void
     {
+        // TODO: Create trait for mocking TenantContext.
         $user = User::factory()->create();
 
         $this->assertInstanceOf(User::class, $user);

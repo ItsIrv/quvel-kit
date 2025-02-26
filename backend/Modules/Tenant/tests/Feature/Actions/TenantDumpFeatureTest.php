@@ -3,9 +3,7 @@
 namespace Modules\Tenant\Tests\Feature\Actions;
 
 use Exception;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Session;
-use Modules\Tenant\app\Models\Tenant;
+use Illuminate\Support\Facades\DB;
 use Modules\Tenant\Enums\TenantError;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -16,18 +14,11 @@ use Tests\TestCase;
 #[Group('actions')]
 class TenantDumpFeatureTest extends TestCase
 {
-    use RefreshDatabase;
-
     /**
      * Test retrieving the tenant successfully.
      */
     public function testTenantDumpSuccess(): void
     {
-        $tenant = Tenant::factory()->create();
-
-        // Simulate the session storing the tenant
-        Session::put('tenant', $tenant->toArray());
-
         $response = $this->getJson(
             route('tenant'),
         );
@@ -35,18 +26,23 @@ class TenantDumpFeatureTest extends TestCase
         $response->assertOk()
             ->assertJson([
                 'data' => [
-                    'id'     => $tenant->public_id,
-                    'name'   => $tenant->name,
-                    'domain' => $tenant->domain,
+                    'id'     => $this->tenant->public_id,
+                    'name'   => $this->tenant->name,
+                    'domain' => $this->tenant->domain,
                 ],
             ]);
     }
 
-    public function testTenantDumpThrowsExceptionWithoutTenantInLocal(): void
+    /**
+     * Test retrieving the tenant fails when tenant is incorrect or does not exist.
+     */
+    public function testTenantDumpThrowsExceptionWithoutTenat(): void
     {
-        Session::forget('tenant');
+        // Simulate incorrect tenant by deleting all.
+        DB::table('tenants')->delete();
 
-        $this->app->detectEnvironment(fn () => 'local');
+        $this->withoutExceptionHandling();
+        $this->expectException(Exception::class);
 
         $this->withoutExceptionHandling();
         $this->expectException(Exception::class);
@@ -54,24 +50,6 @@ class TenantDumpFeatureTest extends TestCase
 
         $this->getJson(
             route('tenant'),
-        );
-    }
-
-    /**
-     * Test retrieving the tenant when no tenant exists.
-     */
-    public function testTenantDumpRedirectsWithoutTenantInProduction(): void
-    {
-        Session::forget('tenant');
-
-        $this->app->detectEnvironment(fn () => 'production');
-
-        $response = $this->getJson(
-            route('tenant'),
-        );
-
-        $response->assertRedirect(
-            config('quvel.frontend_url') . '/error?message=' . urlencode(TenantError::NOT_FOUND->value),
         );
     }
 }

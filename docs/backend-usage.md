@@ -17,6 +17,7 @@ The backend of QuVel Kit is powered by **Laravel** and runs inside a Docker cont
   ```
 
 - It is exposed on <https://api.quvel.127.0.0.1.nip.io>
+- Telescope: <https://api.quvel.127.0.0.1.nip.io/telescope>
 
 ---
 
@@ -43,7 +44,7 @@ php artisan tinker
 ### Run Tests
 
 ```bash
-php artisan test
+php artisan test # -p
 php artisan test --group=providers
 ```
 

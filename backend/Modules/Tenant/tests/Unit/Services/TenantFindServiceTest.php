@@ -27,11 +27,12 @@ class TenantFindServiceTest extends TestCase
      */
     public function testFindTenantByDomain(): void
     {
-        $tenant      = Tenant::factory()->create(
+        $tenant = Tenant::factory()->create(
             [
                 'domain' => 'example.com',
             ],
         );
+
         $foundTenant = $this->service->findTenantByDomain(
             'example.com',
         );
