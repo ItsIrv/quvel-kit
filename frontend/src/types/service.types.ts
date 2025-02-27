@@ -7,10 +7,10 @@ export interface BootableService {
   /**
    * Runs initialization logic and injects the container.
    */
-  boot(container: ServiceContainer): void;
+  register(container: ServiceContainer): void;
 
   /**
    * (Optional) Runs any extra registration logic after booting.
    */
-  register?(): void;
+  boot?(): void;
 }

@@ -10,6 +10,7 @@ The **Service Container** in QuVel Kit is a **dependency injection system** that
 - **Dynamic Service Registration** – Developers can register and retrieve custom services on demand.
 - **Lazy Loading** – Services are only initialized when needed.
 - **Prevention of Circular Booting** – Services are tracked to prevent recursive initialization.
+- **Bootstrap & Register Lifecycle** – Services can define initialization logic before booting.
 - **SSR Compatibility** – Ensures proper state management between server and client environments.
 
 ---
@@ -43,7 +44,7 @@ export function createContainer(ssrContext?: QSsrContext | null): ServiceContain
     createI18nService(ssrContext),
     createValidationService(),
     new TaskService(),
-    new Map([['example', new ExampleService()]]),
+    new Map([["example", new ExampleService()]]),
   );
 }
 ```
@@ -72,64 +73,125 @@ const task = container.task;
 
 ---
 
-## Dynamic Services
+## **Creating Custom Services**
 
-Dynamic services allow developers to register custom services at runtime.
+### **Understanding `BootableService` Contract**
 
-### **Adding a Dynamic Service**
-
-```ts
-import { ExampleService } from 'src/services/ExampleService';
-container.addService('exampleService', new ExampleService());
-```
-
-### **Retrieving a Dynamic Service**
+All services that need to be registered dynamically must implement `BootableService`, which contains two lifecycle methods:
 
 ```ts
-const exampleService = container.getService<ExampleService>('exampleService');
-exampleService?.test(42);
-```
-
-### **Checking if a Service Exists**
-
-```ts
-if (container.hasService('exampleService')) {
-  console.log('ExampleService is registered');
+export interface BootableService {
+  register(container: ServiceContainer): void;
+  boot?(): void;
 }
 ```
 
-### **Preventing Duplicate Service Registration**
+### **Adding a Custom Service**
 
-To avoid accidental overwrites, use the `overwrite` flag:
+A custom service must implement `BootableService`, allowing it to interact with the container and dependencies.
 
-```ts
-container.addService('exampleService', new ExampleService(), true); // Forces overwrite
-```
-
----
-
-## Preventing Circular Booting
-
-If a service adds another service in its `boot` method, ensure it does not cause a recursive loop. While internal checks exist, it is best to avoid it in practice.
-
-### **Example of Correct Usage**
+#### **Example: Creating a Notification Service**
 
 ```ts
-export class ExampleService extends Service implements BootableService {
-  boot(container: ServiceContainer): void {
-    if (!container.hasService('exampleBoot')) {
-      container.addService('exampleBoot', new ExampleService());
-    }
+import type { BootableService } from 'src/types/service.types';
+import type { ServiceContainer } from 'src/services/ServiceContainer';
+
+export class NotificationService implements BootableService {
+  private container!: ServiceContainer;
+
+  register(container: ServiceContainer): void {
+    this.container = container;
+  }
+
+  boot(): void {
+    console.log("NotificationService booted.");
+  }
+
+  send(message: string): void {
+    console.log(`[Notification]: ${message}`);
   }
 }
 ```
 
+### **Registering a Custom Service**
+
+```ts
+import { NotificationService } from 'src/services/NotificationService';
+
+container.addService("notification", new NotificationService());
+```
+
+### **Using the Custom Service**
+
+```ts
+const notification = container.getService<NotificationService>("notification");
+notification?.send("Task completed successfully!");
+```
+
 ---
 
-## Best Practices
+## **Example: Creating a Reusable Task in a Service**
 
-- **Use the core services when possible** – The container provides optimized, built-in services for API, validation, translations, and tasks.
-- **Avoid overloading the container** – Only add necessary dynamic services.
-- **Lazy-load services where applicable** – Only initialize services when they are actually needed.
-- **Prevent recursive dependencies** – Ensure services do not depend on each other in a circular way.
-- **Use SSR-compatible logic** – Ensure services handle both server and client-side execution properly.
+Services can include **predefined tasks** that encapsulate common workflows.
+
+### **Example: Notification Service with a Task**
+
+```ts
+import type { BootableService } from 'src/types/service.types';
+import type { ServiceContainer } from 'src/services/ServiceContainer';
+import type { TaskInstance } from 'src/services/TaskService';
+
+export class NotificationService implements BootableService {
+  private container!: ServiceContainer;
+  private notifyTask!: TaskInstance<void, string>;
+
+  register(container: ServiceContainer): void {
+    this.container = container;
+
+    this.notifyTask = container.task.newFrozenTask<void, string>({
+      showLoading: true,
+      showNotification: { success: "Notification sent!" },
+      task: async (message) => this.send(message),
+    });
+  }
+
+  send(message: string): void {
+    console.log(`[Notification]: ${message}`);
+  }
+
+  async notify(message: string): Promise<void> {
+    await this.notifyTask.run({ taskPayload: message });
+  }
+}
+```
+
+### **Using the Notification Task**
+
+```ts
+const notificationService = container.getService<NotificationService>("notification");
+await notificationService?.notify("User logged in.");
+```
+
+This ensures a **reusable, standardized** way to manage notifications throughout the app.
+
+---
+
+## **Best Practices for Custom Services**
+
+- **Use `register()` for dependency injection** – Ensures services are available when needed.
+- **Keep services stateless if possible** – Reduces complexity and makes them more reusable.
+- **Use `boot()` for initialization logic** – Avoid modifying the container at this stage.
+- **Ensure SSR compatibility** – Be mindful of code that should only run on the client.
+- **Prevent recursive dependencies** – Do not add services inside `boot()` to avoid infinite loops.
+
+---
+
+## Conclusion
+
+The **Service Container** provides a **scalable**, **modular**, and **SSR-compatible** approach to dependency management in QuVel Kit. With its built-in services and dynamic registration system, developers can extend functionality while maintaining **clear structure and maintainability**.
+
+For more in-depth **usage examples**, refer to:
+
+- **[Frontend Component Usage](./frontend-component-usage.md)**
+- **[Frontend Tasks](./frontend-tasks.md)**
+- **[Frontend API & Requests](./frontend-api.md)**

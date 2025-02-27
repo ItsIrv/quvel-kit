@@ -16,30 +16,101 @@ The backend of QuVel Kit is powered by **Laravel** and runs inside a Docker cont
   php artisan serve --host=0.0.0.0 --port=8000
   ```
 
-- It is exposed on:
+- It is exposed on <https://api.quvel.127.0.0.1.nip.io>
+- Telescope: <https://api.quvel.127.0.0.1.nip.io/telescope>
 
-  ```bash
-  https://api.quvel.127.0.0.1.nip.io
-  ```
+---
+
+## Running Commands on Local
+
+Make sure to install packages locally if you want to run commands locally. You can run commands on your local machine, so long they do not need to connect to the docker network.
+This means most analysis and test commands work on your local machine.
+
+```bash
+composer install --dev
+```
+
+## Connecting To Docker
+
+### Open a Terminal in the Laravel Container
+
+To run artisan commands inside the backend container:
+
+```bash
+docker exec -it quvel-app sh 
+```
+
+Once inside, you can run commands as you normally would.
+
+## Testing
+
+### Tinker
+
+```bash
+php artisan tinker
+```
+
+### Run Tests
+
+```bash
+php artisan test # Run tests normally
+php artisan test -p # Run test in parallel
+php artisan test --group=tenant-module # Run tests in groups
+php artisan test --testsuite=Modules # Run Test Suite
+```
+
+The following groups are available:
+
+- security
+- providers
+- actions
+- models
+- transformers
+- services
+- frontend
+- tenant-module
+
+The following test suites are available:
+
+- Unit
+- Feature
+- Modules
+
+---
+
+### Access Coverage Reports
+
+You can access the coverage reports at <https://coverage-api.quvel.127.0.0.1.nip.io>.
+
+### Refresh Coverage Report
+
+```bash
+php artisan test --coverage-html=storage/debug/coverage
+```
+
+---
+
+## Static Analysis
+
+**PHPStan (Static Analysis)**  
+
+```sh
+vendor/bin/phpstan analyse --configuration phpstan.neon
+```
+
+**PHP-CS-Fixer (Code Style)**  
+
+```sh
+vendor/bin/php-cs-fixer fix --dry-run --diff
+```
 
 ---
 
 ## Running Migrations & Database Commands
 
-### **1️. Open a Terminal in the Laravel Container**
-
-To run artisan commands inside the backend container:
-
 ```bash
-docker exec -it quvel-app sh   # Access the Laravel container
-```
-
-Once inside, you can run commands as you normally would:
-
-```bash
-php artisan migrate --force  # Run database migrations
-php artisan db:seed  # Seed the database
-php artisan tinker  # Open interactive Laravel shell
+php artisan migrate
+php artisan db:seed
 ```
 
 Exit the container with:
@@ -67,7 +138,7 @@ This will stop all containers, remove volumes, and restart everything fresh.
 If you encounter issues with file uploads or missing storage links, run:
 
 ```bash
-docker exec -it quvel-app php artisan storage:link
+php artisan storage:link
 ```
 
 ---
@@ -87,36 +158,6 @@ docker restart quvel-app
 ```
 
 ---
-
-**PHPStan (Static Analysis)**  
-
-```sh
-vendor/bin/phpstan analyse app
-```
-
-**PHP-CS-Fixer (Code Style)**  
-
-```sh
-vendor/bin/php-cs-fixer fix app --dry-run --diff
-```
-
----
-
-## Testing
-
-- Coverage Reports <https://coverage-api.quvel.127.0.0.1.nip.io>
-
-### Run Tests
-
-```bash
-docker exec -it quvel-app php artisan test
-```
-
-### Refresh Coverage Report
-
-```bash
-docker exec -it quvel-app php artisan test --coverage-html=storage/debug/coverage
-```
 
 ## Vite Assets
 

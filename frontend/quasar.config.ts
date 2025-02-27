@@ -89,7 +89,7 @@ export default defineConfig((ctx) => {
       iconSet: 'eva-icons',
       plugins: ['Cookies', 'Notify', 'LocalStorage', 'Meta', 'Loading'],
     },
-    animations: [],
+    animations: ['fadeIn', 'fadeOut'],
     ssr: {
       prodPort: 9000,
       middlewares: [

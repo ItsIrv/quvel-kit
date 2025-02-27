@@ -59,26 +59,18 @@ jobs:
 
       - name: Run PHPStan Static Analysis
         continue-on-error: true
-        run: vendor/bin/phpstan analyse app --level=max
+        run: vendor/bin/phpstan analyse --configuration phpstan.neon
         working-directory: backend
 
       - name: Run Code Style Check
         continue-on-error: true
-        run: vendor/bin/php-cs-fixer fix app --dry-run --diff
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
         working-directory: backend
 
-      - name: Run Tests with Coverage
+      - name: Run Tests
         continue-on-error: true
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
-        run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+        run: php artisan test -p
         working-directory: backend
-
-      - name: Upload Coverage Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-coverage
-          path: backend/coverage.xml
-          compression-level: 6

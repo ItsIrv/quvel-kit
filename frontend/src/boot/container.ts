@@ -1,11 +1,13 @@
 import { defineBoot } from '#q-app/wrappers';
 import { ContainerKey, setClientContainer } from 'src/composables/useContainer';
 import type { QSsrContext } from '@quasar/app-vite';
-import { createApiService } from 'src/utils/axiosUtil';
-import { createI18nService } from 'src/utils/i18nUtil';
-import { createValidationService } from 'src/utils/validationUtil';
+import { createApi } from 'src/utils/axiosUtil';
 import { TaskService } from 'src/services/TaskService';
 import { ServiceContainer } from 'src/services/ServiceContainer';
+import { ValidationService } from 'src/services/ValidationService';
+import { ApiService } from 'src/services/ApiService';
+import { I18nService } from 'src/services/I18nService';
+import { createI18n } from 'src/utils/i18nUtil';
 
 /**
  * Creates the service container per request.
@@ -14,9 +16,9 @@ import { ServiceContainer } from 'src/services/ServiceContainer';
  */
 export function createContainer(ssrContext?: QSsrContext | null): ServiceContainer {
   return new ServiceContainer(
-    createApiService(ssrContext),
-    createI18nService(ssrContext),
-    createValidationService(),
+    new ApiService(createApi(ssrContext)),
+    new I18nService(createI18n(ssrContext)),
+    new ValidationService(),
     new TaskService(),
     new Map(),
   );

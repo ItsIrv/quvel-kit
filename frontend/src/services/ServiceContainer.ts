@@ -9,7 +9,8 @@ import type { Service } from './Service';
  * The service container manages core services and allows dynamic service registration.
  */
 export class ServiceContainer {
-  private readonly bootedServiceNames = new Set<string>(); // Track booted service names
+  private readonly registeredServices = new Set<string>(); // Track registered services
+  private readonly bootedServices = new Set<string>(); // Track booted services
 
   constructor(
     readonly api: ApiService,
@@ -18,12 +19,24 @@ export class ServiceContainer {
     readonly task: TaskService,
     private readonly services: Map<string, unknown> = new Map(),
   ) {
-    this.bootServices();
     this.registerServices();
+    this.bootServices();
   }
 
   /**
-   * Boots all core and dynamic services.
+   * Registers all core and dynamic services.
+   */
+  private registerServices(): void {
+    for (const [name, service] of Object.entries({
+      ...this,
+      ...Object.fromEntries(this.services),
+    })) {
+      this.registerService(name, service as BootableService);
+    }
+  }
+
+  /**
+   * Boots all registered services.
    */
   private bootServices(): void {
     for (const [name, service] of Object.entries({
@@ -31,17 +44,6 @@ export class ServiceContainer {
       ...Object.fromEntries(this.services),
     })) {
       this.bootService(name, service as BootableService);
-    }
-  }
-
-  /**
-   * Registers all core and dynamic services.
-   */
-  private registerServices(): void {
-    for (const service of [...Object.values(this), ...this.services.values()]) {
-      if (this.isBootable(service)) {
-        service.register?.();
-      }
     }
   }
 
@@ -68,23 +70,29 @@ export class ServiceContainer {
     }
 
     this.services.set(name, service);
+    this.registerService(name, service);
     this.bootService(name, service);
 
-    if (this.isBootable(service)) {
-      service.register?.();
-    }
-
     return true;
+  }
+
+  /**
+   * Registers a service only if it hasn't been registered.
+   */
+  private registerService(name: string, service: Service): void {
+    if (this.isBootable(service) && !this.registeredServices.has(name)) {
+      this.registeredServices.add(name);
+      service.register(this);
+    }
   }
 
   /**
    * Boots a service only if it hasn't been booted yet.
    */
   private bootService(name: string, service: Service): void {
-    if (this.isBootable(service) && !this.bootedServiceNames.has(name)) {
-      this.bootedServiceNames.add(name);
-
-      service.boot(this);
+    if (this.isBootable(service) && !this.bootedServices.has(name)) {
+      this.bootedServices.add(name);
+      service.boot?.();
     }
   }
 
@@ -92,6 +100,6 @@ export class ServiceContainer {
    * Type guard to check if a service implements `BootableService`.
    */
   private isBootable(service: unknown): service is BootableService {
-    return typeof service === 'object' && service !== null && 'boot' in service;
+    return typeof service === 'object' && service !== null && 'register' in service;
   }
 }

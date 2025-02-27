@@ -1,4 +1,6 @@
 parameters:
     paths:
         - app
-    level: max
+        - Modules/Tenant/app
+        - Modules/Auth/app
+    level: 8

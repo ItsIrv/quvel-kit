@@ -32,9 +32,8 @@ services:
       context: ../backend # Point to Laravel backend source
       dockerfile: ../docker/backend.Dockerfile # Use custom backend Dockerfile
     container_name: quvel-app
-
+    restart: unless-stopped
     working_dir: /var/www # Set working directory for Laravel
-
     volumes:
       - ../backend:/var/www # Sync backend files for live development
       - /var/www/vendor # Keep vendor dependencies inside the container for performance
@@ -45,7 +44,7 @@ services:
     command: [
         '/bin/sh',
         '-c',
-        'composer install && php artisan serve --host=0.0.0.0 --port=8000',
+        'composer install --dev && php artisan serve --host=0.0.0.0 --port=8000',
       ] # Run Laravel API server after installing dependencies
     labels:
       - 'traefik.enable=true' # Enable Traefik proxy for this service

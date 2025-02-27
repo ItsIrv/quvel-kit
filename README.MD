@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**QuVel Kit** is a **Quasar + Laravel Starter Kit** designed for building modern hybrid applications. It seamlessly integrates **SSR, SPA fallback, mobile, and desktop builds**, providing a robust full-stack solution for efficient development.
+**QuVel Kit** is a **Quasar + Laravel Starter Kit** designed for building modern hybrid applications with **SSR, SPA fallback, mobile, and desktop builds**. It provides a modular, scalable foundation for full-stack development, offering robust authentication, state management, and dependency injection via a **Service Container**.
 
 ## Features
 
@@ -13,7 +13,10 @@
 - **Capacitor support** for `iOS` & `Android` builds
 - **Electron** desktop build support
 - **Traefik-based Docker environments** for `production` and `development`
-- **Authentication system** with OAuth support (`Google`, `Apple`)
+- **Fully modular Laravel backend using `nWidart/laravel-modules`**
+- **Service Container for managing frontend dependency injection**
+- **Authentication system** with OAuth (`Google`, `Apple`)
+- **RBAC (Role-Based Access Control) with multi-tenancy support**
 - **Comprehensive testing suite** with `Vitest` (frontend) & `PHPUnit` (backend)
 - **Automated test coverage reports**
 - **Detailed documentation** with `.md` files and **DocBlocks**
@@ -24,52 +27,58 @@
   - Email/Username + Password
   - OAuth Providers (`Google`, `Apple`)
 - **OAuth Flow** with deep link support for **mobile compatibility**
-- **Session-based authentication** for secure logins
+- **Session-based authentication** (tokens coming soon)
+- **Multi-tenancy support using a `tenant_id` system**
+- **Role-Based Access Control (RBAC) from the start**
 - **Account Management**:
   - Sign-up & Login (Email/Username or OAuth)
   - Password reset & Email verification
   - Profile updates (name, password, avatar)
 
-### **Planned Features**
+### **Frontend Service Container**
 
-- **RBAC (Roles & Permissions)**
-- **Admin Dashboard**
-- **Real-time WebSocket support**
-- **In-app Notifications System**
+- **API Service** (`container.api`) – Manages Axios HTTP requests with session authentication
+- **Task Service** (`container.task`) – Encapsulates async operations with built-in loading, error handling, and success notifications
+- **Validation Service** (`container.validation`) – Zod-based validation with support for Vue components and translations
+- **i18n Service** (`container.i18n`) – Fully localized interface with SSR-safe translations
+- **Dynamic Service Loading** – Register and retrieve custom services at runtime
+
+### **Backend Architecture**
+
+- **Multi-tenancy with a `tenant_id` column in all relevant tables**
+- **Modular architecture using `nWidart/laravel-modules`**
+- **RBAC built-in with roles and permissions**
+- **Session-based authentication (Sanctum coming later)**
+- **Socialite-based OAuth login system with secure nonce validation**
+- **Middleware for enforcing tenant-based access**
 
 ## Documentation
 
-For a full guide on **project setup, commands, and troubleshooting**, check the [📚 Docs](docs/README.md).
+For a full guide on **project setup, commands, and troubleshooting**, check the [Documentation](docs/README.md).
 
-## Quick Setup
+## Setup & Installation
 
-### **1️ Clone the repository**
+Refer to the [Getting Started Guide](docs/getting-started.md) for detailed instructions on installation and setup.
 
-```bash
-git clone https://github.com/pdxapps/quvel-kit.git
-cd quvel-kit
-```
+## Development & Debugging
 
-### **2️ Run setup script**
+Refer to the [Frontend Usage Guide](docs/frontend/frontend-usage.md) and [Backend Usage Guide](docs/backend-usage.md) for development workflows.
 
-```bash
-./scripts/setup.sh
-```
+## Roadmap
 
-This will:
+### **Short-Term Goals**
 
-- Set up .env files for Laravel & Quasar
-- Start Docker containers
-- Generate SSL certificates for local HTTPS support
-- Generate app key
-- Run database migrations & seeders
-- Link storage
-- Create an initial test coverage report
+- Complete OAuth & RBAC integration
+- Expand testing coverage
+- Improve module-based backend architecture
 
-### **3️ Access your environment**
+### **Long-Term Goals**
 
-- Frontend: <https://quvel.127.0.0.1.nip.io>
-- API: <https://api.quvel.127.0.0.1.nip.io>
-- Vitest UI: <https://coverage.quvel.127.0.0.1.nip.io/__vitest__/>
-- PHPUnit Coverage Reports: <https://coverage-api.quvel.127.0.0.1.nip.io>
-- Traefik Dashboard: <http://localhost:8080>
+- Add token-based authentication
+- Extend WebSockets for real-time features
+- Push & background Notifications.
+- Offline mode.
+
+---
+
+QuVel Kit provides a **fully modular** foundation for Laravel & Quasar applications, ensuring best practices, multi-tenancy support, and an **enterprise-ready stack** from day one.

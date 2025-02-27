@@ -11,11 +11,19 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
+        <testsuite name="Modules">
+            <directory suffix="Test.php">./Modules/*/Tests/Feature</directory>
+            <directory suffix="Test.php">./Modules/*/Tests/Unit</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
             <directory>app</directory>
+            <directory>Modules/*/app</directory>
         </include>
+        <exclude>
+        <file>app/Providers/TelescopeServiceProvider.php</file>
+        </exclude>
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
