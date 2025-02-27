@@ -2,7 +2,6 @@ import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { Cookies } from 'quasar';
 import type { QSsrContext } from '@quasar/app-vite';
 import { SessionName } from 'src/models/Session';
-import { ApiService } from 'src/services/ApiService';
 
 const isServer = typeof window === 'undefined';
 
@@ -52,13 +51,4 @@ export function createApi(ssrContext?: QSsrContext | null): AxiosInstance {
   }
 
   return api;
-}
-
-/**
- * Creates an instance of the ApiService with the provided SSR context.
- * @param ssrContext - The SSR context, if applicable.
- * @returns An instance of the ApiService.
- */
-export function createApiService(ssrContext?: QSsrContext | null): ApiService {
-  return new ApiService(createApi(ssrContext));
 }

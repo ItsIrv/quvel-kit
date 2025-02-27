@@ -5,7 +5,7 @@ namespace Modules\Auth\Actions;
 use App\Services\User\UserFindService;
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\app\Http\Requests\LoginRequest;
-use Modules\Auth\app\Services\UserAuthenticateService;
+use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\LoginUserStatus;
 use Modules\Auth\Exceptions\SignInUserException;
 
@@ -14,9 +14,14 @@ use Modules\Auth\Exceptions\SignInUserException;
  */
 class LoginUserAction
 {
+    /**
+     * Create a new LoginUserAction instance.
+     * @param \App\Services\User\UserFindService $userFindService
+     * @param \Modules\Auth\app\Services\UserAuthenticationService $UserAuthenticationService
+     */
     public function __construct(
         protected UserFindService $userFindService,
-        protected UserAuthenticateService $userAuthenticateService,
+        protected UserAuthenticationService $UserAuthenticationService,
     ) {
     }
 
@@ -39,7 +44,7 @@ class LoginUserAction
         }
 
         if (
-            !$this->userAuthenticateService->attempt(
+            !$this->UserAuthenticationService->attempt(
                 $loginData['email'],
                 $loginData['password'],
             )

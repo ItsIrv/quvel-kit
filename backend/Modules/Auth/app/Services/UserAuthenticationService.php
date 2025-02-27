@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 /**
  * Service to handle user authentication.
  */
-class UserAuthenticateService
+class UserAuthenticationService
 {
     /**
      * Attempt to authenticate a user with email and password.
@@ -25,10 +25,5 @@ class UserAuthenticateService
             'email'    => $email,
             'password' => $password,
         ]);
-    }
-
-    public function loginUsingId(mixed $id): bool
-    {
-        return Auth::loginUsingId($id);
     }
 }

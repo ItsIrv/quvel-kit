@@ -8,4 +8,4 @@ export const emailSchema = (): z.ZodString => z.string().email();
 /**
  * Password validation schema.
  */
-export const passwordSchema = (): z.ZodString => z.string().min(2).max(100);
+export const passwordSchema = (): z.ZodString => z.string().min(6).max(100);

@@ -11,11 +11,11 @@ import { useSessionStore } from 'src/stores/sessionStore'
 import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
 import EmailField from 'src/components/Form/EmailField.vue';
 import PasswordField from 'src/components/Form/PasswordField.vue';
-import { LaravelErrorHandler } from 'src/utils/taskUtil';
 import type { ErrorHandler } from 'src/types/task.types';
 import type { User } from 'src/models/User';
 import { useContainer } from 'src/composables/useContainer';
 import TaskErrors from 'src/components/Common/TaskErrors.vue';
+import { LaravelErrorHandler } from 'src/utils/errorUtil';
 
 /**
  * Services
@@ -108,14 +108,14 @@ const logoutTask = container.task.newFrozenTask({
         >
           <EmailField
             v-model="email"
-            :error-message="(loginTask.errors.value.email as string)?.[0] ?? ''"
-            :error="!!loginTask.errors.value.email"
+            :error-message="(loginTask.errors.value.get('email') as string) ?? ''"
+            :error="loginTask.errors.value.has('email')"
           />
 
           <PasswordField
             v-model="password"
-            :error-message="(loginTask.errors.value.password as string)?.[0] ?? ''"
-            :error="!!loginTask.errors.value.password"
+            :error-message="(loginTask.errors.value.get('password') as string) ?? ''"
+            :error="loginTask.errors.value.has('password')"
           />
 
           <q-btn

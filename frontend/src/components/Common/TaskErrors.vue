@@ -7,32 +7,35 @@
  * Props:
  * - `taskErrors`: The errors from a task, including the main error and additional errors.
  */
+import { ErrorBag } from 'src/types/error.types';
 import { computed } from 'vue';
 
 /**
- * The properties accepted by the component.
+ * Props for the component.
  */
 const props = defineProps({
   taskErrors: {
-    type: Object as () => { message?: string; errors?: Record<string, string[]> | string },
+    type: Object as () => ErrorBag,
     default: () => ({ message: '', errors: {} }),
   },
 });
 
 /**
- * Extracts the most relevant error message from `taskErrors`.
+ * Checks if `message` is already inside `errors`, avoiding duplicates.
+ */
+// const isMessageInErrors = computed(() => {
+
+//   return false;
+// });
+
+/**
+ * Extracts the most relevant error message.
+ * - If `message` is already inside `errors`, we ignore `message` to prevent duplication.
+ * - If `errors` exist, extract the first error.
+ * - Otherwise, fallback to `message`.
  */
 const errorMessage = computed(() => {
-  if (props.taskErrors.message) return props.taskErrors.message;
-
-  const errors = props.taskErrors.errors;
-  if (!errors || typeof errors !== 'object') return '';
-
-  if (typeof errors === 'string') return errors;
-  if (Array.isArray(errors)) return errors.length > 0 ? errors[0] : '';
-
-  const firstKey = Object.keys(errors)[0];
-  return firstKey ? errors[firstKey]?.[0] ?? '' : '';
+  return props.taskErrors.get('message')
 });
 </script>
 

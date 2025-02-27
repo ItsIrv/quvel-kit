@@ -16,6 +16,7 @@ import { hideLoading, showLoading } from 'src/utils/loadingUtil';
 import type { BootableService } from 'src/types/service.types';
 import { Service } from './Service';
 import type { ServiceContainer } from './ServiceContainer';
+import { ErrorBag } from 'src/types/error.types';
 
 /**
  * Task Service - Manages async operations with built-in error handling, notifications, and loading.
@@ -40,11 +41,11 @@ export class TaskService extends Service implements BootableService {
     reset: typeof resetTask;
     state: Ref<TaskState>;
     error: Ref<unknown>;
-    errors: Ref<Record<string, unknown>>;
+    errors: Ref<ErrorBag>;
     result: Ref<Result | undefined>;
   } {
     const currentError = ref<unknown>();
-    const currentErrors = ref<Record<string, unknown>>({});
+    const currentErrors = ref<ErrorBag>(new Map());
     const currentResult = ref<Result>();
     const currentState = ref<TaskState>('fresh');
     const container = this.container as ServiceContainer;
@@ -54,7 +55,7 @@ export class TaskService extends Service implements BootableService {
      */
     function resetTask(): void {
       currentError.value = undefined;
-      currentErrors.value = {};
+      currentErrors.value = new Map();
       currentResult.value = undefined;
       currentState.value = 'fresh';
     }
@@ -132,8 +133,7 @@ export class TaskService extends Service implements BootableService {
       const te = container.i18n.instance.global.te?.bind(container);
       const errorContext: ErrorHandlerContext<unknown> = {
         error: data,
-        addError,
-        errors: currentErrors,
+        errors: currentErrors.value || {},
         i18n: {
           t,
           te,
@@ -168,7 +168,7 @@ export class TaskService extends Service implements BootableService {
       }
 
       if (isError && handledCalls === 0 && data instanceof Error) {
-        addError('message', data.message);
+        // addError('message', data.message);
       }
 
       void showResolvedNotification(notification, isError);
@@ -191,13 +191,6 @@ export class TaskService extends Service implements BootableService {
             : container?.i18n.t(isError ? 'task.error' : 'task.success'),
         );
       }
-    }
-
-    /**
-     * Adds an error to the current error state.
-     */
-    function addError(key: string, value: unknown): void {
-      currentErrors.value = { ...currentErrors.value, [key]: value };
     }
 
     return {
@@ -226,7 +219,7 @@ export class TaskService extends Service implements BootableService {
     reset: () => void;
     state: Ref<TaskState>;
     error: Ref<unknown>;
-    errors: Ref<Record<string, unknown>>;
+    errors: Ref<ErrorBag>;
     result: Ref<Result | undefined>;
   } {
     const task = this.newTask<Result, Payload>(options);

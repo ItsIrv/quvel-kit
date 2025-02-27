@@ -1,9 +1,12 @@
+/**
+ * Utility functions for working with i18n.
+ * Recommended to use the  `container.i18n` service instead.
+ */
 import { Cookies } from 'quasar';
 import type { QSsrContext } from '@quasar/app-vite';
 import type { I18nType, MessageLanguages } from 'src/types/i18n.types';
 import { createI18n as createI18nInstance } from 'vue-i18n';
 import messages from 'src/i18n';
-import { I18nService } from 'src/services/I18nService';
 
 const LOCALE_COOKIE_KEY = 'user-locale';
 const DEFAULT_LOCALE: MessageLanguages = 'en-US';
@@ -41,19 +44,8 @@ export function storeLocale(locale: MessageLanguages): void {
   document.cookie = `${LOCALE_COOKIE_KEY}=${encodeURIComponent(locale)}; path=/; max-age=31536000;`;
 
   if (typeof window !== 'undefined') {
-    locale = Cookies.get(LOCALE_COOKIE_KEY) || '';
+    Cookies.set(LOCALE_COOKIE_KEY, locale, { expires: 365 });
   }
-}
-
-/**
- * Applies the locale to Vue I18n.
- */
-export function applyLocale(i18n: I18nType, locale: string): void {
-  if (!isValidLocale(locale)) return;
-
-  i18n.global.locale.value = locale;
-
-  storeLocale(locale);
 }
 
 /**
@@ -76,13 +68,4 @@ export function createI18n(ssrContext?: QSsrContext | null): I18nType {
     legacy: false,
     messages,
   });
-}
-
-/**
- * Creates an instance of the I18nService.
- * @param ssrContext - The server-side rendering context.
- * @returns An instance of the I18nService.
- */
-export function createI18nService(ssrContext?: QSsrContext | null): I18nService {
-  return new I18nService(createI18n(ssrContext));
 }
