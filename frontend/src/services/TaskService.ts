@@ -16,6 +16,7 @@ import { hideLoading, showLoading } from 'src/utils/loadingUtil';
 import type { BootableService } from 'src/types/service.types';
 import { Service } from './Service';
 import type { ServiceContainer } from './ServiceContainer';
+import { ErrorBag } from 'src/types/error.types';
 
 /**
  * Task Service - Manages async operations with built-in error handling, notifications, and loading.
@@ -40,11 +41,11 @@ export class TaskService extends Service implements BootableService {
     reset: typeof resetTask;
     state: Ref<TaskState>;
     error: Ref<unknown>;
-    errors: Ref<Record<string, unknown>>;
+    errors: Ref<ErrorBag>;
     result: Ref<Result | undefined>;
   } {
     const currentError = ref<unknown>();
-    const currentErrors = ref<Record<string, unknown>>({});
+    const currentErrors = ref<ErrorBag>(new Map());
     const currentResult = ref<Result>();
     const currentState = ref<TaskState>('fresh');
     const container = this.container as ServiceContainer;
@@ -54,7 +55,7 @@ export class TaskService extends Service implements BootableService {
      */
     function resetTask(): void {
       currentError.value = undefined;
-      currentErrors.value = {};
+      currentErrors.value = new Map();
       currentResult.value = undefined;
       currentState.value = 'fresh';
     }
@@ -128,11 +129,17 @@ export class TaskService extends Service implements BootableService {
     ): void {
       let handledCalls = 0;
 
+      const t = container.i18n.instance.global.t?.bind(container);
+      const te = container.i18n.instance.global.te?.bind(container);
       const errorContext: ErrorHandlerContext<unknown> = {
         error: data,
-        addError,
-        errors: currentErrors,
+        errors: currentErrors.value || {},
+        i18n: {
+          t,
+          te,
+        },
       };
+
       const context: SuccessHandlerContext<Payload> = { result: data as Payload };
 
       if (Array.isArray(handlers)) {
@@ -141,9 +148,9 @@ export class TaskService extends Service implements BootableService {
 
           if (handlerKey !== undefined && (!handler.matcher || handler.matcher(handlerKey))) {
             if (isError) {
-              (handler.callback as unknown as ErrorHandler).callback(handlerKey, errorContext);
+              (handler as unknown as ErrorHandler).callback(handlerKey, errorContext);
             } else {
-              (handler.callback as unknown as SuccessHandler).callback(handlerKey, context);
+              (handler as unknown as SuccessHandler).callback(handlerKey, context);
             }
 
             handledCalls++;
@@ -161,7 +168,7 @@ export class TaskService extends Service implements BootableService {
       }
 
       if (isError && handledCalls === 0 && data instanceof Error) {
-        addError('message', data.message);
+        // addError('message', data.message);
       }
 
       void showResolvedNotification(notification, isError);
@@ -176,21 +183,29 @@ export class TaskService extends Service implements BootableService {
     ): Promise<void> {
       const resolvedNotification = await resolveValue(notification);
 
-      if (resolvedNotification !== undefined && resolvedNotification !== false) {
-        showNotification(
-          isError ? 'negative' : 'positive',
-          typeof resolvedNotification === 'string'
-            ? resolvedNotification
-            : container?.i18n.t(isError ? 'task.error' : 'task.success'),
-        );
-      }
-    }
+      if (resolvedNotification === true || typeof resolvedNotification === 'string') {
+        if (typeof resolvedNotification === 'string') {
+          showNotification(isError ? 'negative' : 'positive', resolvedNotification);
+        } else {
+          let responseMessage = '';
 
-    /**
-     * Adds an error to the current error state.
-     */
-    function addError(key: string, value: unknown): void {
-      currentErrors.value = { ...currentErrors.value, [key]: value };
+          // Try to get messages from result or errors
+          if (isError && currentErrors.value.has('message')) {
+            responseMessage =
+              currentErrors.value.get('message') || container.i18n.t('common.task.error');
+          } else {
+            // On success try to get message from result
+            console.log(currentResult.value);
+            if (typeof (currentResult.value as { message: string }).message === 'string') {
+              responseMessage = (currentResult.value as { message: string }).message;
+            } else {
+              responseMessage = container.i18n.t('common.task.success');
+            }
+          }
+
+          showNotification(isError ? 'negative' : 'positive', container.i18n.t(responseMessage));
+        }
+      }
     }
 
     return {
@@ -219,7 +234,7 @@ export class TaskService extends Service implements BootableService {
     reset: () => void;
     state: Ref<TaskState>;
     error: Ref<unknown>;
-    errors: Ref<Record<string, unknown>>;
+    errors: Ref<ErrorBag>;
     result: Ref<Result | undefined>;
   } {
     const task = this.newTask<Result, Payload>(options);
@@ -258,5 +273,12 @@ export class TaskService extends Service implements BootableService {
       errors: task.errors,
       result: task.result,
     };
+  }
+
+  withLoading<Result = unknown, Payload = unknown>(options: TaskOptions<Result, Payload>) {
+    return this.newTask<Result, Payload>({
+      ...options,
+      showLoading: true,
+    });
   }
 }

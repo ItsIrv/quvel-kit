@@ -13,17 +13,8 @@ export default {
       welcomePage: 'Welcome Page',
     },
   },
-  validation: {
-    passwordMismatch: 'Passwords must match.',
-    invalidCredentials: 'Invalid email or password.',
-    sessionExpired: 'Your session has expired. Please log in again.',
-  },
-  errors: {
-    invalidCredentials: 'Invalid email or password.',
-    sessionExpired: 'Your session has expired. Please log in again.',
-  },
   success: {
+    loggedIn: 'You are logged in.',
     loggedOut: 'You have been logged out.',
-    loggedIn: 'You have been logged in.',
   },
 };

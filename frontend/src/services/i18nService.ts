@@ -1,5 +1,5 @@
 import type { I18nType } from 'src/types/i18n.types';
-import { applyLocale } from 'src/utils/i18nUtil';
+import { isValidLocale, storeLocale } from 'src/utils/i18nUtil';
 import { Service } from './Service';
 
 /**
@@ -25,7 +25,11 @@ export class I18nService extends Service {
    * Changes the locale and stores it.
    */
   changeLocale(locale: string): void {
-    applyLocale(this.i18n, locale);
+    if (isValidLocale(locale)) {
+      this.i18n.global.locale.value = locale;
+
+      storeLocale(locale);
+    }
   }
 
   /**

@@ -12,6 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Tenant global middleware. Do not remove.
         $middleware->append(TenantMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

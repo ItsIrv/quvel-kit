@@ -1,15 +1,14 @@
+import { ZodSchema, ZodIssueCode, ZodIssue } from 'zod';
 import type { ServiceContainer } from './ServiceContainer';
-import type { ZodSchema } from 'zod';
-import { validateOrError } from 'src/utils/validationUtil';
 import type { BootableService } from 'src/types/service.types';
 import type { I18nService } from './I18nService';
 import { Service } from './Service';
 
 /**
- * Validation service with translation support.
+ * Validation service with translation and a scoped Zod instance.
  */
 export class ValidationService extends Service implements BootableService {
-  private i18n: I18nService | null = null;
+  private i18n!: I18nService;
 
   /**
    * Injects the container dependencies.
@@ -19,89 +18,115 @@ export class ValidationService extends Service implements BootableService {
   }
 
   /**
-   * Validates a value with optional translation.
+   * Validates a value and stops at the first error (for Quasar `rules`).
    *
-   * TODO: This only supports basic validators like email, min, max, type.
-   * Zod requires setErrorMap which will be implemented at a later time.
-   * A default message will return for now. You can also pass `translate`: false.
    * @param value - The value to validate.
    * @param schema - The Zod schema.
-   * @param field - The field name for translation (default: 'value').
-   * @param translate - Whether to translate the error message (default: true).
+   * @param attribute - The field name (e.g., "Email").
+   * @returns The first translated error or `true` if valid.
    */
-  validate<T>(
-    value: unknown,
-    schema: ZodSchema<T>,
-    field: string = 'value',
-    translate: boolean = true,
-  ): string | true {
-    if (!this.i18n) throw new Error('ValidationService is missing i18n instance.');
+  validateFirstError<T>(value: unknown, schema: ZodSchema<T>, attribute: string): string | true {
+    const result = schema.safeParse(value);
+    if (result.success) return true;
 
-    const result = validateOrError(value, schema);
-    if (result === true) return true;
+    const firstIssue = result.error.issues[0];
+    if (firstIssue) {
+      return this.translateError(firstIssue, attribute);
+    }
 
-    return translate ? this.translateError(result, field) : result;
+    return this.i18n.t('validation.generic', { attribute });
   }
 
   /**
-   * Translates a Zod error message to an i18n-friendly format.
-   * @param issue - The error message from Zod.
-   * @param field - The field name for translation.
+   * Validates a value and returns **all** translated errors.
+   *
+   * @param value - The value to validate.
+   * @param schema - The Zod schema.
+   * @param attribute - The field name (e.g., "Email").
+   * @returns An array of translated errors or `[]` if valid.
    */
-  private translateError(issue: string, field: string): string {
-    if (!this.i18n) return issue;
+  validateAllErrors<T>(value: unknown, schema: ZodSchema<T>, attribute: string): string[] {
+    const result = schema.safeParse(value);
+    if (result.success) return [];
 
-    // Extract structured parts (e.g., { min: 8 })
-    const parsed = this.parseZodMessage(issue);
-    const translationKey = `validation.${parsed.key}`;
-
-    return this.i18n.t(translationKey, { ...parsed.params, field });
+    return result.error.issues.map((issue) => this.translateError(issue, attribute));
   }
 
   /**
-   * Parses a Zod error message into a structured translation format.
-   * @param message - The full error message from Zod.
+   * Translates a Zod error message into an i18n-friendly format.
+   * @param issue - The Zod validation issue.
+   * @param attribute - The attribute name (required).
    */
-  private parseZodMessage(message: string): { key: string; params: Record<string, unknown> } {
-    if (message.includes('at least')) {
-      const match = message.match(/at least (\d+) character/);
-      return match
-        ? { key: 'minLength', params: { min: parseInt(match[1] ?? '0', 10) } }
-        : { key: 'minLength', params: {} };
-    }
+  private translateError(issue: ZodIssue, attribute: string): string {
+    const i18n = this.i18n;
 
-    if (message.includes('at most')) {
-      const match = message.match(/at most (\d+) character/);
-      return match
-        ? { key: 'maxLength', params: { max: parseInt(match[1] ?? '0', 10) } }
-        : { key: 'maxLength', params: {} };
-    }
+    switch (issue.code) {
+      case ZodIssueCode.invalid_type:
+        return i18n.t('validation.invalid_type', {
+          expectedType: issue.expected,
+          receivedType: issue.received,
+          attribute,
+        });
 
-    if (message.toLowerCase().includes('invalid email')) {
-      return { key: 'email', params: {} };
-    }
+      case ZodIssueCode.too_small:
+        return i18n.t(issue.type === 'string' ? 'validation.minLength' : 'validation.min', {
+          min: issue.minimum,
+          attribute,
+        });
 
-    if (message.toLowerCase().includes('required')) {
-      return { key: 'required', params: {} };
-    }
+      case ZodIssueCode.too_big:
+        return i18n.t(issue.type === 'string' ? 'validation.maxLength' : 'validation.max', {
+          max: issue.maximum,
+          attribute,
+        });
 
-    if (message.includes('Expected') && message.includes('received')) {
-      const match = message.match(/Expected (\w+), received (\w+)/);
-      return match
-        ? { key: 'invalid_type', params: { expectedType: match[1], receivedType: match[2] } }
-        : { key: 'invalid_type', params: {} };
-    }
+      case ZodIssueCode.invalid_string:
+        if (typeof issue.validation === 'string') {
+          return i18n.t(`validation.${issue.validation}`, { attribute });
+        }
+        return i18n.t('validation.invalid_string', { attribute });
 
-    return { key: 'default', params: {} };
+      case ZodIssueCode.invalid_enum_value:
+        return i18n.t('validation.invalid_enum_value', {
+          attribute,
+          received: issue.received,
+          options: issue.options.join(', '),
+        });
+
+      case ZodIssueCode.unrecognized_keys:
+        return i18n.t('validation.unrecognized_keys', {
+          attribute,
+          keys: issue.keys.join(', '),
+        });
+
+      case ZodIssueCode.invalid_union:
+      case ZodIssueCode.invalid_union_discriminator:
+        return i18n.t('validation.invalid_union', { attribute });
+
+      case ZodIssueCode.invalid_date:
+        return i18n.t('validation.invalid_date', { attribute });
+
+      case ZodIssueCode.not_multiple_of:
+        return i18n.t('validation.not_multiple_of', {
+          attribute,
+          multipleOf: issue.multipleOf,
+        });
+
+      case ZodIssueCode.not_finite:
+        return i18n.t('validation.not_finite', { attribute });
+
+      case ZodIssueCode.custom:
+        return i18n.t(issue.params?.translationKey || 'validation.default', { attribute });
+
+      default:
+        return issue.message || i18n.t('validation.default', { attribute });
+    }
   }
 
   /**
-   * Creates a Quasar-compatible validation rule using Vue i18n.
+   * Creates a Quasar-compatible validation rule that stops at the first error.
    */
-  createTranslatedValidationRule<T>(
-    schema: ZodSchema<T>,
-    field: string = 'Field',
-  ): (value: unknown) => string | true {
-    return (value: unknown) => this.validate(value, schema, field);
+  createInputRule<T>(schema: ZodSchema<T>, attribute: string): (value: unknown) => string | true {
+    return (value: unknown) => this.validateFirstError(value, schema, attribute);
   }
 }

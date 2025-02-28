@@ -61,7 +61,7 @@ const inputValue = computed({
     :type="type"
     class="col-12 q-mt-sm"
     :label="label"
-    :rules="schema ? [container.validation.createTranslatedValidationRule(schema, label)] : []"
+    :rules="schema ? [container.validation.createInputRule(schema, label)] : []"
     :error-message="errorMessage"
     :error="error"
   />
