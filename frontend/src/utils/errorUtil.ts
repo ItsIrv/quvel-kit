@@ -14,6 +14,7 @@ export function extractFirstError(errors: ErrorBag): string {
       return error;
     }
   }
+
   return '';
 }
 
@@ -63,7 +64,7 @@ export function LaravelErrorHandler(
               key,
               translate && context.i18n.te(value) ? context.i18n.t(value) : value,
             );
-          } else if (Array.isArray(value) && value[0]) {
+          } else if (Array.isArray(value) && value[0] && typeof value[0] === 'string') {
             context.errors.set(
               key,
               translate && context.i18n.te(value[0]) ? context.i18n.t(value[0]) : value[0],

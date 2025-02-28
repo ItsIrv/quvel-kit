@@ -45,10 +45,10 @@
 
 ### **Backend Architecture**
 
-- **Multi-tenancy with a `tenant_id` column in all relevant tables**
+- **Multi-tenancy with a single database**
 - **Modular architecture using `nWidart/laravel-modules`**
 - **RBAC built-in with roles and permissions**
-- **Session-based authentication (Sanctum coming later)**
+- **Session-based authentication with Sanctum**
 - **Socialite-based OAuth login system with secure nonce validation**
 - **Middleware for enforcing tenant-based access**
 

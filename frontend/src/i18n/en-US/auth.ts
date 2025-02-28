@@ -13,19 +13,8 @@ export default {
       welcomePage: 'Welcome Page',
     },
   },
-  validation: {
-    passwordMismatch: 'Passwords must match.',
-  },
-  errors: {
-    invalidCredentials: 'Invalid email or password.',
-    emailAlreadyInUse: 'This email is already in use.',
-    userNotFound: 'User not found.',
-  },
-  warnings: {
-    emailNotVerified: 'This account has not been verified.',
-  },
   success: {
+    loggedIn: 'You are logged in.',
     loggedOut: 'You have been logged out.',
-    loggedIn: 'You have been logged in.',
   },
 };

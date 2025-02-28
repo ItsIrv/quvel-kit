@@ -3,7 +3,8 @@
 namespace Modules\Auth\Actions;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
+use Modules\Auth\app\Services\UserAuthenticationService;
+use Modules\Auth\Enums\AuthStatusEnum;
 
 /**
  * Action to logout a user.
@@ -11,14 +12,30 @@ use Illuminate\Support\Facades\Auth;
 class UserLogoutAction
 {
     /**
-     * Handle the action.
-     *
-     * TODO: call serivce.
+     * Create a new UserLogoutAction instance.
+     * @param UserAuthenticationService $userAuthenticationService
+     */
+    public function __construct(
+        private readonly UserAuthenticationService $userAuthenticationService,
+    ) {
+    }
+
+    /**
+     * Logout the current user.
+     * @return JsonResponse
      */
     public function __invoke(): JsonResponse
     {
-        Auth::logout();
+        assert(
+            is_string(
+                __(AuthStatusEnum::LOGOUT_SUCCESS->value),
+            ),
+        );
 
-        return response()->noContent();
+        $this->userAuthenticationService->logout();
+
+        return response()->json(
+            ['message' => __(AuthStatusEnum::LOGOUT_SUCCESS->value)],
+        );
     }
 }

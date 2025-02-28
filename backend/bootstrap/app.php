@@ -12,8 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->statefulApi();
-
+        // Tenant global middleware. Do not remove.
         $middleware->append(TenantMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -183,13 +183,28 @@ export class TaskService extends Service implements BootableService {
     ): Promise<void> {
       const resolvedNotification = await resolveValue(notification);
 
-      if (resolvedNotification !== undefined && resolvedNotification !== false) {
-        showNotification(
-          isError ? 'negative' : 'positive',
-          typeof resolvedNotification === 'string'
-            ? resolvedNotification
-            : container?.i18n.t(isError ? 'task.error' : 'task.success'),
-        );
+      if (resolvedNotification === true || typeof resolvedNotification === 'string') {
+        if (typeof resolvedNotification === 'string') {
+          showNotification(isError ? 'negative' : 'positive', resolvedNotification);
+        } else {
+          let responseMessage = '';
+
+          // Try to get messages from result or errors
+          if (isError && currentErrors.value.has('message')) {
+            responseMessage =
+              currentErrors.value.get('message') || container.i18n.t('common.task.error');
+          } else {
+            // On success try to get message from result
+            console.log(currentResult.value);
+            if (typeof (currentResult.value as { message: string }).message === 'string') {
+              responseMessage = (currentResult.value as { message: string }).message;
+            } else {
+              responseMessage = container.i18n.t('common.task.success');
+            }
+          }
+
+          showNotification(isError ? 'negative' : 'positive', container.i18n.t(responseMessage));
+        }
       }
     }
 
@@ -258,5 +273,12 @@ export class TaskService extends Service implements BootableService {
       errors: task.errors,
       result: task.result,
     };
+  }
+
+  withLoading<Result = unknown, Payload = unknown>(options: TaskOptions<Result, Payload>) {
+    return this.newTask<Result, Payload>({
+      ...options,
+      showLoading: true,
+    });
   }
 }

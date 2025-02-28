@@ -7,15 +7,16 @@
  */
 import { ref } from 'vue'
 import LanguageSwitcher from 'src/components/Misc/LanguageSwitcher.vue'
-import { useSessionStore } from 'src/stores/sessionStore'
 import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
 import EmailField from 'src/components/Form/EmailField.vue';
 import PasswordField from 'src/components/Form/PasswordField.vue';
-import type { ErrorHandler } from 'src/types/task.types';
-import type { User } from 'src/models/User';
-import { useContainer } from 'src/composables/useContainer';
+// import PasswordConfirmField from 'src/components/Form/PasswordConfirmField.vue';
 import TaskErrors from 'src/components/Common/TaskErrors.vue';
+import { useContainer } from 'src/composables/useContainer';
+import { useSessionStore } from 'src/stores/sessionStore'
 import { LaravelErrorHandler } from 'src/utils/errorUtil';
+import type { User } from 'src/models/User';
+import type { ErrorHandler } from 'src/types/task.types';
 
 /**
  * Services
@@ -117,6 +118,13 @@ const logoutTask = container.task.newFrozenTask({
             :error-message="(loginTask.errors.value.get('password') as string) ?? ''"
             :error="loginTask.errors.value.has('password')"
           />
+
+          <!--
+          <PasswordConfirmField
+            v-model="passwordConfirmation"
+            :error-message="(loginTask.errors.value.get('password_confirmation') as string) ?? ''"
+            :error="loginTask.errors.value.has('password_confirmation')"
+          /> -->
 
           <q-btn
             color="primary"

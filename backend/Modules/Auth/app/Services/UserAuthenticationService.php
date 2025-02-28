@@ -16,7 +16,7 @@ class UserAuthenticationService
      *
      * @param string $email
      * @param string $password
-     * @return User
+     * @return bool
      * @throws BadRequestException
      */
     public function attempt(string $email, string $password): bool
@@ -25,5 +25,10 @@ class UserAuthenticationService
             'email'    => $email,
             'password' => $password,
         ]);
+    }
+
+    public function logout(): void
+    {
+        Auth::logout();
     }
 }
