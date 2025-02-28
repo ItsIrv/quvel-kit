@@ -25,9 +25,9 @@ For more details, see **[Frontend Usage](./frontend-usage.md)**.
 
 ---
 
-## 📌 **Frontend Sections**
+## **Frontend Sections**
 
-### **1️⃣ Frontend Usage**  
+### **Frontend Usage**  
 
 **[Read More →](./frontend-usage.md)**
 
@@ -35,7 +35,7 @@ For more details, see **[Frontend Usage](./frontend-usage.md)**.
 - Debugging & environment variables
 - Hot reloading & logs
 
-### **2️⃣ Service Container**  
+### **Service Container**  
 
 **[Read More →](./frontend-service-container.md)**
 
@@ -43,7 +43,7 @@ For more details, see **[Frontend Usage](./frontend-usage.md)**.
 - Dynamic service registration
 - Dependency injection & SSR compatibility
 
-### **3️⃣ Task Management**  
+### **Task Management**  
 
 **[Read More →](./frontend-task-management.md)**
 
@@ -51,7 +51,7 @@ For more details, see **[Frontend Usage](./frontend-usage.md)**.
 - Handling success & errors
 - Managing loading states
 
-### **4️⃣ Session Management**  
+### **Session Management**  
 
 **[Read More →](./frontend-session.md)**
 
@@ -59,7 +59,7 @@ For more details, see **[Frontend Usage](./frontend-usage.md)**.
 - SSR state hydration
 - Using services inside Pinia stores
 
-### **5️⃣ Validation**  
+### **Validation**  
 
 **[Read More →](./frontend-validation.md)**
 
@@ -67,14 +67,14 @@ For more details, see **[Frontend Usage](./frontend-usage.md)**.
 - Integration with Vue components
 - Translating validation errors
 
-### **6️⃣ Translations**  
+### **Translations**  
 
 **[Read More →](./frontend-translations.md)**
 
 - Managing multilingual support
 - i18n setup & language switching
 
-### **7️⃣ Component Usage**  
+### **Component Usage**  
 
 **[Read More →](./frontend-component-usage.md)**
 

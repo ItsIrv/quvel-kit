@@ -2,7 +2,6 @@
 
 namespace Modules\Auth\app\Services;
 
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 

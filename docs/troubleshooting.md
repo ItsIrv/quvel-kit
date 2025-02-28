@@ -12,6 +12,12 @@ If you encounter browser warnings about SSL certificates:
   mkcert -install
   ```
 
+- Renew the SSL certificates:
+
+  ```bash
+    mkcert -cert-file docker/certs/selfsigned.crt -key-file docker/certs/selfsigned.key quvel.127.0.0.1.nip.io api.quvel.127.0.0.1.nip.io coverage-api.quvel.127.0.0.1.nip.io coverage.quvel.127.0.0.1.nip.io second-tenant.quvel.127.0.0.1.nip.io
+  ```
+
 - Check if the SSL certificates exist:
 
   ```bash

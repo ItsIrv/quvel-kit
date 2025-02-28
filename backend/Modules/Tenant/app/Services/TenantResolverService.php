@@ -40,10 +40,13 @@ class TenantResolverService
             return $tenant;
         }
 
+        // TODO: Add a check for Cache.
         $domain = $request->getHost();
         $tenant = $this->tenantFindService->findTenantByDomain($domain);
 
         if (!$tenant) {
+            Log::info("Tenant not found for domain: $domain");
+
             throw new TenantNotFoundException();
         }
 

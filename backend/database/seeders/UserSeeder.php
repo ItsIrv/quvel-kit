@@ -20,26 +20,21 @@ class UserSeeder extends Seeder
     {
         $tenant = Tenant::first();
 
+        // Set the context for the TenantScopedModel requirements on User
         app(TenantContext::class)->set($tenant);
 
+        // Main user
         $quvelUserData = User::factory()->make([
+            'name'      => 'Quvel User',
             'email'     => 'quvel@quvel.app',
             'tenant_id' => $tenant->id,
         ])->toArray();
 
-        $quvelUserData['password'] = Hash::make('12345678');
+        $quvelUserData['password'] = Hash::make(config('quvel.default_password'));
 
         User::updateOrCreate(
             ['email' => 'quvel@quvel.app'],
             $quvelUserData,
         );
-
-        $currentUserCount = User::where('tenant_id', $tenant->id)->count();
-
-        if ($currentUserCount < 10) {
-            User::factory(10 - $currentUserCount)->create([
-                'tenant_id' => $tenant->id,
-            ]);
-        }
     }
 }

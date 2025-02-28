@@ -16,13 +16,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        foreach (self::TABLES as $table => $after) {
-            Schema::table($table, function (Blueprint $table) use ($after): void {
+        foreach (self::TABLES as $tableName => $afterColumn) {
+            Schema::table($tableName, function (Blueprint $table) use ($afterColumn): void {
                 $table->foreignId('tenant_id')
                     // TODO: To be removed. This will always be 1 when multi-tenancy is disabled.
                     // Allowing for in-development ease.
                     ->nullable()
-                    ->after($after)
+                    ->after($afterColumn)
                     ->constrained('tenants')
                     ->cascadeOnDelete()
                     ->index();

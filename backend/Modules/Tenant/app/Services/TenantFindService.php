@@ -7,13 +7,21 @@ use Modules\Tenant\app\Models\Tenant;
 class TenantFindService
 {
     /**
-     * Find a tenant by domain.
+     * Finds the parent tenant entity of the domain.
      *
      * @return Tenant|null
      */
     public function findTenantByDomain(string $domain): ?Tenant
     {
-        /** @phpstan-ignore-next-line  TODO: */
-        return Tenant::where('domain', '=', $domain)->first();
+        /** @phpstan-ignore-next-line TODO */
+        $tenant = Tenant::where('domain', '=', $domain)
+            ->orWhereHas('parent', fn ($query) => $query->where('domain', '=', $domain))
+            ->first();
+
+        if ($tenant?->parent) {
+            return $tenant->parent; // Always return the parent
+        }
+
+        return $tenant;
     }
 }

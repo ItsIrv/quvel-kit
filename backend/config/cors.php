@@ -19,7 +19,14 @@ return [
 
     'allowed_methods'          => ['GET', 'POST', 'PUT', 'PATCH', 'OPTIONS'],
 
-    'allowed_origins'          => ['https://quvel.127.0.0.1.nip.io'],
+    'allowed_origins'          => [
+        // Quasar on Docker
+        'https://quvel.127.0.0.1.nip.io',
+        'https://quvel.127.0.0.1.nip.io:3000',
+        // Quasar Local Machine
+        'https://second-tenant.quvel.127.0.0.1.nip.io',
+        'https://second-tenant.quvel.127.0.0.1.nip.io:3000',
+    ],
 
     'allowed_origins_patterns' => [],
 
