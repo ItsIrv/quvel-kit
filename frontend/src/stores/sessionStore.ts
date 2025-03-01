@@ -90,9 +90,16 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * @param password - User's password.
        */
       async login(email: string, password: string): Promise<User> {
-        const data = await this.$container.api.post<IUser>('/auth/login', { email, password });
+        // TODO: Add helpers for validating data from the backend. This could be
+        // for integrity, or for security when working with external sources.
+        const { user } = await this.$container.api.post<{ message: string; user: IUser }>(
+          '/auth/login',
+          { email, password },
+        );
 
-        this.setSession(data);
+        console.log(user);
+
+        this.setSession(user);
 
         return this.user!;
       },

@@ -5,12 +5,14 @@ export default {
       password: 'Password',
     },
     login: {
-      title: 'Login to QuVel Kit',
+      title: 'QuVel Login',
       button: 'Login',
       loggedInAs: 'Logged in as {name}',
-      logout: 'Logout',
       goTo: 'Go to',
       welcomePage: 'Welcome Page',
+    },
+    logout: {
+      button: 'Logout',
     },
   },
   success: {

@@ -87,7 +87,10 @@ class LoginUserAction
         }
 
         return response()->json(
-            ['message' => __(AuthStatusEnum::LOGIN_SUCCESS->value)],
+            [
+                'message' => __(AuthStatusEnum::LOGIN_SUCCESS->value),
+                'user'    => $user,
+            ],
             201,
         );
     }

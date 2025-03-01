@@ -1,16 +1,28 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import LanguageSwitcher from 'src/components/Misc/LanguageSwitcher.vue';
 import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
+import LoginDialog from 'src/components/Dialogs/LoginDialog.vue';
 import { useSessionStore } from 'src/stores/sessionStore';
+import UserMenu from 'src/components/MainLayout/UserMenu.vue';
 
-const { isAuthenticated, user } = useSessionStore();
+/**
+ * Pixels to hide navigation bar on scroll
+ */
+const NAV_HIDE_THRESHOLD = 50;
+
+/**
+ * Refs
+ */
+const { isAuthenticated } = storeToRefs(useSessionStore());
 const isHidden = ref(false);
+const showAuthForm = ref(false);
 
-const handleScroll = () => {
+function handleScroll() {
   const scrollY = window.scrollY;
-  isHidden.value = scrollY > 50;
-};
+  isHidden.value = scrollY > NAV_HIDE_THRESHOLD;
+}
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
@@ -23,9 +35,10 @@ onUnmounted(() => {
 
 <template>
   <div class="LandingPage min-h-screen w-screen bg-main-gradient flex flex-col items-center">
+    <!-- Header -->
     <header class="relative flex justify-center pt-6">
       <nav :class="[
-        'fixed top-6 flex items-center justify-between gap-6 px-8 py-3 rounded-full shadow-lg bg-stone-200 dark:bg-gray-800 border border-stone-100 dark:border-gray-700 transition-all duration-300 w-[90%] max-w-4xl',
+        'GenericBorder fixed top-6 flex items-center justify-between gap-6 px-8 py-3 rounded-full shadow-md GenericCardGradient transition-all duration-300 w-[90%] max-w-4xl',
         isHidden
           ? 'opacity-0 -translate-y-10 pointer-events-none'
           : 'opacity-100 translate-y-0 pointer-events-auto',
@@ -37,11 +50,11 @@ onUnmounted(() => {
           </span>
 
           <!-- Navigation Links -->
-          <ul class="hidden md:!flex gap-10 text-gray-700 dark:text-gray-300 font-mono ml-6">
+          <ul class="hidden sm:!flex gap-10 text-gray-700 dark:text-gray-300 font-mono ml-10">
             <li>
               <a
                 href="https://github.com/ItsIrv/quvel-kit/tree/main/docs"
-                class="GlowEffect transition"
+                class="SmallGlow transition"
               >
                 Docs
               </a>
@@ -50,7 +63,7 @@ onUnmounted(() => {
             <li>
               <a
                 href="https://github.com/ItsIrv/quvel-kit"
-                class="GlowEffect transition"
+                class="SmallGlow transition"
               >
                 GitHub
               </a>
@@ -60,23 +73,17 @@ onUnmounted(() => {
 
         <!-- User Section -->
         <div class="flex items-center gap-4">
-          <ThemeSwitcher />
+          <ThemeSwitcher class="SmallGlow" />
           <LanguageSwitcher class="q-hidden-sm" />
 
           <template v-if="isAuthenticated">
-            <span class="text-gray-700 dark:text-gray-300 text-sm hidden md:inline">
-              {{ user?.email }}
-            </span>
-            <img
-              src="https://i.pravatar.cc/100"
-              alt="User Avatar"
-              class="w-10 h-10 rounded-full border border-stone-400 dark:border-gray-600 shadow-sm"
-            />
+            <UserMenu />
           </template>
 
           <template v-else>
             <button
-              class="bg-transparent border border-stone-400 dark:border-gray-600 text-stone-700 dark:text-gray-300 px-4 py-1 rounded-lg shadow-md hover:bg-primary-600 transition"
+              class="bg-transparent GenericBorder SmallGlow text-stone-700 dark:text-gray-300 px-4 py-1 rounded-lg shadow-md hover:bg-primary-600 transition"
+              @click="showAuthForm = true"
             >
               Log in
             </button>
@@ -86,16 +93,20 @@ onUnmounted(() => {
     </header>
 
     <!-- Main Features Section -->
-    <section class="Features mt-32 px-8 w-full max-w-6xl text-center">
+    <section class="mt-32 px-8 w-full max-w-6xl text-center">
       <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-10">Main Features</h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div class="GenericCard">
           <h3 class="text-h5 text-gray-900 dark:text-white">Laravel & Quasar</h3>
           <p class="text-gray-600 dark:text-gray-300 q-mt-sm text-body1">
-            Run <span class="text-bold">Quasar</span> in SSR + SPA mode with
+            Run <span class="text-bold">Quasar</span> in
+            <span class="text-bold">SSR + SPA mode</span> with
             <span class="text-bold">Laravel</span> as the backend.
-            <span class="text-bold">Built-in APIs</span> to manage connections.
+            <span class="text-bold">Built-in APIs</span> to
+            <span class="text-bold">pre-fetch data</span>,
+            <span class="text-bold">validate forms</span>, and handle
+            <span class="text-bold">errors</span>.
           </p>
         </div>
 
@@ -112,8 +123,9 @@ onUnmounted(() => {
         <div class="GenericCard">
           <h3 class="text-h5 text-gray-900 dark:text-white">Optimized Development</h3>
           <p class="text-gray-600 dark:text-gray-300 q-mt-sm text-body1">
-            Get an <span class="text-bold">HTTPS Traefik-based Docker</span> setup with HMR, Testing
-            Dashboards, debugging tools, and more.
+            Get an <span class="text-bold">HTTPS Traefik-based Docker</span> setup with
+            <span class="text-bold">HMR</span>, <span class="text-bold">Testing</span>,
+            <span class="text-bold">Dashboards</span>, and those are just a few.
           </p>
         </div>
       </div>
@@ -129,52 +141,54 @@ onUnmounted(() => {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <a
           href="https://github.com/ItsIrv/quvel-kit/"
-          class="ResourceCard"
+          class="GenericCard"
         >
           <h4 class="text-xl font-semibold">GitHub</h4>
-          <p>View the QuVel Kit repository.</p>
+          <p class="text-body1">View the QuVel Kit repository.</p>
         </a>
 
         <a
           href="https://github.com/ItsIrv/quvel-kit/blob/main/docs/README.md"
-          class="ResourceCard"
+          class="GenericCard"
         >
           <h4 class="text-xl font-semibold">Docs</h4>
-          <p>Read the full documentation.</p>
+          <p class="text-body1">Read the full documentation.</p>
         </a>
 
         <a
           href="https://api.quvel.127.0.0.1.nip.io"
-          class="ResourceCard"
+          class="GenericCard"
         >
           <h4 class="text-xl font-semibold">API</h4>
-          <p>Check out the backend API.</p>
+          <p class="text-body1">Check out the backend API.</p>
         </a>
 
         <a
           href="https://coverage.quvel.127.0.0.1.nip.io/__vitest__/"
-          class="ResourceCard"
+          class="GenericCard"
         >
           <h4 class="text-xl font-semibold">Vitest</h4>
-          <p>Run frontend unit tests.</p>
+          <p class="text-body1">Run frontend unit tests.</p>
         </a>
 
         <a
           href="https://coverage-api.quvel.127.0.0.1.nip.io"
-          class="ResourceCard"
+          class="GenericCard"
         >
           <h4 class="text-xl font-semibold">Coverage Reports</h4>
-          <p>Analyze code coverage.</p>
+          <p class="text-body1">Analyze code coverage.</p>
         </a>
 
         <a
           href="http://localhost:8080"
-          class="ResourceCard"
+          class="GenericCard"
         >
           <h4 class="text-xl font-semibold">Traefik</h4>
-          <p>Manage local networking.</p>
+          <p class="text-body1">Manage local networking.</p>
         </a>
       </div>
     </section>
   </div>
+
+  <LoginDialog v-model="showAuthForm" />
 </template>

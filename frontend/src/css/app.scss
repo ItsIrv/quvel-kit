@@ -11,26 +11,59 @@
   font-size: 14px;
 }
 
-@import 'tailwindcss';
-
 /* Light Mode Gradient */
 .bg-main-gradient {
-  background: radial-gradient(
-    circle,
-    rgba(237, 237, 237, 1) 19%,
-    rgba(236, 236, 231, 1) 38%,
-    rgba(220, 205, 210, 0.6) 70%,
-    rgba(233, 233, 233, 1) 100%
-  );
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(59, 130, 246, 0.15) 20%,
+      /* Quasar Blue */ transparent 60%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(243, 85, 44, 0.1) 15%,
+      /* Laravel Orange */ transparent 60%
+    ),
+    linear-gradient(180deg, #f8f9fa, #e5e7eb); /* Soft base gradient */
 }
-
 /* Dark Mode Gradient */
 .dark .bg-main-gradient {
-  background: radial-gradient(circle, rgba(31, 41, 55, 1) 0%, rgba(17, 24, 39, 1) 100%);
+  background:
+    radial-gradient(
+      circle at 15% 25%,
+      rgba(99, 102, 241, 0.12) 10%,
+      /* Quasar Blue */ transparent 50%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(253, 106, 42, 0.08) 10%,
+      /* Laravel Orange */ transparent 50%
+    ),
+    linear-gradient(180deg, #1e293b, #111827); /* Dark neutral base */
+}
+
+/* Generic Card Gradient */
+.GenericCardGradient {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(245, 245, 245, 0.9) 40%,
+    rgba(230, 230, 230, 1) 100%
+  );
+
+  .dark & {
+    background: linear-gradient(
+      135deg,
+      rgba(40, 40, 60, 0.9) 0%,
+      rgba(30, 30, 46, 1) 60%,
+      rgba(20, 20, 30, 1) 100%
+    );
+  }
 }
 
 .GenericCard {
-  @apply p-6 rounded-lg shadow-md border border-stone-100 dark:border-gray-700 transition-all duration-300;
+  @extend .GenericCardGradient, .GenericBorder, .BigGlow;
+  @apply p-4 rounded-lg shadow-md transition-all duration-300;
 }
 
 /* Resources Section */
@@ -38,17 +71,7 @@
   @apply text-center mt-16;
 }
 
-/* Resource Cards */
-.ResourceCard {
-  @apply p-4 rounded-lg shadow-lg border border-stone-300 dark:border-gray-700 transition-all duration-300 flex flex-col items-center;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-
-  .dark & {
-    background: linear-gradient(135deg, #1e293b 0%, #111827 100%);
-  }
-}
-
-.GlowEffect {
+.SmallGlow {
   position: relative;
   transition: all 0.4s ease-in-out;
   overflow: hidden;
@@ -64,9 +87,9 @@
     border-radius: 50%;
     background: radial-gradient(
       circle,
-      rgba(225, 29, 72, 0.15) 0%,
-      rgba(255, 255, 255, 0) 70%
-    ); /* Rose Glow */
+      rgba(59, 130, 246, 0.15) 0%,
+      /* Quasar Blue */ rgba(255, 255, 255, 0) 70%
+    );
     opacity: 0;
     transition: opacity 0.4s ease-in-out;
   }
@@ -75,15 +98,57 @@
     opacity: 1;
   }
 
-  &.dark {
-    background: #1e1e2e;
-
-    &::before {
-      background: radial-gradient(
-        circle,
-        rgba(139, 92, 246, 0.15) 0%,
-        rgba(30, 30, 46, 0) 70%
-      ); /* Violet Glow */
-    }
+  /* Dark Mode Hover Fix */
+  .dark &::before {
+    background: radial-gradient(
+      circle,
+      rgba(243, 85, 44, 0.15) 0%,
+      /* Laravel Orange */ rgba(30, 30, 46, 0) 70%
+    );
   }
+}
+
+.BigGlow {
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15); /* Subtle glow */
+    background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 100%); /* Soft blue tint */
+  }
+
+  .dark &:hover {
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2); /* Dark mode violet glow */
+    background: radial-gradient(
+      circle,
+      rgba(243, 85, 44, 0.1) 0%,
+      /* Laravel Orange */ rgba(30, 30, 46, 0) 90%
+    );
+  }
+}
+
+/* Auth Dialog */
+.AuthDialog {
+  @extend .bg-main-gradient;
+  @apply p-6 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 bg-white dark:bg-gray-900 transition-all duration-300;
+  width: 100%;
+  max-width: 420px;
+}
+
+.q-menu {
+  @apply p-2 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 bg-white dark:bg-gray-900 transition-all duration-300;
+  box-shadow: none;
+}
+
+.q-item--active {
+  @apply text-orange-600;
+}
+
+.UserDropdown {
+  @apply absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 border border-gray-300 dark:border-gray-700;
+}
+
+.GenericBorder {
+  @apply border-2 border-stone-100 dark:border-gray-700;
 }

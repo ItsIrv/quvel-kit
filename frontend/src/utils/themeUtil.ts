@@ -16,6 +16,9 @@ export type ThemeOptions = (typeof themeOptions)[number];
  * Loads the theme from header cookies or the system preference.
  */
 export function loadTheme(): void {
+  // TODO: Load theme can only be called after the app has finished booting on the browser.
+  if (typeof window === 'undefined') return;
+
   const userTheme = Cookies.get(THEME_COOKIE_NAME);
 
   if (userTheme && themeOptions.includes(userTheme as ThemeOptions)) {
@@ -29,6 +32,8 @@ export function loadTheme(): void {
  * Sets the theme in local storage, Quasar Dark mode, and Tailwind classes.
  */
 export function setTheme(theme: ThemeOptions): void {
+  if (typeof window === 'undefined') return;
+
   Cookies.set(THEME_COOKIE_NAME, theme);
   Dark.set(theme === 'dark');
 

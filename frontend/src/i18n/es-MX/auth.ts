@@ -5,7 +5,7 @@ export default {
       password: 'Contraseña',
     },
     login: {
-      title: 'Iniciar sesión en QuVel Kit',
+      title: 'Iniciar sesión',
       button: 'Iniciar sesión',
       loggedInAs: 'Conectado como {name}',
       logout: 'Cerrar sesión',

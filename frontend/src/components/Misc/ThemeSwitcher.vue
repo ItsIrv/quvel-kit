@@ -6,7 +6,7 @@
     @click="toggleDarkMode"
   >
     <q-icon
-      :name="isDark ? 'eva-moon-outline' : 'eva-sun-outline'"
+      :name="isDark ? 'eva-sun-outline' : 'eva-moon-outline'"
       size="24px"
     />
   </q-btn>
