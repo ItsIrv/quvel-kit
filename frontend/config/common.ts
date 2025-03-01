@@ -55,6 +55,7 @@ export default defineConfig((ctx) => {
       ],
     },
     framework: {
+      cssAddon: false,
       config: {},
       iconSet: 'eva-icons',
       plugins: ['Cookies', 'Notify', 'LocalStorage', 'Meta', 'Loading'],

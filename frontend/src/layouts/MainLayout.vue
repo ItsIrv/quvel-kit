@@ -1,12 +1,7 @@
 <template>
-  <q-layout
-    class="MainLayout"
-    view="lHh Lpr lFf"
-  >
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+  <div class="MainLayout">
+    <router-view />
+  </div>
 </template>
 
 <style lang="scss" scoped>

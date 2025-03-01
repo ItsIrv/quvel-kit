@@ -1,47 +1,9 @@
-// Fixed max-width values (Matching TailwindCSS)
-.max-w-xs {
-  max-width: 20rem;
-} // 320px
-.max-w-sm {
-  max-width: 24rem;
-} // 384px
-.max-w-md {
-  max-width: 28rem;
-} // 448px
-.max-w-lg {
-  max-width: 32rem;
-} // 512px
-.max-w-xl {
-  max-width: 36rem;
-} // 576px
-.max-w-2xl {
-  max-width: 42rem;
-} // 672px
-.max-w-3xl {
-  max-width: 48rem;
-} // 768px
-.max-w-4xl {
-  max-width: 56rem;
-} // 896px
-.max-w-5xl {
-  max-width: 64rem;
-} // 1024px
+@import 'tailwindcss';
 
-// Dynamic screen-based max-width values (Half of Quasar breakpoints)
-.max-w-screen-xs {
-  max-width: calc(#{$breakpoint-xs} / 2);
-}
-.max-w-screen-sm {
-  max-width: calc(#{$breakpoint-sm} / 2);
-}
-.max-w-screen-md {
-  max-width: calc(#{$breakpoint-md} / 2);
-}
-.max-w-screen-lg {
-  max-width: calc(#{$breakpoint-lg} / 2);
-}
-.max-w-screen-xl {
-  max-width: 960px;
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-family-sans: 'Roboto', 'sans-serif';
 }
 
 /* Increase form error text size */
