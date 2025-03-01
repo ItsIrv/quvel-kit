@@ -3,10 +3,87 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-family-sans: 'Roboto', 'sans-serif';
+  --font-family-sans: 'var(--q-font-family)';
 }
 
 /* Increase form error text size */
 .q-field__bottom {
   font-size: 14px;
+}
+
+@import 'tailwindcss';
+
+/* Light Mode Gradient */
+.bg-main-gradient {
+  background: radial-gradient(
+    circle,
+    rgba(237, 237, 237, 1) 19%,
+    rgba(236, 236, 231, 1) 38%,
+    rgba(220, 205, 210, 0.6) 70%,
+    rgba(233, 233, 233, 1) 100%
+  );
+}
+
+/* Dark Mode Gradient */
+.dark .bg-main-gradient {
+  background: radial-gradient(circle, rgba(31, 41, 55, 1) 0%, rgba(17, 24, 39, 1) 100%);
+}
+
+.GenericCard {
+  @apply p-6 rounded-lg shadow-md border border-stone-100 dark:border-gray-700 transition-all duration-300;
+}
+
+/* Resources Section */
+.Resources {
+  @apply text-center mt-16;
+}
+
+/* Resource Cards */
+.ResourceCard {
+  @apply p-4 rounded-lg shadow-lg border border-stone-300 dark:border-gray-700 transition-all duration-300 flex flex-col items-center;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+
+  .dark & {
+    background: linear-gradient(135deg, #1e293b 0%, #111827 100%);
+  }
+}
+
+.GlowEffect {
+  position: relative;
+  transition: all 0.4s ease-in-out;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 85px;
+    height: 85px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(225, 29, 72, 0.15) 0%,
+      rgba(255, 255, 255, 0) 70%
+    ); /* Rose Glow */
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  &.dark {
+    background: #1e1e2e;
+
+    &::before {
+      background: radial-gradient(
+        circle,
+        rgba(139, 92, 246, 0.15) 0%,
+        rgba(30, 30, 46, 0) 70%
+      ); /* Violet Glow */
+    }
+  }
 }
