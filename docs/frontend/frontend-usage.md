@@ -27,11 +27,11 @@ exit            # Exit the container
 
 QuVel Kit supports running the frontend alongside your Docker environment.  
 
-To start using the frontend, on your local machine, simply execute commands as normal in your terminal.
+To start using the frontend, on your local machine, simply execute commands as normal in your terminal, but add `LOCAL=1` before the command.
 
 ```bash
-yarn dev        # SPA Mode
-yarn dev:ssr    # SSR Mode
+LOCAL=1 yarn dev        # SPA Mode
+LOCAL=1 yarn dev:ssr    # SSR Mode
 ```
 
 - By default, running locally starts at **`second-tenant`**.  

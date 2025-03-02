@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Auth\Actions\GetUserSessionAction;
 use Modules\Auth\Actions\LoginUserAction;
+use Modules\Auth\Actions\RegisterUserAction;
 use Modules\Auth\Actions\UserLogoutAction;
 
 /*
@@ -19,6 +20,7 @@ Route::group([
 ], function (): void {
     // Login
     Route::post('/login', LoginUserAction::class)->name('auth.login');
+    Route::post('/register', RegisterUserAction::class)->name('auth.register');
 
     // Authenticated
     Route::middleware(['auth'])->group(function (): void {

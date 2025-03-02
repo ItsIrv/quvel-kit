@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { emailSchema } from 'src/utils/validators/commonValidators';
+import { nameSchema } from 'src/utils/validators/commonValidators';
 import BaseField from './BaseField.vue'
 /**
  * Props
@@ -37,11 +37,11 @@ const email = computed({
 <template>
   <BaseField
     v-model="email"
-    :label="$t('auth.forms.common.email')"
-    name="email"
-    type="email"
-    autocomplete="email"
-    :schema="emailSchema()"
+    :label="$t('auth.forms.common.name')"
+    name="name"
+    type="text"
+    autocomplete="name"
+    :schema="nameSchema()"
     :error-message="errorMessage"
     :error="error"
   />

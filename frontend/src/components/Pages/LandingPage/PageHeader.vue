@@ -7,7 +7,7 @@ import AuthMenu from 'src/components/Pages/LandingPage/AuthMenu.vue';
 import MenuList from 'src/components/Pages/LandingPage/MenuList.vue';
 
 
-const emits = defineEmits(['login-click', 'open-drawer']);
+const emits = defineEmits(['login-click', 'open-right-drawer', 'open-left-drawer']);
 /**
  * Pixels to hide navigation bar on scroll
  */
@@ -52,21 +52,22 @@ onUnmounted(() => {
       </div>
 
       <!-- User Section -->
-      <div class="hidden sm:!flex items-center gap-4">
-        <AuthMenu @login-click="emits('login-click')" />
-      </div>
-
-      <div class="flex sm:!hidden items-center gap-4">
-        <AuthMenu @login-click="emits('login-click')" />
-
-        <q-btn
-          dense
-          flat
-          round
-          icon="eva-menu-outline"
-          class="sm:hidden text-gray-700 dark:text-gray-300"
-          @click="emits('open-drawer')"
+      <div class="row items-center gap-4">
+        <AuthMenu
+          @login-click="emits('login-click')"
+          @open-left-drawer="emits('open-left-drawer')"
         />
+
+        <div class="flex sm:!hidden">
+          <q-btn
+            dense
+            flat
+            round
+            icon="eva-menu-outline"
+            class="sm:hidden text-gray-700 dark:text-gray-300"
+            @click="emits('open-right-drawer')"
+          />
+        </div>
       </div>
 
     </nav>

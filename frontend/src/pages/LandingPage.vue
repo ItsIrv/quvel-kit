@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import AuthDialog from 'src/components/Dialogs/AuthDialog.vue';
-import MenuRightDrawer from 'src/components/MainLayout/Drawers/MenuRightDrawer.vue';
+import MenuRightDrawer from 'src/components/Pages/LandingPage/MenuRightDrawer.vue';
+import MenuLeftDrawer from 'src/components/Pages/LandingPage/MenuLeftDrawer.vue';
 import PageHeader from 'src/components/Pages/LandingPage/PageHeader.vue';
 import SectionFeatures from 'src/components/Pages/LandingPage/SectionFeatures.vue';
 import SectionResources from 'src/components/Pages/LandingPage/SectionResources.vue';
@@ -11,11 +12,33 @@ import PageFooter from 'src/components/Pages/LandingPage/PageFooter.vue';
  * Refs
  */
 const showAuthForm = ref(false);
-const drawerOpen = ref(false);
+const isRightDrawerOpen = ref(false);
+const isLeftDrawerOpen = ref(false);
 
+/**
+ * Methods
+ */
+
+/**
+ * Opens the login dialog
+ */
 function onLoginClick() {
   showAuthForm.value = true;
-  drawerOpen.value = false;
+  isRightDrawerOpen.value = false;
+}
+
+/**
+ * Opens the left drawer
+ */
+function onOpenLeftDrawer() {
+  isLeftDrawerOpen.value = true;
+}
+
+/**
+ * Opens the right drawer
+ */
+function onOpenRightDrawer() {
+  isRightDrawerOpen.value = true;
 }
 </script>
 
@@ -24,7 +47,8 @@ function onLoginClick() {
     <!-- Header -->
     <PageHeader
       @login-click="onLoginClick"
-      @open-drawer="drawerOpen = true"
+      @open-right-drawer="onOpenRightDrawer"
+      @open-left-drawer="onOpenLeftDrawer"
     />
 
     <!-- Main Features Section -->
@@ -37,11 +61,14 @@ function onLoginClick() {
     <PageFooter />
   </div>
 
-  <!-- Mobile Drawer -->
+  <!-- Right Drawer -->
   <MenuRightDrawer
-    v-model="drawerOpen"
+    v-model="isRightDrawerOpen"
     @login-click="onLoginClick"
   />
+
+  <!-- Left Drawer -->
+  <MenuLeftDrawer v-model="isLeftDrawerOpen" />
 
   <!-- Login Dialog -->
   <AuthDialog v-model="showAuthForm" />

@@ -31,6 +31,7 @@ interface SessionActions {
   fetchSession(): Promise<void>;
   logout(): Promise<void>;
   login(email: string, password: string): Promise<User>;
+  signUp(email: string, password: string, name: string): Promise<void>;
 }
 
 /**
@@ -100,6 +101,14 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
         this.setSession(user);
 
         return this.user!;
+      },
+
+      async signUp(email: string, password: string, name: string): Promise<void> {
+        await this.$container.api.post<{ message: string; user: IUser }>('/auth/register', {
+          email,
+          password,
+          name,
+        });
       },
     },
   },

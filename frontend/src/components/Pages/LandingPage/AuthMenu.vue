@@ -3,15 +3,31 @@ import { ref } from 'vue';
 import { useSessionStore } from 'src/stores/sessionStore';
 import { useContainer } from 'src/composables/useContainer';
 import { storeToRefs } from 'pinia';
+import { useQuasar } from 'quasar';
 
-const emits = defineEmits(['login-click']);
+/**
+ * Emits
+ */
+const emits = defineEmits(['login-click', 'open-left-drawer']);
 
-
+/**
+ * Services
+ */
 const container = useContainer();
 const sessionStore = useSessionStore();
-const { isAuthenticated } = storeToRefs(useSessionStore());
-const menuOpen = ref(false);
+const $q = useQuasar();
 
+/**
+ * Refs
+ */
+const { isAuthenticated, user } = storeToRefs(useSessionStore());
+const isDropdownOpen = ref(false);
+
+/**
+ * Logout Task
+ *
+ * Handles user logout and updates session state.
+ */
 const logoutTask = container.task.newFrozenTask({
   showNotification: {
     success: container.i18n.t('auth.success.loggedOut'),
@@ -19,9 +35,21 @@ const logoutTask = container.task.newFrozenTask({
   task: async () => {
     await sessionStore.logout();
 
-    menuOpen.value = false;
+    isDropdownOpen.value = false;
   },
 });
+
+/**
+ * Opens the dropdown menu.
+ */
+function onDropdownToggle() {
+  // On mobile, emit instead
+  if ($q.platform.is.desktop) {
+    isDropdownOpen.value = !isDropdownOpen.value;
+  } else {
+    emits('open-left-drawer');
+  }
+}
 </script>
 
 <template>
@@ -29,30 +57,45 @@ const logoutTask = container.task.newFrozenTask({
     v-if="isAuthenticated"
     class="relative"
   >
-    <!-- User Avatar -->
-    <q-btn
-      flat
-      round
-      dense
-      @click="menuOpen = !menuOpen"
-    >
-      <img
-        src="https://i.pravatar.cc/100"
-        alt="User Avatar"
-        class="w-10 h-10 rounded-full border border-stone-400 dark:border-gray-600 shadow-sm"
-      />
-    </q-btn>
+    <div class="row items-center">
+      <span
+        class="mr-6 text-xl font-bold hidden sm:!flex cursor-pointer"
+        @click="onDropdownToggle"
+      >{{ user?.name }}</span>
+
+      <!-- User Avatar -->
+      <q-btn
+        flat
+        round
+        dense
+        @click="onDropdownToggle"
+      >
+        <img
+          src="https://i.pravatar.cc/100"
+          alt="User Avatar"
+          class="w-10 h-10 rounded-full border border-stone-400 dark:border-gray-600 shadow-sm"
+        />
+      </q-btn>
+    </div>
+
 
     <!-- Dropdown Menu -->
-    <transition name="fade">
+    <transition
+      enter-active-class="animated fadeInUp"
+      leave-active-class="animated fadeOutDown"
+    >
       <div
-        v-if="menuOpen"
+        v-if="isDropdownOpen"
         class="UserDropdown"
       >
+        <!-- User Information -->
         <p class="text-sm text-gray-900 dark:text-white font-semibold">
           {{ sessionStore.user?.name }}
         </p>
+
         <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">{{ sessionStore.user?.email }}</p>
+
+        <!-- Logout Button -->
         <q-btn
           color="negative"
           class="w-full"
@@ -67,12 +110,13 @@ const logoutTask = container.task.newFrozenTask({
   </div>
 
   <template v-else>
+    <!-- Login Button -->
     <q-btn
       :ripple="false"
       class="PrimaryButton"
       @click="emits('login-click')"
     >
-      Log in
+      Login
     </q-btn>
   </template>
 </template>

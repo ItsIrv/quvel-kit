@@ -35,15 +35,21 @@ const props = defineProps({
  * - Otherwise, fallback to `message`.
  */
 const errorMessage = computed(() => {
-  return props.taskErrors.get('message')
+  const { taskErrors } = props;
+
+  // Get the first available error from `taskErrors`
+  const firstError = Array.from(taskErrors.values())[0];
+
+  // If firstError exists, use it. Otherwise, fallback to message.
+  return firstError || taskErrors.get('message') || '';
 });
 </script>
 
 <template>
   <transition
     appear
-    enter-active-class="animated fadeIn"
-    leave-active-class="animated fadeOut"
+    enter-active-class="animated fadeInUp"
+    leave-active-class="animated fadeOutDown"
   >
     <q-banner
       v-if="errorMessage"
@@ -55,5 +61,3 @@ const errorMessage = computed(() => {
     </q-banner>
   </transition>
 </template>
-
-<style scoped></style>

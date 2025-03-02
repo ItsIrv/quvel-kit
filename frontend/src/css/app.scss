@@ -11,7 +11,8 @@
 */
 
 /* Increase form error text size */
-.q-field__bottom {
+.q-field__bottom,
+.q-field__messages {
   font-size: 14px;
 }
 
@@ -38,7 +39,7 @@
  */
 
 .MainTransition {
-  @apply transition-all duration-300;
+  @apply transition-all duration-300 ease-in-out;
 }
 
 /* Light Mode Gradient */
@@ -194,7 +195,7 @@
 
 /* Auth Dialog */
 .AuthDialog {
-  @extend .DialogGradient, .GenericBorder;
+  @extend .DialogGradient, .GenericBorder, .MainTransition;
   @apply p-6 w-96 rounded-xl shadow-xl;
 }
 
@@ -251,4 +252,27 @@
   p {
     @apply text-gray-600 dark:text-gray-400 text-base;
   }
+}
+
+.slow-expand-enter-active,
+.slow-expand-leave-active {
+  transition:
+    max-height 0.8s ease-in-out,
+    opacity 0.5s ease-in-out;
+}
+
+.slow-expand-enter-from,
+.slow-expand-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+.slow-expand-enter-to,
+.slow-expand-leave-from {
+  max-height: 80px;
+  opacity: 1;
+}
+
+.q-banner {
+  @apply bg-gray-800;
 }
