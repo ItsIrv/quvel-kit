@@ -97,8 +97,8 @@ const logoutTask = container.task.newFrozenTask({
         <q-btn
           color="negative"
           class="q-mt-md"
-          :loading="logoutTask.state.value === 'active'"
-          :disabled="logoutTask.state.value === 'active'"
+          :loading="logoutTask.isActive.value"
+          :disabled="logoutTask.isActive.value"
           @click="logoutTask.run()"
         >
           {{ $t('auth.forms.login.logout') }}
@@ -137,8 +137,8 @@ const logoutTask = container.task.newFrozenTask({
             color="primary"
             class="q-mt-md"
             type="submit"
-            :loading="loginTask.state.value === 'active'"
-            :disabled="loginTask.state.value === 'active'"
+            :loading="loginTask.isActive.value"
+            :disabled="loginTask.isActive.value"
           >
             {{ $t('auth.forms.login.button') }}
           </q-btn>

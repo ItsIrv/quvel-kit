@@ -56,7 +56,7 @@ You can track task state in Vue components:
 
 ```vue
 <template>
-  <q-btn :loading="task.state.value === 'active'" @click="task.run()">
+  <q-btn :loading="task.isActive.value" @click="task.run()">
     Fetch Data
   </q-btn>
 </template>

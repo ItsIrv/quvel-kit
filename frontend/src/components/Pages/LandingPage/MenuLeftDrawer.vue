@@ -107,6 +107,7 @@ const logoutTask = container.task.newFrozenTask({
         <q-item
           clickable
           v-ripple
+          :disable="logoutTask.isActive.value"
           @click="logoutTask.run()"
         >
           <q-item-section avatar>

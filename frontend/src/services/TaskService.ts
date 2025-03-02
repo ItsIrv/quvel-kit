@@ -9,7 +9,7 @@ import type {
   TaskOptions,
   TaskState,
 } from 'src/types/task.types';
-import { ref, type Ref } from 'vue';
+import { computed, ComputedRef, ref, type Ref } from 'vue';
 import { showNotification } from 'src/utils/notifyUtil';
 import { getSafe, resolveValue } from 'src/utils/objectUtils';
 import { hideLoading, showLoading } from 'src/utils/loadingUtil';
@@ -37,6 +37,7 @@ export class TaskService extends Service implements BootableService {
   newTask<Result = unknown, Payload = unknown>(
     options: TaskOptions<Result, Payload>,
   ): {
+    isActive: ComputedRef<boolean>;
     run: typeof runTask;
     reset: typeof resetTask;
     state: Ref<TaskState>;
@@ -207,7 +208,10 @@ export class TaskService extends Service implements BootableService {
       }
     }
 
+    const isActive = computed(() => currentState.value === 'active');
+
     return {
+      isActive,
       run: runTask,
       reset: resetTask,
       state: currentState,
@@ -229,6 +233,7 @@ export class TaskService extends Service implements BootableService {
     options: TaskOptions<Result, Payload>,
     mutableProps: (keyof TaskOptions<Result, Payload>)[] = [],
   ): {
+    isActive: ComputedRef<boolean>;
     run: (customOptions?: Partial<TaskOptions<Result, Payload>>) => Promise<Result | false>;
     reset: () => void;
     state: Ref<TaskState>;
@@ -267,6 +272,7 @@ export class TaskService extends Service implements BootableService {
     return {
       run,
       reset,
+      isActive: task.isActive,
       state: task.state,
       error: task.error,
       errors: task.errors,

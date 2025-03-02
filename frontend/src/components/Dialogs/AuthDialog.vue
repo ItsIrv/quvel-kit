@@ -82,7 +82,7 @@ const signupTask = container.task.newFrozenTask<void, { email: string; password:
 /**
  * Indicates whether the login or signup task is currently active.
  */
-const isBusy = computed(() => loginTask.state.value === 'active' || signupTask.state.value === 'active');
+const isBusy = computed(() => loginTask.isActive.value || signupTask.isActive.value);
 
 /**
  * Resets all form fields to their initial values.

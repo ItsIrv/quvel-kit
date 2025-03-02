@@ -43,11 +43,14 @@ const logoutTask = container.task.newFrozenTask({
  * Opens the dropdown menu.
  */
 function onDropdownToggle() {
+  // TODO: hmm....keep drawer on both? looks kinda nice...
+  emits('open-left-drawer');
+
   // On mobile, emit instead
   if ($q.platform.is.desktop) {
-    isDropdownOpen.value = !isDropdownOpen.value;
+    // isDropdownOpen.value = !isDropdownOpen.value;
   } else {
-    emits('open-left-drawer');
+    // emits('open-left-drawer');
   }
 }
 </script>
@@ -102,7 +105,7 @@ function onDropdownToggle() {
           flat
           dense
           :label="$t('auth.forms.logout.button')"
-          :loading="logoutTask.state.value === 'active'"
+          :loading="logoutTask.isActive.value"
           @click="logoutTask.run()"
         />
       </div>
