@@ -61,8 +61,5 @@ export default defineConfig((ctx) => {
       plugins: ['Cookies', 'Notify', 'LocalStorage', 'Meta', 'Loading'],
     },
     animations: ['fadeIn', 'fadeOut'],
-    capacitor: {
-      hideSplashscreen: true,
-    },
   };
 });
