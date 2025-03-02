@@ -6,8 +6,11 @@ import QuvelKit from 'src/components/Common/QuvelKit.vue';
 import AuthMenu from 'src/components/Pages/LandingPage/AuthMenu.vue';
 import MenuList from 'src/components/Pages/LandingPage/MenuList.vue';
 
-
+/**
+ * Emits
+ */
 const emits = defineEmits(['login-click', 'open-right-drawer', 'open-left-drawer']);
+
 /**
  * Pixels to hide navigation bar on scroll
  */
@@ -19,6 +22,9 @@ const NAV_HIDE_THRESHOLD = 50;
 const { isAuthenticated } = storeToRefs(useSessionStore());
 const isHidden = ref(false);
 
+/**
+ * Handles scroll event and updates isHidden state.
+ */
 function handleScroll() {
   const scrollY = window.scrollY;
   isHidden.value = scrollY > NAV_HIDE_THRESHOLD;
@@ -36,7 +42,7 @@ onUnmounted(() => {
 <template>
   <header class="relative flex justify-center pt-6">
     <nav :class="[
-      'GenericBorder GenericCardGradient MainTransition py-2 fixed top-6 flex items-center justify-between gap-6 px-8 rounded-full shadow-md w-[90%]',
+      'LanderNav',
       isHidden
         ? 'opacity-0 -translate-y-10 pointer-events-none'
         : 'opacity-100 translate-y-0 pointer-events-auto',
@@ -69,7 +75,6 @@ onUnmounted(() => {
           />
         </div>
       </div>
-
     </nav>
   </header>
 </template>

@@ -4,7 +4,7 @@
  *
  * A dialog for logging in and signing up.
  */
-import { ref, defineProps, defineEmits, computed } from 'vue';
+import { ref, computed } from 'vue';
 import EmailField from 'src/components/Form/EmailField.vue';
 import PasswordField from 'src/components/Form/PasswordField.vue';
 import TaskErrors from 'src/components/Common/TaskErrors.vue';

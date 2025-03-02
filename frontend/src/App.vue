@@ -29,5 +29,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <router-view />
+  <router-view :class="{
+    'NativeMobile': $q.platform.is.nativeMobile,
+    'Mobile': $q.platform.is.mobile,
+  }" />
 </template>

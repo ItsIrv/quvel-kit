@@ -26,6 +26,8 @@ return [
         // Quasar Local Machine
         'https://second-tenant.quvel.127.0.0.1.nip.io',
         'https://second-tenant.quvel.127.0.0.1.nip.io:3000',
+        // Capacitor
+        'https://second-tenant.quvel.127.0.0.1.nip.io:3002',
     ],
 
     'allowed_origins_patterns' => [],

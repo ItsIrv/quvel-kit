@@ -254,6 +254,15 @@
   }
 }
 
+.LanderNav {
+  @extend .GenericBorder, .GenericCardGradient, .MainTransition;
+  @apply py-2 fixed top-6 flex items-center justify-between gap-6 px-8 rounded-full shadow-md w-[90%];
+
+  .NativeMobile & {
+    top: env(safe-area-inset-top, 0px) !important;
+  }
+}
+
 .slow-expand-enter-active,
 .slow-expand-leave-active {
   transition:

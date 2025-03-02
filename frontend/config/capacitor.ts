@@ -16,9 +16,9 @@ export default defineConfig(() => {
       //     },
       //     hmr: {
       //       protocol: 'wss',
-      //       host: isLocal ? 'second-tenant.quvel.127.0.0.1.nip.io' : '0.0.0.0',
+      //       host: '127.0.0.1',
       //       port: 9001,
-      //       clientPort: isLocal ? 9001 : 443,
+      //       clientPort: 443,
       //       path: '/hmr',
       //     },
       //     https: getCerts(),
@@ -27,8 +27,8 @@ export default defineConfig(() => {
     },
     devServer: {
       strictPort: true,
-      port: 3001,
-      host: 'quvel.127.0.0.1.nip.io',
+      port: 3002,
+      host: 'second-tenant.quvel.127.0.0.1.nip.io',
       https: getCerts(),
     },
     capacitor: {
