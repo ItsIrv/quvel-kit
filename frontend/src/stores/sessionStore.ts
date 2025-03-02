@@ -97,8 +97,6 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
           { email, password },
         );
 
-        console.log(user);
-
         this.setSession(user);
 
         return this.user!;

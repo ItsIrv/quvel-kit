@@ -195,7 +195,6 @@ export class TaskService extends Service implements BootableService {
               currentErrors.value.get('message') || container.i18n.t('common.task.error');
           } else {
             // On success try to get message from result
-            console.log(currentResult.value);
             if (typeof (currentResult.value as { message: string }).message === 'string') {
               responseMessage = (currentResult.value as { message: string }).message;
             } else {

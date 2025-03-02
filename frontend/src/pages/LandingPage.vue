@@ -5,7 +5,9 @@ import LanguageSwitcher from 'src/components/Misc/LanguageSwitcher.vue';
 import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
 import LoginDialog from 'src/components/Dialogs/LoginDialog.vue';
 import { useSessionStore } from 'src/stores/sessionStore';
-import UserMenu from 'src/components/MainLayout/UserMenu.vue';
+import QuvelKit from 'src/components/Common/QuvelKit.vue';
+import MenuRightDrawer from 'src/components/MainLayout/Drawers/MenuRightDrawer.vue';
+import AuthMenu from 'src/components/MainLayout/AuthMenu.vue';
 
 /**
  * Pixels to hide navigation bar on scroll
@@ -18,10 +20,16 @@ const NAV_HIDE_THRESHOLD = 50;
 const { isAuthenticated } = storeToRefs(useSessionStore());
 const isHidden = ref(false);
 const showAuthForm = ref(false);
+const drawerOpen = ref(false);
 
 function handleScroll() {
   const scrollY = window.scrollY;
   isHidden.value = scrollY > NAV_HIDE_THRESHOLD;
+}
+
+function onLoginClick() {
+  showAuthForm.value = true;
+  drawerOpen.value = false;
 }
 
 onMounted(() => {
@@ -34,20 +42,20 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="LandingPage min-h-screen w-screen bg-main-gradient flex flex-col items-center">
+  <div class="LandingPage MainGradient min-h-screen w-screen flex flex-col items-center">
     <!-- Header -->
     <header class="relative flex justify-center pt-6">
       <nav :class="[
-        'GenericBorder fixed top-6 flex items-center justify-between gap-6 px-8 py-3 rounded-full shadow-md GenericCardGradient transition-all duration-300 w-[90%] max-w-4xl',
+        'GenericBorder GenericCardGradient MainTransition fixed top-6 flex items-center justify-between gap-6 px-8 py-3 rounded-full shadow-md w-[90%]',
         isHidden
           ? 'opacity-0 -translate-y-10 pointer-events-none'
           : 'opacity-100 translate-y-0 pointer-events-auto',
+        isAuthenticated
+          ? 'max-w-5xl'
+          : 'max-w-2xl',
       ]">
         <div class="row items-center">
-          <!-- Branding -->
-          <span class="text-2xl font-bold text-gray-900 dark:text-white">
-            <span class="text-blue-500">Qu</span><span class="text-orange-600">Vel</span> Kit
-          </span>
+          <QuvelKit />
 
           <!-- Navigation Links -->
           <ul class="hidden sm:!flex gap-10 text-gray-700 dark:text-gray-300 font-mono ml-10">
@@ -72,23 +80,25 @@ onUnmounted(() => {
         </div>
 
         <!-- User Section -->
-        <div class="flex items-center gap-4">
+        <div class="hidden sm:!flex items-center gap-4">
           <ThemeSwitcher class="SmallGlow" />
           <LanguageSwitcher class="q-hidden-sm" />
-
-          <template v-if="isAuthenticated">
-            <UserMenu />
-          </template>
-
-          <template v-else>
-            <button
-              class="bg-transparent GenericBorder SmallGlow text-stone-700 dark:text-gray-300 px-4 py-1 rounded-lg shadow-md hover:bg-primary-600 transition"
-              @click="showAuthForm = true"
-            >
-              Log in
-            </button>
-          </template>
+          <AuthMenu @login-click="onLoginClick" />
         </div>
+
+        <div class="flex sm:!hidden items-center gap-4">
+          <AuthMenu @login-click="onLoginClick" />
+
+          <q-btn
+            dense
+            flat
+            round
+            icon="eva-menu-outline"
+            class="sm:hidden text-gray-700 dark:text-gray-300"
+            @click="drawerOpen = true"
+          />
+        </div>
+
       </nav>
     </header>
 
@@ -96,10 +106,10 @@ onUnmounted(() => {
     <section class="mt-32 px-8 w-full max-w-6xl text-center">
       <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-10">Main Features</h2>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="FeaturesGrid">
         <div class="GenericCard">
-          <h3 class="text-h5 text-gray-900 dark:text-white">Laravel & Quasar</h3>
-          <p class="text-gray-600 dark:text-gray-300 q-mt-sm text-body1">
+          <h3>Laravel & Quasar</h3>
+          <p>
             Run <span class="text-bold">Quasar</span> in
             <span class="text-bold">SSR + SPA mode</span> with
             <span class="text-bold">Laravel</span> as the backend.
@@ -111,8 +121,8 @@ onUnmounted(() => {
         </div>
 
         <div class="GenericCard">
-          <h3 class="text-h5 text-gray-900 dark:text-white">Multi-Tenant Ready</h3>
-          <p class="text-gray-600 dark:text-gray-300 q-mt-sm text-body1">
+          <h3>Multi-Tenant Ready</h3>
+          <p>
             Use <span class="text-bold">Quasar</span> to support
             <span class="text-bold">multiple devices</span>, while using
             <span class="text-bold">one Laravel API</span> and database for handling
@@ -121,8 +131,8 @@ onUnmounted(() => {
         </div>
 
         <div class="GenericCard">
-          <h3 class="text-h5 text-gray-900 dark:text-white">Optimized Development</h3>
-          <p class="text-gray-600 dark:text-gray-300 q-mt-sm text-body1">
+          <h3>Optimized Development</h3>
+          <p>
             Get an <span class="text-bold">HTTPS Traefik-based Docker</span> setup with
             <span class="text-bold">HMR</span>, <span class="text-bold">Testing</span>,
             <span class="text-bold">Dashboards</span>, and those are just a few.
@@ -190,5 +200,12 @@ onUnmounted(() => {
     </section>
   </div>
 
+  <!-- Mobile Drawer -->
+  <MenuRightDrawer
+    v-model="drawerOpen"
+    @login-click="onLoginClick"
+  />
+
+  <!-- Login Dialog -->
   <LoginDialog v-model="showAuthForm" />
 </template>

@@ -8,6 +8,7 @@ import { useSessionStore } from 'src/stores/sessionStore';
 import { LaravelErrorHandler } from 'src/utils/errorUtil';
 import type { User } from 'src/models/User';
 import type { ErrorHandler } from 'src/types/task.types';
+import QuvelKit from '../Common/QuvelKit.vue';
 
 defineProps<{ modelValue: boolean }>();
 
@@ -39,9 +40,11 @@ const loginTask = container.task.newFrozenTask<User, { email: string; password: 
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <div class="AuthDialog">
+    <div class="LoginDialog">
       <h3 class="text-h4 font-semibold text-gray-900 dark:text-white">
-        {{ $t('auth.forms.login.title') }}
+        <QuvelKit>
+          {{ $t('auth.forms.login.title') }}
+        </QuvelKit>
       </h3>
 
       <q-form
@@ -70,13 +73,13 @@ const loginTask = container.task.newFrozenTask<User, { email: string; password: 
           <q-btn
             flat
             :label="$t('common.buttons.cancel')"
-            class="text-gray-600 dark:text-gray-400"
+            class="Button"
             @click="$emit('update:modelValue', false)"
           />
 
           <q-btn
             unelevated
-            color="primary"
+            class="PrimaryButton hover:bg-primary-600"
             type="submit"
             :loading="loginTask.state.value === 'active'"
             :disabled="loginTask.state.value === 'active'"

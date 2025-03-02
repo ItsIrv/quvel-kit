@@ -2,9 +2,14 @@
 import { ref } from 'vue';
 import { useSessionStore } from 'src/stores/sessionStore';
 import { useContainer } from 'src/composables/useContainer';
+import { storeToRefs } from 'pinia';
+
+const emits = defineEmits(['login-click']);
+
 
 const container = useContainer();
 const sessionStore = useSessionStore();
+const { isAuthenticated } = storeToRefs(useSessionStore());
 const menuOpen = ref(false);
 
 const logoutTask = container.task.newFrozenTask({
@@ -20,7 +25,10 @@ const logoutTask = container.task.newFrozenTask({
 </script>
 
 <template>
-  <div class="relative">
+  <div
+    v-if="isAuthenticated"
+    class="relative"
+  >
     <!-- User Avatar -->
     <q-btn
       flat
@@ -57,6 +65,16 @@ const logoutTask = container.task.newFrozenTask({
       </div>
     </transition>
   </div>
+
+  <template v-else>
+    <q-btn
+      :ripple="false"
+      class="PrimaryButton"
+      @click="emits('login-click')"
+    >
+      Log in
+    </q-btn>
+  </template>
 </template>
 
 <style lang="scss" scoped>

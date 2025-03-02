@@ -1,5 +1,5 @@
 <template>
-  <div class="MainLayout">
+  <q-layout class="MainLayout">
     <router-view />
-  </div>
+  </q-layout>
 </template>

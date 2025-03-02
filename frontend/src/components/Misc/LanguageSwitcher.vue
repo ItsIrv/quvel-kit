@@ -3,7 +3,7 @@
     v-model="localeRef"
     :options="localeOptions"
     :label="$t('common.language')"
-    class="LanguageSwitcher desktop-only"
+    class="LanguageSwitcher"
     dense
     borderless
     emit-value

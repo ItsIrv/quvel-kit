@@ -6,13 +6,43 @@
   --font-family-sans: 'var(--q-font-family)';
 }
 
+/**
+* Quasar Defaults Changes
+*/
+
 /* Increase form error text size */
 .q-field__bottom {
   font-size: 14px;
 }
 
+.q-menu {
+  @extend .MainTransition;
+  @apply p-2 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 bg-white dark:bg-gray-900;
+  box-shadow: none;
+}
+
+.q-item--active {
+  @apply text-orange-600;
+}
+
+.q-btn {
+  @extend .SmallGlow;
+}
+
+.q-select__dialog {
+  @extend .DialogGradient;
+}
+
+/**
+ * QuVel Styles
+ */
+
+.MainTransition {
+  @apply transition-all duration-300;
+}
+
 /* Light Mode Gradient */
-.bg-main-gradient {
+.MainGradient {
   background:
     radial-gradient(
       circle at top left,
@@ -26,8 +56,9 @@
     ),
     linear-gradient(180deg, #f8f9fa, #e5e7eb); /* Soft base gradient */
 }
+
 /* Dark Mode Gradient */
-.dark .bg-main-gradient {
+.dark .MainGradient {
   background:
     radial-gradient(
       circle at 15% 25%,
@@ -40,6 +71,37 @@
       /* Laravel Orange */ transparent 50%
     ),
     linear-gradient(180deg, #1e293b, #111827); /* Dark neutral base */
+}
+
+/* Dialog Gradient */
+.DialogGradient {
+  background:
+    radial-gradient(
+      circle at top center,
+      rgba(59, 130, 246, 0.18) 15%,
+      /* Quasar Blue */ transparent 80%
+    ),
+    radial-gradient(
+      circle at bottom center,
+      rgba(243, 85, 44, 0.12) 10%,
+      /* Laravel Orange */ transparent 80%
+    ),
+    linear-gradient(170deg, #f9fafb, #e6e7eb); /* Slight angle shift for variation */
+
+  .dark & {
+    background:
+      radial-gradient(
+        circle at 20% 30%,
+        rgba(99, 102, 241, 0.14) 10%,
+        /* Quasar Blue */ transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 70%,
+        rgba(253, 106, 42, 0.1) 8%,
+        /* Laravel Orange */ transparent 50%
+      ),
+      linear-gradient(150deg, #202b3b, #12171e); /* Darker, angled blend */
+  }
 }
 
 /* Generic Card Gradient */
@@ -62,8 +124,8 @@
 }
 
 .GenericCard {
-  @extend .GenericCardGradient, .GenericBorder, .BigGlow;
-  @apply p-4 rounded-lg shadow-md transition-all duration-300;
+  @extend .GenericCardGradient, .GenericBorder, .BigGlow, .MainTransition;
+  @apply p-4 rounded-lg shadow-md;
 }
 
 /* Resources Section */
@@ -114,7 +176,7 @@
   overflow: hidden;
 
   &:hover {
-    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15); /* Subtle glow */
+    box-shadow: 0 10px 25px rgba(239, 12, 12, 0.15); /* Subtle glow */
     background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 100%); /* Soft blue tint */
   }
 
@@ -129,20 +191,9 @@
 }
 
 /* Auth Dialog */
-.AuthDialog {
-  @extend .bg-main-gradient;
-  @apply p-6 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 bg-white dark:bg-gray-900 transition-all duration-300;
-  width: 100%;
-  max-width: 420px;
-}
-
-.q-menu {
-  @apply p-2 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 bg-white dark:bg-gray-900 transition-all duration-300;
-  box-shadow: none;
-}
-
-.q-item--active {
-  @apply text-orange-600;
+.LoginDialog {
+  @extend .DialogGradient, .GenericBorder;
+  @apply p-6 w-96 rounded-xl shadow-xl;
 }
 
 .UserDropdown {
@@ -151,4 +202,28 @@
 
 .GenericBorder {
   @apply border-2 border-stone-100 dark:border-gray-700;
+}
+
+.Button {
+  @extend .SmallGlow;
+  @apply bg-transparent text-stone-700 dark:text-gray-300 px-4 py-1 rounded-lg transition;
+}
+
+.PrimaryButton {
+  @extend .GenericBorder;
+  @apply shadow-md;
+}
+
+.FeaturesGrid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+
+  & > div {
+    & > h3 {
+      @apply text-gray-900 dark:text-white text-2xl;
+    }
+
+    & > p {
+      @apply text-gray-600 dark:text-gray-300 pt-5 text-lg;
+    }
+  }
 }

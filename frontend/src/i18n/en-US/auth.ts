@@ -5,7 +5,7 @@ export default {
       password: 'Password',
     },
     login: {
-      title: 'QuVel Login',
+      title: 'Login',
       button: 'Login',
       loggedInAs: 'Logged in as {name}',
       goTo: 'Go to',
