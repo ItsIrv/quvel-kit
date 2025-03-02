@@ -30,7 +30,7 @@
 }
 
 .q-select__dialog {
-  @extend .DialogGradient;
+  @extend .MainGradient;
 }
 
 /**
@@ -134,8 +134,9 @@
 }
 
 .SmallGlow {
+  @extend .MainTransition;
+
   position: relative;
-  transition: all 0.4s ease-in-out;
   overflow: hidden;
 
   &::before {
@@ -149,7 +150,7 @@
     border-radius: 50%;
     background: radial-gradient(
       circle,
-      rgba(59, 130, 246, 0.15) 0%,
+      rgba(59, 130, 246, 0.25) 0%,
       /* Quasar Blue */ rgba(255, 255, 255, 0) 70%
     );
     opacity: 0;
@@ -171,8 +172,9 @@
 }
 
 .BigGlow {
+  @extend .MainTransition;
+
   position: relative;
-  transition: all 0.3s ease-in-out;
   overflow: hidden;
 
   &:hover {
@@ -191,7 +193,7 @@
 }
 
 /* Auth Dialog */
-.LoginDialog {
+.AuthDialog {
   @extend .DialogGradient, .GenericBorder;
   @apply p-6 w-96 rounded-xl shadow-xl;
 }
@@ -206,7 +208,7 @@
 
 .Button {
   @extend .SmallGlow;
-  @apply bg-transparent text-stone-700 dark:text-gray-300 px-4 py-1 rounded-lg transition;
+  @apply bg-transparent text-stone-700 dark:text-gray-300 px-4 py-1 rounded-lg;
 }
 
 .PrimaryButton {
@@ -225,5 +227,28 @@
     & > p {
       @apply text-gray-600 dark:text-gray-300 pt-5 text-lg;
     }
+  }
+}
+
+.LandingProjectLinks {
+  a {
+    @extend .GenericCard;
+  }
+
+  p {
+    @apply text-gray-600 dark:text-gray-400 text-lg;
+  }
+}
+
+.DrawerProjectLinks {
+  a {
+    @extend .SmallGlow;
+  }
+  h4 {
+    @apply text-lg;
+  }
+
+  p {
+    @apply text-gray-600 dark:text-gray-400 text-base;
   }
 }

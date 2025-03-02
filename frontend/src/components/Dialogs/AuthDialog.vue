@@ -10,17 +10,34 @@ import type { User } from 'src/models/User';
 import type { ErrorHandler } from 'src/types/task.types';
 import QuvelKit from '../Common/QuvelKit.vue';
 
+/**
+ * Props
+ */
 defineProps<{ modelValue: boolean }>();
 
+/**
+ * Emits
+ */
 const emit = defineEmits(['update:modelValue']);
 
+/**
+ * Composables
+ */
 const container = useContainer();
 const sessionStore = useSessionStore();
 
+/**
+ * Refs
+ */
 const email = ref('quvel@quvel.app');
 const password = ref('12345678');
 const loginForm = ref<HTMLFormElement>();
 
+/**
+ * Login Task
+ *
+ * Handles user login and updates session state.
+ */
 const loginTask = container.task.newFrozenTask<User, { email: string; password: string }>({
   showNotification: {
     success: () => container.i18n.t('auth.success.loggedIn'),
@@ -40,7 +57,7 @@ const loginTask = container.task.newFrozenTask<User, { email: string; password: 
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <div class="LoginDialog">
+    <div class="AuthDialog">
       <h3 class="text-h4 font-semibold text-gray-900 dark:text-white">
         <QuvelKit>
           {{ $t('auth.forms.login.title') }}
@@ -68,6 +85,10 @@ const loginTask = container.task.newFrozenTask<User, { email: string; password: 
           class="mt-4"
           :task-errors="loginTask.errors.value"
         />
+
+        <div class="pt-4">
+          Need an account? <a href="/register">Register</a>
+        </div>
 
         <div class="mt-6 flex justify-end gap-4">
           <q-btn

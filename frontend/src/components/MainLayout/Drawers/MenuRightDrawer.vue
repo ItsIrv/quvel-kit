@@ -6,6 +6,7 @@
 import { computed } from 'vue';
 import LanguageSwitcher from 'src/components/Misc/LanguageSwitcher.vue';
 import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
+import ProjectLinks from 'src/components/Pages/LandingPage/ProjectLinks.vue';
 
 /**
  * Props
@@ -37,6 +38,7 @@ const inputValue = computed({
     class="MainGradient"
     side="right"
     overlay
+    behavior="mobile"
   >
     <div class="p-6 flex flex-col gap-4">
       <div class="row gap-8 mx-auto">
@@ -46,21 +48,10 @@ const inputValue = computed({
 
       <q-separator />
 
-      <a
-        href="https://github.com/ItsIrv/quvel-kit/tree/main/docs"
-        class="text-lg text-gray-700 dark:text-gray-300"
-      >
-        Docs
-      </a>
-
-      <a
-        href="https://github.com/ItsIrv/quvel-kit"
-        class="text-lg text-gray-700 dark:text-gray-300"
-      >
-        GitHub
-      </a>
-
-      <q-separator />
+      <!-- Project Links -->
+      <ProjectLinks class="DrawerProjectLinks col space-y-6 text-gray-700 dark:text-gray-300 font-mono" />
     </div>
   </q-drawer>
 </template>
+
+<style lang="scss"></style>
