@@ -17,7 +17,7 @@
       </div>
 
       <div class="GenericCard">
-        <h3>Multi-Tenant Ready</h3>
+        <h3>Multiply Your Reach</h3>
         <p>
           Use <span class="text-bold">Quasar</span> to support
           <span class="text-bold">multiple devices</span>, while using

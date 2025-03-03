@@ -13,6 +13,8 @@ type StateUser = User | null | undefined;
  */
 interface SessionState {
   user: StateUser;
+  /** Don't try to re-authenticate when hydrating */
+  hasRun: boolean;
 }
 
 /**
@@ -41,7 +43,8 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
   'session',
   {
     state: (): SessionState => ({
-      user: undefined,
+      user: null,
+      hasRun: false,
     }),
 
     getters: {
@@ -62,6 +65,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * @param data - User data from API response.
        */
       setSession(data: IUser) {
+        this.user = null;
         this.user = createUserFromApi(data);
       },
 
@@ -69,11 +73,13 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Fetches the user session from the API if not previously attempted.
        */
       async fetchSession(): Promise<void> {
-        if (this.user === undefined) {
+        if (!this.hasRun) {
           const { data } = await this.$container.api.get<{ data: IUser }>('/auth/session');
 
           this.setSession(data);
         }
+
+        this.hasRun = true;
       },
 
       /**

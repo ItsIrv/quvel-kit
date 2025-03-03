@@ -12,12 +12,12 @@ export default {
       loggedInAs: 'Logged in as {name}',
       goTo: 'Go to',
       welcomePage: 'Welcome Page',
-      link: 'Have an account? Login',
+      link: 'Have an account?',
     },
     signup: {
       title: 'Sign Up',
       button: 'Sign Up',
-      link: 'Need an account? Sign Up',
+      link: 'Need an account?',
     },
     logout: {
       button: 'Logout',

@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { useSessionStore } from 'src/stores/sessionStore';
 import { useContainer } from 'src/composables/useContainer';
-import { storeToRefs } from 'pinia';
 import { useQuasar } from 'quasar';
 
 /**
@@ -20,7 +19,6 @@ const $q = useQuasar();
 /**
  * Refs
  */
-const { isAuthenticated, user } = storeToRefs(useSessionStore());
 const isDropdownOpen = ref(false);
 
 /**
@@ -43,29 +41,25 @@ const logoutTask = container.task.newFrozenTask({
  * Opens the dropdown menu.
  */
 function onDropdownToggle() {
-  // TODO: hmm....keep drawer on both? looks kinda nice...
-  emits('open-left-drawer');
-
   // On mobile, emit instead
   if ($q.platform.is.desktop) {
-    // isDropdownOpen.value = !isDropdownOpen.value;
+    isDropdownOpen.value = !isDropdownOpen.value;
   } else {
-    // emits('open-left-drawer');
+    emits('open-left-drawer');
   }
 }
 </script>
 
 <template>
   <div
-    v-if="isAuthenticated"
+    v-if="sessionStore.isAuthenticated"
     class="relative"
   >
     <div class="row items-center">
       <span
         class="mr-6 text-xl font-bold hidden sm:!flex cursor-pointer"
         @click="onDropdownToggle"
-      >{{ user?.name }}</span>
-
+      >{{ sessionStore.user?.name }}</span>
       <!-- User Avatar -->
       <q-btn
         flat
@@ -123,15 +117,3 @@ function onDropdownToggle() {
     </q-btn>
   </template>
 </template>
-
-<style lang="scss" scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease-in-out;
-}
-
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

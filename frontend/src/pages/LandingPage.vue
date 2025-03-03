@@ -25,6 +25,7 @@ const isLeftDrawerOpen = ref(false);
 function onLoginClick() {
   showAuthForm.value = true;
   isRightDrawerOpen.value = false;
+  isLeftDrawerOpen.value = false;
 }
 
 /**

@@ -4,6 +4,7 @@ import common from './config/common';
 import ssr from './config/ssr';
 import spa from './config/spa';
 import capacitor from './config/capacitor';
+import electron from './config/electron';
 
 /**
  * Gets the common config and the config for the current mode
@@ -21,6 +22,9 @@ export default defineConfig(async (ctx) => {
       break;
     case 'capacitor':
       modeConfig = await capacitor(ctx);
+      break;
+    case 'electron':
+      modeConfig = await electron(ctx);
       break;
   }
 

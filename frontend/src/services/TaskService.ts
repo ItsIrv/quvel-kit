@@ -17,12 +17,21 @@ import type { BootableService } from 'src/types/service.types';
 import { Service } from './Service';
 import type { ServiceContainer } from './ServiceContainer';
 import { ErrorBag } from 'src/types/error.types';
+import { LaravelErrorHandler } from 'src/utils/errorUtil';
 
 /**
  * Task Service - Manages async operations with built-in error handling, notifications, and loading.
  */
 export class TaskService extends Service implements BootableService {
+  /** Reference the whole container to provide helpers to the handlers */
   private container: ServiceContainer | null = null;
+
+  /**
+   * Common error handlers.
+   */
+  readonly errorHandlers = Object.freeze({
+    Laravel: LaravelErrorHandler,
+  });
 
   /**
    * Injects the service container dependencies.

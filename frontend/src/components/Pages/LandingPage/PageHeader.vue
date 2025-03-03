@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref } from 'vue';
-import { storeToRefs } from 'pinia';
 import { useSessionStore } from 'src/stores/sessionStore';
 import QuvelKit from 'src/components/Common/QuvelKit.vue';
 import AuthMenu from 'src/components/Pages/LandingPage/AuthMenu.vue';
@@ -19,7 +18,7 @@ const NAV_HIDE_THRESHOLD = 50;
 /**
  * Refs
  */
-const { isAuthenticated } = storeToRefs(useSessionStore());
+const sessionStore = useSessionStore();
 const isHidden = ref(false);
 
 /**
@@ -46,7 +45,7 @@ onUnmounted(() => {
       isHidden
         ? 'opacity-0 -translate-y-10 pointer-events-none'
         : 'opacity-100 translate-y-0 pointer-events-auto',
-      isAuthenticated
+      sessionStore.isAuthenticated
         ? 'max-w-5xl'
         : 'max-w-2xl',
     ]">

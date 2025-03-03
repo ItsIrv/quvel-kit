@@ -5,18 +5,17 @@
  * A dialog for logging in and signing up.
  */
 import { ref, computed } from 'vue';
+import { useContainer } from 'src/composables/useContainer';
+import { useSessionStore } from 'src/stores/sessionStore';
+import type { User } from 'src/models/User';
+import type { ErrorHandler } from 'src/types/task.types';
+import QuvelKit from 'src/components/Common/QuvelKit.vue';
 import EmailField from 'src/components/Form/EmailField.vue';
 import PasswordField from 'src/components/Form/PasswordField.vue';
 import TaskErrors from 'src/components/Common/TaskErrors.vue';
-import { useContainer } from 'src/composables/useContainer';
-import { useSessionStore } from 'src/stores/sessionStore';
-import { LaravelErrorHandler } from 'src/utils/errorUtil';
-import type { User } from 'src/models/User';
-import type { ErrorHandler } from 'src/types/task.types';
-import QuvelKit from '../Common/QuvelKit.vue';
-import PasswordConfirmField from '../Form/PasswordConfirmField.vue';
-import NameField from '../Form/NameField.vue';
-import SlowExpand from '../Transition/SlowExpand.vue';
+import PasswordConfirmField from 'src/components/Form/PasswordConfirmField.vue';
+import NameField from 'src/components/Form/NameField.vue';
+import SlowExpand from 'src/components/Transition/SlowExpand.vue';
 
 /**
  * Props
@@ -29,7 +28,7 @@ defineProps<{ modelValue: boolean }>();
 const emit = defineEmits(['update:modelValue']);
 
 /**
- * Composables
+ * Services
  */
 const container = useContainer();
 const sessionStore = useSessionStore();
@@ -54,10 +53,9 @@ const loginTask = container.task.newFrozenTask<User, { email: string; password: 
     success: () => container.i18n.t('auth.success.loggedIn'),
   },
   task: async () => await sessionStore.login(email.value, password.value),
-  errorHandlers: <ErrorHandler[]>[LaravelErrorHandler()],
+  errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
   successHandlers: () => {
-    email.value = '';
-    password.value = '';
+    resetForms();
     emit('update:modelValue', false);
   },
 });
@@ -72,7 +70,7 @@ const signupTask = container.task.newFrozenTask<void, { email: string; password:
     success: () => container.i18n.t('auth.success.signedUp'),
   },
   task: async () => await sessionStore.signUp(email.value, password.value, name.value),
-  errorHandlers: <ErrorHandler[]>[LaravelErrorHandler()],
+  errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
   successHandlers: () => {
     emit('update:modelValue', false);
     resetForms();
@@ -98,6 +96,11 @@ function resetForms() {
   signupTask.reset();
 }
 
+/**
+ * Sets the dialog type.
+ *
+ * Resets all form fields to their initial values.
+ */
 function setDialogType(type: 'login' | 'signup') {
   dialogType.value = type;
   resetForms();
@@ -122,12 +125,14 @@ function onAuthFormSubmit() {
     @before-show="resetForms(); setDialogType('login')"
   >
     <q-card class="AuthDialog duration-1000 relative overflow-hidden">
+      <!-- Title -->
       <h3 class="text-h4 font-semibold text-gray-900 dark:text-white">
         <QuvelKit>
           {{ $t(dialogType === 'login' ? 'auth.forms.login.title' : 'auth.forms.signup.title') }}
         </QuvelKit>
       </h3>
 
+      <!-- Form -->
       <q-form
         @submit.prevent="onAuthFormSubmit"
         ref="authForm"
@@ -165,26 +170,40 @@ function onAuthFormSubmit() {
           </div>
         </SlowExpand>
 
+        <!-- Errors -->
         <TaskErrors
           class="mt-4"
           :task-errors="dialogType === 'login' ? loginTask.errors.value : signupTask.errors.value"
         />
 
+        <!-- Links -->
         <div class="pt-4 text-base">
-          <a
-            v-if="dialogType === 'login'"
-            @click="setDialogType('signup')"
-          >
+          <span v-if="dialogType === 'login'">
             {{ $t('auth.forms.signup.link') }}
-          </a>
-          <a
-            v-if="dialogType === 'signup'"
-            @click="setDialogType('login')"
-          >
-            {{ $t('auth.forms.login.link') }}
-          </a>
+
+            <a
+              class="underline cursor-pointer"
+              @click="setDialogType('signup')"
+            >
+              {{ $t('auth.forms.signup.button') }}
+            </a>
+          </span>
+
+
+          <span v-if="dialogType === 'signup'">
+            {{ $t('auth.forms.signup.link') }}
+
+            <a
+              class="underline cursor-pointer"
+              @click="setDialogType('login')"
+            >
+              {{ $t('auth.forms.login.button') }}
+            </a>
+          </span>
+
         </div>
 
+        <!-- Buttons -->
         <div class="mt-6 flex justify-end gap-4">
           <q-btn
             flat
@@ -206,7 +225,5 @@ function onAuthFormSubmit() {
         </div>
       </q-form>
     </q-card>
-
   </q-dialog>
-
 </template>

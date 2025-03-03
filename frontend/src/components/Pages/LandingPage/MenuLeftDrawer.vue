@@ -65,6 +65,7 @@ const logoutTask = container.task.newFrozenTask({
           class="w-12 h-12 rounded-full border border-stone-400 dark:border-gray-600 shadow-sm"
         />
 
+        <!-- User Name -->
         <div class="flex flex-col">
           <p class="text-lg font-semibold text-gray-900 dark:text-white">
             {{ sessionStore.user?.name }}
@@ -122,10 +123,3 @@ const logoutTask = container.task.newFrozenTask({
     </div>
   </q-drawer>
 </template>
-
-<style lang="scss">
-/* Customize the drawer look */
-.q-drawer {
-  max-width: 280px;
-}
-</style>

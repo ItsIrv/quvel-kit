@@ -27,11 +27,14 @@ exit            # Exit the container
 
 QuVel Kit supports running the frontend alongside your Docker environment.  
 
-To start using the frontend, on your local machine, simply execute commands as normal in your terminal, but add `LOCAL=1` before the command.
+To start using the frontend, on your local machine, simply execute commands as normal in your terminal, but add `LOCAL=1` before the command. This lets the Quasar configuration helpers to set the appropriate environment variables.
+I have set up some shortcuts for you.
 
 ```bash
-LOCAL=1 yarn dev        # SPA Mode
-LOCAL=1 yarn dev:ssr    # SSR Mode
+LOCAL=1 yarn dev-local        # SPA Mode
+LOCAL=1 yarn dev-local:ssr    # SSR Mode
+        yarn dev:ios # Always runs in local
+        yarn dev:electron # Always runs in local
 ```
 
 - By default, running locally starts at **`second-tenant`**.  
@@ -40,6 +43,7 @@ LOCAL=1 yarn dev:ssr    # SSR Mode
 ```bash
 https://quvel.127.0.0.1.nip.io:3000/ # Main Quvel
 https://second-tenant.quvel.127.0.0.1.nip.io/ # Second Tenant
+https://second-tenant.quvel.127.0.0.1.nip.io:3001 # Capacitor
 ```
 
 - Please note the port `3000` at the end of URLs. Due to the nip.io domain routing system, domains on your local machine can be anything, ie <https://not-quvel.127.0.0.1.nip.io:3000>. This just routes you to 127.0.0.1:3000 under the hood.
