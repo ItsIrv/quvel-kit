@@ -4,11 +4,9 @@
     :options="localeOptions"
     :label="$t('common.language')"
     class="LanguageSwitcher"
-    dense
     borderless
     emit-value
     map-options
-    options-dense
   />
 </template>
 

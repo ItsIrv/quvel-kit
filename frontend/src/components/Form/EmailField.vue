@@ -40,6 +40,7 @@ const email = computed({
     :label="$t('auth.forms.common.email')"
     name="email"
     type="email"
+    autocomplete="email"
     :schema="emailSchema()"
     :error-message="errorMessage"
     :error="error"

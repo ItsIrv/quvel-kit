@@ -1,50 +1,287 @@
-// Fixed max-width values (Matching TailwindCSS)
-.max-w-xs {
-  max-width: 20rem;
-} // 320px
-.max-w-sm {
-  max-width: 24rem;
-} // 384px
-.max-w-md {
-  max-width: 28rem;
-} // 448px
-.max-w-lg {
-  max-width: 32rem;
-} // 512px
-.max-w-xl {
-  max-width: 36rem;
-} // 576px
-.max-w-2xl {
-  max-width: 42rem;
-} // 672px
-.max-w-3xl {
-  max-width: 48rem;
-} // 768px
-.max-w-4xl {
-  max-width: 56rem;
-} // 896px
-.max-w-5xl {
-  max-width: 64rem;
-} // 1024px
+@import 'tailwindcss';
 
-// Dynamic screen-based max-width values (Half of Quasar breakpoints)
-.max-w-screen-xs {
-  max-width: calc(#{$breakpoint-xs} / 2);
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-family-sans: 'var(--q-font-family)';
 }
-.max-w-screen-sm {
-  max-width: calc(#{$breakpoint-sm} / 2);
-}
-.max-w-screen-md {
-  max-width: calc(#{$breakpoint-md} / 2);
-}
-.max-w-screen-lg {
-  max-width: calc(#{$breakpoint-lg} / 2);
-}
-.max-w-screen-xl {
-  max-width: 960px;
-}
+
+/**
+* Quasar Defaults Changes
+*/
 
 /* Increase form error text size */
-.q-field__bottom {
+.q-field__bottom,
+.q-field__messages {
   font-size: 14px;
+}
+
+.q-menu {
+  @extend .MainTransition;
+  @apply p-2 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 bg-white dark:bg-gray-900;
+  box-shadow: none;
+}
+
+.q-item--active {
+  @apply text-orange-600;
+}
+
+.q-btn {
+  @extend .SmallGlow;
+}
+
+.q-select__dialog {
+  @extend .MainGradient;
+}
+
+/**
+ * QuVel Styles
+ */
+
+.MainTransition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Light Mode Gradient */
+.MainGradient {
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(59, 130, 246, 0.15) 20%,
+      /* Quasar Blue */ transparent 60%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(243, 85, 44, 0.1) 15%,
+      /* Laravel Orange */ transparent 60%
+    ),
+    linear-gradient(180deg, #f8f9fa, #e5e7eb); /* Soft base gradient */
+}
+
+/* Dark Mode Gradient */
+.dark .MainGradient {
+  background:
+    radial-gradient(
+      circle at 15% 25%,
+      rgba(99, 102, 241, 0.12) 10%,
+      /* Quasar Blue */ transparent 50%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(253, 106, 42, 0.08) 10%,
+      /* Laravel Orange */ transparent 50%
+    ),
+    linear-gradient(180deg, #1e293b, #111827); /* Dark neutral base */
+}
+
+/* Dialog Gradient */
+.DialogGradient {
+  background:
+    radial-gradient(
+      circle at top center,
+      rgba(59, 130, 246, 0.18) 15%,
+      /* Quasar Blue */ transparent 80%
+    ),
+    radial-gradient(
+      circle at bottom center,
+      rgba(243, 85, 44, 0.12) 10%,
+      /* Laravel Orange */ transparent 80%
+    ),
+    linear-gradient(170deg, #f9fafb, #e6e7eb); /* Slight angle shift for variation */
+
+  .dark & {
+    background:
+      radial-gradient(
+        circle at 20% 30%,
+        rgba(99, 102, 241, 0.14) 10%,
+        /* Quasar Blue */ transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 70%,
+        rgba(253, 106, 42, 0.1) 8%,
+        /* Laravel Orange */ transparent 50%
+      ),
+      linear-gradient(150deg, #202b3b, #12171e); /* Darker, angled blend */
+  }
+}
+
+/* Generic Card Gradient */
+.GenericCardGradient {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(245, 245, 245, 0.9) 40%,
+    rgba(230, 230, 230, 1) 100%
+  );
+
+  .dark & {
+    background: linear-gradient(
+      135deg,
+      rgba(40, 40, 60, 0.9) 0%,
+      rgba(30, 30, 46, 1) 60%,
+      rgba(20, 20, 30, 1) 100%
+    );
+  }
+}
+
+.GenericCard {
+  @extend .GenericCardGradient, .GenericBorder, .BigGlow, .MainTransition;
+  @apply p-4 rounded-lg shadow-md;
+}
+
+/* Resources Section */
+.Resources {
+  @apply text-center mt-16;
+}
+
+.SmallGlow {
+  @extend .MainTransition;
+
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 85px;
+    height: 85px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(59, 130, 246, 0.25) 0%,
+      /* Quasar Blue */ rgba(255, 255, 255, 0) 70%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  /* Dark Mode Hover Fix */
+  .dark &::before {
+    background: radial-gradient(
+      circle,
+      rgba(243, 85, 44, 0.15) 0%,
+      /* Laravel Orange */ rgba(30, 30, 46, 0) 70%
+    );
+  }
+}
+
+.BigGlow {
+  @extend .MainTransition;
+
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: 0 10px 25px rgba(239, 12, 12, 0.15); /* Subtle glow */
+    background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 100%); /* Soft blue tint */
+  }
+
+  .dark &:hover {
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2); /* Dark mode violet glow */
+    background: radial-gradient(
+      circle,
+      rgba(243, 85, 44, 0.1) 0%,
+      /* Laravel Orange */ rgba(30, 30, 46, 0) 90%
+    );
+  }
+}
+
+/* Auth Dialog */
+.AuthDialog {
+  @extend .DialogGradient, .GenericBorder, .MainTransition;
+  @apply p-6 w-96 rounded-xl shadow-xl;
+}
+
+.UserDropdown {
+  @apply absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 border border-gray-300 dark:border-gray-700;
+}
+
+.GenericBorder {
+  @apply border-2 border-stone-100 dark:border-gray-700;
+}
+
+.Button {
+  @extend .SmallGlow;
+  @apply bg-transparent text-stone-700 dark:text-gray-300 px-4 py-1 rounded-lg;
+}
+
+.PrimaryButton {
+  @extend .GenericBorder;
+  @apply shadow-md;
+}
+
+.FeaturesGrid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+
+  & > div {
+    & > h3 {
+      @apply text-gray-900 dark:text-white text-2xl;
+    }
+
+    & > p {
+      @apply text-gray-600 dark:text-gray-300 pt-5 text-lg;
+    }
+  }
+}
+
+.LandingProjectLinks {
+  a {
+    @extend .GenericCard;
+  }
+
+  p {
+    @apply text-gray-600 dark:text-gray-400 text-lg;
+  }
+}
+
+.DrawerProjectLinks {
+  a {
+    @extend .SmallGlow;
+  }
+  h4 {
+    @apply text-lg;
+  }
+
+  p {
+    @apply text-gray-600 dark:text-gray-400 text-base;
+  }
+}
+
+.LanderNav {
+  @extend .GenericBorder, .GenericCardGradient, .MainTransition;
+  @apply py-2 fixed top-6 flex items-center justify-between gap-6 px-8 rounded-full shadow-md w-[90%];
+
+  .NativeMobile & {
+    top: env(safe-area-inset-top, 0px) !important;
+  }
+}
+
+.slow-expand-enter-active,
+.slow-expand-leave-active {
+  transition:
+    max-height 0.8s ease-in-out,
+    opacity 0.5s ease-in-out;
+}
+
+.slow-expand-enter-from,
+.slow-expand-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+.slow-expand-enter-to,
+.slow-expand-leave-from {
+  max-height: 80px;
+  opacity: 1;
+}
+
+.q-banner {
+  @apply bg-gray-800;
 }

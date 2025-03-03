@@ -23,6 +23,10 @@ const props = defineProps({
     type: Object as () => ZodSchema<string> | undefined,
     default: undefined,
   },
+  rules: {
+    type: Array as () => ((val: string) => true | string)[],
+    default: () => [],
+  },
   errorMessage: {
     type: String,
     default: '',
@@ -50,6 +54,17 @@ const inputValue = computed({
   get: () => props.modelValue,
   set: (value) => emits('update:modelValue', value),
 });
+
+/**
+ * Computed Property for Validation Rules
+ * - If `schema` is provided, use `container.validation.createInputRule(schema, label)`.
+ * - Otherwise, use the provided `rules` array.
+ */
+const computedRules = computed(() => {
+  return props.schema
+    ? [container.validation.createInputRule(props.schema, props.label)]
+    : props.rules;
+});
 </script>
 
 <template>
@@ -57,11 +72,11 @@ const inputValue = computed({
     v-model="inputValue"
     lazy-rules
     filled
-    :autocomplete="type === 'password' ? 'current-password' : 'username'"
+    dense
     :type="type"
     class="col-12 q-mt-sm"
     :label="label"
-    :rules="schema ? [container.validation.createInputRule(schema, label)] : []"
+    :rules="computedRules"
     :error-message="errorMessage"
     :error="error"
   />

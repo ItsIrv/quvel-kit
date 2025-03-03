@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { passwordSchema } from 'src/utils/validators/commonValidators';
 import BaseField from './BaseField.vue'
 
 /**
@@ -11,13 +10,9 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  errorMessage: {
+  passwordValue: {
     type: String,
-    default: '',
-  },
-  error: {
-    type: Boolean,
-    default: false,
+    required: true,
   },
 });
 
@@ -34,16 +29,21 @@ const password = computed({
   get: () => props.modelValue,
   set: (value) => emits('update:modelValue', value),
 });
+
+const errorMessage = computed(() => {
+  return props.modelValue &&
+    props.modelValue !== props.passwordValue ? 'auth.errors.mismatch' : '';
+});
 </script>
 
 <template>
   <BaseField
     v-model="password"
-    :label="$t('auth.forms.common.password')"
+    :label="$t('auth.forms.common.passwordConfirm')"
     name="password"
     type="password"
-    :schema="passwordSchema()"
-    :error-message="errorMessage"
-    :error="error"
+    autocomplete="current-password"
+    :error-message="errorMessage ? $t(errorMessage) : ''"
+    :error="!!errorMessage"
   />
 </template>

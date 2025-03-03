@@ -42,6 +42,7 @@ const password = computed({
     :label="$t('auth.forms.common.password')"
     name="password"
     type="password"
+    autocomplete="current-password"
     :schema="passwordSchema()"
     :error-message="errorMessage"
     :error="error"

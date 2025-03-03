@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { useSessionStore } from 'src/stores/sessionStore';
 import { useXsrf } from 'src/composables/useXsrf';
-import { useTheme } from 'src/composables/useTheme';
 import { useMetaConfig } from './composables/useMetaConfig';
+import { onMounted } from 'vue';
+import { loadTheme } from './utils/themeUtil';
 
 defineOptions({
   /**
@@ -19,11 +20,17 @@ defineOptions({
   }
 })
 
-useTheme();
 useXsrf();
 useMetaConfig('A Modern Hybrid App Framework');
+
+onMounted(() => {
+  loadTheme();
+})
 </script>
 
 <template>
-  <router-view />
+  <router-view :class="{
+    'NativeMobile': $q.platform.is.nativeMobile,
+    'Mobile': $q.platform.is.mobile,
+  }" />
 </template>

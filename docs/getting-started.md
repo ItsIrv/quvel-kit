@@ -20,6 +20,11 @@ yarn -v         # Check Yarn version
 mkcert -install # Ensure mkcert is configured
 ```
 
+### iOS Capacitor Requirements
+
+- **Xcode** – Version 12.0 or higher
+- **iOS Simulator** – Version 12.0 or higher
+
 ---
 
 ## Setting Up the Project

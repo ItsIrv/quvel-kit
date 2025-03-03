@@ -19,7 +19,7 @@
 <body class="hero-container text-white flex flex-col items-center justify-center min-h-screen p-6">
   <div class="max-w-3xl bg-white/10 backdrop-blur-md rounded-lg shadow-lg p-8 text-center">
     <h1 class="text-4xl font-bold mb-4">
-      Welcome to <span class="text-primary">QuVel Kit</span>
+      Welcome to <span class="text-blue-500">Qu</span><span class="text-orange-600">Vel</span> Kit
     </h1>
     <p class="text-lg text-gray-200 mb-6">
       A full-stack hybrid starter kit for Laravel & Quasar.

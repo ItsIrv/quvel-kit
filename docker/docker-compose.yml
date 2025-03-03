@@ -91,8 +91,10 @@ services:
     working_dir: /frontend
     volumes:
       - ../frontend:/frontend # Sync frontend files
-      - /frontend/node_modules
       - '${PWD}/docker/certs:/certs' # Mount local certificates folder into the container
+      - /frontend/node_modules
+      - /frontend/.cache
+      - /frontend/.quasar
     command: ['/bin/sh', '-c', 'yarn install && yarn test:unit:ui'] # Only run Vitest UI here
     labels:
       - 'traefik.enable=true'

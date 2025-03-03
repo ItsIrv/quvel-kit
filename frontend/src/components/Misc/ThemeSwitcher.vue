@@ -6,7 +6,7 @@
     @click="toggleDarkMode"
   >
     <q-icon
-      :name="isDark ? 'eva-moon-outline' : 'eva-sun-outline'"
+      :name="isDark ? 'eva-sun-outline' : 'eva-moon-outline'"
       size="24px"
     />
   </q-btn>
@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { Dark } from 'quasar';
-import { toggleTheme } from 'src/composables/useTheme';
+import { toggleTheme } from 'src/utils/themeUtil';
 
 const isDark = computed(() => Dark.isActive);
 

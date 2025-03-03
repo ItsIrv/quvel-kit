@@ -9,7 +9,7 @@ import type {
   TaskOptions,
   TaskState,
 } from 'src/types/task.types';
-import { ref, type Ref } from 'vue';
+import { computed, ComputedRef, ref, type Ref } from 'vue';
 import { showNotification } from 'src/utils/notifyUtil';
 import { getSafe, resolveValue } from 'src/utils/objectUtils';
 import { hideLoading, showLoading } from 'src/utils/loadingUtil';
@@ -17,12 +17,21 @@ import type { BootableService } from 'src/types/service.types';
 import { Service } from './Service';
 import type { ServiceContainer } from './ServiceContainer';
 import { ErrorBag } from 'src/types/error.types';
+import { LaravelErrorHandler } from 'src/utils/errorUtil';
 
 /**
  * Task Service - Manages async operations with built-in error handling, notifications, and loading.
  */
 export class TaskService extends Service implements BootableService {
+  /** Reference the whole container to provide helpers to the handlers */
   private container: ServiceContainer | null = null;
+
+  /**
+   * Common error handlers.
+   */
+  readonly errorHandlers = Object.freeze({
+    Laravel: LaravelErrorHandler,
+  });
 
   /**
    * Injects the service container dependencies.
@@ -37,6 +46,7 @@ export class TaskService extends Service implements BootableService {
   newTask<Result = unknown, Payload = unknown>(
     options: TaskOptions<Result, Payload>,
   ): {
+    isActive: ComputedRef<boolean>;
     run: typeof runTask;
     reset: typeof resetTask;
     state: Ref<TaskState>;
@@ -195,7 +205,6 @@ export class TaskService extends Service implements BootableService {
               currentErrors.value.get('message') || container.i18n.t('common.task.error');
           } else {
             // On success try to get message from result
-            console.log(currentResult.value);
             if (typeof (currentResult.value as { message: string }).message === 'string') {
               responseMessage = (currentResult.value as { message: string }).message;
             } else {
@@ -208,7 +217,10 @@ export class TaskService extends Service implements BootableService {
       }
     }
 
+    const isActive = computed(() => currentState.value === 'active');
+
     return {
+      isActive,
       run: runTask,
       reset: resetTask,
       state: currentState,
@@ -230,6 +242,7 @@ export class TaskService extends Service implements BootableService {
     options: TaskOptions<Result, Payload>,
     mutableProps: (keyof TaskOptions<Result, Payload>)[] = [],
   ): {
+    isActive: ComputedRef<boolean>;
     run: (customOptions?: Partial<TaskOptions<Result, Payload>>) => Promise<Result | false>;
     reset: () => void;
     state: Ref<TaskState>;
@@ -268,6 +281,7 @@ export class TaskService extends Service implements BootableService {
     return {
       run,
       reset,
+      isActive: task.isActive,
       state: task.state,
       error: task.error,
       errors: task.errors,

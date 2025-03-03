@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// TODO: Keeping this file for the test suite example until I have time to make real tests.
 import { useMetaConfig } from 'src/composables/useMetaConfig';
 
 useMetaConfig('Welcome');

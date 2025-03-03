@@ -3,28 +3,30 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Auth\Actions\GetUserSessionAction;
 use Modules\Auth\Actions\LoginUserAction;
+use Modules\Auth\Actions\RegisterUserAction;
 use Modules\Auth\Actions\UserLogoutAction;
 
 /*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the 'web' middleware group. Now create something great!
-|
-*/
+ *--------------------------------------------------------------------------
+ * Auth Routes
+ *--------------------------------------------------------------------------
+ *
+ * All authentication related routes are defined here.
+ *
+ */
 
 Route::group([
     'prefix' => 'auth',
 ], function (): void {
     // Login
     Route::post('/login', LoginUserAction::class)->name('auth.login');
+    Route::post('/register', RegisterUserAction::class)->name('auth.register');
 
     // Authenticated
     Route::middleware(['auth'])->group(function (): void {
+        // Session Status Check
         Route::get('/session', GetUserSessionAction::class)->name('auth.session');
+        // Logout
         Route::post('/logout', UserLogoutAction::class)->name('auth.logout');
     });
 });

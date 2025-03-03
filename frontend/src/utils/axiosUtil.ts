@@ -38,16 +38,10 @@ export function createApi(ssrContext?: QSsrContext | null): AxiosInstance {
   if (ssrContext) {
     const cookies = Cookies.parseSSR(ssrContext);
     const sessionToken = cookies.get(SessionName);
-    const xsrfToken = cookies.get('XSRF-TOKEN');
 
     // Attach cookies (for session auth)
     api.defaults.headers.Cookie = `${SessionName}=${sessionToken}`;
-    api.defaults.headers['Host'] = process.env.VITE_API_HOST ?? '';
-
-    // Attach X-XSRF-TOKEN header
-    if (xsrfToken !== null) {
-      api.defaults.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
-    }
+    api.defaults.headers['Host'] = '';
   }
 
   return api;
