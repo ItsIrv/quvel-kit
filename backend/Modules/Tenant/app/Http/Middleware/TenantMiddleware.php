@@ -20,8 +20,8 @@ class TenantMiddleware
      * @param \Modules\Tenant\app\Contexts\TenantContext $tenantContext
      */
     public function __construct(
-        protected TenantResolverService $tenantResolver,
-        protected TenantContext $tenantContext,
+        protected readonly TenantResolverService $tenantResolver,
+        protected readonly TenantContext $tenantContext,
     ) {
     }
 

@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Services\FrontendService;
+use App\Services\User\UserCreateService;
+use App\Services\User\UserFindService;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
                 config('quvel.frontend_url'),
             )
         );
+
+        $this->app->singleton(UserCreateService::class);
+        $this->app->singleton(UserFindService::class);
     }
 
     /**

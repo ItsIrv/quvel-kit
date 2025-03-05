@@ -1,10 +1,12 @@
 <?php
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
-use Modules\Auth\Actions\GetUserSessionAction;
-use Modules\Auth\Actions\LoginUserAction;
-use Modules\Auth\Actions\RegisterUserAction;
-use Modules\Auth\Actions\UserLogoutAction;
+use Modules\Auth\Actions\Socialite\RedirectAction;
+use Modules\Auth\Actions\User\GetUserSessionAction;
+use Modules\Auth\Actions\User\LoginUserAction;
+use Modules\Auth\Actions\User\RegisterUserAction;
+use Modules\Auth\Actions\User\UserLogoutAction;
 
 /*
  *--------------------------------------------------------------------------
@@ -20,7 +22,17 @@ Route::group([
 ], function (): void {
     // Login
     Route::post('/login', LoginUserAction::class)->name('auth.login');
+    // Register
     Route::post('/register', RegisterUserAction::class)->name('auth.register');
+    // Socialite
+    Route::group([
+        'prefix' => 'provider/{provider}',
+    ], function (): void {
+        // Redirect
+        Route::get('/redirect', RedirectAction::class)->name('auth.provider.redirect');
+        // Callback
+        Route::get('/callback', fn (): string => 'OK')->name('auth.provider.callback');
+    });
 
     // Authenticated
     Route::middleware(['auth'])->group(function (): void {

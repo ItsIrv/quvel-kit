@@ -5,6 +5,8 @@ return [
         'userNotFound'       => 'User not found.',
         'invalidCredentials' => 'Invalid email or password.',
         'emailAlreadyInUse'  => 'This email is already in use.',
+        'invalidProvider'    => 'Invalid :provider.',
+        'invalidNonce'       => 'Invalid nonce.',
     ],
     'warnings' => [
         'emailNotVerified' => 'This account has not been verified.',

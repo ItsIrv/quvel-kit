@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { useQuasar } from 'quasar';
 import { useSessionStore } from 'src/stores/sessionStore';
 import { useContainer } from 'src/composables/useContainer';
-import { useQuasar } from 'quasar';
+import BackInOutUp from 'src/components/Transitions/BackInOutUp.vue';
 
 /**
  * Emits
@@ -59,7 +60,10 @@ function onDropdownToggle() {
       <span
         class="mr-6 text-xl font-bold hidden sm:!flex cursor-pointer"
         @click="onDropdownToggle"
-      >{{ sessionStore.user?.name }}</span>
+      >
+        {{ sessionStore.user?.name }}
+      </span>
+
       <!-- User Avatar -->
       <q-btn
         flat
@@ -68,7 +72,7 @@ function onDropdownToggle() {
         @click="onDropdownToggle"
       >
         <img
-          src="https://i.pravatar.cc/100"
+          src="https://i.pravatar.cc/100?img=55"
           alt="User Avatar"
           class="w-10 h-10 rounded-full border border-stone-400 dark:border-gray-600 shadow-sm"
         />
@@ -77,10 +81,7 @@ function onDropdownToggle() {
 
 
     <!-- Dropdown Menu -->
-    <transition
-      enter-active-class="animated fadeInUp"
-      leave-active-class="animated fadeOutDown"
-    >
+    <BackInOutUp>
       <div
         v-if="isDropdownOpen"
         class="UserDropdown"
@@ -95,15 +96,14 @@ function onDropdownToggle() {
         <!-- Logout Button -->
         <q-btn
           color="negative"
-          class="w-full"
+          class="block !w-full"
           flat
-          dense
           :label="$t('auth.forms.logout.button')"
           :loading="logoutTask.isActive.value"
           @click="logoutTask.run()"
         />
       </div>
-    </transition>
+    </BackInOutUp>
   </div>
 
   <template v-else>
@@ -111,6 +111,7 @@ function onDropdownToggle() {
     <q-btn
       :ripple="false"
       class="PrimaryButton"
+      unelevated
       @click="emits('login-click')"
     >
       Login

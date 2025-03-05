@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Auth\Actions;
+namespace Modules\Auth\Actions\User;
 
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\app\Services\UserAuthenticationService;

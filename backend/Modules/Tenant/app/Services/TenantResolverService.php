@@ -19,8 +19,8 @@ class TenantResolverService
      * @param \Modules\Tenant\app\Services\TenantSessionService $tenantSessionService
      */
     public function __construct(
-        protected TenantFindService $tenantFindService,
-        protected TenantSessionService $tenantSessionService,
+        protected readonly TenantFindService $tenantFindService,
+        protected readonly TenantSessionService $tenantSessionService,
     ) {
     }
 

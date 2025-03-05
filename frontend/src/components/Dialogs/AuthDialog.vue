@@ -7,7 +7,6 @@
 import { ref, computed } from 'vue';
 import { useContainer } from 'src/composables/useContainer';
 import { useSessionStore } from 'src/stores/sessionStore';
-import type { User } from 'src/models/User';
 import type { ErrorHandler } from 'src/types/task.types';
 import QuvelKit from 'src/components/Common/QuvelKit.vue';
 import EmailField from 'src/components/Form/EmailField.vue';
@@ -15,7 +14,10 @@ import PasswordField from 'src/components/Form/PasswordField.vue';
 import TaskErrors from 'src/components/Common/TaskErrors.vue';
 import PasswordConfirmField from 'src/components/Form/PasswordConfirmField.vue';
 import NameField from 'src/components/Form/NameField.vue';
-import SlowExpand from 'src/components/Transition/SlowExpand.vue';
+import SlowExpand from 'src/components/Transitions/SlowExpand.vue';
+import BackInOutUp from '../Transitions/BackInOutUp.vue';
+
+type AuthDialogType = 'login' | 'signup';
 
 /**
  * Props
@@ -32,15 +34,14 @@ const emit = defineEmits(['update:modelValue']);
  */
 const container = useContainer();
 const sessionStore = useSessionStore();
-
 /**
  * Refs
  */
-const email = ref('quvel@quvel.app');
-const name = ref('Quvel User');
-const password = ref('12345678');
-const passwordConfirm = ref('12345678');
-const dialogType = ref<'login' | 'signup'>('login');
+const email = ref('');
+const name = ref('');
+const password = ref('');
+const passwordConfirm = ref('');
+const dialogType = ref<AuthDialogType>('login');
 const authForm = ref<HTMLFormElement>();
 
 /**
@@ -48,15 +49,15 @@ const authForm = ref<HTMLFormElement>();
  *
  * Handles user login and updates session state.
  */
-const loginTask = container.task.newFrozenTask<User, { email: string; password: string }>({
+const loginTask = container.task.newFrozenTask({
   showNotification: {
     success: () => container.i18n.t('auth.success.loggedIn'),
   },
   task: async () => await sessionStore.login(email.value, password.value),
   errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
   successHandlers: () => {
-    resetForms();
     emit('update:modelValue', false);
+    resetForms();
   },
 });
 
@@ -65,7 +66,7 @@ const loginTask = container.task.newFrozenTask<User, { email: string; password: 
  *
  * Handles user signup.
  */
-const signupTask = container.task.newFrozenTask<void, { email: string; password: string }>({
+const signupTask = container.task.newFrozenTask({
   showNotification: {
     success: () => container.i18n.t('auth.success.signedUp'),
   },
@@ -81,6 +82,16 @@ const signupTask = container.task.newFrozenTask<void, { email: string; password:
  * Indicates whether the login or signup task is currently active.
  */
 const isBusy = computed(() => loginTask.isActive.value || signupTask.isActive.value);
+
+/**
+ * Indicates whether the current dialog is the login dialog.
+ */
+const isLogin = computed(() => dialogType.value === 'login');
+
+/**
+ * Indicates whether the current dialog is the signup dialog.
+ */
+const isSignup = computed(() => dialogType.value === 'signup');
 
 /**
  * Resets all form fields to their initial values.
@@ -101,7 +112,7 @@ function resetForms() {
  *
  * Resets all form fields to their initial values.
  */
-function setDialogType(type: 'login' | 'signup') {
+function setDialogType(type: AuthDialogType) {
   dialogType.value = type;
   resetForms();
 }
@@ -110,11 +121,23 @@ function setDialogType(type: 'login' | 'signup') {
  * Handles form submission based on the dialog type.
  */
 function onAuthFormSubmit() {
-  if (dialogType.value === 'login') {
+  if (isLogin.value) {
     void loginTask.run();
   } else {
     void signupTask.run();
   }
+}
+
+/**
+ * Handles the before-show event of the dialog.
+ */
+function onBeforeShow() {
+  resetForms();
+  setDialogType('login');
+}
+
+async function loginWithOAuth(provider: string) {
+  //
 }
 </script>
 
@@ -122,20 +145,43 @@ function onAuthFormSubmit() {
   <q-dialog
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
-    @before-show="resetForms(); setDialogType('login')"
+    @before-show="onBeforeShow"
   >
     <q-card class="AuthDialog duration-1000 relative overflow-hidden">
       <!-- Title -->
       <h3 class="text-h4 font-semibold text-gray-900 dark:text-white">
         <QuvelKit>
-          {{ $t(dialogType === 'login' ? 'auth.forms.login.title' : 'auth.forms.signup.title') }}
+          {{ $t(isLogin ? 'auth.forms.login.title' : 'auth.forms.signup.title') }}
         </QuvelKit>
       </h3>
 
+      <BackInOutUp>
+        <!-- Oauth providers -->
+        <div
+          v-if="isLogin"
+          class="grid grid-cols-2 gap-2 mt-4"
+        >
+          <q-btn
+            class="GenericBorder AccentGradient Button"
+            :label="$t('auth.forms.oauth.logInWith', { provider: $t('auth.forms.oauth.google') })"
+            unelevated
+            @click="loginWithOAuth('google')"
+          />
+
+          <q-btn
+            class="GenericBorder AccentGradient Button"
+            :label="$t('auth.forms.oauth.logInWith', { provider: $t('auth.forms.oauth.apple') })"
+            unelevated
+            @click="loginWithOAuth('apple')"
+          />
+        </div>
+      </BackInOutUp>
+
       <!-- Form -->
       <q-form
-        @submit.prevent="onAuthFormSubmit"
+        class="my-4"
         ref="authForm"
+        @submit.prevent="onAuthFormSubmit"
       >
         <EmailField
           v-model="email"
@@ -143,14 +189,14 @@ function onAuthFormSubmit() {
           :error="loginTask.errors.value.has('email')"
         />
 
-        <SlowExpand>
+        <BackInOutUp>
           <NameField
-            v-if="dialogType === 'signup'"
+            v-if="isSignup"
             v-model="name"
             :error-message="(loginTask.errors.value.get('name') as string) ?? ''"
             :error="loginTask.errors.value.has('name')"
           />
-        </SlowExpand>
+        </BackInOutUp>
 
         <PasswordField
           v-model="password"
@@ -160,7 +206,7 @@ function onAuthFormSubmit() {
 
         <SlowExpand>
           <div
-            v-if="dialogType === 'signup'"
+            v-if="isSignup"
             class="overflow-hidden"
           >
             <PasswordConfirmField
@@ -172,13 +218,13 @@ function onAuthFormSubmit() {
 
         <!-- Errors -->
         <TaskErrors
-          class="mt-4"
-          :task-errors="dialogType === 'login' ? loginTask.errors.value : signupTask.errors.value"
+          class="mt-2"
+          :task-errors="isLogin ? loginTask.errors.value : signupTask.errors.value"
         />
 
         <!-- Links -->
         <div class="pt-4 text-base">
-          <span v-if="dialogType === 'login'">
+          <span v-if="isLogin">
             {{ $t('auth.forms.signup.link') }}
 
             <a
@@ -190,7 +236,7 @@ function onAuthFormSubmit() {
           </span>
 
 
-          <span v-if="dialogType === 'signup'">
+          <span v-if="isSignup">
             {{ $t('auth.forms.signup.link') }}
 
             <a
@@ -200,7 +246,6 @@ function onAuthFormSubmit() {
               {{ $t('auth.forms.login.button') }}
             </a>
           </span>
-
         </div>
 
         <!-- Buttons -->

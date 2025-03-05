@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Auth\Actions;
+namespace Modules\Auth\Actions\User;
 
 use App\Services\User\UserFindService;
 use Illuminate\Http\JsonResponse;
@@ -61,7 +61,6 @@ class LoginUserAction
 
         // Find the user by email
         if (!$user = $this->userFindService->findByEmail($loginData['email'])) {
-
             throw new SignInUserException(
                 __(AuthStatusEnum::USER_NOT_FOUND->value),
             );

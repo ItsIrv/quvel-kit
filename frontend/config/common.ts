@@ -60,6 +60,6 @@ export default defineConfig((ctx) => {
       iconSet: 'eva-icons',
       plugins: ['Cookies', 'Notify', 'LocalStorage', 'Meta', 'Loading'],
     },
-    animations: ['fadeIn', 'fadeOut'],
+    animations: ['fadeIn', 'fadeOut', 'backInDown', 'backOutUp'],
   };
 });

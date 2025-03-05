@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Auth\Actions;
+namespace Modules\Auth\Actions\User;
 
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;

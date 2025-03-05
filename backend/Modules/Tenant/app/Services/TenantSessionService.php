@@ -17,7 +17,7 @@ class TenantSessionService
      *
      * @param Session $store
      */
-    public function __construct(protected Session $store)
+    public function __construct(protected readonly Session $store)
     {
     }
 

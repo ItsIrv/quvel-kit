@@ -6,7 +6,7 @@ import { createUserFromApi } from 'src/factories/userFactory';
 /**
  * Type for the authenticated user.
  */
-type StateUser = User | null | undefined;
+type StateUser = User | null;
 
 /**
  * Interface defining the structure of the session state.
