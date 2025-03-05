@@ -4,7 +4,6 @@ namespace Modules\Auth\Services;
 
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Illuminate\Support\Str;
 
 class ServerTokenService
 {
@@ -21,8 +20,11 @@ class ServerTokenService
      */
     public function generateServerToken(string $clientNonce): string
     {
-        $serverToken = Str::random(64);
-        $ttl         = $this->config->get('auth.socialite.token_ttl', 300);
+        $serverToken = bin2hex(random_bytes(32));
+        $ttl         = $this->config->get(
+            'auth.socialite.token_ttl',
+            1,
+        );
 
         $this->cache->put(
             self::CACHE_KEY_PREFIX . $serverToken,
@@ -40,6 +42,16 @@ class ServerTokenService
     {
         return $this->cache->get(
             self::CACHE_KEY_PREFIX . $serverToken
+        );
+    }
+
+    /**
+     * Remove client nonce from cache.
+     */
+    public function forgetClientNonce(string $serverToken): bool
+    {
+        return $this->cache->forget(
+            self::CACHE_KEY_PREFIX . $serverToken,
         );
     }
 }

@@ -5,6 +5,6 @@ return [
         'google',
         'apple',
     ],
-    'nonce_ttl' => 3600,
-    'token_ttl' => 3600,
+    'nonce_ttl' => 60, // 1 minute
+    'token_ttl' => 60, // 1 minute
 ];

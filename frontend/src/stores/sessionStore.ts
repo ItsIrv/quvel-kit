@@ -13,8 +13,10 @@ type StateUser = User | null;
  */
 interface SessionState {
   user: StateUser;
-  /** Don't try to re-authenticate when hydrating */
+  // Don't try to re-authenticate when hydrating
   hasRun: boolean;
+  // Oauth nonce
+  nonce: string | null;
 }
 
 /**
@@ -34,6 +36,9 @@ interface SessionActions {
   logout(): Promise<void>;
   login(email: string, password: string): Promise<User>;
   signUp(email: string, password: string, name: string): Promise<void>;
+  setNonce(nonce: string): void;
+  getNonce(): string | null;
+  clearNonce(): void;
 }
 
 /**
@@ -45,6 +50,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
     state: (): SessionState => ({
       user: null,
       hasRun: false,
+      nonce: null,
     }),
 
     getters: {
@@ -109,12 +115,40 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
         return this.user!;
       },
 
+      /**
+       * Signs up a new user and sets the session.
+       * @param email - User's email.
+       * @param password - User's password.
+       * @param name - User's name.
+       */
       async signUp(email: string, password: string, name: string): Promise<void> {
         await this.$container.api.post<{ message: string; user: IUser }>('/auth/register', {
           email,
           password,
           name,
         });
+      },
+
+      /**
+       * Stores the OAuth nonce in the session store
+       * @param nonce - The OAuth nonce
+       */
+      setNonce(nonce: string) {
+        this.nonce = nonce;
+      },
+
+      /**
+       * Retrieves the stored nonce
+       */
+      getNonce(): string | null {
+        return this.nonce;
+      },
+
+      /**
+       * Clears the nonce after use
+       */
+      clearNonce() {
+        this.nonce = null;
       },
     },
   },

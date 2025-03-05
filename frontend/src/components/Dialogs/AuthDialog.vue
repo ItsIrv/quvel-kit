@@ -136,8 +136,23 @@ function onBeforeShow() {
   setDialogType('login');
 }
 
-async function loginWithOAuth(provider: string) {
-  //
+function generateNonce(length: number): string {
+  const array = new Uint8Array(length);
+  crypto.getRandomValues(array);
+
+  return btoa(String.fromCharCode(...array))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
+
+function loginWithOAuth(provider: string) {
+  const nonce = generateNonce(100);
+  sessionStore.setNonce(nonce);
+
+  const redirectUrl = `${process.env.VITE_API_URL}/auth/provider/${provider}/redirect?nonce=${encodeURIComponent(nonce)}`;
+  // window.location.href = redirectUrl;
+  window.open(redirectUrl, 'mozillaWindow');
 }
 </script>
 

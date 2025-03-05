@@ -4,6 +4,7 @@ namespace Modules\Auth\Services;
 
 use Illuminate\Http\RedirectResponse;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Contracts\User as SocialiteUser;
 
 class SocialiteService
 {
@@ -21,7 +22,7 @@ class SocialiteService
     /**
      * Get user data from provider callback.
      */
-    public function getProviderUser(string $provider): mixed
+    public function getProviderUser(string $provider): SocialiteUser
     {
         return Socialite::driver($provider)->stateless()->user();
     }

@@ -46,4 +46,17 @@ class UserFindService
         /** @phpstan-ignore-next-line TODO: */
         return User::where('username', '=', $username)->first();
     }
+
+    /**
+     * Find a user by a field and value.
+     *
+     * @param string $field
+     * @param string $value
+     * @return User|null
+     */
+    public function findByField(string $field, string $value): ?User
+    {
+        /** @phpstan-ignore-next-line TODO: */
+        return User::where($field, '=', $value)->first();
+    }
 }

@@ -4,7 +4,7 @@ namespace Modules\Auth\Services;
 
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Modules\Auth\Enums\SocialiteStatusEnum;
+use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
 
 class ClientNonceService
@@ -30,11 +30,14 @@ class ClientNonceService
         // If nonce already exists, reject it
         if ($this->cache->has($key)) {
             throw new OAuthException(
-                __(SocialiteStatusEnum::INVALID_NONCE->value),
+                OAuthStatusEnum::INVALID_NONCE,
             );
         }
 
-        $ttl = $this->config->get('auth.socialite.nonce_ttl', 300);
+        $ttl = $this->config->get(
+            'auth.socialite.nonce_ttl',
+            1,
+        );
 
         // Store nonce temporarily
         $this->cache->put(
@@ -44,5 +47,17 @@ class ClientNonceService
         );
 
         return $nonce;
+    }
+
+    public function assignUserToNonce(string $clientNonce, int $userId): void
+    {
+        $this->cache->put(
+            self::CACHE_KEY_PREFIX . $clientNonce,
+            $userId,
+            $this->config->get(
+                'auth.socialite.nonce_ttl',
+                1,
+            ),
+        );
     }
 }

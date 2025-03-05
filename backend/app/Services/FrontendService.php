@@ -4,8 +4,8 @@ namespace App\Services;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use Log;
 
+// TODO: should be scoped to TenantContext to correctly handle tenant-specific frontend URLs.
 class FrontendService
 {
     protected string $frontendUrl;

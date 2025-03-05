@@ -2,11 +2,10 @@
 
 namespace Modules\Auth\Rules;
 
-class NonceRule
+class TokenRule
 {
     public const RULES = [
         'string',
-        'min:100',
-        'max:255',
+        'size:64',
     ];
 }

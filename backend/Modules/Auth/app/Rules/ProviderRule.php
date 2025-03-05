@@ -5,6 +5,7 @@ namespace Modules\Auth\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Config;
+use Modules\Auth\Enums\OAuthStatusEnum;
 
 class ProviderRule implements ValidationRule
 {
@@ -28,7 +29,10 @@ class ProviderRule implements ValidationRule
                 true,
             )
         ) {
-            $fail(__('auth::status.errors.invalidProvider', ['provider' => $attribute]));
+            $fail(__(
+                OAuthStatusEnum::INVALID_PROVIDER->value,
+                ['provider' => $attribute],
+            ));
         }
     }
 
