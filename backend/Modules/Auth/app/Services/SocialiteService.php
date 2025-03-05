@@ -3,8 +3,8 @@
 namespace Modules\Auth\Services;
 
 use Illuminate\Http\RedirectResponse;
-use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
+use Laravel\Socialite\Facades\Socialite;
 
 class SocialiteService
 {
@@ -13,8 +13,9 @@ class SocialiteService
      */
     public function getRedirectResponse(string $provider, string $serverToken): RedirectResponse
     {
+        // @phpstan-ignore-next-line Laravel provides statelesss
         return Socialite::driver($provider)
-            ->stateless() // Required due to custom state handling
+            ->stateless()
             ->with(['state' => $serverToken])
             ->redirect();
     }
@@ -24,6 +25,9 @@ class SocialiteService
      */
     public function getProviderUser(string $provider): SocialiteUser
     {
-        return Socialite::driver($provider)->stateless()->user();
+        // @phpstan-ignore-next-line Laravel provides statelesss
+        return Socialite::driver($provider)
+            ->stateless()
+            ->user();
     }
 }

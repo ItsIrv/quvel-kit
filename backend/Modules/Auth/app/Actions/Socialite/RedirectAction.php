@@ -2,12 +2,13 @@
 
 namespace Modules\Auth\Actions\Socialite;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\RedirectRequest;
-use Modules\Auth\Services\SocialiteService;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\ServerTokenService;
+use Modules\Auth\Services\SocialiteService;
 
 class RedirectAction
 {
@@ -21,7 +22,7 @@ class RedirectAction
     /**
      * Handle OAuth provider redirect.
      */
-    public function __invoke(RedirectRequest $request, string $provider): RedirectResponse
+    public function __invoke(RedirectRequest $request, string $provider): RedirectResponse|JsonResponse
     {
         try {
             // Validate client nonce

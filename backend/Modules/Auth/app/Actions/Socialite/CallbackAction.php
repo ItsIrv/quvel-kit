@@ -4,12 +4,12 @@ namespace Modules\Auth\Actions\Socialite;
 
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\app\Services\UserAuthenticationService;
-use Modules\Auth\Http\Requests\CallbackRequest;
-use Modules\Auth\Services\ClientNonceService;
-use Modules\Auth\Services\SocialiteService;
-use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
+use Modules\Auth\Http\Requests\CallbackRequest;
+use Modules\Auth\Services\ClientNonceService;
+use Modules\Auth\Services\ServerTokenService;
+use Modules\Auth\Services\SocialiteService;
 
 class CallbackAction
 {
@@ -50,12 +50,13 @@ class CallbackAction
             );
 
             // Ensure the provider user data is valid
-            if (!$providerUser || !$providerUser->getEmail() || !$providerUser->getId()) {
+            if (!$providerUser->getEmail() || !$providerUser->getId()) {
                 throw new OAuthException(
                     OAuthStatusEnum::INVALID_USER,
                 );
             }
 
+            // Create or get the user
             [$user, $status] = $this->userAuthenticationService->handleOAuthLogin(
                 $provider,
                 $providerUser,
@@ -70,7 +71,6 @@ class CallbackAction
             return response()->json([
                 'status'  => $status,
                 'message' => __(OAuthStatusEnum::CLIENT_TOKEN_GRANED->value),
-                'nonce'   => $clientNonce, // Client will use this to complete login
             ]);
         } catch (OAuthException $e) {
             return response()->json([

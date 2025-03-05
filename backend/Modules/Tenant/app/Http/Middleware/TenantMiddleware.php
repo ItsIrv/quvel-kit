@@ -15,8 +15,8 @@ class TenantMiddleware
     /**
      * Create a new TenantMiddleware instance.
      *
-     * @param \Modules\Tenant\app\Services\TenantResolverService $tenantResolver
-     * @param \Modules\Tenant\app\Contexts\TenantContext $tenantContext
+     * @param TenantResolverService $tenantResolver
+     * @param TenantContext $tenantContext
      */
     public function __construct(
         protected readonly TenantResolverService $tenantResolver,

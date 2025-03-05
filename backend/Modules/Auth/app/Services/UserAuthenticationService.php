@@ -5,7 +5,6 @@ namespace Modules\Auth\app\Services;
 use App\Services\User\UserCreateService;
 use App\Services\User\UserFindService;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
@@ -18,7 +17,6 @@ class UserAuthenticationService
 {
     public function __construct(
         private readonly AuthFactory $auth,
-        private readonly ConfigRepository $config,
         private readonly UserFindService $userFindService,
         private readonly UserCreateService $userCreateService,
     ) {
@@ -34,7 +32,8 @@ class UserAuthenticationService
      */
     public function attempt(string $email, string $password): bool
     {
-        return $this->auth->attempt([
+        // @phpstan-ignore-next-line Laravel provides attempt
+        return $this->auth->guard()->attempt([
             'email'    => $email,
             'password' => $password,
         ]);
@@ -42,11 +41,16 @@ class UserAuthenticationService
 
     public function logout(): void
     {
-        $this->auth->logout();
+        // @phpstan-ignore-next-line Laravel provides logout
+        $this->auth->guard()->logout();
     }
 
     /**
      * Handle user authentication via OAuth.
+     *
+     * @property string $provider
+     * @property SocialiteUser $providerUser
+     * @return array<int, mixed>
      */
     public function handleOAuthLogin(string $provider, SocialiteUser $providerUser): array
     {
@@ -54,7 +58,7 @@ class UserAuthenticationService
 
         // Find existing user by provider ID or email
         $user = $this->userFindService->findByField('provider_id', $providerIdentifier)
-            ?? $this->userFindService->findByEmail($providerUser->getEmail());
+            ?? $this->userFindService->findByEmail($providerUser->getEmail() ?? '');
 
         if ($user) {
             // Ensure provider ID consistency (avoid hijacking)
@@ -64,18 +68,21 @@ class UserAuthenticationService
                 );
             }
 
+            // Ensure provider ID consistency (avoid hijacking)
             if ($user->provider_id !== $providerIdentifier) {
                 throw new OAuthException(
                     OAuthStatusEnum::PROVIDER_ID_TAKEN,
                 );
             }
 
+            // Ensure email is verified
             if (!$user->email_verified_at) {
                 throw new OAuthException(
                     OAuthStatusEnum::EMAIL_NOT_VERIFIED,
                 );
             }
 
+            // Login successful
             return [$user, OAuthStatusEnum::LOGIN_OK];
         }
 

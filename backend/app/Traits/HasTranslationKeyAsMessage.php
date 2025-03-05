@@ -2,9 +2,6 @@
 
 namespace App\Traits;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-
 trait HasTranslationKeyAsMessage
 {
     /**
@@ -12,6 +9,8 @@ trait HasTranslationKeyAsMessage
      */
     public function getTranslatedMessage(): string
     {
-        return __($this->message);
+        $translation = __($this->message);
+
+        return is_string($translation) ? $translation : '';
     }
 }

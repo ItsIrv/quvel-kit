@@ -41,7 +41,7 @@ class ProviderRule implements ValidationRule
      *
      * // TODO: Find a good consistency accross rules.
      *
-     * @return array
+     * @return array<int, self>
      */
     public static function RULES(): array
     {

@@ -15,8 +15,8 @@ class TenantResolverService
     /**
      * Create a new TenantResolverService instance.
      *
-     * @param \Modules\Tenant\app\Services\TenantFindService $tenantFindService
-     * @param \Modules\Tenant\app\Services\TenantSessionService $tenantSessionService
+     * @param TenantFindService $tenantFindService
+     * @param TenantSessionService $tenantSessionService
      */
     public function __construct(
         protected readonly TenantFindService $tenantFindService,
