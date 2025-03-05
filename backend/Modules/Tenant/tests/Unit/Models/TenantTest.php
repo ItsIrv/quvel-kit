@@ -22,7 +22,7 @@ class TenantTest extends TestCase
         $tenant = new Tenant();
 
         $this->assertEquals(
-            ['name', 'domain'],
+            ['name', 'domain', 'parent_id'],
             $tenant->getFillable(),
         );
     }

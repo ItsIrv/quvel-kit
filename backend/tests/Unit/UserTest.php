@@ -35,6 +35,8 @@ class UserTest extends TestCase
             'name',
             'email',
             'password',
+            'provider_id',
+            'avatar',
         ];
 
         $this->assertEquals(

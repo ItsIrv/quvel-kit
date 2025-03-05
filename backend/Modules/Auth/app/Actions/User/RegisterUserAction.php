@@ -34,24 +34,12 @@ class RegisterUserAction
      */
     public function __invoke(RegisterRequest $request): JsonResponse
     {
-        assert(
-            is_string(
-                __(AuthStatusEnum::EMAIL_ALREADY_IN_USE->value),
-            ),
-        );
-
-        assert(
-            is_string(
-                __(AuthStatusEnum::REGISTER_SUCCESS->value),
-            ),
-        );
-
         $loginData = $request->validated();
 
         // Check if user already exists
         if ($this->userFindService->findByEmail($loginData['email'])) {
             throw new RegisterUserException(
-                __(AuthStatusEnum::EMAIL_ALREADY_IN_USE->value),
+                AuthStatusEnum::EMAIL_ALREADY_IN_USE,
             );
         }
 

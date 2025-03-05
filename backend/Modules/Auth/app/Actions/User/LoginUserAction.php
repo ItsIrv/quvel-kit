@@ -33,43 +33,19 @@ class LoginUserAction
      */
     public function __invoke(LoginRequest $request): JsonResponse
     {
-        assert(
-            is_string(
-                __(AuthStatusEnum::USER_NOT_FOUND->value),
-            ),
-        );
-
-        assert(
-            is_string(
-                __(AuthStatusEnum::EMAIL_NOT_VERIFIED->value),
-            ),
-        );
-
-        assert(
-            is_string(
-                __(AuthStatusEnum::INVALID_CREDENTIALS->value),
-            ),
-        );
-
-        assert(
-            is_string(
-                __(AuthStatusEnum::LOGIN_SUCCESS->value),
-            ),
-        );
-
         $loginData = $request->validated();
 
         // Find the user by email
         if (!$user = $this->userFindService->findByEmail($loginData['email'])) {
             throw new SignInUserException(
-                __(AuthStatusEnum::USER_NOT_FOUND->value),
+                AuthStatusEnum::USER_NOT_FOUND,
             );
         }
 
         // Check if the user has verified their email
         if (!$user->hasVerifiedEmail()) {
             throw new SignInUserException(
-                __(AuthStatusEnum::EMAIL_NOT_VERIFIED->value),
+                AuthStatusEnum::EMAIL_NOT_VERIFIED,
             );
         }
 
@@ -81,9 +57,15 @@ class LoginUserAction
             )
         ) {
             throw new SignInUserException(
-                __(AuthStatusEnum::INVALID_CREDENTIALS->value),
+                AuthStatusEnum::INVALID_CREDENTIALS,
             );
         }
+
+        assert(
+            is_string(
+                __(AuthStatusEnum::LOGIN_SUCCESS->value),
+            ),
+        );
 
         return response()->json(
             [

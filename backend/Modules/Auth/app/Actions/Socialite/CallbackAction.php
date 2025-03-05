@@ -27,9 +27,10 @@ class CallbackAction
     public function __invoke(CallbackRequest $request, string $provider): JsonResponse
     {
         try {
+            $state = $request->validated('state');
             // Validate the state (server token)
             $clientNonce = $this->serverTokenService->getClientNonce(
-                $request->validated('state'),
+                $state,
             );
 
             if (!$clientNonce) {
@@ -40,7 +41,7 @@ class CallbackAction
 
             // Forget, one-time use.
             $this->serverTokenService->forgetClientNonce(
-                $request->validated('state'),
+                $state,
             );
 
             // Retrieve provider user data

@@ -4,7 +4,6 @@ namespace Modules\Tenant\app\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Modules\Tenant\app\Contexts\TenantContext;
 use Modules\Tenant\app\Services\TenantResolverService;
 
@@ -39,8 +38,6 @@ class TenantMiddleware
                 $request,
             ),
         );
-
-        Log::info('Tenant resolved: ', $this->tenantContext->get()->toArray());
 
         return $next($request);
     }
