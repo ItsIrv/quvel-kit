@@ -4,10 +4,10 @@ namespace Modules\Tenant\Tests\Unit\Services;
 
 use Illuminate\Http\Request;
 use Mockery;
-use Modules\Tenant\App\Exceptions\TenantNotFoundException;
-use Modules\Tenant\App\Services\TenantFindService;
-use Modules\Tenant\App\Services\TenantResolverService;
-use Modules\Tenant\App\Services\TenantSessionService;
+use Modules\Tenant\Exceptions\TenantNotFoundException;
+use Modules\Tenant\Services\TenantFindService;
+use Modules\Tenant\Services\TenantResolverService;
+use Modules\Tenant\Services\TenantSessionService;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;

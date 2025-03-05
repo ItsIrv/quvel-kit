@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Tenant\app\Exceptions;
+namespace Modules\Tenant\Exceptions;
 
 use Exception;
 use Modules\Tenant\Enums\TenantError;

@@ -4,7 +4,7 @@ namespace Modules\Tenant\Tests\Unit\Transformers;
 
 use Illuminate\Http\Request;
 use Modules\Tenant\Transformers\TenantDumpTransformer;
-use Modules\Tenant\App\Models\Tenant;
+use Modules\Tenant\Models\Tenant;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;

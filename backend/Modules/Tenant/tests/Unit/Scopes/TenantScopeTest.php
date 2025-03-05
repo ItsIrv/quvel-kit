@@ -4,7 +4,7 @@ namespace Modules\Tenant\Tests\Unit\Scopes;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Tenant\App\Scopes\TenantScope;
+use Modules\Tenant\Scopes\TenantScope;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;

@@ -6,7 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Modules\Tenant\app\Traits\TenantScopedModel;
+use Modules\Tenant\Traits\TenantScopedModel;
 
 /**
  * @property int $id

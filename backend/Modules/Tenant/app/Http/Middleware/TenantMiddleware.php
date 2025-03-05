@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Tenant\app\Http\Middleware;
+namespace Modules\Tenant\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Modules\Tenant\app\Contexts\TenantContext;
-use Modules\Tenant\app\Services\TenantResolverService;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Services\TenantResolverService;
 
 /**
  * Middleware to resolve the tenant based on the domain.

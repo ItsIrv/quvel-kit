@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Tenant\app\Traits;
+namespace Modules\Tenant\Traits;
 
 use Illuminate\Database\Eloquent\Model;
-use Modules\Tenant\app\Exceptions\TenantMismatchException;
-use Modules\Tenant\app\Scopes\TenantScope;
+use Modules\Tenant\Exceptions\TenantMismatchException;
+use Modules\Tenant\Scopes\TenantScope;
 
 /**
  * Trait to be applied to Eloquent models to enforce `tenant_id`.

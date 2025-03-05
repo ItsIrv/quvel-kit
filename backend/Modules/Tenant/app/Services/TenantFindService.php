@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\Tenant\app\Services;
+namespace Modules\Tenant\Services;
 
-use Modules\Tenant\app\Models\Tenant;
+use Modules\Tenant\Models\Tenant;
 
 class TenantFindService
 {

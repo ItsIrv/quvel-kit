@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Tenant\app\Services;
+namespace Modules\Tenant\Services;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Modules\Tenant\app\Exceptions\TenantNotFoundException;
-use Modules\Tenant\app\Models\Tenant;
+use Modules\Tenant\Exceptions\TenantNotFoundException;
+use Modules\Tenant\Models\Tenant;
 
 /**
  * Service to resolve tenants.

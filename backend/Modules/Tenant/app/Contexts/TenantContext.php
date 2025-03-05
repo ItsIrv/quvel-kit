@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Tenant\app\Contexts;
+namespace Modules\Tenant\Contexts;
 
-use Modules\Tenant\app\Exceptions\TenantNotFoundException;
-use Modules\Tenant\app\Models\Tenant;
+use Modules\Tenant\Exceptions\TenantNotFoundException;
+use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Enums\TenantError;
 
 /**

@@ -2,8 +2,8 @@
 
 namespace Modules\Tenant\Tests\Unit\Services;
 
-use Modules\Tenant\App\Models\Tenant;
-use Modules\Tenant\App\Services\TenantFindService;
+use Modules\Tenant\Models\Tenant;
+use Modules\Tenant\Services\TenantFindService;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;

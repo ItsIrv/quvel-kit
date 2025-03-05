@@ -2,7 +2,7 @@
 
 namespace Modules\Tenant\Actions;
 
-use Modules\Tenant\app\Contexts\TenantContext;
+use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Transformers\TenantDumpTransformer;
 
 /**

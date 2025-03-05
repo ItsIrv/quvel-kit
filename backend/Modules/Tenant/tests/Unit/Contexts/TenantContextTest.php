@@ -2,9 +2,9 @@
 
 namespace Modules\Tenant\Tests\Unit\Contexts;
 
-use Modules\Tenant\App\Contexts\TenantContext;
-use Modules\Tenant\App\Models\Tenant;
-use Modules\Tenant\App\Exceptions\TenantNotFoundException;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Models\Tenant;
+use Modules\Tenant\Exceptions\TenantNotFoundException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;

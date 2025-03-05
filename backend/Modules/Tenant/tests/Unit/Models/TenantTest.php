@@ -2,7 +2,7 @@
 
 namespace Modules\Tenant\Tests\Unit\Models;
 
-use Modules\Tenant\App\Models\Tenant;
+use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Database\Factories\TenantFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;

@@ -3,8 +3,8 @@
 namespace Modules\Tenant\Tests\Unit\Services;
 
 use Illuminate\Contracts\Session\Session;
-use Modules\Tenant\app\Models\Tenant;
-use Modules\Tenant\app\Services\TenantSessionService;
+use Modules\Tenant\Models\Tenant;
+use Modules\Tenant\Services\TenantSessionService;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;

@@ -6,8 +6,8 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Modules\Tenant\app\Contexts\TenantContext;
-use Modules\Tenant\app\Models\Tenant;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Models\Tenant;
 
 class TenantSeeder extends Seeder
 {

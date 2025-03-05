@@ -2,7 +2,7 @@
 
 namespace Modules\Tenant\Tests\Unit\Exceptions;
 
-use Modules\Tenant\App\Exceptions\TenantNotFoundException;
+use Modules\Tenant\Exceptions\TenantNotFoundException;
 use Modules\Tenant\Enums\TenantError;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
