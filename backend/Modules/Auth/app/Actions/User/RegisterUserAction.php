@@ -46,7 +46,7 @@ class RegisterUserAction
         $this->userCreateService->create($loginData);
 
         return response()->json(
-            ['message' => __(AuthStatusEnum::REGISTER_SUCCESS->value)],
+            ['message' => AuthStatusEnum::REGISTER_SUCCESS->getTranslatedMessage()],
             201,
         );
     }

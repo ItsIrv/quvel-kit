@@ -101,6 +101,7 @@ class UserAuthenticationService
      */
     public function logInWithId(int $id): void
     {
+        // @phpstan-ignore-next-line laravel provides loginUsingId
         $this->auth->guard()->loginUsingId($id);
     }
 }

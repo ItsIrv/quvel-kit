@@ -44,7 +44,6 @@ class SocialiteService
                     ->user();
             }
 
-            // @phpstan-ignore-next-line
             $user = Socialite::driver($provider)
                 ->user();
 

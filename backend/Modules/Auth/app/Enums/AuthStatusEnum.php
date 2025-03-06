@@ -2,8 +2,12 @@
 
 namespace Modules\Auth\Enums;
 
+use App\Traits\TranslatableEnum;
+
 enum AuthStatusEnum: string
 {
+    use TranslatableEnum;
+
     case USER_NOT_FOUND       = 'auth::status.errors.userNotFound';
     case INVALID_CREDENTIALS  = 'auth::status.errors.invalidCredentials';
     case EMAIL_ALREADY_IN_USE = 'auth::status.errors.emailAlreadyInUse';

@@ -26,16 +26,10 @@ class UserLogoutAction
      */
     public function __invoke(): JsonResponse
     {
-        assert(
-            is_string(
-                __(AuthStatusEnum::LOGOUT_SUCCESS->value),
-            ),
-        );
-
         $this->userAuthenticationService->logout();
 
         return response()->json(
-            ['message' => __(AuthStatusEnum::LOGOUT_SUCCESS->value)],
+            ['message' => AuthStatusEnum::LOGOUT_SUCCESS->getTranslatedMessage()],
         );
     }
 }

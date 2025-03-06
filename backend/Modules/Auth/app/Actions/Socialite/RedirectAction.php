@@ -3,6 +3,7 @@
 namespace Modules\Auth\Actions\Socialite;
 
 use App\Services\FrontendService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Modules\Auth\Exceptions\OAuthException;
@@ -10,7 +11,6 @@ use Modules\Auth\Http\Requests\RedirectRequest;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
-use Exception;
 
 class RedirectAction
 {
@@ -59,7 +59,7 @@ class RedirectAction
             return $this->frontendService->redirectPage(
                 '',
                 [
-                    'message' => is_a($e, OAuthException::class)
+                    'message' => $e instanceof OAuthException
                         ? $e->getTranslatedMessage() : $e->getMessage(),
                 ],
             );

@@ -3,6 +3,7 @@
 namespace Modules\Auth\Actions\Socialite;
 
 use App\Services\FrontendService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Modules\Auth\app\Services\UserAuthenticationService;
@@ -12,7 +13,6 @@ use Modules\Auth\Http\Requests\CallbackRequest;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
-use Exception;
 
 class CallbackAction
 {
@@ -73,7 +73,7 @@ class CallbackAction
             return $this->frontendService->redirectPage(
                 '',
                 [
-                    'message' => is_a($e, OAuthException::class)
+                    'message' => $e instanceof OAuthException
                         ? $e->getTranslatedMessage()
                         : $e->getMessage(),
                 ],

@@ -61,15 +61,9 @@ class LoginUserAction
             );
         }
 
-        assert(
-            is_string(
-                __(AuthStatusEnum::LOGIN_SUCCESS->value),
-            ),
-        );
-
         return response()->json(
             [
-                'message' => __(AuthStatusEnum::LOGIN_SUCCESS->value),
+                'message' => AuthStatusEnum::LOGIN_SUCCESS->getTranslatedMessage(),
                 'user'    => $user,
             ],
             201,

@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use App\Contracts\TranslatableEntity;
+
 trait TranslatableException
 {
     /**
@@ -9,8 +11,12 @@ trait TranslatableException
      */
     public function getTranslatedMessage(): string
     {
-        $translation = __($this->message);
+        $translation = $this->message instanceof TranslatableEntity
+            ? $this->message->getTranslatedMessage()
+            : __($this->message);
 
-        return is_string($translation) ? $translation : '';
+        assert(is_string($translation));
+
+        return $translation;
     }
 }
