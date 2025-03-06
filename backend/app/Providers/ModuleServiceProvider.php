@@ -18,13 +18,6 @@ class ModuleServiceProvider extends ServiceProvider
     protected string $nameLower = 'tenant';
 
     /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-    }
-
-    /**
      * Bootstrap any application services.
      */
     public function boot(): void
@@ -35,13 +28,6 @@ class ModuleServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(
             module_path($this->name, 'database/migrations'),
         );
-    }
-
-    /**
-     * Register the middleware.
-     */
-    public function registerMiddleware(): void
-    {
     }
 
     /**

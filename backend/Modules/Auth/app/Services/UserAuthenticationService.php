@@ -50,28 +50,22 @@ class UserAuthenticationService
      *
      * @property string $provider
      * @property SocialiteUser $providerUser
-     * @return array<int, mixed>
+     * @return array{0: \App\Models\User, 1: OAuthStatusEnum}
      */
     public function handleOAuthLogin(string $provider, SocialiteUser $providerUser): array
     {
         $providerIdentifier = "{$provider}_{$providerUser->getId()}"; // Full identifier (e.g., google_123456)
 
-        // Find existing user by provider ID or email
-        $user = $this->userFindService->findByField('provider_id', $providerIdentifier)
-            ?? $this->userFindService->findByEmail($providerUser->getEmail() ?? '');
+        // Find existing user by email
+        $user = $this->userFindService->findByEmail(
+            $providerUser->getEmail() ?? ''
+        );
 
         if ($user) {
             // Ensure provider ID consistency (avoid hijacking)
-            if (!$user->provider_id) {
-                throw new OAuthException(
-                    OAuthStatusEnum::EMAIL_TAKEN,
-                );
-            }
-
-            // Ensure provider ID consistency (avoid hijacking)
             if ($user->provider_id !== $providerIdentifier) {
                 throw new OAuthException(
-                    OAuthStatusEnum::PROVIDER_ID_TAKEN,
+                    OAuthStatusEnum::EMAIL_TAKEN,
                 );
             }
 
