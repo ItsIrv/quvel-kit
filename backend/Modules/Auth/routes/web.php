@@ -29,9 +29,7 @@ Route::group([
     Route::group([
         'prefix' => 'provider/{provider}',
     ], function (): void {
-        // Redirect
         Route::get('/redirect', RedirectAction::class)->name('auth.provider.redirect');
-        // Callback
         Route::get('/callback', CallbackAction::class)->name('auth.provider.callback');
     });
 

@@ -93,4 +93,14 @@ class UserAuthenticationService
 
         return [$user, OAuthStatusEnum::USER_CREATED];
     }
+
+    /**
+     * Log in a user using their ID.
+     *
+     * @param int $id The ID of the user to log in.
+     */
+    public function logInWithId(int $id): void
+    {
+        $this->auth->guard()->loginUsingId($id);
+    }
 }

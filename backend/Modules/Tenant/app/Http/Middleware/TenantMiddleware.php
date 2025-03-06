@@ -19,8 +19,8 @@ class TenantMiddleware
      * @param TenantContext $tenantContext
      */
     public function __construct(
-        protected readonly TenantResolverService $tenantResolver,
-        protected readonly TenantContext $tenantContext,
+        private readonly TenantResolverService $tenantResolver,
+        private readonly TenantContext $tenantContext,
     ) {
     }
 

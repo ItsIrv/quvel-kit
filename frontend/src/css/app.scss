@@ -197,7 +197,7 @@
 
 .UserDropdown {
   @extend .GenericBorder, .GenericCardGradient;
-  @apply absolute right-0 mt-2 w-48 rounded-lg p-4 rounded-b-lg;
+  @apply absolute right-0 mt-2 w-48 rounded-lg p-4 rounded-b-lg z-10;
 
   border-radius: 0 0 0.5rem 0.5rem;
 }
@@ -253,7 +253,7 @@
 
 .LanderNav {
   @extend .GenericBorder, .GenericCardGradient, .MainTransition;
-  @apply py-2 fixed top-6 flex items-center justify-between gap-6 px-8 rounded-full shadow-md w-[90%];
+  @apply z-10 py-2 fixed top-6 flex items-center justify-between gap-6 px-8 rounded-full shadow-md w-[90%];
 
   .NativeMobile & {
     top: env(safe-area-inset-top, 0px) !important;

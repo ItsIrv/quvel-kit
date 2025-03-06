@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Traits;
 
-use App\Contracts\TranslatableException;
+use App\Contracts\TranslatableEntity;
 use App\Traits\RendersBadRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -16,11 +16,11 @@ class RendersBadRequestTest extends TestCase
 {
     /**
      * Test that render() returns a JSON response with the translated message
-     * when the exception implements TranslatableException.
+     * when the exception implements TranslatableEntity.
      */
     public function testRenderReturnsTranslatedMessageWhenExceptionIsTranslatable(): void
     {
-        $exception = new class extends \Exception implements TranslatableException
+        $exception = new class extends \Exception implements TranslatableEntity
         {
             use RendersBadRequest;
 
@@ -39,7 +39,7 @@ class RendersBadRequestTest extends TestCase
 
     /**
      * Test that render() returns a JSON response with the default message
-     * when the exception does not implement TranslatableException.
+     * when the exception does not implement TranslatableEntity.
      */
     public function testRenderReturnsDefaultMessageWhenExceptionIsNotTranslatable(): void
     {

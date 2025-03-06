@@ -61,32 +61,6 @@ class FrontendServiceTest extends TestCase
     }
 
     /**
-     * Test redirect to success page with a message.
-     */
-    public function testRedirectSuccess(): void
-    {
-        $this->assertRedirect(
-            "{$this->baseUrl}/success?message=" . urlencode('Operation successful'),
-            fn () => $this->frontendService->redirectSuccess(
-                'Operation successful',
-            ),
-        );
-    }
-
-    /**
-     * Test redirect to an error page with a message.
-     */
-    public function testRedirectError(): void
-    {
-        $this->assertRedirect(
-            "{$this->baseUrl}/error?message=" . urlencode('Something went wrong'),
-            fn () => $this->frontendService->redirectError(
-                'Something went wrong',
-            ),
-        );
-    }
-
-    /**
      * Test redirect to a frontend page with query parameters.
      */
     public function testRedirectPageWithParams(): void

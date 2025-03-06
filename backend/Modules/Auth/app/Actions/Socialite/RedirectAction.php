@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Actions\Socialite;
 
+use App\Services\FrontendService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Modules\Auth\Exceptions\OAuthException;
@@ -9,13 +10,15 @@ use Modules\Auth\Http\Requests\RedirectRequest;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
+use Exception;
 
 class RedirectAction
 {
     public function __construct(
-        protected readonly SocialiteService $socialiteService,
-        protected readonly ServerTokenService $serverTokenService,
-        protected readonly ClientNonceService $clientNonceService,
+        private readonly SocialiteService $socialiteService,
+        private readonly ServerTokenService $serverTokenService,
+        private readonly ClientNonceService $clientNonceService,
+        private readonly FrontendService $frontendService,
     ) {
     }
 
@@ -24,7 +27,16 @@ class RedirectAction
      */
     public function __invoke(RedirectRequest $request, string $provider): RedirectResponse|JsonResponse
     {
+        $stateless = $request->validated('stateless', false);
+
         try {
+            if (!$stateless) {
+                return $this->socialiteService->getRedirectResponse(
+                    $provider,
+                    false,
+                );
+            }
+
             // Validate client nonce
             $clientNonce = $this->clientNonceService->validateNonce(
                 $request->validated('nonce'),
@@ -38,14 +50,19 @@ class RedirectAction
             // Get OAuth redirect URL
             $redirectUrl = $this->socialiteService->getRedirectResponse(
                 $provider,
+                true,
                 $serverToken,
             );
 
             return $redirectUrl;
-        } catch (OAuthException $e) {
-            return response()->json([
-                'error' => $e->getMessage(),
-            ], 400);
+        } catch (Exception $e) {
+            return $this->frontendService->redirectPage(
+                '',
+                [
+                    'message' => is_a($e, OAuthException::class)
+                        ? $e->getTranslatedMessage() : $e->getMessage(),
+                ],
+            );
         }
     }
 }

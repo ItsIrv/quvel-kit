@@ -60,7 +60,7 @@ const logoutTask = container.task.newFrozenTask({
       <!-- User Info -->
       <div class="flex items-center gap-4">
         <img
-          src="https://i.pravatar.cc/100?img=55"
+          :src="sessionStore.user?.avatar || ''"
           alt="User Avatar"
           class="w-12 h-12 rounded-full border border-stone-400 dark:border-gray-600 shadow-sm"
         />

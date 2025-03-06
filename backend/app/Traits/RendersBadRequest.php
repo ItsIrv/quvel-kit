@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-use App\Contracts\TranslatableException;
+use App\Contracts\TranslatableEntity;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -14,7 +14,7 @@ trait RendersBadRequest
     public function render(): JsonResponse
     {
         return response()->json([
-            'message' => $this instanceof TranslatableException
+            'message' => $this instanceof TranslatableEntity
                 ? $this->getTranslatedMessage()
                 : $this->getMessage(),
         ], Response::HTTP_BAD_REQUEST);

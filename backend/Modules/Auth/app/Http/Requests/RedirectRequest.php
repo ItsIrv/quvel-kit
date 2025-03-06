@@ -3,6 +3,7 @@
 namespace Modules\Auth\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Modules\Auth\Rules\NonceRule;
 use Modules\Auth\Rules\ProviderRule;
 
@@ -29,8 +30,9 @@ class RedirectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nonce'    => ['required', ...NonceRule::RULES],
-            'provider' => ['required', ...ProviderRule::RULES()],
+            'nonce'     => ['required_if:stateless,true', ...NonceRule::RULES],
+            'provider'  => ['required', ...ProviderRule::RULES()],
+            'stateless' => ['boolean'],
         ];
     }
 

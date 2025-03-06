@@ -27,6 +27,7 @@ class UserResourceTest extends TestCase
             'id'         => 'public-id-1',
             'name'       => $name,
             'email'      => $email,
+            'avatar'     => $user->avatar,
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
         ], true);
@@ -38,6 +39,7 @@ class UserResourceTest extends TestCase
             'id'         => 0,
             'name'       => $name,
             'email'      => $email,
+            'avatar'     => $user->avatar,
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
         ], $result);

@@ -24,22 +24,6 @@ class FrontendService
     }
 
     /**
-     * Redirect to a success page with a message.
-     */
-    public function redirectSuccess(string $message): RedirectResponse
-    {
-        return $this->redirect("/success?message=" . urlencode($message));
-    }
-
-    /**
-     * Redirect to an error page with a message.
-     */
-    public function redirectError(string $message): RedirectResponse
-    {
-        return $this->redirect("/error?message=" . urlencode($message));
-    }
-
-    /**
      * Redirect to a specific frontend page with optional parameters.
      * @param array<string, string> $payload
      */

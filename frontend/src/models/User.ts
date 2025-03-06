@@ -7,6 +7,7 @@ export class User implements IUser {
   id: number;
   name: string;
   email: string;
+  avatar: string;
   emailVerifiedAt: string;
   createdAt: string;
   updatedAt: string;
@@ -19,6 +20,7 @@ export class User implements IUser {
     this.id = data.id ?? 0;
     this.name = data.name ?? '';
     this.email = data.email ?? '';
+    this.avatar = data.avatar ?? '';
     this.emailVerifiedAt = data.emailVerifiedAt ?? '';
     this.createdAt = data.createdAt ?? '';
     this.updatedAt = data.updatedAt ?? '';

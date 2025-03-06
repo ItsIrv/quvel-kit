@@ -2,8 +2,12 @@
 
 namespace Modules\Auth\Enums;
 
+use App\Traits\TranslatableEnum;
+
 enum OAuthStatusEnum: string
 {
+    use TranslatableEnum;
+
     case INVALID_NONCE       = 'auth::status.errors.invalidNonce';
     case INVALID_TOKEN       = 'auth::status.errors.invalidToken';
     case INVALID_PROVIDER    = 'auth::status.errors.invalidProvider';

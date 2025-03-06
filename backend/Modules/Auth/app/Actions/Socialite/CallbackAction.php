@@ -2,7 +2,9 @@
 
 namespace Modules\Auth\Actions\Socialite;
 
+use App\Services\FrontendService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
@@ -10,72 +12,72 @@ use Modules\Auth\Http\Requests\CallbackRequest;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
+use Exception;
 
 class CallbackAction
 {
     public function __construct(
-        protected readonly SocialiteService $socialiteService,
-        protected readonly ServerTokenService $serverTokenService,
-        protected readonly ClientNonceService $clientNonceService,
-        protected readonly UserAuthenticationService $userAuthenticationService,
+        private readonly SocialiteService $socialiteService,
+        private readonly ServerTokenService $serverTokenService,
+        private readonly ClientNonceService $clientNonceService,
+        private readonly UserAuthenticationService $userAuthenticationService,
+        private readonly FrontendService $frontendService,
     ) {
     }
 
     /**
      * Handle OAuth provider callback.
      */
-    public function __invoke(CallbackRequest $request, string $provider): JsonResponse
+    public function __invoke(CallbackRequest $request, string $provider): RedirectResponse|JsonResponse
     {
         try {
-            $state = $request->validated('state');
-            // Validate the state (server token)
-            $clientNonce = $this->serverTokenService->getClientNonce(
-                $state,
-            );
+            $nonce       = $request->validated('state', '');
+            $clientNonce = $this->serverTokenService->getClientNonce($nonce);
+            $stateless   = $clientNonce !== null;
 
-            if (!$clientNonce) {
-                throw new OAuthException(
-                    OAuthStatusEnum::INVALID_TOKEN,
-                );
-            }
-
-            // Forget, one-time use.
-            $this->serverTokenService->forgetClientNonce(
-                $state,
-            );
-
-            // Retrieve provider user data
+            // Retrieve provider user data (stateless determines method)
             $providerUser = $this->socialiteService->getProviderUser(
                 $provider,
+                $stateless,
             );
 
-            // Ensure the provider user data is valid
             if (!$providerUser->getEmail() || !$providerUser->getId()) {
-                throw new OAuthException(
-                    OAuthStatusEnum::INVALID_USER,
-                );
+                throw new OAuthException(OAuthStatusEnum::INVALID_USER);
             }
 
-            // Create or get the user
+            // Authenticate user via OAuth
             [$user, $status] = $this->userAuthenticationService->handleOAuthLogin(
                 $provider,
                 $providerUser,
             );
 
-            // Assign nonce to user (client will exchange it for an auth session later)
-            $this->clientNonceService->assignUserToNonce(
-                $clientNonce,
-                $user->id,
-            );
+            if ($stateless) {
+                // Stateless Flow: Assign nonce & return JSON response
+                $this->serverTokenService->forgetClientNonce($nonce);
+                $this->clientNonceService->assignUserToNonce($clientNonce, $user->id);
 
-            return response()->json([
-                'status'  => $status,
-                'message' => __(OAuthStatusEnum::CLIENT_TOKEN_GRANED->value),
-            ]);
-        } catch (OAuthException $e) {
-            return response()->json([
-                'error' => $e->getMessage(),
-            ], 400);
+                return response()->json([
+                    'status'  => $status,
+                    'message' => OAuthStatusEnum::CLIENT_TOKEN_GRANED->getTranslatedMessage(),
+                ]);
+            }
+
+            // Stateful Flow: Log the user in & redirect
+            $this->userAuthenticationService->logInWithId($user->id);
+
+            return $this->frontendService->redirectPage(
+                '',
+                ['message' => $status->getTranslatedMessage()],
+            );
+        } catch (Exception $e) {
+            return $this->frontendService->redirectPage(
+                '',
+                [
+                    'message' => is_a($e, OAuthException::class)
+                        ? $e->getTranslatedMessage()
+                        : $e->getMessage(),
+                ],
+            );
         }
     }
 }

@@ -150,9 +150,8 @@ function loginWithOAuth(provider: string) {
   const nonce = generateNonce(100);
   sessionStore.setNonce(nonce);
 
-  const redirectUrl = `${process.env.VITE_API_URL}/auth/provider/${provider}/redirect?nonce=${encodeURIComponent(nonce)}`;
-  // window.location.href = redirectUrl;
-  window.open(redirectUrl, 'mozillaWindow');
+  const redirectUrl = `${process.env.VITE_API_URL}/auth/provider/${provider}/redirect?nonce=${encodeURIComponent(nonce)}&stateless=0`;
+  window.location.href = redirectUrl;
 }
 </script>
 
