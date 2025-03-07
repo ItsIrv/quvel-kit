@@ -41,10 +41,6 @@ class CallbackAction
                 $stateless,
             );
 
-            if (!$providerUser->getEmail() || !$providerUser->getId()) {
-                throw new OAuthException(OAuthStatusEnum::INVALID_USER);
-            }
-
             // Authenticate user via OAuth
             [$user, $status] = $this->userAuthenticationService->handleOAuthLogin(
                 $provider,

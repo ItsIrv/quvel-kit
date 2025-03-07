@@ -5,7 +5,13 @@ import { isLocal } from './utils';
 export default defineConfig((ctx) => {
   return {
     preFetch: true,
-    boot: ['container'],
+    boot: [
+      'container',
+      {
+        server: false,
+        path: 'pinia-hydrator',
+      },
+    ],
     css: ['app.scss'],
     extras: ['eva-icons', 'roboto-font'],
     build: {

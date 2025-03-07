@@ -33,6 +33,9 @@ return [
         'https://second-tenant.quvel.127.0.0.1.nip.io:3002',
         // Local Electron
         'http://second-tenant.quvel.127.0.0.1.nip.io:3003',
+        // Local Network
+        'https://quvel.192.168.86.20.nip.io', // REPLACE_WITH_LOCAL_IP
+        'https://api.quvel.192.168.86.20.nip.io', // REPLACE_WITH_LOCAL_IP
     ],
 
     'allowed_origins_patterns' => [],

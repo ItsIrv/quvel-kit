@@ -71,7 +71,6 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * @param data - User data from API response.
        */
       setSession(data: IUser) {
-        this.user = null;
         this.user = createUserFromApi(data);
       },
 

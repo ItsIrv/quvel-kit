@@ -173,7 +173,7 @@ function loginWithOAuth(provider: string) {
         <!-- Oauth providers -->
         <div
           v-if="isLogin"
-          class="grid grid-cols-2 gap-2 mt-4"
+          class="grid grid-cols-2 gap-2 mt-4 mb-2"
         >
           <q-btn
             class="GenericBorder AccentGradient Button"
@@ -183,10 +183,10 @@ function loginWithOAuth(provider: string) {
           />
 
           <q-btn
-            class="GenericBorder AccentGradient Button"
-            :label="$t('auth.forms.oauth.logInWith', { provider: $t('auth.forms.oauth.apple') })"
+            class="GenericBorder Button"
+            :label="$t('common.placeholder')"
             unelevated
-            @click="loginWithOAuth('apple')"
+            :disable="true"
           />
         </div>
       </BackInOutUp>

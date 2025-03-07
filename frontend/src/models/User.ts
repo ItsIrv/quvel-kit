@@ -7,7 +7,7 @@ export class User implements IUser {
   id: number;
   name: string;
   email: string;
-  avatar: string;
+  avatar: string | null;
   emailVerifiedAt: string;
   createdAt: string;
   updatedAt: string;
@@ -24,5 +24,11 @@ export class User implements IUser {
     this.emailVerifiedAt = data.emailVerifiedAt ?? '';
     this.createdAt = data.createdAt ?? '';
     this.updatedAt = data.updatedAt ?? '';
+  }
+
+  // TODO: Race condition regarding the hydration of the store into the user
+  // before the component calls it.
+  get avatarUrl(): string {
+    return this.avatar ?? 'https://api.dicebear.com/7.x/avataaars/svg?seed=7';
   }
 }

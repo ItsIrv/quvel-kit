@@ -72,7 +72,7 @@ function onDropdownToggle() {
         @click="onDropdownToggle"
       >
         <img
-          :src="sessionStore.user?.avatar || ''"
+          :src="sessionStore.user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=44'"
           alt="User Avatar"
           class="w-10 h-10 rounded-full border border-stone-400 dark:border-gray-600 shadow-sm"
         />

@@ -15,4 +15,5 @@ export default {
     error: 'Action failed. Please try again.',
   },
   language: 'Language',
+  placeholder: 'Placeholder',
 };

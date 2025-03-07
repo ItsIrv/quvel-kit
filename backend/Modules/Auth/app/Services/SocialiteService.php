@@ -31,6 +31,8 @@ class SocialiteService
 
     /**
      * Get user data from provider callback.
+     *
+     * @throws OAuthException
      */
     public function getProviderUser(string $provider, bool $stateless): SocialiteUser
     {
@@ -38,14 +40,14 @@ class SocialiteService
 
         try {
             if ($stateless) {
-                // @phpstan-ignore-next-line Laravel provides statelesss
+                // @phpstan-ignore-next-line Laravel provides stateless
                 $user = Socialite::driver($provider)
                     ->stateless()
                     ->user();
+            } else {
+                $user = Socialite::driver($provider)
+                    ->user();
             }
-
-            $user = Socialite::driver($provider)
-                ->user();
 
             if (!$user->getEmail() || !$user->getId()) {
                 throw new OAuthException(OAuthStatusEnum::INVALID_USER);

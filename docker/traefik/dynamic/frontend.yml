@@ -2,13 +2,13 @@
 http:
   routers:
     web:
-      rule: 'Host(`quvel.127.0.0.1.nip.io`)'
+      rule: 'Host(`quvel.127.0.0.1.nip.io`) || Host(`quvel.192.168.86.20.nip.io`)' # REPLACE_WITH_LOCAL_IP
       entryPoints: websecure
       service: web
       tls: {}
 
     web-ws:
-      rule: 'Host(`quvel.127.0.0.1.nip.io`) && PathPrefix(`/hmr`)'
+      rule: '(Host(`quvel.127.0.0.1.nip.io`) || Host(`quvel.192.168.86.20.nip.io`)) && PathPrefix(`/hmr`)' # REPLACE_WITH_LOCAL_IP
       entryPoints: websecure
       service: web-ws
       tls: {}
