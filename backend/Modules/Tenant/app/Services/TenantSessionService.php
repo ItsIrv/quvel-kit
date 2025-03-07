@@ -1,23 +1,23 @@
 <?php
 
-namespace Modules\Tenant\app\Services;
+namespace Modules\Tenant\Services;
 
 use Illuminate\Contracts\Session\Session;
-use Modules\Tenant\app\Models\Tenant;
+use Modules\Tenant\Models\Tenant;
 
 /**
  * Service to manage the tenant session.
  */
 class TenantSessionService
 {
-    private const string TENANT_KEY = 'tenant';
+    private const TENANT_KEY = 'tenant';
 
     /**
      * Tenant session service constructor.
      *
      * @param Session $store
      */
-    public function __construct(protected Session $store)
+    public function __construct(private readonly Session $store)
     {
     }
 

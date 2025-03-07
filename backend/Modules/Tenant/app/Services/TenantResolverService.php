@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Tenant\app\Services;
+namespace Modules\Tenant\Services;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Modules\Tenant\app\Exceptions\TenantNotFoundException;
-use Modules\Tenant\app\Models\Tenant;
+use Modules\Tenant\Exceptions\TenantNotFoundException;
+use Modules\Tenant\Models\Tenant;
 
 /**
  * Service to resolve tenants.
@@ -15,12 +15,12 @@ class TenantResolverService
     /**
      * Create a new TenantResolverService instance.
      *
-     * @param \Modules\Tenant\app\Services\TenantFindService $tenantFindService
-     * @param \Modules\Tenant\app\Services\TenantSessionService $tenantSessionService
+     * @param TenantFindService $tenantFindService
+     * @param TenantSessionService $tenantSessionService
      */
     public function __construct(
-        protected TenantFindService $tenantFindService,
-        protected TenantSessionService $tenantSessionService,
+        private readonly TenantFindService $tenantFindService,
+        private readonly TenantSessionService $tenantSessionService,
     ) {
     }
 

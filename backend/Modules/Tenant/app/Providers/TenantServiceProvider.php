@@ -4,11 +4,11 @@ namespace Modules\Tenant\Providers;
 
 use App\Providers\ModuleServiceProvider;
 use Illuminate\Support\Facades\Route;
-use Modules\Tenant\app\Contexts\TenantContext;
-use Modules\Tenant\app\Http\Middleware\TenantMiddleware;
-use Modules\Tenant\app\Services\TenantFindService;
-use Modules\Tenant\app\Services\TenantResolverService;
-use Modules\Tenant\app\Services\TenantSessionService;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Http\Middleware\TenantMiddleware;
+use Modules\Tenant\Services\TenantFindService;
+use Modules\Tenant\Services\TenantResolverService;
+use Modules\Tenant\Services\TenantSessionService;
 
 /**
  * Provider for the Tenant module.

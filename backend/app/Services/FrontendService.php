@@ -4,8 +4,8 @@ namespace App\Services;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use Log;
 
+// TODO: should be scoped to TenantContext to correctly handle tenant-specific frontend URLs.
 class FrontendService
 {
     protected string $frontendUrl;
@@ -21,22 +21,6 @@ class FrontendService
     public function redirect(string $to): RedirectResponse
     {
         return Redirect::away("{$this->frontendUrl}$to");
-    }
-
-    /**
-     * Redirect to a success page with a message.
-     */
-    public function redirectSuccess(string $message): RedirectResponse
-    {
-        return $this->redirect("/success?message=" . urlencode($message));
-    }
-
-    /**
-     * Redirect to an error page with a message.
-     */
-    public function redirectError(string $message): RedirectResponse
-    {
-        return $this->redirect("/error?message=" . urlencode($message));
     }
 
     /**

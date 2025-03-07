@@ -8,7 +8,7 @@ use Modules\Auth\app\Rules\NameRule;
 use Modules\Auth\app\Rules\PasswordRule;
 
 /**
- * Request DTO for login.
+ * Request DTO for register.
  */
 class RegisterRequest extends FormRequest
 {

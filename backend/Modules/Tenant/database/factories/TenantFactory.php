@@ -4,10 +4,10 @@ namespace Modules\Tenant\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use Modules\Tenant\app\Models\Tenant;
+use Modules\Tenant\Models\Tenant;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Modules\Tenant\app\Models\Tenant>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<Tenant>
  */
 class TenantFactory extends Factory
 {

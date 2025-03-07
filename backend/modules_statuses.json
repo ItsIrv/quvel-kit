@@ -1,4 +1,5 @@
 {
     "Auth": true,
-    "Tenant": true
+    "Tenant": true,
+    "Migration": true
 }

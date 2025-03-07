@@ -3,14 +3,13 @@
 namespace Tests\Unit;
 
 use App\Models\User;
-use Modules\Tenant\app\Contexts\TenantContext;
-use Modules\Tenant\app\Models\Tenant;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(User::class)]
-#[Group('models')]
+#[Group('user-module')]
+#[Group('user-models')]
 class UserTest extends TestCase
 {
     /**
@@ -35,6 +34,8 @@ class UserTest extends TestCase
             'name',
             'email',
             'password',
+            'provider_id',
+            'avatar',
         ];
 
         $this->assertEquals(

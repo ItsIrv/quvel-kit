@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
@@ -17,13 +18,6 @@ class ModuleServiceProvider extends ServiceProvider
     protected string $nameLower = 'tenant';
 
     /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-    }
-
-    /**
      * Bootstrap any application services.
      */
     public function boot(): void
@@ -34,13 +28,6 @@ class ModuleServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(
             module_path($this->name, 'database/migrations'),
         );
-    }
-
-    /**
-     * Register the middleware.
-     */
-    public function registerMiddleware(): void
-    {
     }
 
     /**

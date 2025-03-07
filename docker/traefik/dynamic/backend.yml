@@ -1,0 +1,24 @@
+http:
+  routers:
+    api-local:
+      rule: 'Host(`api.quvel.127.0.0.1.nip.io`)'
+      entryPoints: websecure
+      service: api-local
+      tls: {}
+
+    api-lan:
+      rule: 'Host(`api.quvel.192.168.86.20.nip.io`)' # REPLACE_WITH_LOCAL_IP
+      entryPoints: websecure
+      service: api-lan
+      tls: {}
+
+  services:
+    api-local:
+      loadBalancer:
+        servers:
+          - url: 'http://quvel-app:8000'
+
+    api-lan:
+      loadBalancer:
+        servers:
+          - url: 'http://api-lan:8000'

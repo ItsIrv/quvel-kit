@@ -4,9 +4,9 @@ namespace Modules\Tenant\Tests\Unit\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Mockery\MockInterface;
-use Modules\Tenant\App\Contexts\TenantContext;
-use Modules\Tenant\App\Http\Middleware\TenantMiddleware;
-use Modules\Tenant\App\Services\TenantResolverService;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Http\Middleware\TenantMiddleware;
+use Modules\Tenant\Services\TenantResolverService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;

@@ -1,12 +1,11 @@
 <?php
 
-namespace Modules\Tenant\app\Http\Middleware;
+namespace Modules\Tenant\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Modules\Tenant\app\Contexts\TenantContext;
-use Modules\Tenant\app\Services\TenantResolverService;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Services\TenantResolverService;
 
 /**
  * Middleware to resolve the tenant based on the domain.
@@ -16,12 +15,12 @@ class TenantMiddleware
     /**
      * Create a new TenantMiddleware instance.
      *
-     * @param \Modules\Tenant\app\Services\TenantResolverService $tenantResolver
-     * @param \Modules\Tenant\app\Contexts\TenantContext $tenantContext
+     * @param TenantResolverService $tenantResolver
+     * @param TenantContext $tenantContext
      */
     public function __construct(
-        protected TenantResolverService $tenantResolver,
-        protected TenantContext $tenantContext,
+        private readonly TenantResolverService $tenantResolver,
+        private readonly TenantContext $tenantContext,
     ) {
     }
 
@@ -39,8 +38,6 @@ class TenantMiddleware
                 $request,
             ),
         );
-
-        Log::info('Tenant resolved: ', $this->tenantContext->get()->toArray());
 
         return $next($request);
     }

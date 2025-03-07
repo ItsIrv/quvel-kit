@@ -19,6 +19,13 @@ export default {
       button: 'Sign Up',
       link: 'Need an account?',
     },
+    oauth: {
+      title: 'Login with Provider',
+      link: 'Use Email/Password instead?',
+      google: 'Google',
+      apple: 'Apple',
+      logInWith: '{provider} Login',
+    },
     logout: {
       button: 'Logout',
     },

@@ -6,8 +6,8 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\MockInterface;
-use Modules\Tenant\app\Contexts\TenantContext;
-use Modules\Tenant\app\Models\Tenant;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Models\Tenant;
 use Illuminate\Http\Request;
 
 abstract class TestCase extends BaseTestCase

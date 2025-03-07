@@ -2,7 +2,7 @@
 
 namespace Modules\Tenant\Tests\Unit\Exceptions;
 
-use Modules\Tenant\App\Exceptions\TenantMismatchException;
+use Modules\Tenant\Exceptions\TenantMismatchException;
 use Modules\Tenant\Enums\TenantError;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;

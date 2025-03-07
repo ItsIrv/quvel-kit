@@ -7,8 +7,9 @@
  * Props:
  * - `taskErrors`: The errors from a task, including the main error and additional errors.
  */
-import { ErrorBag } from 'src/types/error.types';
 import { computed } from 'vue';
+import { ErrorBag } from 'src/types/error.types';
+import FadeInOut from 'src/components/Transitions/FadeInOut.vue';
 
 /**
  * Props for the component.
@@ -46,11 +47,7 @@ const errorMessage = computed(() => {
 </script>
 
 <template>
-  <transition
-    appear
-    enter-active-class="animated fadeInUp"
-    leave-active-class="animated fadeOutDown"
-  >
+  <FadeInOut>
     <q-banner
       v-if="errorMessage"
       class="bg-negative text-white"
@@ -59,5 +56,5 @@ const errorMessage = computed(() => {
     >
       {{ errorMessage }}
     </q-banner>
-  </transition>
+  </FadeInOut>
 </template>

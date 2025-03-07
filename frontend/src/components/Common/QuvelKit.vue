@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import { useContainer } from 'src/composables/useContainer';
+
+const configService = useContainer().config;
+
 defineProps({
   animate: {
     type: Boolean,
@@ -11,13 +15,8 @@ defineProps({
 <template>
   <span class="QuvelKit text-2xl font-bold text-gray-900 dark:text-white">
     <!-- Tight spacing on purpose; prevents space in text.-->
-    <span
-      class="text-blue-500"
-      :class="{ 'animate-wave': animate }"
-    >Qu<span
-        class="text-orange-600"
-        :class="{ 'animate-wave delay-1': animate }"
-      >Vel</span>
+    <span class="text-blue-500">
+      {{ configService.get('appName') }}
     </span>
 
     Kit

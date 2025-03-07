@@ -5,7 +5,13 @@ import { isLocal } from './utils';
 export default defineConfig((ctx) => {
   return {
     preFetch: true,
-    boot: ['container'],
+    boot: [
+      'container',
+      {
+        server: false,
+        path: 'pinia-hydrator',
+      },
+    ],
     css: ['app.scss'],
     extras: ['eva-icons', 'roboto-font'],
     build: {
@@ -60,6 +66,6 @@ export default defineConfig((ctx) => {
       iconSet: 'eva-icons',
       plugins: ['Cookies', 'Notify', 'LocalStorage', 'Meta', 'Loading'],
     },
-    animations: ['fadeIn', 'fadeOut'],
+    animations: ['fadeIn', 'fadeOut', 'backInDown', 'backOutUp'],
   };
 });

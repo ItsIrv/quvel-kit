@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Tenant\app\Scopes;
+namespace Modules\Tenant\Scopes;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
-use Modules\Tenant\app\Traits\GetsTenant;
+use Modules\Tenant\Traits\GetsTenant;
 
 class TenantScope implements Scope
 {

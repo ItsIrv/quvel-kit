@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Tenant\app\Traits;
+namespace Modules\Tenant\Traits;
 
-use Modules\Tenant\app\Contexts\TenantContext;
-use Modules\Tenant\app\Models\Tenant;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Models\Tenant;
 
 trait GetsTenant
 {

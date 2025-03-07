@@ -9,6 +9,7 @@ export function createUserFromApi(data: IUser): User {
     id: data.id,
     name: data.name,
     email: data.email,
+    avatar: data.avatar,
     emailVerifiedAt: data.emailVerifiedAt,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,

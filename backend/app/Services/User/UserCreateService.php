@@ -17,7 +17,7 @@ class UserCreateService
      */
     public function create(array $data): User
     {
-        /** @phpstan-ignore-next-line */
+        /** @phpstan-ignore-next-line Laravel provides create */
         return User::create($data);
     }
 }

@@ -26,10 +26,6 @@
   @apply text-orange-600;
 }
 
-.q-btn {
-  @extend .SmallGlow;
-}
-
 .q-select__dialog {
   @extend .MainGradient;
 }
@@ -47,12 +43,12 @@
   background:
     radial-gradient(
       circle at top left,
-      rgba(59, 130, 246, 0.15) 20%,
+      rgba(59, 130, 246, 0.2) 20%,
       /* Quasar Blue */ transparent 60%
     ),
     radial-gradient(
       circle at bottom right,
-      rgba(243, 85, 44, 0.1) 15%,
+      rgba(243, 85, 44, 0.15) 15%,
       /* Laravel Orange */ transparent 60%
     ),
     linear-gradient(180deg, #f8f9fa, #e5e7eb); /* Soft base gradient */
@@ -200,7 +196,10 @@
 }
 
 .UserDropdown {
-  @apply absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 border border-gray-300 dark:border-gray-700;
+  @extend .GenericBorder, .GenericCardGradient;
+  @apply absolute right-0 mt-2 w-48 rounded-lg p-4 rounded-b-lg z-10;
+
+  border-radius: 0 0 0.5rem 0.5rem;
 }
 
 .GenericBorder {
@@ -208,13 +207,11 @@
 }
 
 .Button {
-  @extend .SmallGlow;
   @apply bg-transparent text-stone-700 dark:text-gray-300 px-4 py-1 rounded-lg;
 }
 
 .PrimaryButton {
-  @extend .GenericBorder;
-  @apply shadow-md;
+  @extend .GenericBorder, .Button, .AccentGradient;
 }
 
 .FeaturesGrid {
@@ -256,13 +253,34 @@
 
 .LanderNav {
   @extend .GenericBorder, .GenericCardGradient, .MainTransition;
-  @apply py-2 fixed top-6 flex items-center justify-between gap-6 px-8 rounded-full shadow-md w-[90%];
+  @apply z-10 py-2 fixed top-6 flex items-center justify-between gap-6 px-8 rounded-full shadow-md w-[90%];
 
   .NativeMobile & {
     top: env(safe-area-inset-top, 0px) !important;
   }
 }
 
+.AccentGradient {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 105, 180, 0.15) 0%,
+    rgba(255, 165, 0, 0.2) 30%,
+    rgba(255, 69, 0, 0.25) 100%
+  );
+
+  .dark & {
+    background: linear-gradient(
+      135deg,
+      rgba(139, 92, 246, 0.15) 0%,
+      rgba(99, 102, 241, 0.2) 30%,
+      rgba(59, 130, 246, 0.25) 100%
+    );
+  }
+}
+
+/**
+ * Animations
+ */
 .slow-expand-enter-active,
 .slow-expand-leave-active {
   transition:
@@ -280,8 +298,4 @@
 .slow-expand-leave-from {
   max-height: 80px;
   opacity: 1;
-}
-
-.q-banner {
-  @apply bg-gray-800;
 }

@@ -4,8 +4,8 @@ namespace Modules\Tenant\Tests\Unit\Traits;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Modules\Tenant\app\Exceptions\TenantMismatchException;
-use Modules\Tenant\app\Traits\TenantScopedModel;
+use Modules\Tenant\Exceptions\TenantMismatchException;
+use Modules\Tenant\Traits\TenantScopedModel;
 use Modules\Tenant\Tests\Models\TestTenantModel;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;

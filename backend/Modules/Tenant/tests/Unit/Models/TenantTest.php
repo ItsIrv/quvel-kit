@@ -2,7 +2,9 @@
 
 namespace Modules\Tenant\Tests\Unit\Models;
 
-use Modules\Tenant\App\Models\Tenant;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Database\Factories\TenantFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -11,7 +13,6 @@ use Tests\TestCase;
 #[CoversClass(Tenant::class)]
 #[Group('tenant-module')]
 #[Group('tenant-models')]
-
 class TenantTest extends TestCase
 {
     /**
@@ -22,7 +23,7 @@ class TenantTest extends TestCase
         $tenant = new Tenant();
 
         $this->assertEquals(
-            ['name', 'domain'],
+            ['name', 'domain', 'parent_id'],
             $tenant->getFillable(),
         );
     }
@@ -38,5 +39,44 @@ class TenantTest extends TestCase
             TenantFactory::class,
             $factory,
         );
+    }
+
+    /**
+     * Test that the parent relationship returns a BelongsTo instance.
+     */
+    public function testParentRelationship(): void
+    {
+        $tenant = new Tenant();
+
+        $this->assertInstanceOf(BelongsTo::class, $tenant->parent());
+    }
+
+    /**
+     * Test that the children relationship returns a HasMany instance.
+     */
+    public function testChildrenRelationship(): void
+    {
+        $tenant = new Tenant();
+
+        $this->assertInstanceOf(HasMany::class, $tenant->children());
+    }
+
+    /**
+     * Test that a tenant can be created.
+     */
+    public function testCreatingTenant(): void
+    {
+        $tenant = Tenant::factory()->create([
+            'name'   => 'Example Tenant',
+            'domain' => 'example.com',
+        ]);
+
+        $this->assertDatabaseHas('tenants', [
+            'id'     => $tenant->id,
+            'name'   => 'Example Tenant',
+            'domain' => 'example.com',
+        ]);
+
+        $this->assertInstanceOf(Tenant::class, $tenant);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Modules\Tenant\Tests\Unit\Services;
 
-use Modules\Tenant\App\Models\Tenant;
-use Modules\Tenant\App\Services\TenantFindService;
+use Modules\Tenant\Models\Tenant;
+use Modules\Tenant\Services\TenantFindService;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -27,21 +27,14 @@ class TenantFindServiceTest extends TestCase
      */
     public function testFindTenantByDomain(): void
     {
-        $tenant = Tenant::factory()->create(
-            [
-                'domain' => 'example.com',
-            ],
-        );
+        $tenant = Tenant::factory()->create([
+            'domain' => 'example.com',
+        ]);
 
-        $foundTenant = $this->service->findTenantByDomain(
-            'example.com',
-        );
+        $foundTenant = $this->service->findTenantByDomain('example.com');
 
         $this->assertNotNull($foundTenant);
-        $this->assertEquals(
-            $tenant->id,
-            $foundTenant->id,
-        );
+        $this->assertEquals($tenant->id, $foundTenant->id);
     }
 
     /**
@@ -49,10 +42,28 @@ class TenantFindServiceTest extends TestCase
      */
     public function testFindTenantByDomainReturnsNull(): void
     {
-        $foundTenant = $this->service->findTenantByDomain(
-            'nonexistent.com',
-        );
+        $foundTenant = $this->service->findTenantByDomain('nonexistent.com');
 
         $this->assertNull($foundTenant);
+    }
+
+    /**
+     * Test that the findTenantByDomain method returns the parent tenant if it exists.
+     */
+    public function testFindTenantByDomainReturnsParent(): void
+    {
+        $parentTenant = Tenant::factory()->create([
+            'domain' => 'parent.com',
+        ]);
+
+        Tenant::factory()->create([
+            'domain'    => 'child.com',
+            'parent_id' => $parentTenant->id,
+        ]);
+
+        $foundTenant = $this->service->findTenantByDomain('child.com');
+
+        $this->assertNotNull($foundTenant);
+        $this->assertEquals($parentTenant->id, $foundTenant->id);
     }
 }
