@@ -4,6 +4,7 @@ import type { I18nService } from 'src/services/I18nService';
 import type { ValidationService } from 'src/services/ValidationService';
 import type { TaskService } from './TaskService';
 import type { Service } from './Service';
+import { ConfigService } from './ConfigService';
 
 /**
  * The service container manages core services and allows dynamic service registration.
@@ -17,6 +18,7 @@ export class ServiceContainer {
     readonly i18n: I18nService,
     readonly validation: ValidationService,
     readonly task: TaskService,
+    readonly config: ConfigService,
     private readonly services: Map<string, unknown> = new Map(),
   ) {
     this.registerServices();

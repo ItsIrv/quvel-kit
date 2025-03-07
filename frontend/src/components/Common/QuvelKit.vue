@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import { useContainer } from 'src/composables/useContainer';
+
+const configService = useContainer().config;
+
 defineProps({
   animate: {
     type: Boolean,
@@ -14,10 +18,8 @@ defineProps({
     <span
       class="text-blue-500"
       :class="{ 'animate-wave': animate }"
-    >Qu<span
-        class="text-orange-600"
-        :class="{ 'animate-wave delay-1': animate }"
-      >Vel</span>
+    >
+      {{ configService.get('appName') }}
     </span>
 
     Kit

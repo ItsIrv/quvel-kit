@@ -14,6 +14,7 @@ return new class extends Migration
             $table->char('public_id', 26)->unique();
             $table->string('name')->unique();
             $table->string('domain')->unique();
+            $table->json('config')->nullable();
             $table->timestamps();
         });
     }

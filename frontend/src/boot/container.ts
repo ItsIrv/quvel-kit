@@ -8,6 +8,7 @@ import { ValidationService } from 'src/services/ValidationService';
 import { ApiService } from 'src/services/ApiService';
 import { I18nService } from 'src/services/I18nService';
 import { createI18n } from 'src/utils/i18nUtil';
+import { ConfigService } from 'src/services/ConfigService';
 
 /**
  * Creates the service container per request.
@@ -15,11 +16,14 @@ import { createI18n } from 'src/utils/i18nUtil';
  * @returns The fully initialized service container.
  */
 export function createContainer(ssrContext?: QSsrContext | null): ServiceContainer {
+  const configService = new ConfigService(ssrContext?.req?.tenantConfig);
+
   return new ServiceContainer(
-    new ApiService(createApi(ssrContext)),
+    new ApiService(createApi(ssrContext, configService.getAll())),
     new I18nService(createI18n(ssrContext)),
     new ValidationService(),
     new TaskService(),
+    configService,
     new Map(),
   );
 }

@@ -5,6 +5,7 @@ namespace Modules\Tenant\Contexts;
 use Modules\Tenant\Enums\TenantError;
 use Modules\Tenant\Exceptions\TenantNotFoundException;
 use Modules\Tenant\Models\Tenant;
+use Modules\Tenant\ValueObjects\TenantConfig;
 
 /**
  * This class is used for getting and storing the current tenant from the scoped request cycle.
@@ -41,5 +42,22 @@ class TenantContext
         }
 
         return $this->tenant;
+    }
+
+    /**
+     * Get the tenant's scoped configuration.
+     * @return TenantConfig
+     */
+    public function getConfig(): TenantConfig
+    {
+        return $this->tenant->config;
+    }
+
+    /**
+     * Get a specific config value.
+     */
+    public function getConfigValue(string $key, mixed $default = null): mixed
+    {
+        return $this->tenant->config?->{$key} ?? $default;
     }
 }

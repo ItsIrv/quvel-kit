@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Models\Tenant;
+use Modules\Tenant\ValueObjects\TenantConfig;
 
 class TenantSeeder extends Seeder
 {
@@ -21,22 +22,51 @@ class TenantSeeder extends Seeder
             config('quvel.frontend_url'),
         )['host'] ?? throw new \Exception('Could not determine frontend domain');
 
-        $mainTenant = Tenant::updateOrCreate(
-            ['domain' => $apiDomain],
-            ['name' => 'First Tenant - API', 'public_id' => Str::ulid()->toString()],
+        # REPLACE_WITH_LOCAL_IP
+        $lanDomain = 'quvel.192.168.86.20.nip.io';
+
+        // Define the tenant configurations
+        $mainTenantConfig = new TenantConfig(
+            apiUrl: "https://$apiDomain",
+            internalApiUrl: "http://quvel-app:8000",
+            appUrl: "https://$frontendDomain",
+            appName: 'QuVel',
+            appEnv: 'local',
+            debug: true,
         );
 
-        # REPLACE_WITH_LOCAL_IP
+        $secondTenantConfig = new TenantConfig(
+            apiUrl: "https://api.$lanDomain",
+            internalApiUrl: "http://api-lan:8000",
+            appUrl: "https://$lanDomain",
+            appName: 'QuVel - LAN',
+            appEnv: 'local',
+            debug: true,
+        );
+
+        // Create main API tenant
+        $mainTenant = Tenant::updateOrCreate(
+            ['domain' => $apiDomain],
+            [
+                'name'      => 'First Tenant - API',
+                'public_id' => Str::ulid()->toString(),
+                'config'    => $mainTenantConfig->toArray(), // Store as JSON
+            ],
+        );
+
+        // Create second API tenant
         $secondTenant = Tenant::updateOrCreate(
             [
-                'domain' => 'api.quvel.192.168.86.20.nip.io',
+                'domain' => "api.$lanDomain",
             ],
             [
                 'name'      => 'Second Tenant - API',
                 'public_id' => Str::ulid()->toString(),
+                'config'    => $secondTenantConfig->toArray(),
             ],
         );
 
+        // Create frontend tenants
         Tenant::updateOrCreate(
             [
                 'domain'    => $frontendDomain,
@@ -44,6 +74,17 @@ class TenantSeeder extends Seeder
             ],
             [
                 'name'      => 'First Tenant - Frontend',
+                'public_id' => Str::ulid()->toString(),
+            ],
+        );
+
+        Tenant::updateOrCreate(
+            [
+                'domain'    => $lanDomain,
+                'parent_id' => $secondTenant->id,
+            ],
+            [
+                'name'      => 'Second Tenant - Frontend',
                 'public_id' => Str::ulid()->toString(),
             ],
         );
@@ -81,6 +122,7 @@ class TenantSeeder extends Seeder
                 'tenant_id'         => $secondTenant->id,
                 'password'          => Hash::make(config('quvel.default_password')),
                 'email_verified_at' => now(),
+                'avatar'            => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . (string) rand(1, 100),
             ],
         );
     }
