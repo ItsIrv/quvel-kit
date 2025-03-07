@@ -47,7 +47,9 @@ services:
         'composer install --dev && php artisan serve --host=0.0.0.0 --port=8000',
       ] # Run Laravel API server after installing dependencies
     networks:
-      - quvel-network
+      quvel-network:
+        aliases:
+          - api-lan
 
   # Laravel Assets Builder
   asset-builder:

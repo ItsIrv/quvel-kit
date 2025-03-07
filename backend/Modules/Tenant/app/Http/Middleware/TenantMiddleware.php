@@ -4,7 +4,6 @@ namespace Modules\Tenant\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Services\TenantResolverService;
 

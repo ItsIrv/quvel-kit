@@ -26,14 +26,48 @@ class TenantSeeder extends Seeder
             ['name' => 'First Tenant - API', 'public_id' => Str::ulid()->toString()],
         );
 
-        Tenant::updateOrCreate(
-            ['domain' => $frontendDomain, 'parent_id' => $mainTenant->id],
-            ['name' => 'First Tenant - Frontend', 'public_id' => Str::ulid()->toString()],
+        # REPLACE_WITH_LOCAL_IP
+        $secondTenant = Tenant::updateOrCreate(
+            [
+                'domain' => 'api.quvel.192.168.86.20.nip.io',
+            ],
+            [
+                'name'      => 'Second Tenant - API',
+                'public_id' => Str::ulid()->toString(),
+            ],
         );
 
-        $secondTenant = Tenant::updateOrCreate(
-            ['domain' => 'second-tenant.127.0.0.1.nip.io'],
-            ['name' => 'Second Tenant - API', 'public_id' => Str::ulid()->toString()],
+        Tenant::updateOrCreate(
+            [
+                'domain'    => $frontendDomain,
+                'parent_id' => $mainTenant->id,
+            ],
+            [
+                'name'      => 'First Tenant - Frontend',
+                'public_id' => Str::ulid()->toString(),
+            ],
+        );
+
+        Tenant::updateOrCreate(
+            [
+                'domain'    => 'quvel-app',
+                'parent_id' => $mainTenant->id,
+            ],
+            [
+                'name'      => 'First Tenant - Frontend Docker Internal',
+                'public_id' => Str::ulid()->toString(),
+            ],
+        );
+
+        Tenant::updateOrCreate(
+            [
+                'domain'    => 'api-lan',
+                'parent_id' => $secondTenant->id,
+            ],
+            [
+                'name'      => 'Second Tenant - Frontend Docker Internal',
+                'public_id' => Str::ulid()->toString(),
+            ],
         );
 
         // Set the context for the TenantScopedModel requirements on User
@@ -41,9 +75,9 @@ class TenantSeeder extends Seeder
 
         // Create a user for the second tenant.
         User::updateOrCreate(
-            ['email' => 'second-tenant@quvel.app'],
+            ['email' => 'lan-user@quvel.app'],
             [
-                'name'              => 'Second Tenant User',
+                'name'              => 'LAN Tenant User',
                 'tenant_id'         => $secondTenant->id,
                 'password'          => Hash::make(config('quvel.default_password')),
                 'email_verified_at' => now(),
