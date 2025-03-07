@@ -7,6 +7,7 @@ use App\Services\User\UserCreateService;
 use App\Services\User\UserFindService;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Modules\Tenant\Contexts\TenantContext;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,12 +16,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(
-            FrontendService::class,
-            fn () => new FrontendService(
-                config('quvel.frontend_url'),
-            )
-        );
+        // FrontendService must be scoped per request, not a singleton.
+        $this->app->scoped(FrontendService::class, function ($app): FrontendService {
+            /** @var TenantContext $tenantContext */
+            $tenantContext = $app->make(TenantContext::class);
+
+            return new FrontendService(
+                $tenantContext->getConfigValue('appUrl'),
+            );
+        });
 
         $this->app->singleton(UserCreateService::class);
         $this->app->singleton(UserFindService::class);

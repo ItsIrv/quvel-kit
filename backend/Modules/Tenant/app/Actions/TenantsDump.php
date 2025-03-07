@@ -5,8 +5,6 @@ namespace Modules\Tenant\Actions;
 use Illuminate\Cache\Repository as CacheRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Validation\UnauthorizedException;
-use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Services\TenantFindService;
 use Modules\Tenant\Transformers\TenantDumpTransformer;
 
@@ -27,21 +25,20 @@ class TenantsDump
         Request $request,
         TenantFindService $tenantFindService,
         CacheRepository $cache,
-        TenantContext $tenantContext,
     ): AnonymousResourceCollection {
-        dd($tenantContext->getConfigValue('appUrl'));
+        // TODO: Decide how we want to internalize this.
         if ($request->ip() !== '127.0.0.1') {
             // throw new UnauthorizedException();
         }
 
-        if ($cache->has(self::CACHE_KEY)) {
-            return TenantDumpTransformer::collection(
-                $cache->get(self::CACHE_KEY),
-            );
-        }
+        $tenants = [];
 
-        $tenants = $tenantFindService->findAll();
-        $cache->put(self::CACHE_KEY, $tenants, self::CACHE_TTL);
+        if ($cache->has(self::CACHE_KEY)) {
+            $tenants = $cache->get(self::CACHE_KEY);
+        } else {
+            $tenants = $tenantFindService->findAll();
+            $cache->put(self::CACHE_KEY, $tenants, self::CACHE_TTL);
+        }
 
         return TenantDumpTransformer::collection($tenants);
     }
