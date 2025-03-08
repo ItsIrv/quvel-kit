@@ -69,7 +69,7 @@ class Tenant extends Model
 
     /**
      * Get the effective tenant configuration.
-     * Always returns the **parent's config** if available.
+     * Always returns the parent's config if available.
      *
      * @return TenantConfig|null
      */

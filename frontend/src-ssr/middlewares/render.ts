@@ -2,12 +2,31 @@ import { type RenderError } from '#q-app';
 import { defineSsrMiddleware } from '#q-app/wrappers';
 import type { Request, Response } from 'express';
 import { TenantCacheService } from '../services/TenantCache';
+import { TenantConfig } from '../types/tenant.types';
 
 const tenantService = TenantCacheService.getInstance();
 
+/**
+ * Filters out non-public fields from the tenant config.
+ */
+/**
+ * Filters out non-public fields from the tenant config.
+ */
+function filterTenantConfig(config: TenantConfig): Partial<TenantConfig> {
+  const filteredConfig = { ...config };
+
+  Object.keys(filteredConfig).forEach((key) => {
+    const typedKey = key as keyof TenantConfig;
+
+    if (config.__visibility?.[typedKey] !== 'public') {
+      delete filteredConfig[typedKey];
+    }
+  });
+
+  return filteredConfig;
+}
+
 export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
-  // Capture all unmatched routes and hand them over
-  // to Vue and Vue Router for rendering
   app.get(resolve.urlPath('*'), async (req: Request, res: Response) => {
     res.header('Content-Type', 'text/html');
 
@@ -20,23 +39,25 @@ export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
         return;
       }
 
-      // Attach only the tenant configuration to the request
+      // Attach full tenantConfig to the request for SSR
       req.tenantConfig = tenantConfig;
 
-      // Render the page using Vue SSR with the extracted tenant config
+      // Filter non-public fields before injecting into window
+      const publicTenantConfig = filterTenantConfig(tenantConfig);
+
+      // Render the page using Vue SSR
       const html = await render({ req, res });
 
-      // Inject tenant config into `window.__TENANT_CONFIG__`
+      // Inject **only public fields** into `window.__TENANT_CONFIG__`
       const hydratedHtml = html.replace(
         '</body>',
-        `<script>window.__TENANT_CONFIG__ = ${JSON.stringify(tenantConfig)};</script></body>`,
+        `<script>window.__TENANT_CONFIG__ = ${JSON.stringify(publicTenantConfig)};</script></body>`,
       );
 
       res.send(hydratedHtml);
     } catch (err) {
       const error = err as RenderError;
 
-      // If an error specifies a redirect URL, follow it
       if (error.url) {
         res.redirect(error.code ?? 302, error.url);
         return;

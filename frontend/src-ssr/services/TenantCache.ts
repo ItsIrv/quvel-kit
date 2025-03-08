@@ -1,5 +1,5 @@
 import { createAxios } from 'src/utils/axiosUtil';
-import { Tenant, TenantConfig, TenantConfigResponse } from '../types/tenant';
+import { Tenant, TenantConfig } from '../types/tenant.types';
 
 export class TenantCacheService {
   private static instance: TenantCacheService;
@@ -25,19 +25,20 @@ export class TenantCacheService {
   private async loadTenants(): Promise<void> {
     try {
       const response = await createAxios().get<{
-        data: (Tenant & { config: TenantConfigResponse })[];
+        data: (Tenant & { config: TenantConfig })[];
       }>('http://quvel-app:8000/tenant/cache');
 
       response.data.data.forEach((tenant) => {
         // Ensure config is properly formatted
         const formattedConfig: TenantConfig = {
-          apiUrl: tenant.config.api_url ?? '',
-          appUrl: tenant.config.app_url ?? '',
-          appName: tenant.config.app_name ?? '',
-          appEnv: tenant.config.app_env ?? '',
-          internalApiUrl: tenant.config.internal_api_url ?? '',
-          debug: tenant.config.debug ?? false,
+          api_url: tenant.config.api_url ?? '',
+          app_url: tenant.config.app_url ?? '',
+          app_name: tenant.config.app_name ?? '',
+          internal_api_url: tenant.config.internal_api_url ?? '',
+          __visibility: tenant.config.__visibility ?? {},
         };
+
+        console.log('1,', tenant.config);
 
         // Store tenant with formatted config
         this.tenants.set(tenant.domain, {
@@ -74,12 +75,5 @@ export class TenantCacheService {
     }
 
     return tenant.config ?? null;
-  }
-
-  /**
-   * Get all tenants.
-   */
-  public getAllTenants(): Tenant[] {
-    return Array.from(this.tenants.values());
   }
 }

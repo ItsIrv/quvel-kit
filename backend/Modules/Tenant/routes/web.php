@@ -10,9 +10,11 @@ use Modules\Tenant\Actions\TenantsDump;
 Route::group([
     "prefix" => "tenant",
 ], function (): void {
+    // Dumps Current Tenant
     Route::get('/', TenantDump::class)
         ->name('tenant');
 
+    // Dumps All Tenants
     Route::get('/cache', TenantsDump::class)
         ->name('tenants.cache');
 });

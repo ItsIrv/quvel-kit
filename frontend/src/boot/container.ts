@@ -1,6 +1,6 @@
 import { defineBoot } from '#q-app/wrappers';
-import { ContainerKey, setClientContainer } from 'src/composables/useContainer';
 import type { QSsrContext } from '@quasar/app-vite';
+import { ContainerKey, setClientContainer } from 'src/composables/useContainer';
 import { createApi } from 'src/utils/axiosUtil';
 import { TaskService } from 'src/services/TaskService';
 import { ServiceContainer } from 'src/services/ServiceContainer';

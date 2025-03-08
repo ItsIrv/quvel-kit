@@ -2,7 +2,7 @@ import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { Cookies } from 'quasar';
 import type { QSsrContext } from '@quasar/app-vite';
 import { SessionName } from 'src/models/Session';
-import { TenantConfig } from 'app/src-ssr/types/tenant';
+import { TenantConfig } from 'src/types/tenant.types';
 
 /**
  * Creates an Axios instance with the given configuration.
@@ -26,8 +26,8 @@ export function createApi(
 ): AxiosInstance {
   const baseURL =
     ssrContext !== null
-      ? (configOverrides?.internalApiUrl ?? process.env.VITE_API_INTERNAL_URL ?? '')
-      : (configOverrides?.apiUrl ?? process.env.VITE_API_URL ?? '');
+      ? (configOverrides?.internal_api_url ?? '')
+      : (configOverrides?.api_url ?? process.env.VITE_API_URL ?? '');
 
   const axiosConfig: AxiosRequestConfig = {
     baseURL,

@@ -7,122 +7,103 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\database\factories\TenantConfigFactory;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\ValueObjects\TenantConfig;
 
 class TenantSeeder extends Seeder
 {
     public function run(): void
     {
-        $apiDomain = parse_url(
-            config('app.url'),
-        )['host'] ?? throw new \Exception('Could not determine API domain');
+        $apiDomain      = config('quvel.default_api_domain');
+        $frontendDomain = str_replace('api.', '', $apiDomain);
+        $lanApiDomain   = config('quvel.default_lan_domain');
+        $lanFrontend    = str_replace('api.', '', $lanApiDomain);
 
-        $frontendDomain = parse_url(
-            config('quvel.frontend_url'),
-        )['host'] ?? throw new \Exception('Could not determine frontend domain');
-
-        # REPLACE_WITH_LOCAL_IP
-        $lanDomain = 'quvel.192.168.86.20.nip.io';
-
-        // Define the tenant configurations
-        $mainTenantConfig = new TenantConfig(
-            apiUrl: "https://$apiDomain",
-            internalApiUrl: "http://quvel-app:8000",
-            appUrl: "https://$frontendDomain",
-            appName: 'QuVel',
-            appEnv: 'local',
-            debug: true,
+        // Create API tenants
+        $mainTenant = $this->createTenant(
+            $apiDomain,
+            'First Tenant - API',
+            TenantConfigFactory::create(
+                $apiDomain,
+                'quvel-app',
+            ),
         );
 
-        $secondTenantConfig = new TenantConfig(
-            apiUrl: "https://api.$lanDomain",
-            internalApiUrl: "http://api-lan:8000",
-            appUrl: "https://$lanDomain",
-            appName: 'QuVel - LAN',
-            appEnv: 'local',
-            debug: true,
-        );
-
-        // Create main API tenant
-        $mainTenant = Tenant::updateOrCreate(
-            ['domain' => $apiDomain],
-            [
-                'name'      => 'First Tenant - API',
-                'public_id' => Str::ulid()->toString(),
-                'config'    => $mainTenantConfig->toArray(), // Store as JSON
-            ],
-        );
-
-        // Create second API tenant
-        $secondTenant = Tenant::updateOrCreate(
-            [
-                'domain' => "api.$lanDomain",
-            ],
-            [
-                'name'      => 'Second Tenant - API',
-                'public_id' => Str::ulid()->toString(),
-                'config'    => $secondTenantConfig->toArray(),
-            ],
+        $secondTenant = $this->createTenant(
+            $lanApiDomain,
+            'Second Tenant - API',
+            TenantConfigFactory::create(
+                $lanApiDomain,
+                'api-lan',
+                'QuVel - LAN',
+            ),
         );
 
         // Create frontend tenants
-        Tenant::updateOrCreate(
-            [
-                'domain'    => $frontendDomain,
-                'parent_id' => $mainTenant->id,
-            ],
-            [
-                'name'      => 'First Tenant - Frontend',
-                'public_id' => Str::ulid()->toString(),
-            ],
+        $this->createTenant(
+            $frontendDomain,
+            'First Tenant - Frontend',
+            null,
+            $mainTenant,
         );
 
-        Tenant::updateOrCreate(
-            [
-                'domain'    => $lanDomain,
-                'parent_id' => $secondTenant->id,
-            ],
-            [
-                'name'      => 'Second Tenant - Frontend',
-                'public_id' => Str::ulid()->toString(),
-            ],
+        $this->createTenant(
+            $lanFrontend,
+            'Second Tenant - Frontend',
+            null,
+            $secondTenant,
         );
 
-        Tenant::updateOrCreate(
-            [
-                'domain'    => 'quvel-app',
-                'parent_id' => $mainTenant->id,
-            ],
-            [
-                'name'      => 'First Tenant - Frontend Docker Internal',
-                'public_id' => Str::ulid()->toString(),
-            ],
+        $this->createTenant(
+            'quvel-app',
+            'First Tenant - Frontend Docker Internal',
+            null,
+            $mainTenant,
         );
 
-        Tenant::updateOrCreate(
-            [
-                'domain'    => 'api-lan',
-                'parent_id' => $secondTenant->id,
-            ],
-            [
-                'name'      => 'Second Tenant - Frontend Docker Internal',
-                'public_id' => Str::ulid()->toString(),
-            ],
+        $this->createTenant(
+            'api-lan',
+            'Second Tenant - Frontend Docker Internal',
+            null,
+            $secondTenant,
         );
 
-        // Set the context for the TenantScopedModel requirements on User
+        // Set tenant context
         app(TenantContext::class)->set($secondTenant);
 
-        // Create a user for the second tenant.
+        // Create a test user for LAN Tenant
+        $this->createTenantUser($secondTenant);
+    }
+
+    /**
+     * Create or update a tenant.
+     */
+    private function createTenant(string $domain, string $name, ?array $config = null, ?Tenant $parent = null): Tenant
+    {
+        return Tenant::updateOrCreate(
+            ['domain' => $domain],
+            [
+                'name'      => $name,
+                'public_id' => Str::ulid()->toString(),
+                'config'    => $config,
+                'parent_id' => $parent?->id,
+            ],
+        );
+    }
+
+    /**
+     * Create a user for a tenant.
+     */
+    private function createTenantUser(Tenant $tenant): void
+    {
         User::updateOrCreate(
             ['email' => 'lan-user@quvel.app'],
             [
                 'name'              => 'LAN Tenant User',
-                'tenant_id'         => $secondTenant->id,
+                'tenant_id'         => $tenant->id,
                 'password'          => Hash::make(config('quvel.default_password')),
                 'email_verified_at' => now(),
-                'avatar'            => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . (string) rand(1, 100),
+                'avatar'            => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . rand(1, 100),
             ],
         );
     }

@@ -9,7 +9,7 @@ use Modules\Tenant\Services\TenantFindService;
 use Modules\Tenant\Transformers\TenantDumpTransformer;
 
 /**
- * Action for frontend SSR to fetch all tenants.
+ * Action for frontend SSR to fetch all tenants and allow dynamic config on client.
  */
 class TenantsDump
 {

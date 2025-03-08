@@ -5,6 +5,9 @@ declare module 'express' {
   }
 }
 
+/**
+ * The tenant model.
+ */
 export interface Tenant {
   id: string;
   name: string;
@@ -15,20 +18,18 @@ export interface Tenant {
   updated_at: string;
 }
 
+/**
+ * The tenant configuration (processed config used in app).
+ */
 export interface TenantConfig {
-  apiUrl: string;
-  appUrl: string;
-  appName: string;
-  appEnv: string;
-  internalApiUrl?: string;
-  debug: boolean;
-}
-
-export interface TenantConfigResponse {
   api_url: string;
   app_url: string;
   app_name: string;
-  app_env: string;
-  internal_api_url: string | null;
-  debug: boolean;
+  internal_api_url?: string;
+  __visibility: Record<keyof TenantConfig, TenantConfigVisibility>;
 }
+
+/**
+ * The visibility of a tenant configuration field.
+ */
+export type TenantConfigVisibility = 'public' | 'protected';

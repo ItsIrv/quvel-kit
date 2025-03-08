@@ -16,7 +16,7 @@ defineProps({
   <span class="QuvelKit text-2xl font-bold text-gray-900 dark:text-white">
     <!-- Tight spacing on purpose; prevents space in text.-->
     <span class="text-blue-500">
-      {{ configService.get('appName') }}
+      {{ configService.get('app_name') }}
     </span>
 
     Kit

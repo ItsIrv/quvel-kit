@@ -1,15 +1,15 @@
-import { AppConfig } from 'src/types/config.types';
+import { TenantConfig } from 'src/types/tenant.types';
 
 declare global {
   interface Window {
-    __TENANT_CONFIG__?: AppConfig;
+    __TENANT_CONFIG__?: TenantConfig;
   }
 }
 
 export class ConfigService {
-  private config: AppConfig;
+  private config: TenantConfig;
 
-  constructor(ssrConfig?: AppConfig) {
+  constructor(ssrConfig?: TenantConfig) {
     // Check if running in browser and `window.__TENANT_CONFIG__` is available
     const clientConfig =
       typeof window !== 'undefined' && window.__TENANT_CONFIG__ ? window.__TENANT_CONFIG__ : null;
@@ -17,12 +17,9 @@ export class ConfigService {
     // Prefer SSR config > Client Hydrated Config > Environment Variables
     this.config = ssrConfig ??
       clientConfig ?? {
-        apiUrl: import.meta.env.VITE_API_URL ?? '',
-        internalApiUrl: import.meta.env.VITE_API_INTERNAL_URL ?? '',
-        appUrl: import.meta.env.VITE_APP_URL ?? '',
-        appName: import.meta.env.VITE_APP_NAME ?? 'QuVel',
-        appEnv: import.meta.env.VITE_APP_ENV ?? 'production',
-        debug: import.meta.env.VITE_DEBUG === 'true',
+        api_url: import.meta.env.VITE_API_URL ?? '',
+        app_url: import.meta.env.VITE_APP_URL ?? '',
+        app_name: import.meta.env.VITE_APP_NAME ?? 'QuVel',
       };
   }
 
@@ -38,7 +35,7 @@ export class ConfigService {
   /**
    * Get all config values.
    */
-  public getAll(): AppConfig {
+  public getAll(): TenantConfig {
     return this.config;
   }
 }
