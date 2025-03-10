@@ -46,9 +46,9 @@ class TenantContext
 
     /**
      * Get the tenant's scoped configuration.
-     * @return TenantConfig
+     * @return TenantConfig|null
      */
-    public function getConfig(): TenantConfig
+    public function getConfig(): TenantConfig|null
     {
         return $this->tenant->config;
     }
@@ -58,6 +58,6 @@ class TenantContext
      */
     public function getConfigValue(string $key, mixed $default = null): mixed
     {
-        return $this->tenant->config?->{$key} ?? $default;
+        return $this->tenant->config->{$key} ?? $default;
     }
 }

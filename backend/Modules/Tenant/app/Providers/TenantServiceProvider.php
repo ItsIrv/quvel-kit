@@ -4,6 +4,7 @@ namespace Modules\Tenant\Providers;
 
 use App\Providers\ModuleServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Modules\Tenant\Console\ManageTenantConfig;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Http\Middleware\TenantMiddleware;
 use Modules\Tenant\Services\TenantFindService;
@@ -42,6 +43,13 @@ class TenantServiceProvider extends ModuleServiceProvider
         parent::boot();
 
         $this->registerMiddleware();
+
+        // If running in CLI, register the command
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                ManageTenantConfig::class,
+            ]);
+        }
     }
 
     /**

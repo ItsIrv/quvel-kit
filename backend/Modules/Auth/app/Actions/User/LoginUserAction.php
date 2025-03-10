@@ -42,10 +42,10 @@ class LoginUserAction
             );
         }
 
-        // Check if the user has verified their email
-        if (!$user->hasVerifiedEmail()) {
+        // Check the user signed up with password
+        if (!$user->password || $user->provider_id) {
             throw new SignInUserException(
-                AuthStatusEnum::EMAIL_NOT_VERIFIED,
+                AuthStatusEnum::INVALID_CREDENTIALS,
             );
         }
 
@@ -58,6 +58,13 @@ class LoginUserAction
         ) {
             throw new SignInUserException(
                 AuthStatusEnum::INVALID_CREDENTIALS,
+            );
+        }
+
+        // Check if the user has verified their email
+        if (!$user->hasVerifiedEmail()) {
+            throw new SignInUserException(
+                AuthStatusEnum::EMAIL_NOT_VERIFIED,
             );
         }
 

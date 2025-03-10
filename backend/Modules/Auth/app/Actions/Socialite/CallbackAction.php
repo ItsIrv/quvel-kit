@@ -58,8 +58,9 @@ class CallbackAction
                 ]);
             }
 
-            // Stateful Flow: Log the user in & redirect
-            $this->userAuthenticationService->logInWithId($user->id);
+            if ($status === OAuthStatusEnum::LOGIN_OK) {
+                $this->userAuthenticationService->logInWithId($user->id);
+            }
 
             return $this->frontendService->redirectPage(
                 '',

@@ -11,6 +11,7 @@ return [
         'invalidUser'        => 'Invalid user.',
         'emailTaken'         => 'This email is already in use.',
         'providerIdTaken'    => 'This :provider ID is already in use.',
+        'invalidConfig'      => 'Invalid configuration.',
     ],
     'warnings' => [
         'emailNotVerified' => 'This account has not been verified.',

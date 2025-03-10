@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table): void {
             $table->string('password')->nullable()->change();
-            $table->string('provider_id')->nullable()->unique()->after('email');
+            $table->string('provider_id')->nullable()->after('email');
             $table->string('avatar')->nullable()->after('provider_id');
+
+            $table->unique(['tenant_id', 'provider_id']);
         });
     }
 

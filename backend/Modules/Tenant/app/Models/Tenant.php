@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Tenant\database\factories\TenantFactory;
 use Modules\Tenant\Casts\TenantConfigCast;
+use Modules\Tenant\database\factories\TenantFactory;
 use Modules\Tenant\ValueObjects\TenantConfig;
 
 /**
@@ -30,8 +30,18 @@ class Tenant extends Model
     /** @use HasFactory<\Modules\Tenant\database\factories\TenantFactory> */
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = ['name', 'domain', 'parent_id', 'config'];
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array<string, class-string>
+     */
     protected $casts = [
         'config' => TenantConfigCast::class,
     ];
@@ -75,6 +85,6 @@ class Tenant extends Model
      */
     public function getEffectiveConfig(): ?TenantConfig
     {
-        return $this->parent?->config ?? $this->config;
+        return $this->parent->config ?? $this->config;
     }
 }

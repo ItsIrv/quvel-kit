@@ -5,6 +5,12 @@ namespace Modules\Tenant\ValueObjects;
 use Illuminate\Contracts\Support\Arrayable;
 use Modules\Tenant\Enums\TenantConfigVisibility;
 
+/**
+ * Represents the configuration for a tenant.
+ * Implements Arrayable for conversion between object and array representation.
+ *
+ * @implements Arrayable<string, mixed>
+ */
 class TenantConfig implements Arrayable
 {
     public function __construct(
@@ -23,6 +29,7 @@ class TenantConfig implements Arrayable
 
     /**
      * Create an instance from an array.
+     * @param array<string, mixed> $data The configuration data.
      */
     public static function fromArray(array $data): self
     {

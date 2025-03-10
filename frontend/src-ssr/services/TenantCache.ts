@@ -14,7 +14,11 @@ export class TenantCacheService {
   public static async getInstance(): Promise<TenantCacheService> {
     if (!this.instance) {
       this.instance = new TenantCacheService();
+
       await this.instance.loadTenants();
+
+      // Refresh cache every minute
+      setInterval(() => void this.instance.loadTenants(), 1000 * 60 * 1); // 1 minute
     }
     return this.instance;
   }
@@ -37,8 +41,6 @@ export class TenantCacheService {
           internal_api_url: tenant.config.internal_api_url ?? '',
           __visibility: tenant.config.__visibility ?? {},
         };
-
-        console.log('1,', tenant.config);
 
         // Store tenant with formatted config
         this.tenants.set(tenant.domain, {
