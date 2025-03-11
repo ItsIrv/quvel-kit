@@ -16,6 +16,7 @@ import PasswordConfirmField from 'src/components/Form/PasswordConfirmField.vue';
 import NameField from 'src/components/Form/NameField.vue';
 import SlowExpand from 'src/components/Transitions/SlowExpand.vue';
 import BackInOutUp from '../Transitions/BackInOutUp.vue';
+import { useQuasar } from 'quasar';
 
 type AuthDialogType = 'login' | 'signup';
 
@@ -34,6 +35,8 @@ const emit = defineEmits(['update:modelValue']);
  */
 const container = useContainer();
 const sessionStore = useSessionStore();
+const quasar = useQuasar();
+
 /**
  * Refs
  */
@@ -147,10 +150,18 @@ function generateNonce(length: number): string {
 }
 
 function loginWithOAuth(provider: string) {
-  const nonce = generateNonce(100);
-  sessionStore.setNonce(nonce);
+  const stateless = quasar.platform.is.nativeMobile ? 1 : 0;
+  const apiUrl = container.config.get('api_url');
+  let redirectUrl = '';
 
-  const redirectUrl = `${process.env.VITE_API_URL}/auth/provider/${provider}/redirect?nonce=${encodeURIComponent(nonce)}&stateless=0`;
+  if (stateless) {
+    const nonce = generateNonce(100);
+    sessionStore.setNonce(nonce);
+    redirectUrl = `${apiUrl}/auth/provider/${provider}/redirect?nonce=${encodeURIComponent(nonce)}&stateless=${stateless}`;
+  } else {
+    redirectUrl = `${apiUrl}/auth/provider/${provider}/redirect`;
+  }
+
   window.location.href = redirectUrl;
 }
 </script>

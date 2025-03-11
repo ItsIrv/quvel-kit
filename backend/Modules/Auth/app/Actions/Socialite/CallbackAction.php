@@ -47,18 +47,18 @@ class CallbackAction
                 $providerUser,
             );
 
-            if ($stateless) {
-                // Stateless Flow: Assign nonce & return JSON response
-                $this->serverTokenService->forgetClientNonce($nonce);
-                $this->clientNonceService->assignUserToNonce($clientNonce, $user->id);
-
-                return response()->json([
-                    'status'  => $status,
-                    'message' => OAuthStatusEnum::CLIENT_TOKEN_GRANED->getTranslatedMessage(),
-                ]);
-            }
-
             if ($status === OAuthStatusEnum::LOGIN_OK) {
+                if ($stateless) {
+                    // Stateless Flow: Assign nonce & return JSON response
+                    $this->serverTokenService->forgetClientNonce($nonce);
+                    $this->clientNonceService->assignUserToNonce($clientNonce, $user->id);
+
+                    return response()->json([
+                        'status'  => $status,
+                        'message' => OAuthStatusEnum::CLIENT_TOKEN_GRANED->getTranslatedMessage(),
+                    ]);
+                }
+
                 $this->userAuthenticationService->logInWithId($user->id);
             }
 

@@ -73,6 +73,10 @@ class SocialiteService
         return "{$this->tenantContext->getConfig()?->apiUrl}/auth/provider/{$provider}/callback";
     }
 
+    /**
+     * Gets the base configuration for the provider.
+     * @return array<string, mixed>
+     */
     private function getProviderConfig(string $provider): array
     {
         return config("services.{$provider}", []);

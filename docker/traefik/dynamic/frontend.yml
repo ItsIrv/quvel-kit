@@ -15,6 +15,12 @@ http:
       middlewares:
         - websocket-headers
 
+    capacitor:
+      rule: 'Host(`second-tenant.quvel.127.0.0.1.nip.io`)'
+      entryPoints: websecure
+      service: capacitor
+      tls: {}
+
   services:
     web:
       loadBalancer:
@@ -26,6 +32,12 @@ http:
       loadBalancer:
         servers:
           - url: 'https://quvel-frontend:9001'
+        serversTransport: 'insecureTransport' # Supports self-signed certificates
+
+    capacitor:
+      loadBalancer:
+        servers:
+          - url: 'https://host.docker.internal:3002'
         serversTransport: 'insecureTransport' # Supports self-signed certificates
 
   middlewares:
