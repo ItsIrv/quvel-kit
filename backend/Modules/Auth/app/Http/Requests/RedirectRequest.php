@@ -30,9 +30,8 @@ class RedirectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nonce'     => ['required_if:stateless,true', ...NonceRule::RULES],
-            'provider'  => ['required', ...ProviderRule::RULES()],
-            'stateless' => ['boolean'],
+            'nonce'    => NonceRule::RULES,
+            'provider' => ['required', ...ProviderRule::RULES()],
         ];
     }
 

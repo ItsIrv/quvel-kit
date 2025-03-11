@@ -6,7 +6,7 @@ class NonceRule
 {
     public const RULES = [
         'string',
-        'min:100',
+        'min:1',
         'max:255',
     ];
 }

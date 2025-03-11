@@ -27,7 +27,7 @@ class RedirectAction
      */
     public function __invoke(RedirectRequest $request, string $provider): RedirectResponse|JsonResponse
     {
-        $stateless = $request->validated('stateless', false);
+        $stateless = $request->has('nonce');
 
         try {
             if (!$stateless) {

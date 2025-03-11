@@ -150,7 +150,7 @@ function generateNonce(length: number): string {
 }
 
 function loginWithOAuth(provider: string) {
-  const stateless = quasar.platform.is.nativeMobile ? 1 : 0;
+  const stateless = quasar.platform.is.capacitor ? 1 : 0;
   const apiUrl = container.config.get('api_url');
   let redirectUrl = '';
 

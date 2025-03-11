@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 use Modules\Auth\Actions\Socialite\CallbackAction;
+use Modules\Auth\Actions\Socialite\CreateClientNonceAction;
 use Modules\Auth\Actions\Socialite\RedirectAction;
 use Modules\Auth\Actions\User\GetUserSessionAction;
 use Modules\Auth\Actions\User\LoginUserAction;
@@ -31,6 +32,7 @@ Route::group([
     ], function (): void {
         Route::get('/redirect', RedirectAction::class)->name('auth.provider.redirect');
         Route::get('/callback', CallbackAction::class)->name('auth.provider.callback');
+        Route::get('/create-nonce', CreateClientNonceAction::class)->name('auth.provider.create-nonce');
     });
 
     // Authenticated
