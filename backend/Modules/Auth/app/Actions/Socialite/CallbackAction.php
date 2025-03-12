@@ -6,7 +6,6 @@ use App\Services\FrontendService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
@@ -68,7 +67,6 @@ class CallbackAction
                 ['message' => $status->getTranslatedMessage()],
             );
         } catch (Exception $e) {
-            Log::error($e);
             return $this->frontendService->redirectPage(
                 '',
                 [
