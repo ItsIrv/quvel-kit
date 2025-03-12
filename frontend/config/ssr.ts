@@ -9,7 +9,6 @@ export default defineConfig(() => {
       extendViteConf(viteConf): void {
         viteConf.server = {
           ...viteConf.server,
-          allowedHosts: ['second-tenant.quvel.127.0.0.1.nip.io', 'quvel.127.0.0.1.nip.io'],
           strictPort: true,
           port: 9001,
           host: '0.0.0.0',
@@ -18,7 +17,7 @@ export default defineConfig(() => {
           },
           hmr: {
             protocol: 'wss',
-            host: isLocal ? 'second-tenant.quvel.127.0.0.1.nip.io' : '0.0.0.0',
+            host: isLocal ? 'quvel.127.0.0.1.nip.io' : '0.0.0.0',
             port: 9001,
             clientPort: isLocal ? 9001 : 443,
             path: '/hmr',
@@ -30,7 +29,7 @@ export default defineConfig(() => {
     devServer: {
       strictPort: true,
       port: isLocal ? 3000 : 9000,
-      host: isLocal ? 'second-tenant.quvel.127.0.0.1.nip.io' : '0.0.0.0',
+      host: isLocal ? 'quvel.127.0.0.1.nip.io' : '0.0.0.0',
       https: getCerts(),
     },
     ssr: {

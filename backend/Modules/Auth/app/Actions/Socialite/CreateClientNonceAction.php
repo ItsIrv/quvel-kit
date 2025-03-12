@@ -6,6 +6,9 @@ use Illuminate\Http\JsonResponse;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\NonceSessionService;
 
+/**
+ * Creates a new client nonce to begin the stateless socialite flow.
+ */
 class CreateClientNonceAction
 {
     public function __construct(

@@ -26,7 +26,7 @@ BASE_DOMAINS=(
   "api.quvel.127.0.0.1.nip.io"
   "coverage-api.quvel.127.0.0.1.nip.io"
   "coverage.quvel.127.0.0.1.nip.io"
-  "second-tenant.quvel.127.0.0.1.nip.io"
+  "cap-tenant.quvel.127.0.0.1.nip.io"
 )
 
 # Ask for optional LAN IP
@@ -39,7 +39,7 @@ if [[ -n "$LAN_IP" ]]; then
     "api.quvel.${LAN_IP}.nip.io"
     "coverage-api.quvel.${LAN_IP}.nip.io"
     "coverage.quvel.${LAN_IP}.nip.io"
-    "second-tenant.quvel.${LAN_IP}.nip.io"
+    "cap-tenant.quvel.${LAN_IP}.nip.io"
   )
   DOMAINS=("${BASE_DOMAINS[@]}" "${LAN_DOMAINS[@]}")
 else

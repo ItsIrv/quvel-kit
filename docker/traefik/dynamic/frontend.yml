@@ -16,7 +16,7 @@ http:
         - websocket-headers
 
     capacitor:
-      rule: 'Host(`second-tenant.quvel.127.0.0.1.nip.io`)'
+      rule: 'Host(`cap-tenant.quvel.127.0.0.1.nip.io`) || Host(`cap-tenant.quvel.192.168.86.20.nip.io`)' # REPLACE_WITH_LOCAL_IP
       entryPoints: websecure
       service: capacitor
       tls: {}

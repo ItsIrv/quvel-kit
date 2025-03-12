@@ -10,6 +10,9 @@ use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\RedeemNonceRequest;
 use Modules\Auth\Services\ClientNonceService;
 
+/**
+ * Redeems a client nonce and logs in the user.
+ */
 class RedeemClientNonceAction
 {
     public function __construct(
@@ -18,9 +21,6 @@ class RedeemClientNonceAction
     ) {
     }
 
-    /**
-     * Redeems a client nonce and logs in the user.
-     */
     public function __invoke(RedeemNonceRequest $request): JsonResponse
     {
         try {

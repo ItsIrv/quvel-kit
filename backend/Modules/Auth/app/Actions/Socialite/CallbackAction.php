@@ -15,6 +15,9 @@ use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
 
+/**
+ * Handles the callback from the socialite provider.
+ */
 class CallbackAction
 {
     public function __construct(
@@ -48,6 +51,7 @@ class CallbackAction
                 $providerUser,
             );
 
+            // Only on status LOGIN_OK shall we grant access; others are user-friendly failures
             if ($status === OAuthStatusEnum::LOGIN_OK) {
                 if ($stateless) {
                     $this->serverTokenService->forget($signedToken);

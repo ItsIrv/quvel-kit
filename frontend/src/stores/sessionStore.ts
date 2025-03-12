@@ -174,7 +174,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
           const authUrl = `${redirectBase}?nonce=${encodeURIComponent(nonce)}`;
           const popup = window.open(
             authUrl,
-            '_blank',
+            '_self',
             'width=500,height=600,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,noreferrer,noopener',
           );
 

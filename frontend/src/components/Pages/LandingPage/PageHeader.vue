@@ -50,7 +50,7 @@ onUnmounted(() => {
         : 'max-w-2xl',
     ]">
       <div class="row items-center">
-        <QuvelKit :animate="!isHidden" />
+        <QuvelKit :link="true" />
 
         <!-- Navigation Links -->
         <MenuList class="hidden sm:!flex gap-10 text-gray-700 dark:text-gray-300 font-mono ml-10" />

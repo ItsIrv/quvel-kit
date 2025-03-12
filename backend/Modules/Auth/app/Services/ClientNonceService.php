@@ -71,7 +71,7 @@ class ClientNonceService
      *
      * @throws OAuthException
      */
-    public function getNonce(string $signedNonce, ?int $expectedState = null, $setState = null): string
+    public function getNonce(string $signedNonce, ?int $expectedState = null): string
     {
         $nonce = $this->hmacService->extractAndVerify($signedNonce);
 
@@ -84,10 +84,6 @@ class ClientNonceService
 
         if ($expectedState && $value !== $expectedState) {
             throw new OAuthException(OAuthStatusEnum::INVALID_NONCE);
-        }
-
-        if ($setState) {
-            $this->setNonceValue($nonce, $setState);
         }
 
         return $nonce;

@@ -6,6 +6,7 @@ use Illuminate\Broadcasting\Channel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Queue\SerializesModels;
 
+// TODO: Need to pick a random channel name instead of the full nonce.
 class OAuthLoginSuccess implements ShouldBroadcast
 {
     use SerializesModels;

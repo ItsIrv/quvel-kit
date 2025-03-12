@@ -12,6 +12,9 @@ use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
 
+/**
+ * Redirects the user to the socialite provider.
+ */
 class RedirectAction
 {
     public function __construct(
@@ -37,23 +40,20 @@ class RedirectAction
                 );
             }
 
-            // Validate client nonce
-            $clientNonce = $this->clientNonceService->getNonce(
+            // Validate nonce
+            $nonce = $this->clientNonceService->getNonce(
                 $request->validated('nonce'),
                 ClientNonceService::TOKEN_CREATED,
-                ClientNonceService::TOKEN_REDIRECTED,
             );
 
-            // Generate secure server token and associate it with client nonce
-            $signedServerToken = $this->serverTokenService->create($clientNonce);
+            // Don't allow multiple redirects with the same token
+            $this->clientNonceService->assignRedirectedToNonce($nonce);
 
-            // Get OAuth redirect URL
-            $redirectUrl = $this->socialiteService->getRedirectResponse(
+            // Redirect with the custom state
+            return $this->socialiteService->getRedirectResponse(
                 $provider,
-                $signedServerToken,
+                $this->serverTokenService->create($nonce),
             );
-
-            return $redirectUrl;
         } catch (Exception $e) {
             return $this->frontendService->redirectPage(
                 '',
