@@ -18,7 +18,7 @@ class ProviderRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $validProviders = Config::get('auth.socialite.providers', []);
+        $validProviders = Config::get('auth.oauth.providers', []);
 
         assert(is_array($validProviders));
 

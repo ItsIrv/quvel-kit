@@ -6,6 +6,7 @@ use App\Services\FrontendService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\RedirectRequest;
 use Modules\Auth\Services\ClientNonceService;
@@ -33,7 +34,7 @@ class RedirectAction
             if (!$stateless) {
                 return $this->socialiteService->getRedirectResponse(
                     $provider,
-                    false,
+                    '',
                 );
             }
 
@@ -43,19 +44,18 @@ class RedirectAction
             );
 
             // Generate secure server token and associate it with client nonce
-            $serverToken = $this->serverTokenService->generateServerToken(
-                $clientNonce,
-            );
+            $signedServerToken = $this->serverTokenService->create($clientNonce);
 
             // Get OAuth redirect URL
             $redirectUrl = $this->socialiteService->getRedirectResponse(
                 $provider,
-                true,
-                $serverToken,
+                $signedServerToken,
             );
 
             return $redirectUrl;
         } catch (Exception $e) {
+            Log::error($e);
+
             return $this->frontendService->redirectPage(
                 '',
                 [

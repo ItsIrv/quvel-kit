@@ -2,6 +2,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia';
 import type { User } from 'src/models/User';
 import type { IUser } from 'src/types/user.types';
 import { createUserFromApi } from 'src/factories/userFactory';
+import { showNotification } from 'src/utils/notifyUtil';
 
 /**
  * Type for the authenticated user.
@@ -36,6 +37,7 @@ interface SessionActions {
   logout(): Promise<void>;
   login(email: string, password: string): Promise<User>;
   signUp(email: string, password: string, name: string): Promise<void>;
+  loginWithOAuth(provider: string): Promise<void>;
   setNonce(nonce: string): void;
   getNonce(): string | null;
   clearNonce(): void;
@@ -126,6 +128,23 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
           password,
           name,
         });
+      },
+
+      /**
+       * OAuth Flow: Request nonce, store it, and redirect.
+       */
+      async loginWithOAuth(provider: string) {
+        try {
+          const { nonce } = await this.$container.api.get<{ nonce: string }>(
+            `/auth/provider/${provider}/create-nonce`,
+          );
+
+          this.setNonce(nonce);
+
+          window.location.href = `${this.$container.config.get('api_url')}/auth/provider/${provider}/redirect?nonce=${encodeURIComponent(nonce)}`;
+        } catch {
+          showNotification('negative', this.$container.i18n.t('common.task.error'));
+        }
       },
 
       /**

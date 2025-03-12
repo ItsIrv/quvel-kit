@@ -4,54 +4,74 @@ namespace Modules\Auth\Services;
 
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Modules\Auth\Enums\OAuthStatusEnum;
+use Modules\Auth\Exceptions\OAuthException;
 
 class ServerTokenService
 {
-    protected const CACHE_KEY_PREFIX = 'server_token_';
+    private const CACHE_KEY_PREFIX = 'server_token_';
 
     public function __construct(
         private readonly CacheRepository $cache,
         private readonly ConfigRepository $config,
+        private readonly HmacService $hmacService,
     ) {
     }
 
     /**
-     * Generate a secure server token and map it to a client nonce.
+     * Get cache key for a given token.
      */
-    public function generateServerToken(string $clientNonce): string
+    private function getCacheKey(string $token): string
     {
-        $serverToken = bin2hex(random_bytes(32));
-        $ttl         = $this->config->get(
-            'auth.socialite.token_ttl',
-            1,
-        );
+        return self::CACHE_KEY_PREFIX . $token;
+    }
+
+    /**
+     * Create a secure server token and map it to a client nonce.
+     */
+    public function create(string $clientNonce): string
+    {
+        $serverToken = bin2hex(random_bytes(64));
+
+        $ttl = $this->config->get('auth.oauth.token_ttl', 1);
 
         $this->cache->put(
-            self::CACHE_KEY_PREFIX . $serverToken,
+            $this->getCacheKey($serverToken),
             $clientNonce,
             $ttl,
         );
 
-        return $serverToken;
+        return $this->hmacService->signWithHmac($serverToken);
     }
-
     /**
      * Retrieve client nonce from server token.
      */
-    public function getClientNonce(string $serverToken): ?string
+    public function getClientNonce(string $signedServerToken): ?string
     {
+        $serverToken = $this->hmacService->extractAndVerify($signedServerToken);
+
+        if (!$serverToken) {
+            throw new OAuthException(OAuthStatusEnum::INVALID_TOKEN);
+        }
+
         return $this->cache->get(
-            self::CACHE_KEY_PREFIX . $serverToken
+            $this->getCacheKey($serverToken),
         );
     }
 
     /**
      * Remove client nonce from cache.
      */
-    public function forgetClientNonce(string $serverToken): bool
+    public function forget(string $signedServerToken): bool
     {
+        $serverToken = $this->hmacService->extractAndVerify($signedServerToken);
+
+        if (!$serverToken) {
+            throw new OAuthException(OAuthStatusEnum::INVALID_TOKEN);
+        }
+
         return $this->cache->forget(
-            self::CACHE_KEY_PREFIX . $serverToken,
+            $this->getCacheKey($serverToken),
         );
     }
 }

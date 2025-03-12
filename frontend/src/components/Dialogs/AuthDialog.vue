@@ -16,7 +16,6 @@ import PasswordConfirmField from 'src/components/Form/PasswordConfirmField.vue';
 import NameField from 'src/components/Form/NameField.vue';
 import SlowExpand from 'src/components/Transitions/SlowExpand.vue';
 import BackInOutUp from '../Transitions/BackInOutUp.vue';
-import { useQuasar } from 'quasar';
 
 type AuthDialogType = 'login' | 'signup';
 
@@ -35,7 +34,6 @@ const emit = defineEmits(['update:modelValue']);
  */
 const container = useContainer();
 const sessionStore = useSessionStore();
-const quasar = useQuasar();
 
 /**
  * Refs
@@ -139,30 +137,8 @@ function onBeforeShow() {
   setDialogType('login');
 }
 
-function generateNonce(length: number): string {
-  const array = new Uint8Array(length);
-  crypto.getRandomValues(array);
-
-  return btoa(String.fromCharCode(...array))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-}
-
 function loginWithOAuth(provider: string) {
-  const stateless = quasar.platform.is.capacitor ? 1 : 0;
-  const apiUrl = container.config.get('api_url');
-  let redirectUrl = '';
-
-  if (stateless) {
-    const nonce = generateNonce(100);
-    sessionStore.setNonce(nonce);
-    redirectUrl = `${apiUrl}/auth/provider/${provider}/redirect?nonce=${encodeURIComponent(nonce)}&stateless=${stateless}`;
-  } else {
-    redirectUrl = `${apiUrl}/auth/provider/${provider}/redirect`;
-  }
-
-  window.location.href = redirectUrl;
+  void sessionStore.loginWithOAuth(provider);
 }
 </script>
 

@@ -52,7 +52,7 @@ class NonceSessionService
             return false;
         }
 
-        $ttl       = $this->config->get('auth.socialite.nonce_ttl', 1);
+        $ttl       = $this->config->get('auth.oauth.nonce_ttl', 1);
         $expiresAt = Carbon::parse($timestamp)->addSeconds($ttl);
 
         return Carbon::now()->lessThan($expiresAt);

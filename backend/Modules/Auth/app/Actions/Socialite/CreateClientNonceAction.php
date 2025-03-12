@@ -19,7 +19,7 @@ class CreateClientNonceAction
     public function __invoke(): JsonResponse
     {
         if ($this->nonceSessionService->isValid()) {
-            throw new OAuthException(OAuthStatusEnum::ACTIVE_FLOW_EXISTS);
+            // throw new OAuthException(OAuthStatusEnum::ACTIVE_FLOW_EXISTS);
         }
 
         $nonce = $this->clientNonceService->create();

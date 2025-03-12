@@ -23,13 +23,12 @@ class SocialiteService
      */
     public function getRedirectResponse(
         string $provider,
-        bool $stateless,
-        string $serverToken = '',
+        string $signedServerToken = '',
     ): RedirectResponse {
         $driver = $this->buildOAuthDriver($provider);
 
-        return $stateless
-            ? $driver->stateless()->with(['state' => $serverToken])->redirect()
+        return $signedServerToken !== ''
+            ? $driver->stateless()->with(['state' => $signedServerToken])->redirect()
             : $driver->redirect();
     }
 

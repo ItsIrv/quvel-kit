@@ -6,7 +6,7 @@ class TokenRule
 {
     public const RULES = [
         'string',
-        'min:30',
-        'max:64',
+        'min:160',
+        'max:200',
     ];
 }

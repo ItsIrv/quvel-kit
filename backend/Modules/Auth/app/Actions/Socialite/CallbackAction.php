@@ -6,6 +6,7 @@ use App\Services\FrontendService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
@@ -31,8 +32,8 @@ class CallbackAction
     public function __invoke(CallbackRequest $request, string $provider): RedirectResponse|JsonResponse
     {
         try {
-            $nonce       = $request->validated('state', '');
-            $clientNonce = $this->serverTokenService->getClientNonce($nonce);
+            $signedToken = $request->validated('state', '');
+            $clientNonce = $this->serverTokenService->getClientNonce($signedToken);
             $stateless   = $clientNonce !== null;
 
             // Retrieve provider user data (stateless determines method)
@@ -50,7 +51,7 @@ class CallbackAction
             if ($status === OAuthStatusEnum::LOGIN_OK) {
                 if ($stateless) {
                     // Stateless Flow: Assign nonce & return JSON response
-                    $this->serverTokenService->forgetClientNonce($nonce);
+                    $this->serverTokenService->forget($signedToken);
                     $this->clientNonceService->assignUserToNonce($clientNonce, $user->id);
 
                     return response()->json([
@@ -67,6 +68,7 @@ class CallbackAction
                 ['message' => $status->getTranslatedMessage()],
             );
         } catch (Exception $e) {
+            Log::error($e);
             return $this->frontendService->redirectPage(
                 '',
                 [

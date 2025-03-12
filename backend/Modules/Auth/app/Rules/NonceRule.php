@@ -6,7 +6,7 @@ class NonceRule
 {
     public const RULES = [
         'string',
-        'min:1',
-        'max:255',
+        'min:85', // 20 (nonce) + 1 (.) + 64 (HMAC)
+        'max:128', // Allow slight buffer
     ];
 }
