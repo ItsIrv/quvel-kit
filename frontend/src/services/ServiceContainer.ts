@@ -20,7 +20,7 @@ export class ServiceContainer {
     readonly i18n: I18nService,
     readonly validation: ValidationService,
     readonly task: TaskService,
-    readonly webSocket: WebSocketService,
+    readonly ws: WebSocketService,
     private readonly services: Map<string, unknown> = new Map(),
   ) {
     this.registerServices();

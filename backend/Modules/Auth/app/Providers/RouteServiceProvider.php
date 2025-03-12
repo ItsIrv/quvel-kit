@@ -26,6 +26,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->mapApiRoutes();
         $this->mapWebRoutes();
+        $this->mapChannelRoutes();
     }
 
     /**
@@ -52,5 +53,13 @@ class RouteServiceProvider extends ServiceProvider
             ->name('api.')->group(
                 module_path($this->name, '/routes/api.php'),
             );
+    }
+
+    /**
+     * Define the broadcast channels for the application.
+     */
+    protected function mapChannelRoutes(): void
+    {
+        require module_path($this->name, '/routes/channels.php');
     }
 }

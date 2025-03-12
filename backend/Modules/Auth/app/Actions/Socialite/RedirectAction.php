@@ -38,8 +38,10 @@ class RedirectAction
             }
 
             // Validate client nonce
-            $clientNonce = $this->clientNonceService->validateNonce(
+            $clientNonce = $this->clientNonceService->getNonce(
                 $request->validated('nonce'),
+                ClientNonceService::TOKEN_CREATED,
+                ClientNonceService::TOKEN_REDIRECTED,
             );
 
             // Generate secure server token and associate it with client nonce

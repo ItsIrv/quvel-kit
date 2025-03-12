@@ -18,6 +18,4 @@ enum OAuthStatusEnum: string
     case EMAIL_NOT_VERIFIED  = 'auth::status.warnings.emailNotVerified';
     case CLIENT_TOKEN_GRANED = 'auth::status.success.clientTokenGranted';
     case INVALID_CONFIG      = 'auth::status.errors.invalidConfig';
-    case ACTIVE_FLOW_EXISTS  = 'auth::status.errors.activeFlowExists';
-
 }

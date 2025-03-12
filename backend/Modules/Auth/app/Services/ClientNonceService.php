@@ -15,12 +15,12 @@ class ClientNonceService
     /**
      * The flow just started.
      */
-    private const TOKEN_CREATED = -1;
+    public const TOKEN_CREATED = -1;
 
     /**
      * Redirect has been sent.
      */
-    private const REDIRECT_SENT = -2;
+    public const TOKEN_REDIRECTED = -2;
 
     public function __construct(
         private readonly CacheRepository $cache,
@@ -45,7 +45,7 @@ class ClientNonceService
         $attempts = 0;
 
         do {
-            $nonce = bin2hex(random_bytes(16));
+            $nonce = $this->generateRandomNonce();
             $attempts++;
 
             if ($attempts >= self::MAX_RETRIES) {
@@ -55,15 +55,23 @@ class ClientNonceService
 
         $this->setNonceValue($nonce, self::TOKEN_CREATED);
 
+        return $this->getSignedNonce($nonce);
+    }
+
+    /**
+     * Get the signed nonce.
+     */
+    public function getSignedNonce(string $nonce): string
+    {
         return $this->hmacService->signWithHmac($nonce);
     }
 
     /**
-     * Validate the nonce for redirect.
+     * Get the raw nonce.
      *
      * @throws OAuthException
      */
-    public function validateNonce(string $signedNonce): string
+    public function getNonce(string $signedNonce, ?int $expectedState = null, $setState = null): string
     {
         $nonce = $this->hmacService->extractAndVerify($signedNonce);
 
@@ -74,14 +82,48 @@ class ClientNonceService
         $key   = $this->getCacheKey($nonce);
         $value = $this->cache->get($key);
 
-        if ($value !== self::TOKEN_CREATED) {
+        if ($expectedState && $value !== $expectedState) {
             throw new OAuthException(OAuthStatusEnum::INVALID_NONCE);
         }
 
-        // Mark nonce as used
-        $this->setNonceValue($nonce, self::REDIRECT_SENT);
+        if ($setState) {
+            $this->setNonceValue($nonce, $setState);
+        }
 
         return $nonce;
+    }
+
+    /**
+     * Get the user ID associated with a client nonce.
+     *
+     * @throws OAuthException
+     */
+    public function getUserIdFromNonce(string $nonce): ?int
+    {
+        $userId = $this->cache->get(
+            $this->getCacheKey($nonce),
+        );
+
+        if ($userId <= 0) {
+            throw new OAuthException(OAuthStatusEnum::INVALID_NONCE);
+        }
+
+        return $userId;
+    }
+
+    /**
+     * Forgets a client nonce.
+     */
+    public function forget(string $nonce): bool
+    {
+        return $this->cache->forget(
+            $this->getCacheKey($nonce),
+        );
+    }
+
+    public function assignRedirectedToNonce(string $nonce): void
+    {
+        $this->setNonceValue($nonce, self::TOKEN_REDIRECTED);
     }
 
     /**
@@ -102,5 +144,15 @@ class ClientNonceService
             $userId,
             $this->config->get('auth.oauth.nonce_ttl', 1),
         );
+    }
+
+    /**
+     * Generate a random nonce.
+     *
+     * @return string
+     */
+    private function generateRandomNonce(): string
+    {
+        return bin2hex(random_bytes(16));
     }
 }

@@ -4,10 +4,11 @@ namespace Modules\Auth\Actions\Socialite;
 
 use App\Services\FrontendService;
 use Exception;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
 use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\OAuthStatusEnum;
+use Modules\Auth\Events\OAuthLoginSuccess;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\CallbackRequest;
 use Modules\Auth\Services\ClientNonceService;
@@ -28,7 +29,7 @@ class CallbackAction
     /**
      * Handle OAuth provider callback.
      */
-    public function __invoke(CallbackRequest $request, string $provider): RedirectResponse|JsonResponse
+    public function __invoke(CallbackRequest $request, string $provider): RedirectResponse|Response
     {
         try {
             $signedToken = $request->validated('state', '');
@@ -49,17 +50,21 @@ class CallbackAction
 
             if ($status === OAuthStatusEnum::LOGIN_OK) {
                 if ($stateless) {
-                    // Stateless Flow: Assign nonce & return JSON response
                     $this->serverTokenService->forget($signedToken);
                     $this->clientNonceService->assignUserToNonce($clientNonce, $user->id);
 
-                    return response()->json([
-                        'status'  => $status,
-                        'message' => OAuthStatusEnum::CLIENT_TOKEN_GRANED->getTranslatedMessage(),
-                    ]);
-                }
+                    event(new OAuthLoginSuccess(
+                        $this->clientNonceService->getSignedNonce($clientNonce),
+                    ));
 
-                $this->userAuthenticationService->logInWithId($user->id);
+                    return response()->make("
+                    <script>
+                        setTimeout(() => window.close(), 500);
+                    </script>
+                ", 200, ['Content-Type' => 'text/html']);
+                } else {
+                    $this->userAuthenticationService->logInWithId($user->id);
+                }
             }
 
             return $this->frontendService->redirectPage(

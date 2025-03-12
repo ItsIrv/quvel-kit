@@ -29,20 +29,36 @@ class ServerTokenService
     /**
      * Create a secure server token and map it to a client nonce.
      */
-    public function create(string $clientNonce): string
+    public function create(string $nonce): string
     {
-        $serverToken = bin2hex(random_bytes(64));
-
-        $ttl = $this->config->get('auth.oauth.token_ttl', 1);
+        $serverToken = $this->generateRandomToken();
+        $ttl         = $this->config->get('auth.oauth.token_ttl', 1);
 
         $this->cache->put(
             $this->getCacheKey($serverToken),
-            $clientNonce,
+            $nonce,
             $ttl,
         );
 
-        return $this->hmacService->signWithHmac($serverToken);
+        return $this->getSignedToken($serverToken);
     }
+
+    /**
+     * Generate a random token.
+     */
+    public function generateRandomToken(): string
+    {
+        return bin2hex(random_bytes(64));
+    }
+
+    /**
+     * Get the signed token.
+     */
+    public function getSignedToken(string $token): string
+    {
+        return $this->hmacService->signWithHmac($token);
+    }
+
     /**
      * Retrieve client nonce from server token.
      */
@@ -50,8 +66,8 @@ class ServerTokenService
     {
         $serverToken = $this->hmacService->extractAndVerify($signedServerToken);
 
-        if (!$serverToken) {
-            throw new OAuthException(OAuthStatusEnum::INVALID_TOKEN);
+        if (empty($serverToken)) {
+            return null;
         }
 
         return $this->cache->get(

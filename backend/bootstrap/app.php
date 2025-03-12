@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Tenant global middleware. Do not remove.
         $middleware->append(TenantMiddleware::class);
     })
+    ->withBroadcasting('')
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

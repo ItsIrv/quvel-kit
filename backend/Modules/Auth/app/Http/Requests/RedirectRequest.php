@@ -3,7 +3,6 @@
 namespace Modules\Auth\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Modules\Auth\Rules\NonceRule;
 use Modules\Auth\Rules\ProviderRule;
 

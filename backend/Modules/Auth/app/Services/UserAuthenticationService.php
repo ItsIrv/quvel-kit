@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\app\Services;
 
+use App\Models\User;
 use App\Services\User\UserCreateService;
 use App\Services\User\UserFindService;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
@@ -96,12 +97,10 @@ class UserAuthenticationService
 
     /**
      * Log in a user using their ID.
-     *
-     * @param int $id The ID of the user to log in.
      */
-    public function logInWithId(int $id): void
+    public function logInWithId(int $id): User|bool
     {
         // @phpstan-ignore-next-line laravel provides loginUsingId
-        $this->auth->guard()->loginUsingId($id);
+        return $this->auth->guard()->loginUsingId($id);
     }
 }
