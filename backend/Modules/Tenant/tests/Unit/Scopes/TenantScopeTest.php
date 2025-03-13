@@ -22,7 +22,7 @@ class TenantScopeTest extends TestCase
         $mockBuilder = $this->createMock(Builder::class);
         $mockBuilder->expects($this->once())
             ->method('where')
-            ->with('tenant_id', '=', 1);
+            ->with('tenant_id', '=', $this->tenant->id);
 
         $mockModel = $this->createMock(Model::class);
 

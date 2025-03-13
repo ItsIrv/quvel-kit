@@ -21,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
             /** @var TenantContext $tenantContext */
             $tenantContext = $app->make(TenantContext::class);
 
+            if ($tenantContext->getConfigValue('appUrl') === null) {
+                \Log::info('App URL not found in tenant config', ['tenant' => $tenantContext->get()]);
+                dd(1);
+            }
+
             return new FrontendService(
                 $tenantContext->getConfigValue('appUrl'),
             );

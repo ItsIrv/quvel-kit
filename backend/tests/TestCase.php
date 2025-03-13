@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\MockInterface;
 use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\database\seeders\TenantSeeder;
 use Modules\Tenant\Models\Tenant;
 use Illuminate\Http\Request;
 
@@ -33,23 +34,19 @@ abstract class TestCase extends BaseTestCase
      */
     protected function seedTenant(): void
     {
-        // Extract host from config or default to app.url
-        $apiDomain = parse_url(config('app.url'))['host'] ?? config('app.url');
+        $this->seed(TenantSeeder::class);
 
-        // Create a tenant for tests
-        $this->tenant = Tenant::factory()->create([
-            'domain' => $apiDomain,
-        ]);
+        // Create a tenant for tests, match the static .env
+        $this->tenant = Tenant::where(
+            'domain',
+            '=',
+            'api.quvel.192.168.86.20.nip.io',
+        )->first();
 
         // Set TenantContext for tests
         $this->tenantContext = new TenantContext();
         $this->tenantContext->set($this->tenant);
         $this->app->instance(TenantContext::class, $this->tenantContext);
-
-        // Bind request host in the container
-        $this->app->bind(Request::class, function () use ($apiDomain) {
-            return Request::create('/', 'GET', [], [], [], ['HTTP_HOST' => $apiDomain]);
-        });
     }
 
     protected function seedMock(): void

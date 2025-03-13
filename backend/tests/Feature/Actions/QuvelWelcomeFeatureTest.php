@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 #[CoversClass(QuvelWelcome::class)]
 #[Group('welcome')]
-#[Group('actions')]
+#[Group('app-actions')]
 class QuvelWelcomeFeatureTest extends TestCase
 {
     /**

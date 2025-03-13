@@ -9,6 +9,7 @@ export default defineConfig(() => {
       extendViteConf(viteConf): void {
         viteConf.server = {
           ...viteConf.server,
+          allowedHosts: ['quvel.127.0.0.1.nip.io'],
           strictPort: true,
           port: 9001,
           host: '0.0.0.0',

@@ -11,6 +11,7 @@ use Tests\TestCase;
 
 #[CoversClass(TenantDumpTransformer::class)]
 #[Group('tenant-module')]
+#[Group('tenant-transformers')]
 class TenantDumpTransformerTest extends TestCase
 {
     /**
@@ -39,6 +40,8 @@ class TenantDumpTransformerTest extends TestCase
             'domain'     => 'tenant.com',
             'created_at' => $tenant->created_at,
             'updated_at' => $tenant->updated_at,
+            'config'     => [],
+            'parent_id'  => null,
         ], $result);
     }
 }

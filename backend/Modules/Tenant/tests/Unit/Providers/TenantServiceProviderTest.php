@@ -16,6 +16,7 @@ use Modules\Tenant\Services\TenantSessionService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use ReflectionClass;
 use Tests\TestCase;
 
 #[CoversClass(TenantServiceProvider::class)]
@@ -28,9 +29,23 @@ class TenantServiceProviderTest extends TestCase
      */
     private function createMockedProvider(): Mockery\MockInterface|TenantServiceProvider
     {
-        return $this->mock(TenantServiceProvider::class)
+        // Mock the Application instance
+        $mockApp = Mockery::mock(Application::class);
+        $mockApp->shouldReceive('runningInConsole')->andReturn(false); // Prevent CLI errors
+        $mockApp->shouldReceive('make')->andReturnUsing(fn ($class) => Mockery::mock($class));
+
+        // Create a partial mock of the provider
+        $mockProvider = $this->mock(TenantServiceProvider::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
+
+        // Use Reflection to set the protected `app` property
+        $reflection = new ReflectionClass($mockProvider);
+        $property   = $reflection->getProperty('app');
+        $property->setAccessible(true);
+        $property->setValue($mockProvider, $mockApp); // Inject the mocked app
+
+        return $mockProvider;
     }
 
     /**
@@ -82,7 +97,7 @@ class TenantServiceProviderTest extends TestCase
         $provider->shouldReceive('registerTranslations')->once();
         $provider->shouldReceive('registerConfig')->once();
         $provider->shouldReceive('registerViews')->once();
-        $provider->shouldReceive('registerMiddleware')->once();
+        $provider->shouldReceive('bootMiddleware')->once();
         $provider->shouldReceive('loadMigrationsFrom')->once()
             ->with(module_path('Tenant', 'database/migrations'));
 
@@ -92,12 +107,12 @@ class TenantServiceProviderTest extends TestCase
     /**
      * Test registering middleware.
      */
-    public function testRegisterMiddleware(): void
+    public function testBootMiddleware(): void
     {
         Route::shouldReceive('aliasMiddleware')->once()
             ->with('tenant', TenantMiddleware::class);
 
-        $this->createMockedProvider()->registerMiddleware();
+        $this->createMockedProvider()->bootMiddleware();
     }
 
     /**
