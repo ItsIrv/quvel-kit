@@ -28,10 +28,10 @@ class TenantConfigFactory
             mailFromName: $mailFromName,
             mailFromAddress: $mailFromAddress,
             visibility: [
-                'app_name'         => TenantConfigVisibility::PUBLIC ,
-                'app_url'          => TenantConfigVisibility::PUBLIC ,
                 'api_url'          => TenantConfigVisibility::PUBLIC ,
                 'internal_api_url' => TenantConfigVisibility::PROTECTED ,
+                'app_url'          => TenantConfigVisibility::PUBLIC ,
+                'app_name'         => TenantConfigVisibility::PUBLIC ,
             ],
         ))->toArray();
     }

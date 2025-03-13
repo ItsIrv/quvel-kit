@@ -66,4 +66,24 @@ class TenantFindServiceTest extends TestCase
         $this->assertNotNull($foundTenant);
         $this->assertEquals($parentTenant->id, $foundTenant->id);
     }
+
+    /**
+     * Test that findAll method returns all tenants.
+     */
+    public function testFindAllReturnsAllTenants(): void
+    {
+        Tenant::truncate();
+
+        // Create multiple tenants
+        $tenant1 = Tenant::factory()->create();
+        $tenant2 = Tenant::factory()->create();
+
+        // Call the findAll method
+        $tenants = $this->service->findAll();
+
+        // Assert that the returned collection contains all created tenants
+        $this->assertCount(2, $tenants);
+        $this->assertTrue($tenants->contains($tenant1));
+        $this->assertTrue($tenants->contains($tenant2));
+    }
 }

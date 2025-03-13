@@ -5,7 +5,6 @@ namespace Modules\Tenant\Providers;
 use App\Providers\ModuleServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Modules\Tenant\Console\ManageTenantConfig;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Http\Middleware\TenantMiddleware;
 use Modules\Tenant\Services\TenantFindService;
@@ -46,13 +45,6 @@ class TenantServiceProvider extends ModuleServiceProvider
         parent::boot();
 
         $this->bootMiddleware();
-
-        // If running in CLI, register the command
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                ManageTenantConfig::class,
-            ]);
-        }
     }
 
     /**
@@ -78,17 +70,6 @@ class TenantServiceProvider extends ModuleServiceProvider
                 $appConfig->set('app.debug', $tenantConfig->debug);
                 $appConfig->set('app.url', $tenantConfig->apiUrl);
 
-                // Ensure session domain is properly scoped to the backend
-                $apiHost = parse_url($tenantConfig->apiUrl, PHP_URL_HOST);
-                if ($apiHost) {
-                    $parts = explode('.', $apiHost);
-                    if (count($parts) > 2) {
-                        array_shift($parts);
-                    }
-                    $sessionDomain = '.' . implode('.', $parts);
-                    $appConfig->set('session.domain', $sessionDomain);
-                }
-
                 // Frontend Configuration (appUrl)
                 $appConfig->set('vite.api_url', $tenantConfig->apiUrl);
                 $appConfig->set('vite.app_url', $tenantConfig->appUrl);
@@ -102,8 +83,23 @@ class TenantServiceProvider extends ModuleServiceProvider
                     'services.google.redirect',
                     "{$tenantConfig->apiUrl}/auth/provider/google/callback",
                 );
+
+                // Ensure session domain is properly scoped to the backend
+                $apiHost = parse_url(
+                    $tenantConfig->apiUrl,
+                    PHP_URL_HOST,
+                );
+
+                if ($apiHost) {
+                    $parts = explode('.', $apiHost);
+                    if (count($parts) > 2) {
+                        array_shift($parts);
+                    }
+                    $sessionDomain = '.' . implode('.', $parts);
+                    $appConfig->set('session.domain', $sessionDomain);
+                }
             } catch (\Exception $e) {
-                \Log::critical("⚠️ Tenant Config Could Not Be Applied: " . $e->getMessage());
+                \Log::critical("Tenant Config Could Not Be Applied: " . $e->getMessage());
             }
         });
     }
