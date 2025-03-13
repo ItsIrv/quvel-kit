@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Traits;
 
+use App\Contracts\TranslatableEntity;
 use App\Traits\TranslatableException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -42,5 +43,33 @@ class TranslatableExceptionTest extends TestCase
         };
 
         $this->assertEquals('missing.translation.key', $exception->getTranslatedMessage());
+    }
+
+    /**
+     * Test that getTranslatedMessage() is called on message if it implements TranslatableEntity.
+     */
+    public function testGetTranslatedMessageCalledOnTranslatableEntity(): void
+    {
+        // Create a mock for TranslatableEntity
+        $translatableEntityMock = $this->createMock(
+            TranslatableEntity::class,
+        );
+
+        // Set up the mock to expect getTranslatedMessage() to be called
+        $translatableEntityMock->expects($this->once())
+            ->method('getTranslatedMessage')
+            ->willReturn('Translated Message');
+
+        // Mock an exception class that uses the trait
+        $exception = new class ($translatableEntityMock)
+        {
+            use TranslatableException;
+
+            public function __construct(protected TranslatableEntity $message)
+            {
+            }
+        };
+
+        $this->assertEquals('Translated Message', $exception->getTranslatedMessage());
     }
 }

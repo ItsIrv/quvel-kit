@@ -9,7 +9,6 @@ use Mockery\MockInterface;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\database\seeders\TenantSeeder;
 use Modules\Tenant\Models\Tenant;
-use Illuminate\Http\Request;
 
 abstract class TestCase extends BaseTestCase
 {

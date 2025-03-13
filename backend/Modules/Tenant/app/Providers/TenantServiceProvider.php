@@ -102,13 +102,6 @@ class TenantServiceProvider extends ModuleServiceProvider
                     'services.google.redirect',
                     "{$tenantConfig->apiUrl}/auth/provider/google/callback",
                 );
-
-                // Debugging - Remove in production
-                \Log::info("🔁 Dynamic Config Applied for Tenant: {$tenant->name}", [
-                    'api_url'        => $tenantConfig->apiUrl,
-                    'app_url'        => $tenantConfig->appUrl,
-                    'session_domain' => $sessionDomain,
-                ]);
             } catch (\Exception $e) {
                 \Log::critical("⚠️ Tenant Config Could Not Be Applied: " . $e->getMessage());
             }
