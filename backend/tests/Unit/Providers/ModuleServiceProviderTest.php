@@ -23,7 +23,6 @@ class ModuleServiceProviderTest extends TestCase
     {
         // Mock the Application instance
         $mockApp = Mockery::mock(Application::class);
-        $mockApp->shouldReceive('runningInConsole')->andReturn(false);
         $mockApp->shouldReceive('make')->andReturnUsing(fn ($class) => Mockery::mock($class));
 
         // Create a partial mock of the provider

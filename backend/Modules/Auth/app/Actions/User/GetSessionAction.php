@@ -12,9 +12,6 @@ class GetSessionAction
 {
     /**
      * Handle the action.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \App\Http\Resources\UserResource
      */
     public function __invoke(Request $request): UserResource
     {

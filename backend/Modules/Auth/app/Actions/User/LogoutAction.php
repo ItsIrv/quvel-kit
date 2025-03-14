@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Actions\User;
 
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\AuthStatusEnum;
@@ -13,10 +14,10 @@ class LogoutAction
 {
     /**
      * Create a new LogoutAction instance.
-     * @param UserAuthenticationService $userAuthenticationService
      */
     public function __construct(
         private readonly UserAuthenticationService $userAuthenticationService,
+        private readonly ResponseFactory $responseFactory,
     ) {
     }
 
@@ -28,8 +29,8 @@ class LogoutAction
     {
         $this->userAuthenticationService->logout();
 
-        return response()->json(
-            ['message' => AuthStatusEnum::LOGOUT_SUCCESS->getTranslatedMessage()],
-        );
+        return $this->responseFactory->json([
+            'message' => AuthStatusEnum::LOGOUT_SUCCESS->getTranslatedMessage(),
+        ]);
     }
 }
