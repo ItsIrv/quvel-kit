@@ -12,16 +12,16 @@ use Modules\Auth\Exceptions\SignInUserException;
 /**
  * Action to sign in a user.
  */
-class LoginUserAction
+class LoginAction
 {
     /**
-     * Create a new LoginUserAction instance.
+     * Create a new LoginAction instance.
      * @param \App\Services\User\UserFindService $userFindService
-     * @param \Modules\Auth\app\Services\UserAuthenticationService $UserAuthenticationService
+     * @param \Modules\Auth\app\Services\UserAuthenticationService $userAuthenticationService
      */
     public function __construct(
         protected UserFindService $userFindService,
-        protected UserAuthenticationService $UserAuthenticationService,
+        protected UserAuthenticationService $userAuthenticationService,
     ) {
     }
 
@@ -51,7 +51,7 @@ class LoginUserAction
 
         // Attempt to authenticate the user
         if (
-            !$this->UserAuthenticationService->attempt(
+            !$this->userAuthenticationService->attempt(
                 $loginData['email'],
                 $loginData['password'],
             )

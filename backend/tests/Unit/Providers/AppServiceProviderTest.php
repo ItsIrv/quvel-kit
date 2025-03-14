@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Providers;
 
 use App\Providers\AppServiceProvider;
 use App\Services\FrontendService;
@@ -103,7 +103,6 @@ class AppServiceProviderTest extends TestCase
     /**
      * Ensures boot forces HTTPS.
      */
-    #[Group('security')]
     public function testBootForcesHttps(): void
     {
         URL::shouldReceive('forceScheme')

@@ -124,15 +124,6 @@ class ModuleServiceProvider extends ServiceProvider
     }
 
     /**
-     * Get the services provided by the provider.
-     * @return array<string>
-     */
-    public function provides(): array
-    {
-        return [];
-    }
-
-    /**
      * Get the view paths for the module.
      *
      * @return string[]

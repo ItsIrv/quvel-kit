@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 /**
  * Action to get the user session.
  */
-class GetUserSessionAction
+class GetSessionAction
 {
     /**
      * Handle the action.

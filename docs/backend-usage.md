@@ -85,7 +85,7 @@ You can access the coverage reports at <https://coverage-api.quvel.127.0.0.1.nip
 ### Refresh Coverage Report
 
 ```bash
-php artisan test --coverage-html=storage/debug/coverage
+php artisan test -p --coverage-html=storage/debug/coverage
 ```
 
 ---

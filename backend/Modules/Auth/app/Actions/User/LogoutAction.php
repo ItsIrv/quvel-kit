@@ -9,10 +9,10 @@ use Modules\Auth\Enums\AuthStatusEnum;
 /**
  * Action to logout a user.
  */
-class UserLogoutAction
+class LogoutAction
 {
     /**
-     * Create a new UserLogoutAction instance.
+     * Create a new LogoutAction instance.
      * @param UserAuthenticationService $userAuthenticationService
      */
     public function __construct(

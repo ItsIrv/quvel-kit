@@ -12,10 +12,10 @@ use Modules\Auth\Exceptions\RegisterUserException;
 /**
  * Action to register a new user.
  */
-class RegisterUserAction
+class RegisterAction
 {
     /**
-     * Create a new RegisterUserAction instance.
+     * Create a new RegisterAction instance.
      *
      * @param UserFindService $userFindService
      * @param UserCreateService $userCreateService
