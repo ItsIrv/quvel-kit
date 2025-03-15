@@ -18,8 +18,7 @@ class OAuthException extends Exception implements TranslatableEntity
 
     public function __construct(
         OAuthStatusEnum $status,
-        int $code = 0,
     ) {
-        parent::__construct($status->value, $code);
+        parent::__construct($status->value);
     }
 }

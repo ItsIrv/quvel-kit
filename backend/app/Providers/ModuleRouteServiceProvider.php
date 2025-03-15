@@ -13,16 +13,6 @@ abstract class ModuleRouteServiceProvider extends ServiceProvider
     protected string $name;
 
     /**
-     * Called before routes are registered.
-     *
-     * Register any model bindings or pattern-based filters.
-     */
-    public function boot(): void
-    {
-        parent::boot();
-    }
-
-    /**
      * Define the routes for the application.
      */
     public function map(): void

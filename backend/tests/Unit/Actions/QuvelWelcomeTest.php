@@ -32,7 +32,7 @@ class QuvelWelcomeTest extends TestCase
         $this->app->detectEnvironment(fn () => 'local');
 
         $response = ($this->action)(
-            new FrontendService($this->faker->url()),
+            new FrontendService("https://quvel.app"),
         );
 
         $this->assertInstanceOf(
@@ -51,7 +51,7 @@ class QuvelWelcomeTest extends TestCase
      */
     public function testRedirectsToFrontendUrlInProduction(): void
     {
-        $url = $this->faker->url();
+        $url = "https://quvel.app";
         $this->app->detectEnvironment(fn () => 'production');
 
         $response = ($this->action)(

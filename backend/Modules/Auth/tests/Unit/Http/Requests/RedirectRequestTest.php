@@ -5,10 +5,10 @@ namespace Modules\Auth\Tests\Unit\Http\Requests;
 use Illuminate\Support\Facades\Validator;
 use Modules\Auth\Http\Requests\RedirectRequest;
 use Modules\Auth\Rules\NonceRule;
-use Modules\Auth\Rules\ProviderRule;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use ReflectionMethod;
 use Tests\TestCase;
 
 #[CoversClass(RedirectRequest::class)]
@@ -85,5 +85,44 @@ class RedirectRequestTest extends TestCase
         );
 
         $this->assertContains('required', $rules['provider']);
+    }
+
+    /**
+     * Test that `prepareForValidation()` correctly merges route parameters.
+     */
+    public function testPrepareForValidationMergesRouteParameters(): void
+    {
+        // Arrange: Create a request instance without a provider field
+        $request = new RedirectRequest([], [], [], [], [], [
+            'REQUEST_METHOD' => 'GET',
+        ]);
+
+        // Create a class that simulates the route resolver
+        $routeResolver = new class
+        {
+            /**
+             * Simulates retrieving a route parameter.
+             *
+             * @param  string  $key
+             * @return string|null
+             */
+            public function parameter(string $key): ?string
+            {
+                return $key === 'provider' ? 'google' : null;
+            }
+        };
+
+        // Assign the route resolver to the request
+        $request->setRouteResolver(function () use ($routeResolver) {
+            return $routeResolver;
+        });
+
+        // Use reflection to call the protected prepareForValidation method
+        $reflection = new ReflectionMethod($request, 'prepareForValidation');
+        $reflection->setAccessible(true);
+        $reflection->invoke($request);
+
+        // Assert: The 'provider' field should now be set in the request data
+        $this->assertEquals('google', $request->input('provider'));
     }
 }
