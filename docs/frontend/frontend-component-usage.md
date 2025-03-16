@@ -62,7 +62,7 @@ const loginTask = container.task.newTask<User, { email: string, password: string
   shouldRun: async () => await loginForm.value?.validate(),
   showLoading: true,
   showNotification: {
-    success: container.i18n.t('auth.success.loggedIn'),
+    success: container.i18n.t('auth.status.success.loggedIn'),
   },
   task: async () => await sessionStore.login(email.value, password.value),
   errorHandlers: <ErrorHandler[]>[
@@ -145,7 +145,7 @@ Access **localized translations** inside components using `container.i18n`.
 Using translations inside scripts:
 
 ```ts
-const translatedMessage = container.i18n.t('auth.success.loggedIn');
+const translatedMessage = container.i18n.t('auth.status.success.loggedIn');
 console.log(translatedMessage);
 ```
 

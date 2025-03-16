@@ -11,7 +11,7 @@ use Modules\Auth\Actions\User\LoginAction;
 use Modules\Auth\app\Http\Requests\LoginRequest;
 use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\AuthStatusEnum;
-use Modules\Auth\Exceptions\SignInUserException;
+use Modules\Auth\Exceptions\LoginActionException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -117,7 +117,7 @@ class LoginActionTest extends TestCase
             ->once()
             ->andReturn(null);
 
-        $this->expectException(SignInUserException::class);
+        $this->expectException(LoginActionException::class);
         $this->expectExceptionMessage(AuthStatusEnum::USER_NOT_FOUND->value);
 
         // Act
@@ -144,7 +144,7 @@ class LoginActionTest extends TestCase
             ->once()
             ->andReturn($user);
 
-        $this->expectException(SignInUserException::class);
+        $this->expectException(LoginActionException::class);
         $this->expectExceptionMessage(AuthStatusEnum::INVALID_CREDENTIALS->value);
 
         // Act
@@ -181,7 +181,7 @@ class LoginActionTest extends TestCase
             ->once()
             ->andReturn(false);
 
-        $this->expectException(SignInUserException::class);
+        $this->expectException(LoginActionException::class);
         $this->expectExceptionMessage(AuthStatusEnum::INVALID_CREDENTIALS->value);
 
         // Act
@@ -214,7 +214,7 @@ class LoginActionTest extends TestCase
         $this->userFindService->shouldReceive('findByEmail')->once()->andReturn($user);
         $this->userAuthenticationService->shouldReceive('attempt')->once()->andReturn(true);
 
-        $this->expectException(SignInUserException::class);
+        $this->expectException(LoginActionException::class);
         $this->expectExceptionMessage(AuthStatusEnum::EMAIL_NOT_VERIFIED->value);
 
         // Act

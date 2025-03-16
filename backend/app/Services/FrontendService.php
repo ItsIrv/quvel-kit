@@ -5,10 +5,9 @@ namespace App\Services;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 
-// TODO: should be scoped to TenantContext to correctly handle tenant-specific frontend URLs.
 class FrontendService
 {
-    protected string $frontendUrl;
+    protected readonly string $frontendUrl;
 
     public function __construct(string $frontendUrl)
     {
@@ -36,30 +35,6 @@ class FrontendService
         }
 
         return $this->redirect($uri);
-    }
-
-    /**
-     * Redirect to the login page with optional parameters.
-     *
-     * @param  array<string, string>  $payload
-     */
-    public function redirectLogin(array $payload = []): RedirectResponse
-    {
-        return $this->redirectPage(
-            'login',
-            $payload,
-        );
-    }
-
-    /**
-     * Redirect to log in with status messages.
-     */
-    public function redirectLoginStatus(string $type, string $message): RedirectResponse
-    {
-        return $this->redirectLogin([
-            'type' => $type,
-            'message' => $message,
-        ]);
     }
 
     /**

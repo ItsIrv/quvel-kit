@@ -56,7 +56,7 @@ const authForm = ref<HTMLFormElement>();
  */
 const loginTask = container.task.newFrozenTask({
   showNotification: {
-    success: () => container.i18n.t('auth.success.loggedIn'),
+    success: () => container.i18n.t('auth.status.success.loggedIn'),
   },
   task: async () => await sessionStore.login(email.value, password.value),
   errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
@@ -73,7 +73,7 @@ const loginTask = container.task.newFrozenTask({
  */
 const signupTask = container.task.newFrozenTask({
   showNotification: {
-    success: () => container.i18n.t('auth.success.signedUp'),
+    success: () => container.i18n.t('auth.status.success.signedUp'),
   },
   task: async () => await sessionStore.signUp(email.value, password.value, name.value),
   errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
@@ -86,7 +86,9 @@ const signupTask = container.task.newFrozenTask({
 /**
  * Indicates whether the login or signup task is currently active.
  */
-const isBusy = computed(() => loginTask.isActive.value || signupTask.isActive.value || isOAuthRedirecting.value);
+const isBusy = computed(
+  () => loginTask.isActive.value || signupTask.isActive.value || isOAuthRedirecting.value,
+);
 
 /**
  * Indicates whether the current dialog is the login dialog.
@@ -151,11 +153,14 @@ function loginWithOAuth(provider: string) {
   }, 5000);
 }
 
-watch(() => sessionStore.user, () => {
-  if (sessionStore.user) {
-    $emit('update:modelValue', false);
-  }
-});
+watch(
+  () => sessionStore.user,
+  () => {
+    if (sessionStore.user) {
+      $emit('update:modelValue', false);
+    }
+  },
+);
 </script>
 
 <template>
@@ -174,10 +179,7 @@ watch(() => sessionStore.user, () => {
 
       <BackInOutUp>
         <!-- Oauth providers -->
-        <div
-          v-if="isLogin"
-          class="grid grid-cols-2 gap-2 mt-4 mb-2"
-        >
+        <div v-if="isLogin" class="grid grid-cols-2 gap-2 mt-4 mb-2">
           <q-btn
             class="GenericBorder AccentGradient Button"
             :label="$t('auth.forms.oauth.logInWith', { provider: $t('auth.forms.oauth.google') })"
@@ -197,11 +199,7 @@ watch(() => sessionStore.user, () => {
       </BackInOutUp>
 
       <!-- Form -->
-      <q-form
-        class="my-4"
-        ref="authForm"
-        @submit.prevent="onAuthFormSubmit"
-      >
+      <q-form class="my-4" ref="authForm" @submit.prevent="onAuthFormSubmit">
         <EmailField
           v-model="email"
           :error-message="(loginTask.errors.value.get('email') as string) ?? ''"
@@ -224,14 +222,8 @@ watch(() => sessionStore.user, () => {
         />
 
         <SlowExpand>
-          <div
-            v-if="isSignup"
-            class="overflow-hidden"
-          >
-            <PasswordConfirmField
-              v-model="passwordConfirm"
-              :password-value="password"
-            />
+          <div v-if="isSignup" class="overflow-hidden">
+            <PasswordConfirmField v-model="passwordConfirm" :password-value="password" />
           </div>
         </SlowExpand>
 
@@ -246,22 +238,15 @@ watch(() => sessionStore.user, () => {
           <span v-if="isLogin">
             {{ $t('auth.forms.signup.link') }}
 
-            <a
-              class="underline cursor-pointer"
-              @click="setDialogType('signup')"
-            >
+            <a class="underline cursor-pointer" @click="setDialogType('signup')">
               {{ $t('auth.forms.signup.button') }}
             </a>
           </span>
 
-
           <span v-if="isSignup">
             {{ $t('auth.forms.signup.link') }}
 
-            <a
-              class="underline cursor-pointer"
-              @click="setDialogType('login')"
-            >
+            <a class="underline cursor-pointer" @click="setDialogType('login')">
               {{ $t('auth.forms.login.button') }}
             </a>
           </span>
@@ -269,11 +254,7 @@ watch(() => sessionStore.user, () => {
 
         <!-- Buttons -->
         <div class="mt-6 flex justify-end gap-4">
-          <q-btn
-            flat
-            class="Button"
-            @click="$emit('update:modelValue', false)"
-          >
+          <q-btn flat class="Button" @click="$emit('update:modelValue', false)">
             {{ $t('common.buttons.cancel') }}
           </q-btn>
 

@@ -11,7 +11,7 @@ use Mockery;
 use Modules\Auth\Actions\User\RegisterAction;
 use Modules\Auth\app\Http\Requests\RegisterRequest;
 use Modules\Auth\Enums\AuthStatusEnum;
-use Modules\Auth\Exceptions\RegisterUserException;
+use Modules\Auth\Exceptions\RegisterActionException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -99,7 +99,7 @@ class RegisterActionTest extends TestCase
             ->once()
             ->andReturn($existingUser); // Return a User mock instead of stdClass
 
-        $this->expectException(RegisterUserException::class);
+        $this->expectException(RegisterActionException::class);
         $this->expectExceptionMessage(AuthStatusEnum::EMAIL_ALREADY_IN_USE->value);
 
         // Act

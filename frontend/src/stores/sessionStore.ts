@@ -145,7 +145,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
           const wsService = this.$container.ws;
           wsService.unsubscribeAll();
 
-          const { nonce } = await this.$container.api.get<{ nonce: string }>(
+          const { nonce } = await this.$container.api.post<{ nonce: string }>(
             `/auth/provider/${provider}/create-nonce`,
           );
 
@@ -162,24 +162,20 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
               this.setSession(user);
 
-              showNotification('positive', this.$container.i18n.t('auth.success.loggedIn'));
+              showNotification('positive', this.$container.i18n.t('auth.status.success.loggedIn'));
 
               wsService.unsubscribeAll();
             } catch {
-              showNotification('negative', this.$container.i18n.t('auth.errors.login'));
+              showNotification('negative', this.$container.i18n.t('auth.status.errors.login'));
             }
           });
 
           // Open provider authentication in a new popup window
           const authUrl = `${redirectBase}?nonce=${encodeURIComponent(nonce)}`;
-          const popup = window.open(
-            authUrl,
-            '_self',
-            'width=500,height=600,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,noreferrer,noopener',
-          );
+          const popup = window.open(authUrl, '_self', 'width=500,height=600');
 
           if (!popup) {
-            showNotification('negative', this.$container.i18n.t('auth.errors.popupBlocked'));
+            showNotification('negative', this.$container.i18n.t('auth.status.errors.popupBlocked'));
           }
         } catch {
           showNotification('negative', this.$container.i18n.t('common.task.error'));

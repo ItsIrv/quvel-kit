@@ -78,33 +78,6 @@ class FrontendServiceTest extends TestCase
     }
 
     /**
-     * Test redirect to login page with parameters.
-     */
-    public function test_redirect_login(): void
-    {
-        $params = ['next' => 'dashboard'];
-
-        $this->assertRedirect(
-            "$this->baseUrl/login?".http_build_query($params),
-            fn () => $this->frontendService->redirectLogin($params),
-        );
-    }
-
-    /**
-     * Test redirect to login with status messages.
-     */
-    public function test_redirect_login_status(): void
-    {
-        $this->assertRedirect(
-            "$this->baseUrl/login?type=error&message=".urlencode('Invalid credentials'),
-            fn () => $this->frontendService->redirectLoginStatus(
-                'error',
-                'Invalid credentials',
-            ),
-        );
-    }
-
-    /**
      * Test getting a full frontend page URL.
      */
     public function test_get_page_url(): void

@@ -8,7 +8,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\app\Http\Requests\RegisterRequest;
 use Modules\Auth\Enums\AuthStatusEnum;
-use Modules\Auth\Exceptions\RegisterUserException;
+use Modules\Auth\Exceptions\RegisterActionException;
 
 /**
  * Action to register a new user.
@@ -27,7 +27,7 @@ class RegisterAction
     /**
      * Register a new user.
      *
-     * @throws RegisterUserException
+     * @throws RegisterActionException
      */
     public function __invoke(RegisterRequest $request): JsonResponse
     {
@@ -35,7 +35,7 @@ class RegisterAction
 
         // Check if user already exists
         if ($this->userFindService->findByEmail($loginData['email'])) {
-            throw new RegisterUserException(
+            throw new RegisterActionException(
                 AuthStatusEnum::EMAIL_ALREADY_IN_USE,
             );
         }

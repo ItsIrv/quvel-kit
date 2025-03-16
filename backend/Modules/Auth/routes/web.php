@@ -32,7 +32,8 @@ Route::group([
     ], static function (): void {
         Route::get('/redirect', RedirectAction::class)->name('auth.provider.redirect');
         Route::get('/callback', CallbackAction::class)->name('auth.provider.callback');
-        Route::get('/create-nonce', CreateClientNonceAction::class)->name('auth.provider.create-nonce');
+        Route::post('/callback', CallbackAction::class)->name('auth.provider.callback.post');
+        Route::post('/create-nonce', CreateClientNonceAction::class)->name('auth.provider.create-nonce');
         Route::post('/redeem-nonce', RedeemClientNonceAction::class)->name('auth.provider.redeem-nonce');
     });
 

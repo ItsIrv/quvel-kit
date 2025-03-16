@@ -14,29 +14,48 @@ export default {
       welcomePage: 'Welcome Page',
       link: 'Have an account?',
     },
-    signup: {
-      title: 'Sign Up',
-      button: 'Sign Up',
-      link: 'Need an account?',
-    },
-    oauth: {
-      title: 'Login with Provider',
-      link: 'Use Email/Password instead?',
-      google: 'Google',
-      apple: 'Apple',
-      logInWith: '{provider} Login',
-    },
     logout: {
       button: 'Logout',
     },
+    oauth: {
+      apple: 'Apple',
+      google: 'Google',
+      link: 'Use Email/Password instead?',
+      logInWith: '{provider} Login',
+      title: 'Login with Provider',
+    },
+    signup: {
+      button: 'Sign Up',
+      link: 'Need an account?',
+      title: 'Sign Up',
+    },
   },
-  errors: {
-    mismatch: 'Password does not match.',
-    login: 'Failed to log in, please try again later',
-  },
-  success: {
-    loggedIn: 'You are logged in.',
-    loggedOut: 'You have been logged out.',
-    signedUp: 'You have been signed up.',
+  status: {
+    errors: {
+      activeFlowExists: 'An active flow already exists.',
+      emailAlreadyInUse: 'This email is already in use.',
+      emailTaken: 'This email is already in use.',
+      invalidConfig: 'Invalid configuration.',
+      invalidCredentials: 'Invalid email or password.',
+      invalidNonce: 'Invalid nonce.',
+      invalidProvider: 'Invalid provider.',
+      invalidToken: 'Invalid token.',
+      invalidUser: 'Invalid user.',
+      login: 'Failed to log in, please try again later',
+      mismatch: 'Password does not match.',
+      providerIdTaken: 'This provider ID is already in use.',
+      userNotFound: 'User not found.',
+    },
+    warnings: {
+      emailNotVerified: 'This account has not been verified.',
+    },
+    success: {
+      clientTokenGranted: 'Authentication successful, exchange nonce for session',
+      loggedIn: 'You have been logged in.',
+      loggedOut: 'You have been logged out.',
+      loginOk: 'Login successful.',
+      registered: 'You have been registered.',
+      userCreated: 'User created successfully.',
+    },
   },
 };

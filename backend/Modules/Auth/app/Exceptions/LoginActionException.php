@@ -11,7 +11,7 @@ use Modules\Auth\Enums\AuthStatusEnum;
 /**
  * Exception to be thrown when the user registration fails.
  */
-class SignInUserException extends Exception implements TranslatableEntity
+class LoginActionException extends Exception implements TranslatableEntity
 {
     use RendersBadRequest;
     use TranslatableException;

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import BaseField from './BaseField.vue'
+import BaseField from './BaseField.vue';
 
 /**
  * Props
@@ -21,7 +21,6 @@ const props = defineProps({
  */
 const emits = defineEmits(['update:modelValue']);
 
-
 /**
  * Computed
  */
@@ -31,8 +30,9 @@ const password = computed({
 });
 
 const errorMessage = computed(() => {
-  return props.modelValue &&
-    props.modelValue !== props.passwordValue ? 'auth.errors.mismatch' : '';
+  return props.modelValue && props.modelValue !== props.passwordValue
+    ? 'auth.status.errors.mismatch'
+    : '';
 });
 </script>
 

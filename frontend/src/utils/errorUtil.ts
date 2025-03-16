@@ -1,22 +1,6 @@
-import type { ErrorBag } from 'src/types/error.types';
 import type { AxiosError } from 'axios';
 import type { ErrorHandler, ErrorHandlerContext } from 'src/types/task.types';
 import type { LaravelErrorResponse } from 'src/types/error.types';
-
-/**
- * Extracts the first error message from the error bag.
- * @param errors - The ErrorBag Map.
- * @returns The first error message found, or an empty string.
- */
-export function extractFirstError(errors: ErrorBag): string {
-  for (const error of errors.values()) {
-    if (error.trim().length > 0) {
-      return error;
-    }
-  }
-
-  return '';
-}
 
 /**
  * Handles Laravel errors by extracting `message` and top-level `errors` into the ErrorBag.
@@ -33,10 +17,6 @@ export function LaravelErrorHandler(
     callback: (_: boolean, context: ErrorHandlerContext<LaravelErrorResponse>): void => {
       const responseData = context.error.response?.data;
       const { errors } = responseData || {};
-
-      if (!context.errors) {
-        context.errors = new Map();
-      }
 
       // Store `message` if it's not already in errors
       if (typeof responseData?.message === 'string') {

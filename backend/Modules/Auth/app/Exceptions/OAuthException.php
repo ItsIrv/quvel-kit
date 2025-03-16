@@ -3,7 +3,6 @@
 namespace Modules\Auth\Exceptions;
 
 use App\Contracts\TranslatableEntity;
-use App\Traits\RendersBadRequest;
 use App\Traits\TranslatableException;
 use Exception;
 use Modules\Auth\Enums\OAuthStatusEnum;
@@ -13,7 +12,6 @@ use Modules\Auth\Enums\OAuthStatusEnum;
  */
 class OAuthException extends Exception implements TranslatableEntity
 {
-    use RendersBadRequest;
     use TranslatableException;
 
     public function __construct(
