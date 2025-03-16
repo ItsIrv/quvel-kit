@@ -21,7 +21,7 @@ use Modules\Auth\Actions\User\RegisterAction;
 
 Route::group([
     'prefix' => 'auth',
-], function (): void {
+], static function (): void {
     // Login
     Route::post('/login', LoginAction::class)->name('auth.login');
     // Register
@@ -29,7 +29,7 @@ Route::group([
     // Socialite
     Route::group([
         'prefix' => 'provider/{provider}',
-    ], function (): void {
+    ], static function (): void {
         Route::get('/redirect', RedirectAction::class)->name('auth.provider.redirect');
         Route::get('/callback', CallbackAction::class)->name('auth.provider.callback');
         Route::get('/create-nonce', CreateClientNonceAction::class)->name('auth.provider.create-nonce');

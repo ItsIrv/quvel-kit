@@ -1,10 +1,10 @@
 {
-    "name": "nwidart/tenant",
-    "description": "",
+    "name": "itsirv/tenant",
+    "description": "Handles multi-tenancy for QuVel Kit. Provides a global middleware to set the tenant per request based on the domain.",
     "authors": [
         {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
+            "name": "Irving Gomez",
+            "email": "gomirv.work@gmail.com"
         }
     ],
     "extra": {

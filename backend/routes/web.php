@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', QuvelWelcome::class)->name('welcome');
 
-Route::get('_', function (): RedirectResponse|string {
+Route::get('_', static function (): RedirectResponse|string {
     if (app()->environment('production')) {
         return redirect('https://quvel.127.0.0.1.nip.io');
     }

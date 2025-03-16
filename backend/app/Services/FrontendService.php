@@ -52,7 +52,7 @@ class FrontendService
     }
 
     /**
-     * Redirect to login with status messages.
+     * Redirect to log in with status messages.
      */
     public function redirectLoginStatus(string $type, string $message): RedirectResponse
     {

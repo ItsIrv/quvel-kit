@@ -9,7 +9,7 @@ use Modules\Tenant\Actions\TenantsDump;
 */
 Route::group([
     'prefix' => 'tenant',
-], function (): void {
+], static function (): void {
     // Dumps Current Tenant
     Route::get('/', TenantDump::class)
         ->name('tenant');

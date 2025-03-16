@@ -10,6 +10,7 @@ use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\RedeemNonceRequest;
 use Modules\Auth\Services\ClientNonceService;
+use Psr\SimpleCache\InvalidArgumentException;
 
 /**
  * Redeems a client nonce and logs in the user.
@@ -22,6 +23,9 @@ class RedeemClientNonceAction
         private readonly ResponseFactory $responseFactory,
     ) {}
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __invoke(RedeemNonceRequest $request): JsonResponse
     {
         try {

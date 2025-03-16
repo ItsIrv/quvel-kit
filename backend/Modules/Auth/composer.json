@@ -1,10 +1,10 @@
 {
-    "name": "nwidart/auth",
-    "description": "",
+    "name": "itsirv/auth",
+    "description": "Handles authentication for QuVel Kit. Includes login, logout, session dumping, registration and social login.",
     "authors": [
         {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
+            "name": "Irving Gomez",
+            "email": "gomirv.work@gmail.com"
         }
     ],
     "extra": {

@@ -35,6 +35,7 @@ class CallbackAction
 
     /**
      * Handle OAuth provider callback.
+     *
      * @throws InvalidArgumentException
      */
     public function __invoke(CallbackRequest $request, string $provider): RedirectResponse|Response
@@ -68,6 +69,7 @@ class CallbackAction
 
     /**
      * Authenticate the user via OAuth.
+     *
      * @throws OAuthException
      */
     private function authenticateUser(string $provider, bool $stateless): array
@@ -85,6 +87,7 @@ class CallbackAction
 
     /**
      * Handle a successful login in stateless mode.
+     *
      * @throws OAuthException
      */
     private function handleStatelessLogin(string $signedToken, string $clientNonce, $user): Response

@@ -89,6 +89,7 @@ class RedirectRequestTest extends TestCase
 
     /**
      * Test that `prepareForValidation()` correctly merges route parameters.
+     *
      * @throws \ReflectionException
      */
     public function test_prepare_for_validation_merges_route_parameters(): void
