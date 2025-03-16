@@ -32,23 +32,22 @@ class ClientNonceService
     public const int TOKEN_REDIRECTED = -2;
 
     public function __construct(
-        private readonly CacheRepository  $cache,
+        private readonly CacheRepository $cache,
         private readonly ConfigRepository $config,
-        private readonly HmacService      $hmacService,
-    )
-    {
-    }
+        private readonly HmacService $hmacService,
+    ) {}
 
     /**
      * Get cache key for a given nonce.
      */
     private function getCacheKey(string $nonce): string
     {
-        return self::CACHE_KEY_PREFIX . $nonce;
+        return self::CACHE_KEY_PREFIX.$nonce;
     }
 
     /**
      * Creates a new unique client nonce.
+     *
      * @throws OAuthException|InvalidArgumentException|RandomException
      */
     public function create(): string
@@ -86,7 +85,7 @@ class ClientNonceService
     {
         $nonce = $this->hmacService->extractAndVerify($signedNonce);
 
-        if (!$nonce) {
+        if (! $nonce) {
             throw new OAuthException(OAuthStatusEnum::INVALID_NONCE);
         }
 
@@ -156,7 +155,6 @@ class ClientNonceService
     /**
      * Generate a random nonce.
      *
-     * @return string
      * @throws RandomException
      */
     protected function generateRandomNonce(): string

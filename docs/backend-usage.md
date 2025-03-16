@@ -101,7 +101,7 @@ vendor/bin/phpstan analyse --configuration phpstan.neon
 **PHP-CS-Fixer (Code Style)**  
 
 ```sh
-vendor/bin/php-cs-fixer fix --dry-run --diff
+vendor/bin/pint --test 
 ```
 
 ---

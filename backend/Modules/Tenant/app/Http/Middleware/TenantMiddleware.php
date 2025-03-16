@@ -14,22 +14,14 @@ class TenantMiddleware
 {
     /**
      * Create a new TenantMiddleware instance.
-     *
-     * @param TenantResolverService $tenantResolver
-     * @param TenantContext $tenantContext
      */
     public function __construct(
         private readonly TenantResolverService $tenantResolver,
         private readonly TenantContext $tenantContext,
-    ) {
-    }
+    ) {}
 
     /**
      * Handle an incoming request.
-     *
-     * @param Request $request
-     * @param Closure $next
-     * @return mixed
      */
     public function handle(Request $request, Closure $next): mixed
     {

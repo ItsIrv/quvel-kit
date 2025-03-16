@@ -18,19 +18,19 @@ class GetSessionActionTest extends TestCase
 {
     private GetSessionAction $action;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
-        $this->action = new GetSessionAction();
+        $this->action = new GetSessionAction;
     }
 
     /**
      * Test that the session action returns the correct user resource.
      */
-    public function testGetSessionReturnsUserResource(): void
+    public function test_get_session_returns_user_resource(): void
     {
         // Arrange
-        $user    = User::factory()->make();
+        $user = User::factory()->make();
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('user')->once()->andReturn($user);
 

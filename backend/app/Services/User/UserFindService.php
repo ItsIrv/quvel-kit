@@ -13,8 +13,6 @@ class UserFindService
     /**
      * Find a user by ID.
      *
-     * @param int|string $id
-     * @return User
      * @throws ModelNotFoundException
      */
     public function findById(int|string $id): User
@@ -25,9 +23,6 @@ class UserFindService
 
     /**
      * Find a user by email.
-     *
-     * @param string $email
-     * @return User|null
      */
     public function findByEmail(string $email): ?User
     {
@@ -38,8 +33,7 @@ class UserFindService
     /**
      * Find a user by username.
      *
-     * @param string $username
-     * @return User|null
+     * @param  string  $username
      */
     // public function findByUsername(string $username): ?User
     // {
@@ -48,10 +42,6 @@ class UserFindService
 
     /**
      * Find a user by a field and value.
-     *
-     * @param string $field
-     * @param string $value
-     * @return User|null
      */
     public function findByField(string $field, string $value): ?User
     {

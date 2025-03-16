@@ -23,19 +23,16 @@ use Tests\TestCase;
 class SocialiteServiceTest extends TestCase
 {
     private MockInterface|SocialiteManager $socialiteManager;
+
     private SocialiteService $service;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $tenantConfig = TenantConfigFactory::create(
             apiDomain: 'api.quvel.app',
             internalApiDomain: 'internal-api.quvel.app',
-            appName: 'QuVel',
-            appEnv: 'local',
-            mailFromName: 'QuVel Support',
-            mailFromAddress: 'support@quvel.app',
             toArray: false
         );
 
@@ -52,7 +49,7 @@ class SocialiteServiceTest extends TestCase
         );
     }
 
-    public function testGetRedirectResponseReturnsUrlWithoutServerToken(): void
+    public function test_get_redirect_response_returns_url_without_server_token(): void
     {
         $redirectUrl = Mockery::mock(RedirectResponse::class);
         $driver = Mockery::mock(AbstractProvider::class);
@@ -69,7 +66,7 @@ class SocialiteServiceTest extends TestCase
         $this->assertSame($redirectUrl, $result);
     }
 
-    public function testGetRedirectResponseReturnsUrlWithServerToken(): void
+    public function test_get_redirect_response_returns_url_with_server_token(): void
     {
         $redirectUrl = Mockery::mock(RedirectResponse::class);
         $driver = Mockery::mock(AbstractProvider::class);
@@ -92,7 +89,7 @@ class SocialiteServiceTest extends TestCase
     /**
      * @throws OAuthException
      */
-    public function testGetProviderUserReturnsStatelessUser(): void
+    public function test_get_provider_user_returns_stateless_user(): void
     {
         $provider = 'google';
         $mockUser = Mockery::mock(SocialiteUser::class);
@@ -113,7 +110,7 @@ class SocialiteServiceTest extends TestCase
     /**
      * @throws OAuthException
      */
-    public function testGetProviderUserReturnsStatefulUser(): void
+    public function test_get_provider_user_returns_stateful_user(): void
     {
         $provider = 'google';
         $mockUser = Mockery::mock(SocialiteUser::class);
@@ -130,7 +127,7 @@ class SocialiteServiceTest extends TestCase
         $this->assertSame($mockUser, $result);
     }
 
-    public function testGetProviderUserThrowsOAuthExceptionOnFailure(): void
+    public function test_get_provider_user_throws_o_auth_exception_on_failure(): void
     {
         $provider = 'google';
         $driver = Mockery::mock(AbstractProvider::class);
@@ -138,7 +135,7 @@ class SocialiteServiceTest extends TestCase
         // Mock driver exception
         $this->socialiteManager->shouldReceive('buildProvider')->andReturn($driver);
         $driver->shouldReceive('stateless')->andReturn($driver);
-        $driver->shouldReceive('user')->andThrow(new Exception());
+        $driver->shouldReceive('user')->andThrow(new Exception);
 
         // Expect exception
         $this->expectException(OAuthException::class);

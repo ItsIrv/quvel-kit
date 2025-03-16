@@ -4,10 +4,10 @@ namespace Tests\Unit\Traits;
 
 use App\Contracts\TranslatableEntity;
 use App\Traits\RendersBadRequest;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
+use Exception;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use Tests\TestCase;
 
 #[CoversClass(RendersBadRequest::class)]
@@ -18,9 +18,9 @@ class RendersBadRequestTest extends TestCase
      * Test that render() returns a JSON response with the translated message
      * when the exception implements TranslatableEntity.
      */
-    public function testRenderReturnsTranslatedMessageWhenExceptionIsTranslatable(): void
+    public function test_render_returns_translated_message_when_exception_is_translatable(): void
     {
-        $exception = new class extends \Exception implements TranslatableEntity
+        $exception = new class extends Exception implements TranslatableEntity
         {
             use RendersBadRequest;
 
@@ -32,8 +32,7 @@ class RendersBadRequestTest extends TestCase
 
         $response = $exception->render();
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertEquals(ResponseAlias::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertEquals(['message' => 'Translated error message'], $response->getData(true));
     }
 
@@ -41,17 +40,16 @@ class RendersBadRequestTest extends TestCase
      * Test that render() returns a JSON response with the default message
      * when the exception does not implement TranslatableEntity.
      */
-    public function testRenderReturnsDefaultMessageWhenExceptionIsNotTranslatable(): void
+    public function test_render_returns_default_message_when_exception_is_not_translatable(): void
     {
-        $exception = new class ('Default error message') extends \Exception
+        $exception = new class('Default error message') extends Exception
         {
             use RendersBadRequest;
         };
 
         $response = $exception->render();
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertEquals(ResponseAlias::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertEquals(['message' => 'Default error message'], $response->getData(true));
     }
 }

@@ -16,7 +16,7 @@ class HmacServiceTest extends TestCase
 {
     private HmacService $service;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -31,7 +31,7 @@ class HmacServiceTest extends TestCase
         $this->service = new HmacService($config);
     }
 
-    public function testSignGeneratesValidHmac(): void
+    public function test_sign_generates_valid_hmac(): void
     {
         $value = 'test_value';
 
@@ -45,7 +45,7 @@ class HmacServiceTest extends TestCase
         $this->assertEquals($expectedHmac, $hmac);
     }
 
-    public function testVerifyReturnsTrueForValidHmac(): void
+    public function test_verify_returns_true_for_valid_hmac(): void
     {
         $value = 'test_value';
 
@@ -59,7 +59,7 @@ class HmacServiceTest extends TestCase
         $this->assertTrue($isValid);
     }
 
-    public function testVerifyReturnsFalseForInvalidHmac(): void
+    public function test_verify_returns_false_for_invalid_hmac(): void
     {
         $value = 'test_value';
         $invalidHmac = 'invalid_hmac';
@@ -71,7 +71,7 @@ class HmacServiceTest extends TestCase
         $this->assertFalse($isValid);
     }
 
-    public function testSignWithHmacReturnsFormattedValue(): void
+    public function test_sign_with_hmac_returns_formatted_value(): void
     {
         $value = 'test_value';
 
@@ -86,7 +86,7 @@ class HmacServiceTest extends TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function testExtractAndVerifyReturnsOriginalValueWhenValid(): void
+    public function test_extract_and_verify_returns_original_value_when_valid(): void
     {
         $value = 'test_value';
 
@@ -101,7 +101,7 @@ class HmacServiceTest extends TestCase
         $this->assertEquals($value, $originalValue);
     }
 
-    public function testExtractAndVerifyReturnsNullWhenHmacIsInvalid(): void
+    public function test_extract_and_verify_returns_null_when_hmac_is_invalid(): void
     {
         $signedValue = 'test_value.invalid_hmac';
 
@@ -112,7 +112,7 @@ class HmacServiceTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testExtractAndVerifyReturnsNullForMalformedString(): void
+    public function test_extract_and_verify_returns_null_for_malformed_string(): void
     {
         $signedValue = 'invalid_format_string';
 

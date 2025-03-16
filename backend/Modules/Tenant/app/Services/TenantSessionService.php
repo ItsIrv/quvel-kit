@@ -14,12 +14,8 @@ class TenantSessionService
 
     /**
      * Tenant session service constructor.
-     *
-     * @param Session $store
      */
-    public function __construct(private readonly Session $store)
-    {
-    }
+    public function __construct(private readonly Session $store) {}
 
     /**
      * Check if a tenant is stored in the session.
@@ -41,7 +37,7 @@ class TenantSessionService
             return null;
         }
 
-        $tenant = new Tenant();
+        $tenant = new Tenant;
 
         foreach ($attributes as $key => $value) {
             $tenant->setAttribute($key, $value);
@@ -52,8 +48,6 @@ class TenantSessionService
 
     /**
      * Store a tenant in the session.
-     *
-     * @param Tenant $tenant
      */
     public function setTenant(Tenant $tenant): void
     {

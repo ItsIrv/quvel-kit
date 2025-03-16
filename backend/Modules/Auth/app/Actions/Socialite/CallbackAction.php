@@ -5,8 +5,8 @@ namespace Modules\Auth\Actions\Socialite;
 use App\Services\FrontendService;
 use Exception;
 use Illuminate\Events\Dispatcher as EventDispatcher;
-use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\View\Factory as ViewFactory;
 use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\OAuthStatusEnum;
@@ -16,6 +16,7 @@ use Modules\Auth\Http\Requests\CallbackRequest;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
+use Psr\SimpleCache\InvalidArgumentException;
 
 /**
  * Handles the callback from the socialite provider.
@@ -30,11 +31,11 @@ class CallbackAction
         private readonly FrontendService $frontendService,
         private readonly EventDispatcher $eventDispatcher,
         private readonly ViewFactory $viewFactory,
-    ) {
-    }
+    ) {}
 
     /**
      * Handle OAuth provider callback.
+     * @throws InvalidArgumentException
      */
     public function __invoke(CallbackRequest $request, string $provider): RedirectResponse|Response
     {
@@ -43,7 +44,7 @@ class CallbackAction
             $clientNonce = $this->serverTokenService->getClientNonce(
                 $signedToken,
             );
-            $stateless   = $clientNonce !== null;
+            $stateless = $clientNonce !== null;
 
             [$user, $status] = $this->authenticateUser(
                 $provider,
@@ -58,7 +59,7 @@ class CallbackAction
                     $user,
                 )
                 : $this->handleSessionLogin($user),
-                default                   => $this->handleFailedLogin($status),
+                default => $this->handleFailedLogin($status),
             };
         } catch (Exception $e) {
             return $this->handleException($e);
@@ -67,6 +68,7 @@ class CallbackAction
 
     /**
      * Authenticate the user via OAuth.
+     * @throws OAuthException
      */
     private function authenticateUser(string $provider, bool $stateless): array
     {
@@ -83,6 +85,7 @@ class CallbackAction
 
     /**
      * Handle a successful login in stateless mode.
+     * @throws OAuthException
      */
     private function handleStatelessLogin(string $signedToken, string $clientNonce, $user): Response
     {
@@ -129,7 +132,7 @@ class CallbackAction
             [
                 'message' => $e instanceof OAuthException
                     ? $e->getTranslatedMessage()
-                    : $e->getMessage()
+                    : $e->getMessage(),
             ],
         );
     }

@@ -15,15 +15,13 @@ class TenantScope implements Scope
      * Apply the scope to a given Eloquent query.
      *
      * @param  Builder<Model>  $builder
-     * @param  Model  $model
-     * @return void
      */
     public function apply(Builder $builder, Model $model): void
     {
         $builder->where(
             'tenant_id',
             '=',
-            $this->getTenant()->id,
+            self::getTenant()->id,
         );
     }
 }

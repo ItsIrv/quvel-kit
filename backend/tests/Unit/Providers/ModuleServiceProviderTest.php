@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use ReflectionClass;
+use ReflectionException;
 use Tests\TestCase;
 
 #[CoversClass(ModuleServiceProvider::class)]
@@ -18,6 +19,8 @@ class ModuleServiceProviderTest extends TestCase
 {
     /**
      * Creates a mock instance of ModuleServiceProvider with protected methods allowed.
+     *
+     * @throws ReflectionException
      */
     private function createMockedProvider(): Mockery\MockInterface|ModuleServiceProvider
     {
@@ -32,8 +35,7 @@ class ModuleServiceProviderTest extends TestCase
 
         // Inject the mocked app
         $reflection = new ReflectionClass($mockProvider);
-        $property   = $reflection->getProperty('app');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('app');
         $property->setValue($mockProvider, $mockApp);
 
         return $mockProvider;
@@ -41,12 +43,14 @@ class ModuleServiceProviderTest extends TestCase
 
     /**
      * Test registering translations with and without existing directories.
+     *
+     * @throws ReflectionException
      */
     #[DataProvider('translationDirectoryProvider')]
-    public function testRegisterTranslations(bool $dirExists): void
+    public function test_register_translations(bool $dirExists): void
     {
         $provider = $this->createMockedProvider();
-        $langPath = resource_path("lang/modules/tenant");
+        $langPath = resource_path('lang/modules/tenant');
 
         $provider->shouldReceive('isDir')->once()
             ->with($langPath)
@@ -60,15 +64,17 @@ class ModuleServiceProviderTest extends TestCase
     public static function translationDirectoryProvider(): array
     {
         return [
-            'Directory exists'         => [true],
+            'Directory exists' => [true],
             'Directory does not exist' => [false],
         ];
     }
 
     /**
      * Test registering config files.
+     *
+     * @throws ReflectionException
      */
-    public function testRegisterConfig(): void
+    public function test_register_config(): void
     {
         $provider = $this->createMockedProvider();
 
@@ -80,8 +86,10 @@ class ModuleServiceProviderTest extends TestCase
 
     /**
      * Test registering views.
+     *
+     * @throws ReflectionException
      */
-    public function testRegisterViews(): void
+    public function test_register_views(): void
     {
         Blade::shouldReceive('componentNamespace')->once()->with(
             Mockery::type('string'),
@@ -98,8 +106,10 @@ class ModuleServiceProviderTest extends TestCase
 
     /**
      * Test that `getPublishableViewPaths()` returns only existing directories.
+     *
+     * @throws ReflectionException
      */
-    public function testGetPublishableViewPaths(): void
+    public function test_get_publishable_view_paths(): void
     {
         config(['view.paths' => ['/path/to/valid', '/path/to/invalid']]);
 

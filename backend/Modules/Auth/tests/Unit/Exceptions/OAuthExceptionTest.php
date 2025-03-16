@@ -2,8 +2,9 @@
 
 namespace Modules\Auth\Tests\Unit\Exceptions;
 
-use Modules\Auth\Exceptions\OAuthException;
+use Exception;
 use Modules\Auth\Enums\OAuthStatusEnum;
+use Modules\Auth\Exceptions\OAuthException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -16,7 +17,7 @@ class OAuthExceptionTest extends TestCase
     /**
      * Test that the exception message is set correctly.
      */
-    public function testExceptionMessage(): void
+    public function test_exception_message(): void
     {
         $exception = new OAuthException(OAuthStatusEnum::INVALID_PROVIDER);
 
@@ -29,9 +30,9 @@ class OAuthExceptionTest extends TestCase
     /**
      * Test that the exception allows a previous exception.
      */
-    public function testExceptionWithPrevious(): void
+    public function test_exception_with_previous(): void
     {
-        $previous  = new \Exception('Previous exception');
+        $previous = new Exception('Previous exception');
         $exception = new OAuthException(OAuthStatusEnum::INVALID_PROVIDER);
 
         $this->assertNull($exception->getPrevious());

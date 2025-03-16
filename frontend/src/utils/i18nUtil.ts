@@ -21,7 +21,7 @@ const SUPPORTED_LOCALES: MessageLanguages[] = ['en-US', 'es-MX'];
  * Falls back to the default locale if no valid locale is found.
  */
 export function getStoredLocale(ssrContext?: QSsrContext | null): MessageLanguages {
-  let locale = '';
+  let locale: string;
 
   if (ssrContext) {
     const cookies = Cookies.parseSSR(ssrContext);

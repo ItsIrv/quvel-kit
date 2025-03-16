@@ -9,8 +9,6 @@ class TenantFindService
 {
     /**
      * Finds the parent tenant entity of the domain.
-     *
-     * @return Tenant|null
      */
     public function findTenantByDomain(string $domain): ?Tenant
     {
@@ -28,6 +26,7 @@ class TenantFindService
 
     /**
      * Summary of findAll
+     *
      * @return Collection<int, Tenant>
      */
     public function findAll(): Collection

@@ -16,6 +16,7 @@ use Tests\TestCase;
 class FrontendServiceTest extends TestCase
 {
     private FrontendService $frontendService;
+
     private string $baseUrl = 'https://quvel.127.0.0.1.nip.io';
 
     #[Before]
@@ -52,10 +53,10 @@ class FrontendServiceTest extends TestCase
     /**
      * Test redirect to a specific frontend route.
      */
-    public function testRedirect(): void
+    public function test_redirect(): void
     {
         $this->assertRedirect(
-            "{$this->baseUrl}/dashboard",
+            "$this->baseUrl/dashboard",
             fn () => $this->frontendService->redirect('/dashboard'),
         );
     }
@@ -63,12 +64,12 @@ class FrontendServiceTest extends TestCase
     /**
      * Test redirect to a frontend page with query parameters.
      */
-    public function testRedirectPageWithParams(): void
+    public function test_redirect_page_with_params(): void
     {
         $params = ['id' => 42, 'mode' => 'edit'];
 
         $this->assertRedirect(
-            "{$this->baseUrl}/profile?" . http_build_query($params),
+            "$this->baseUrl/profile?".http_build_query($params),
             fn () => $this->frontendService->redirectPage(
                 'profile',
                 $params,
@@ -79,12 +80,12 @@ class FrontendServiceTest extends TestCase
     /**
      * Test redirect to login page with parameters.
      */
-    public function testRedirectLogin(): void
+    public function test_redirect_login(): void
     {
         $params = ['next' => 'dashboard'];
 
         $this->assertRedirect(
-            "{$this->baseUrl}/login?" . http_build_query($params),
+            "$this->baseUrl/login?".http_build_query($params),
             fn () => $this->frontendService->redirectLogin($params),
         );
     }
@@ -92,10 +93,10 @@ class FrontendServiceTest extends TestCase
     /**
      * Test redirect to login with status messages.
      */
-    public function testRedirectLoginStatus(): void
+    public function test_redirect_login_status(): void
     {
         $this->assertRedirect(
-            "{$this->baseUrl}/login?type=error&message=" . urlencode('Invalid credentials'),
+            "$this->baseUrl/login?type=error&message=".urlencode('Invalid credentials'),
             fn () => $this->frontendService->redirectLoginStatus(
                 'error',
                 'Invalid credentials',
@@ -106,10 +107,10 @@ class FrontendServiceTest extends TestCase
     /**
      * Test getting a full frontend page URL.
      */
-    public function testGetPageUrl(): void
+    public function test_get_page_url(): void
     {
-        $params      = ['theme' => 'dark'];
-        $expectedUrl = "{$this->baseUrl}/settings?" . http_build_query($params);
+        $params = ['theme' => 'dark'];
+        $expectedUrl = "$this->baseUrl/settings?".http_build_query($params);
 
         $this->assertEquals(
             $expectedUrl,

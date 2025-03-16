@@ -17,19 +17,20 @@ use Tests\TestCase;
 class TenantSessionServiceTest extends TestCase
 {
     private TenantSessionService $sessionService;
+
     private Session|MockObject $sessionMock;
 
     #[Before]
     public function setupTest(): void
     {
-        $this->sessionMock    = $this->createMock(Session::class);
+        $this->sessionMock = $this->createMock(Session::class);
         $this->sessionService = new TenantSessionService($this->sessionMock);
     }
 
     /**
      * Test that hasTenant returns true when tenant exists in session.
      */
-    public function testHasTenantReturnsTrueWhenTenantExists(): void
+    public function test_has_tenant_returns_true_when_tenant_exists(): void
     {
         $this->sessionMock->expects($this->once())
             ->method('has')
@@ -42,7 +43,7 @@ class TenantSessionServiceTest extends TestCase
     /**
      * Test that hasTenant returns false when tenant does not exist in session.
      */
-    public function testHasTenantReturnsFalseWhenTenantDoesNotExist(): void
+    public function test_has_tenant_returns_false_when_tenant_does_not_exist(): void
     {
         $this->sessionMock->expects($this->once())
             ->method('has')
@@ -55,7 +56,7 @@ class TenantSessionServiceTest extends TestCase
     /**
      * Test that getTenant returns null when tenant does not exist.
      */
-    public function testGetTenantReturnsNullWhenTenantDoesNotExist(): void
+    public function test_get_tenant_returns_null_when_tenant_does_not_exist(): void
     {
         $this->sessionMock->expects($this->once())
             ->method('get')
@@ -68,7 +69,7 @@ class TenantSessionServiceTest extends TestCase
     /**
      * Test that getTenant returns tenant when tenant exists.
      */
-    public function testGetTenantReturnsTenantWhenTenantExists(): void
+    public function test_get_tenant_returns_tenant_when_tenant_exists(): void
     {
         $tenant = Tenant::factory()->make();
 
@@ -86,7 +87,7 @@ class TenantSessionServiceTest extends TestCase
     /**
      * Test that setTenant stores the tenant in the session.
      */
-    public function testSetTenantStoresTenantInSession(): void
+    public function test_set_tenant_stores_tenant_in_session(): void
     {
         $tenant = Tenant::factory()->make();
 

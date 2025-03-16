@@ -6,6 +6,8 @@ use Exception;
 use Illuminate\Http\RedirectResponse;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\SocialiteManager;
+use Laravel\Socialite\Two\AbstractProvider;
+use Laravel\Socialite\Two\GoogleProvider;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Tenant\Contexts\TenantContext;
@@ -14,9 +16,8 @@ class SocialiteService
 {
     public function __construct(
         private readonly SocialiteManager $socialiteManager,
-        private readonly TenantContext    $tenantContext,
-    ) {
-    }
+        private readonly TenantContext $tenantContext,
+    ) {}
 
     /**
      * Get OAuth provider redirect URL.
@@ -51,10 +52,10 @@ class SocialiteService
     /**
      * Build the OAuth driver with a dynamic redirect URI.
      */
-    private function buildOAuthDriver(string $provider): \Laravel\Socialite\Two\AbstractProvider
+    private function buildOAuthDriver(string $provider): AbstractProvider
     {
         return $this->socialiteManager->buildProvider(
-            \Laravel\Socialite\Two\GoogleProvider::class,
+            GoogleProvider::class,
             array_merge(
                 $this->getProviderConfig($provider),
                 [
@@ -69,15 +70,16 @@ class SocialiteService
      */
     private function getRedirectUri(string $provider): string
     {
-        return "{$this->tenantContext->getConfig()?->apiUrl}/auth/provider/{$provider}/callback";
+        return "{$this->tenantContext->getConfig()?->apiUrl}/auth/provider/$provider/callback";
     }
 
     /**
      * Gets the base configuration for the provider.
+     *
      * @return array<string, mixed>
      */
     private function getProviderConfig(string $provider): array
     {
-        return config("services.{$provider}", []);
+        return config("services.$provider", []);
     }
 }

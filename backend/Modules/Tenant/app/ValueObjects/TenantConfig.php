@@ -22,14 +22,14 @@ class TenantConfig implements Arrayable
         public readonly bool $debug = false,
         public readonly string $mailFromName = '',
         public readonly string $mailFromAddress = '',
-        /** @var array<string, \Modules\Tenant\Enums\TenantConfigVisibility> */
+        /** @var array<string, TenantConfigVisibility> */
         public readonly array $visibility = [],
-    ) {
-    }
+    ) {}
 
     /**
      * Create an instance from an array.
-     * @param array<string, mixed> $data The configuration data.
+     *
+     * @param  array<string, mixed>  $data  The configuration data.
      */
     public static function fromArray(array $data): self
     {
@@ -57,15 +57,15 @@ class TenantConfig implements Arrayable
     public function toArray(): array
     {
         return [
-            'api_url'           => $this->apiUrl,
-            'app_url'           => $this->appUrl,
-            'app_name'          => $this->appName,
-            'internal_api_url'  => $this->internalApiUrl,
-            'app_env'           => $this->appEnv,
-            'debug'             => $this->debug,
-            'mail_from_name'    => $this->mailFromName,
+            'api_url' => $this->apiUrl,
+            'app_url' => $this->appUrl,
+            'app_name' => $this->appName,
+            'internal_api_url' => $this->internalApiUrl,
+            'app_env' => $this->appEnv,
+            'debug' => $this->debug,
+            'mail_from_name' => $this->mailFromName,
             'mail_from_address' => $this->mailFromAddress,
-            '__visibility'      => array_map(
+            '__visibility' => array_map(
                 fn (TenantConfigVisibility $v): string => $v->value,
                 $this->visibility,
             ),

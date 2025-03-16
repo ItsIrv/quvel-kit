@@ -17,15 +17,16 @@ use Tests\TestCase;
 class TenantMiddlewareTest extends TestCase
 {
     private TenantResolverService|MockInterface $tenantResolver;
+
     private TenantMiddleware $middleware;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->tenantResolver    = $this->mock(TenantResolverService::class);
+        $this->tenantResolver = $this->mock(TenantResolverService::class);
         $this->tenantContextMock = $this->mock(TenantContext::class);
-        $this->middleware        = new TenantMiddleware(
+        $this->middleware = new TenantMiddleware(
             $this->tenantResolver,
             $this->tenantContextMock,
         );
@@ -34,7 +35,7 @@ class TenantMiddlewareTest extends TestCase
     /**
      * Test that the middleware sets the tenant in the context and allows the request to proceed.
      */
-    public function testHandleSetsTenantInContextAndProceeds(): void
+    public function test_handle_sets_tenant_in_context_and_proceeds(): void
     {
         $request = $this->mock(Request::class);
 

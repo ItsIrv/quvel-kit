@@ -2,7 +2,6 @@ import { Loading, type QLoadingShowOptions } from 'quasar';
 
 /**
  * Shows the loading spinner with a customizable timeout.
- * @param message - The message to display during loading.
  * @param timeout - Timeout in milliseconds before hiding the spinner automatically (default: 1000ms).
  * @param options - Additional options for customizing the loading spinner.
  */

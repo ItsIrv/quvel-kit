@@ -13,12 +13,11 @@ use Modules\Tenant\Transformers\TenantDumpTransformer;
 class TenantsDump
 {
     private const CACHE_KEY = 'tenants';
+
     private const CACHE_TTL = 60; // 1 minute
 
     /**
      * Execute the action.
-     *
-     * @return AnonymousResourceCollection
      */
     public function __invoke(
         TenantFindService $tenantFindService,

@@ -11,8 +11,6 @@ class PasswordRule extends Password
 {
     /**
      * Default password validation rules.
-     *
-     * @return PasswordRule
      */
     public static function default(): PasswordRule
     {

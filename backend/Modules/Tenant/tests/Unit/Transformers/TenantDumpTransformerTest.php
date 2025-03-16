@@ -18,39 +18,39 @@ class TenantDumpTransformerTest extends TestCase
     /**
      * Test that the transformer converts a tenant model to an array correctly with no parent or config.
      */
-    public function testToArrayTransformsTenantWithoutParentOrConfig(): void
+    public function test_to_array_transforms_tenant_without_parent_or_config(): void
     {
         $tenant = Tenant::factory()->make();
         $tenant->setRawAttributes([
-            'id'         => 1,
-            'public_id'  => 'public-id-1',
-            'name'       => 'Tenant Name',
-            'domain'     => 'tenant.com',
+            'id' => 1,
+            'public_id' => 'public-id-1',
+            'name' => 'Tenant Name',
+            'domain' => 'tenant.com',
             'created_at' => $tenant->created_at,
             'updated_at' => $tenant->updated_at,
         ], true);
 
         $transformer = new TenantDumpTransformer($tenant);
-        $result      = $transformer->toArray(new Request());
+        $result = $transformer->toArray(new Request);
 
         $this->assertEquals([
-            'id'         => 'public-id-1',
-            'name'       => 'Tenant Name',
-            'domain'     => 'tenant.com',
+            'id' => 'public-id-1',
+            'name' => 'Tenant Name',
+            'domain' => 'tenant.com',
             'created_at' => $tenant->created_at,
             'updated_at' => $tenant->updated_at,
-            'config'     => [],
-            'parent_id'  => null,
+            'config' => [],
+            'parent_id' => null,
         ], $result);
     }
 
     /**
      * Test that the transformer includes the parent_id when the tenant has a parent.
      */
-    public function testToArrayIncludesParentIdWhenTenantHasParent(): void
+    public function test_to_array_includes_parent_id_when_tenant_has_parent(): void
     {
         $transformer = new TenantDumpTransformer($this->tenant->children()->first());
-        $result      = $transformer->toArray(new Request());
+        $result = $transformer->toArray(new Request);
 
         $this->assertEquals($this->tenant->public_id, $result['parent_id']);
     }
@@ -58,7 +58,7 @@ class TenantDumpTransformerTest extends TestCase
     /**
      * Test that the transformer filters config correctly using the correct factory.
      */
-    public function testToArrayFiltersTenantConfigCorrectly(): void
+    public function test_to_array_filters_tenant_config_correctly(): void
     {
         $tenantConfigArray = TenantConfigFactory::create(
             apiDomain: 'api.example.com',
@@ -71,7 +71,7 @@ class TenantDumpTransformerTest extends TestCase
         $tenant = Tenant::factory()->make(['config' => $tenantConfigArray]);
 
         $transformer = new TenantDumpTransformer($tenant);
-        $result      = $transformer->toArray(new Request());
+        $result = $transformer->toArray(new Request);
 
         $this->assertArrayNotHasKey('mail_from_name', $result['config']);
         $this->assertArrayNotHasKey('mail_from_address', $result['config']);
@@ -89,12 +89,12 @@ class TenantDumpTransformerTest extends TestCase
     /**
      * Test that the transformer handles missing config properly.
      */
-    public function testToArrayHandlesMissingConfigGracefully(): void
+    public function test_to_array_handles_missing_config_gracefully(): void
     {
         $tenant = Tenant::factory()->make(['config' => null]);
 
         $transformer = new TenantDumpTransformer($tenant);
-        $result      = $transformer->toArray(new Request());
+        $result = $transformer->toArray(new Request);
 
         $this->assertEquals([], $result['config']);
     }

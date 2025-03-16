@@ -12,9 +12,6 @@ class TenantDump
 {
     /**
      * Execute the action.
-     *
-     * @param TenantContext $tenantContext
-     * @return TenantDumpTransformer
      */
     public function __invoke(TenantContext $tenantContext): TenantDumpTransformer
     {

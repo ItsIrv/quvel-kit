@@ -18,7 +18,7 @@ class PasswordRuleTest extends TestCase
      * Test that the PasswordRule enforces minimum length correctly.
      */
     #[DataProvider('passwordProvider')]
-    public function testPasswordRuleEnforcesMinimumLength(string $password, bool $shouldPass): void
+    public function test_password_rule_enforces_minimum_length(string $password, bool $shouldPass): void
     {
         // Arrange
         $validator = Validator::make(
@@ -27,10 +27,10 @@ class PasswordRuleTest extends TestCase
         );
 
         // Act
-        $passes = !$validator->fails();
+        $passes = ! $validator->fails();
 
         // Assert
-        $this->assertEquals($shouldPass, $passes, "Failed asserting that '{$password}' validation is correct.");
+        $this->assertEquals($shouldPass, $passes, "Failed asserting that '$password' validation is correct.");
     }
 
     /**
@@ -39,8 +39,8 @@ class PasswordRuleTest extends TestCase
     public static function passwordProvider(): array
     {
         return [
-            'valid password (8 chars)'     => ['password1', true],
-            'valid password (longer)'      => ['supersecure123!', true],
+            'valid password (8 chars)' => ['password1', true],
+            'valid password (longer)' => ['supersecure123!', true],
             'invalid password (too short)' => ['short', false],
         ];
     }

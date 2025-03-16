@@ -3,9 +3,9 @@
 namespace Modules\Auth\Tests\Unit\Rules;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Validator;
 use Mockery;
-use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Rules\ProviderRule;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -19,7 +19,7 @@ class ProviderRuleTest extends TestCase
 {
     private ConfigRepository $configMock;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->configMock = Mockery::mock(ConfigRepository::class);
@@ -29,31 +29,31 @@ class ProviderRuleTest extends TestCase
     }
 
     #[DataProvider('providerData')]
-    public function testProviderRule(string $provider, bool $shouldPass): void
+    public function test_provider_rule(string $provider, bool $shouldPass): void
     {
         $validator = Validator::make(
             ['provider' => $provider],
-            ['provider' => ProviderRule::RULES($this->configMock)],
+            ['provider' => ProviderRule::RULES()],
         );
 
-        $passes = !$validator->fails();
-        $this->assertEquals($shouldPass, $passes, "Failed asserting that '{$provider}' validation is correct.");
+        $passes = ! $validator->fails();
+        $this->assertEquals($shouldPass, $passes, "Failed asserting that '$provider' validation is correct.");
     }
 
     public static function providerData(): array
     {
         return [
-            'valid provider (google)'   => ['google', true],
+            'valid provider (google)' => ['google', true],
             'valid provider (facebook)' => ['facebook', false],
-            'valid provider (apple)'    => ['apple', false],
-            'invalid provider (xyz)'    => ['xyz', false],
+            'valid provider (apple)' => ['apple', false],
+            'invalid provider (xyz)' => ['xyz', false],
         ];
     }
 
-    public function testInvalidProviderFailsWithCorrectMessage(): void
+    public function test_invalid_provider_fails_with_correct_message(): void
     {
         // Mock Translator
-        $translatorMock = Mockery::mock(\Illuminate\Contracts\Translation\Translator::class);
+        $translatorMock = Mockery::mock(Translator::class);
         $translatorMock->shouldReceive('get')
             ->times(3)
             ->andReturn('Invalid provider.');
@@ -64,10 +64,10 @@ class ProviderRuleTest extends TestCase
         // Run validation
         $validator = Validator::make(
             ['provider' => 'invalid_provider'],
-            ['provider' => ProviderRule::RULES($this->configMock)],
+            ['provider' => ProviderRule::RULES()],
         );
 
-        $fails         = $validator->fails();
+        $fails = $validator->fails();
         $errorMessages = $validator->errors()->get('provider');
 
         $this->assertTrue($fails, 'Validation should fail for an invalid provider.');

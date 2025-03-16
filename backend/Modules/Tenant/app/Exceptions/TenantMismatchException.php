@@ -12,14 +12,15 @@ class TenantMismatchException extends Exception
 {
     /**
      * Create a new exception instance.
-     * @param string $message The error message.
-     * @param int $code The error code.
-     * @param Exception|null $previous The previous exception.
+     *
+     * @param  string  $message  The error message.
+     * @param  int  $code  The error code.
+     * @param  Exception|null  $previous  The previous exception.
      */
     public function __construct(
         $message = TenantError::TENANT_MISMATCH->value,
         $code = 0,
-        Exception|null $previous = null,
+        ?Exception $previous = null,
     ) {
         parent::__construct($message, $code, $previous);
     }

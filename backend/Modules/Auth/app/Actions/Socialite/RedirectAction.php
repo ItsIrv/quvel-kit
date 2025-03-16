@@ -11,6 +11,7 @@ use Modules\Auth\Http\Requests\RedirectRequest;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
+use Psr\SimpleCache\InvalidArgumentException;
 
 /**
  * Redirects the user to the socialite provider.
@@ -22,21 +23,21 @@ class RedirectAction
         private readonly ServerTokenService $serverTokenService,
         private readonly ClientNonceService $clientNonceService,
         private readonly FrontendService $frontendService,
-    ) {
-    }
+    ) {}
 
     /**
      * Handle OAuth provider redirect.
+     *
+     * @throws InvalidArgumentException
      */
     public function __invoke(RedirectRequest $request, string $provider): RedirectResponse|JsonResponse
     {
         $stateless = $request->has('nonce');
 
         try {
-            if (!$stateless) {
+            if (! $stateless) {
                 return $this->socialiteService->getRedirectResponse(
                     $provider,
-                    '',
                 );
             }
 

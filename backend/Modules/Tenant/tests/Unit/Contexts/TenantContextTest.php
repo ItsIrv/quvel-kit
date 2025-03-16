@@ -3,9 +3,9 @@
 namespace Modules\Tenant\Tests\Unit\Contexts;
 
 use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Exceptions\TenantNotFoundException;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\ValueObjects\TenantConfig;
-use Modules\Tenant\Exceptions\TenantNotFoundException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -18,10 +18,10 @@ class TenantContextTest extends TestCase
     /**
      * Test setting and getting the tenant.
      */
-    public function testSetAndGetTenant(): void
+    public function test_set_and_get_tenant(): void
     {
-        $tenant  = Tenant::factory()->make();
-        $context = new TenantContext();
+        $tenant = Tenant::factory()->make();
+        $context = new TenantContext;
 
         $context->set($tenant);
 
@@ -31,18 +31,18 @@ class TenantContextTest extends TestCase
     /**
      * Test getting tenant when none is set throws exception.
      */
-    public function testGetTenantThrowsExceptionWhenNotSet(): void
+    public function test_get_tenant_throws_exception_when_not_set(): void
     {
         $this->expectException(TenantNotFoundException::class);
 
-        $context = new TenantContext();
+        $context = new TenantContext;
         $context->get();
     }
 
     /**
      * Test retrieving tenant config.
      */
-    public function testGetConfig(): void
+    public function test_get_config(): void
     {
         $tenant = Tenant::factory()->make([
             'config' => new TenantConfig(
@@ -53,7 +53,7 @@ class TenantContextTest extends TestCase
             ),
         ]);
 
-        $context = new TenantContext();
+        $context = new TenantContext;
         $context->set($tenant);
 
         $this->assertInstanceOf(TenantConfig::class, $context->getConfig());
@@ -63,7 +63,7 @@ class TenantContextTest extends TestCase
     /**
      * Test retrieving a specific config value.
      */
-    public function testGetConfigValue(): void
+    public function test_get_config_value(): void
     {
         $tenant = Tenant::factory()->make([
             'config' => new TenantConfig(
@@ -74,7 +74,7 @@ class TenantContextTest extends TestCase
             ),
         ]);
 
-        $context = new TenantContext();
+        $context = new TenantContext;
         $context->set($tenant);
 
         $this->assertEquals(
@@ -91,7 +91,7 @@ class TenantContextTest extends TestCase
     /**
      * Test retrieving a missing config value returns the default.
      */
-    public function testGetConfigValueReturnsDefaultWhenMissing(): void
+    public function test_get_config_value_returns_default_when_missing(): void
     {
         $tenant = Tenant::factory()->make([
             'config' => new TenantConfig(
@@ -102,7 +102,7 @@ class TenantContextTest extends TestCase
             ),
         ]);
 
-        $context = new TenantContext();
+        $context = new TenantContext;
         $context->set($tenant);
 
         $this->assertEquals(

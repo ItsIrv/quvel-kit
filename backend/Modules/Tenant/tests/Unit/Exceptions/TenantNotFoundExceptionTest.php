@@ -2,8 +2,9 @@
 
 namespace Modules\Tenant\Tests\Unit\Exceptions;
 
-use Modules\Tenant\Exceptions\TenantNotFoundException;
+use Exception;
 use Modules\Tenant\Enums\TenantError;
+use Modules\Tenant\Exceptions\TenantNotFoundException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -16,9 +17,9 @@ class TenantNotFoundExceptionTest extends TestCase
     /**
      * Test that the default exception message is set correctly.
      */
-    public function testExceptionMessage(): void
+    public function test_exception_message(): void
     {
-        $exception = new TenantNotFoundException();
+        $exception = new TenantNotFoundException;
 
         $this->assertEquals(
             TenantError::NOT_FOUND->value,
@@ -29,10 +30,10 @@ class TenantNotFoundExceptionTest extends TestCase
     /**
      * Test that the exception message can be set with a custom message.
      */
-    public function testExceptionWithCustomMessage(): void
+    public function test_exception_with_custom_message(): void
     {
         $customMessage = 'Custom tenant not found message';
-        $exception     = new TenantNotFoundException($customMessage);
+        $exception = new TenantNotFoundException($customMessage);
 
         $this->assertEquals($customMessage, $exception->getMessage());
     }
@@ -40,7 +41,7 @@ class TenantNotFoundExceptionTest extends TestCase
     /**
      * Test that the exception allows a custom error code.
      */
-    public function testExceptionWithCode(): void
+    public function test_exception_with_code(): void
     {
         $exception = new TenantNotFoundException('Error', 404);
 
@@ -50,9 +51,9 @@ class TenantNotFoundExceptionTest extends TestCase
     /**
      * Test that the exception allows a previous exception.
      */
-    public function testExceptionWithPrevious(): void
+    public function test_exception_with_previous(): void
     {
-        $previous  = new \Exception('Previous exception');
+        $previous = new Exception('Previous exception');
         $exception = new TenantNotFoundException('Error', 0, $previous);
 
         $this->assertSame($previous, $exception->getPrevious());

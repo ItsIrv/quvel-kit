@@ -9,15 +9,16 @@ use Illuminate\Support\Str;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\database\factories\TenantConfigFactory;
 use Modules\Tenant\Models\Tenant;
+use Random\RandomException;
 
 class TenantSeeder extends Seeder
 {
     public function run(): void
     {
-        $apiDomain      = config('quvel.default_api_domain');
+        $apiDomain = config('quvel.default_api_domain');
         $frontendDomain = str_replace('api.', '', $apiDomain);
-        $lanApiDomain   = config('quvel.default_lan_domain');
-        $lanFrontend    = str_replace('api.', '', $lanApiDomain);
+        $lanApiDomain = config('quvel.default_lan_domain');
+        $lanFrontend = str_replace('api.', '', $lanApiDomain);
 
         // Create API tenants
         $mainTenant = $this->createTenant(
@@ -83,9 +84,9 @@ class TenantSeeder extends Seeder
         return Tenant::updateOrCreate(
             ['domain' => $domain],
             [
-                'name'      => $name,
+                'name' => $name,
                 'public_id' => Str::ulid()->toString(),
-                'config'    => $config,
+                'config' => $config,
                 'parent_id' => $parent?->id,
             ],
         );
@@ -93,17 +94,19 @@ class TenantSeeder extends Seeder
 
     /**
      * Create a user for a tenant.
+     *
+     * @throws RandomException
      */
     private function createTenantUser(Tenant $tenant): void
     {
         User::updateOrCreate(
             ['email' => 'lan-user@quvel.app'],
             [
-                'name'              => 'LAN Tenant User',
-                'tenant_id'         => $tenant->id,
-                'password'          => Hash::make(config('quvel.default_password')),
+                'name' => 'LAN Tenant User',
+                'tenant_id' => $tenant->id,
+                'password' => Hash::make(config('quvel.default_password')),
                 'email_verified_at' => now(),
-                'avatar'            => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . rand(1, 100),
+                'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed='.random_int(1, 100),
             ],
         );
     }

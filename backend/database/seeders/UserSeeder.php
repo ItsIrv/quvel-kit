@@ -25,8 +25,8 @@ class UserSeeder extends Seeder
 
         // Main user
         $quvelUserData = User::factory()->make([
-            'name'      => 'Quvel User',
-            'email'     => 'quvel@quvel.app',
+            'name' => 'Quvel User',
+            'email' => 'quvel@quvel.app',
             'tenant_id' => $tenant->id,
         ])->toArray();
 

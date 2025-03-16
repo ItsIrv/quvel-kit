@@ -3,7 +3,7 @@
 namespace Modules\Auth\Tests\Unit\Providers;
 
 use Illuminate\Foundation\Application;
-use Mockery;
+use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Providers\AuthServiceProvider;
 use Modules\Auth\Providers\EventServiceProvider;
 use Modules\Auth\Providers\RouteServiceProvider;
@@ -12,10 +12,8 @@ use Modules\Auth\Services\HmacService;
 use Modules\Auth\Services\NonceSessionService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
-use Modules\Auth\app\Services\UserAuthenticationService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
-use ReflectionClass;
 use Tests\TestCase;
 
 #[CoversClass(AuthServiceProvider::class)]
@@ -26,12 +24,12 @@ class AuthServiceProviderTest extends TestCase
     /**
      * Test that the service provider registers services correctly.
      */
-    public function testRegistersServices(): void
+    public function test_registers_services(): void
     {
         $app = $this->createMock(Application::class);
 
         $singletons = [];
-        $registers  = [];
+        $registers = [];
 
         $app->method('singleton')
             ->willReturnCallback(function ($class) use (&$singletons): void {

@@ -16,16 +16,16 @@ class LoginRequestTest extends TestCase
     /**
      * Test that the request passes validation with correct data.
      */
-    public function testRequestPassesValidationWithValidData(): void
+    public function test_request_passes_validation_with_valid_data(): void
     {
         // Arrange
         $validData = [
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => 'SecurePassword123!',
         ];
 
         // Act
-        $validator = Validator::make($validData, (new LoginRequest())->rules());
+        $validator = Validator::make($validData, (new LoginRequest)->rules());
 
         // Assert
         $this->assertFalse($validator->fails());
@@ -34,7 +34,7 @@ class LoginRequestTest extends TestCase
     /**
      * Test that the request fails validation when 'email' is missing.
      */
-    public function testRequestFailsValidationWhenEmailIsMissing(): void
+    public function test_request_fails_validation_when_email_is_missing(): void
     {
         // Arrange
         $invalidData = [
@@ -42,7 +42,7 @@ class LoginRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new LoginRequest())->rules());
+        $validator = Validator::make($invalidData, (new LoginRequest)->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -52,7 +52,7 @@ class LoginRequestTest extends TestCase
     /**
      * Test that the request fails validation when 'password' is missing.
      */
-    public function testRequestFailsValidationWhenPasswordIsMissing(): void
+    public function test_request_fails_validation_when_password_is_missing(): void
     {
         // Arrange
         $invalidData = [
@@ -60,7 +60,7 @@ class LoginRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new LoginRequest())->rules());
+        $validator = Validator::make($invalidData, (new LoginRequest)->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -70,16 +70,16 @@ class LoginRequestTest extends TestCase
     /**
      * Test that 'email' follows EmailRule validation.
      */
-    public function testRequestFailsValidationWithInvalidEmail(): void
+    public function test_request_fails_validation_with_invalid_email(): void
     {
         // Arrange
         $invalidData = [
-            'email'    => 'invalid-email',
+            'email' => 'invalid-email',
             'password' => 'SecurePassword123!',
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new LoginRequest())->rules());
+        $validator = Validator::make($invalidData, (new LoginRequest)->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -89,16 +89,16 @@ class LoginRequestTest extends TestCase
     /**
      * Test that 'password' follows PasswordRule validation.
      */
-    public function testRequestFailsValidationWithInvalidPassword(): void
+    public function test_request_fails_validation_with_invalid_password(): void
     {
         // Arrange
         $invalidData = [
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => '123', // Too short, assuming PasswordRule requires stronger passwords
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new LoginRequest())->rules());
+        $validator = Validator::make($invalidData, (new LoginRequest)->rules());
 
         // Assert
         $this->assertTrue($validator->fails());

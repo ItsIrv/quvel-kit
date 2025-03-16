@@ -10,7 +10,7 @@ import type { LaravelErrorResponse } from 'src/types/error.types';
  */
 export function extractFirstError(errors: ErrorBag): string {
   for (const error of errors.values()) {
-    if (typeof error === 'string' && error.trim().length > 0) {
+    if (error.trim().length > 0) {
       return error;
     }
   }
@@ -29,7 +29,7 @@ export function LaravelErrorHandler(
 ): ErrorHandler<boolean, LaravelErrorResponse> {
   return {
     key: 'isAxiosError',
-    matcher: (isAxiosError: boolean) => isAxiosError === true,
+    matcher: (isAxiosError: boolean) => isAxiosError,
     callback: (_: boolean, context: ErrorHandlerContext<LaravelErrorResponse>): void => {
       const responseData = context.error.response?.data;
       const { errors } = responseData || {};

@@ -6,8 +6,8 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Mockery;
 use Modules\Auth\Actions\User\LogoutAction;
-use Modules\Auth\Enums\AuthStatusEnum;
 use Modules\Auth\app\Services\UserAuthenticationService;
+use Modules\Auth\Enums\AuthStatusEnum;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -18,15 +18,17 @@ use Tests\TestCase;
 class LogoutActionTest extends TestCase
 {
     private Mockery\MockInterface|UserAuthenticationService $userAuthenticationService;
+
     private Mockery\MockInterface|ResponseFactory $responseFactory;
+
     private LogoutAction $action;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->userAuthenticationService = Mockery::mock(UserAuthenticationService::class);
-        $this->responseFactory           = Mockery::mock(ResponseFactory::class);
+        $this->responseFactory = Mockery::mock(ResponseFactory::class);
 
         $this->action = new LogoutAction(
             $this->userAuthenticationService,
@@ -37,7 +39,7 @@ class LogoutActionTest extends TestCase
     /**
      * Test that the logout action correctly logs out the user.
      */
-    public function testLogoutActionLogsOutUser(): void
+    public function test_logout_action_logs_out_user(): void
     {
         // Arrange
         $this->userAuthenticationService->shouldReceive('logout')

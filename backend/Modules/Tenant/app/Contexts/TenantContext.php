@@ -14,14 +14,11 @@ class TenantContext
 {
     /**
      * The current tenant.
-     * @var Tenant
      */
     protected Tenant $tenant;
 
     /**
      * Set the tenant.
-     * @param Tenant $tenant
-     * @return void
      */
     public function set(Tenant $tenant): void
     {
@@ -30,12 +27,12 @@ class TenantContext
 
     /**
      * Get the tenant.
-     * @return Tenant
+     *
      * @throws TenantNotFoundException
      */
     public function get(): Tenant
     {
-        if (!isset($this->tenant)) {
+        if (! isset($this->tenant)) {
             throw new TenantNotFoundException(
                 TenantError::NO_CONTEXT_TENANT->value,
             );
@@ -46,9 +43,8 @@ class TenantContext
 
     /**
      * Get the tenant's scoped configuration.
-     * @return TenantConfig|null
      */
-    public function getConfig(): TenantConfig|null
+    public function getConfig(): ?TenantConfig
     {
         return $this->tenant->config;
     }

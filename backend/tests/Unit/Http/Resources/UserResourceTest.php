@@ -17,29 +17,29 @@ class UserResourceTest extends TestCase
     /**
      * Test that the resource transforms a user model correctly.
      */
-    public function testToArrayTransformsUserCorrectly(): void
+    public function test_to_array_transforms_user_correctly(): void
     {
-        $name  = $this->faker->name;
+        $name = $this->faker->name;
         $email = $this->faker->email;
 
         $user = User::factory()->make();
         $user->setRawAttributes([
-            'id'         => 'public-id-1',
-            'name'       => $name,
-            'email'      => $email,
-            'avatar'     => $user->avatar,
+            'id' => 'public-id-1',
+            'name' => $name,
+            'email' => $email,
+            'avatar' => $user->avatar,
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
         ], true);
 
         $resource = new UserResource($user);
-        $result   = $resource->toArray(new Request());
+        $result = $resource->toArray(new Request);
 
         $this->assertEquals([
-            'id'         => 0,
-            'name'       => $name,
-            'email'      => $email,
-            'avatar'     => $user->avatar,
+            'id' => 0,
+            'name' => $name,
+            'email' => $email,
+            'avatar' => $user->avatar,
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
         ], $result);

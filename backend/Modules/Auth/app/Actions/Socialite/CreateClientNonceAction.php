@@ -14,8 +14,7 @@ class CreateClientNonceAction
     public function __construct(
         private readonly ClientNonceService $clientNonceService,
         private readonly NonceSessionService $nonceSessionService,
-    ) {
-    }
+    ) {}
 
     public function __invoke(): JsonResponse
     {

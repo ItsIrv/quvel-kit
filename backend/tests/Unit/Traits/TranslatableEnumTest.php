@@ -20,7 +20,7 @@ class TranslatableEnumTest extends TestCase
     /**
      * Test that getTranslatedMessage returns the correct translation.
      */
-    public function testGetTranslatedMessage(): void
+    public function test_get_translated_message(): void
     {
         $enumInstance = new class
         {

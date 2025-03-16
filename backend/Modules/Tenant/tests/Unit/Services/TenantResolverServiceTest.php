@@ -20,8 +20,11 @@ use Tests\TestCase;
 class TenantResolverServiceTest extends TestCase
 {
     private TenantFindService|MockObject $tenantFindService;
+
     private TenantSessionService|MockObject $tenantSessionService;
+
     private TenantResolverService $tenantResolverService;
+
     private Request|MockObject $requestMock;
 
     #[Before]
@@ -46,7 +49,7 @@ class TenantResolverServiceTest extends TestCase
     /**
      * Test that resolveTenant returns tenant from session if available.
      */
-    public function testResolveTenantReturnsTenantFromSessionIfAvailable(): void
+    public function test_resolve_tenant_returns_tenant_from_session_if_available(): void
     {
         $this->tenantSessionService->expects(
             $this->once(),
@@ -63,7 +66,7 @@ class TenantResolverServiceTest extends TestCase
     /**
      * Test that resolveTenant returns tenant from find service if available.
      */
-    public function testResolveTenantReturnsTenantFromFindServiceIfAvailable(): void
+    public function test_resolve_tenant_returns_tenant_from_find_service_if_available(): void
     {
         $this->tenantSessionService->expects(
             $this->once(),
@@ -90,7 +93,7 @@ class TenantResolverServiceTest extends TestCase
     /**
      * Test that resolveTenant throws TenantNotFoundException when tenant is not found by domain.
      */
-    public function testResolveTenantThrowsExceptionWhenTenantNotFound(): void
+    public function test_resolve_tenant_throws_exception_when_tenant_not_found(): void
     {
         $this->tenantSessionService->expects($this->once())
             ->method('getTenant')

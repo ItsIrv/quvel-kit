@@ -22,8 +22,7 @@ class RegisterAction
         private readonly UserFindService $userFindService,
         private readonly UserCreateService $userCreateService,
         private readonly ResponseFactory $responseFactory,
-    ) {
-    }
+    ) {}
 
     /**
      * Register a new user.

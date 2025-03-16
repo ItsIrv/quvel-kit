@@ -16,13 +16,13 @@ class RedeemNonceRequestTest extends TestCase
     /**
      * Test that the request passes validation with a valid nonce.
      */
-    public function testRequestPassesValidationWithValidNonce(): void
+    public function test_request_passes_validation_with_valid_nonce(): void
     {
         // Arrange
         $validData = ['nonce' => str_repeat('a', 85)];
 
         // Act
-        $validator = Validator::make($validData, (new RedeemNonceRequest())->rules());
+        $validator = Validator::make($validData, (new RedeemNonceRequest)->rules());
 
         // Assert
         $this->assertFalse($validator->fails());
@@ -31,13 +31,13 @@ class RedeemNonceRequestTest extends TestCase
     /**
      * Test that the request fails validation when 'nonce' is missing.
      */
-    public function testRequestFailsValidationWhenNonceIsMissing(): void
+    public function test_request_fails_validation_when_nonce_is_missing(): void
     {
         // Arrange
         $invalidData = [];
 
         // Act
-        $validator = Validator::make($invalidData, (new RedeemNonceRequest())->rules());
+        $validator = Validator::make($invalidData, (new RedeemNonceRequest)->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -47,13 +47,13 @@ class RedeemNonceRequestTest extends TestCase
     /**
      * Test that the request fails validation when 'nonce' is invalid.
      */
-    public function testRequestFailsValidationWithInvalidNonce(): void
+    public function test_request_fails_validation_with_invalid_nonce(): void
     {
         // Arrange
         $invalidData = ['nonce' => ''];
 
         // Act
-        $validator = Validator::make($invalidData, (new RedeemNonceRequest())->rules());
+        $validator = Validator::make($invalidData, (new RedeemNonceRequest)->rules());
 
         // Assert
         $this->assertTrue($validator->fails());

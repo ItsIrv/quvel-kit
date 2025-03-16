@@ -15,10 +15,10 @@ class TranslatableExceptionTest extends TestCase
     /**
      * Test that getTranslatedMessage() returns a valid translation string.
      */
-    public function testGetTranslatedMessageReturnsValidTranslation(): void
+    public function test_get_translated_message_returns_valid_translation(): void
     {
         // Mock an exception class that uses the trait
-        $exception = new class ('validation.required') extends \Exception
+        $exception = new class('validation.required') extends \Exception
         {
             use TranslatableException;
         };
@@ -34,10 +34,10 @@ class TranslatableExceptionTest extends TestCase
     /**
      * Test that getTranslatedMessage() returns an empty string for missing translation.
      */
-    public function testGetTranslatedMessageReturnsEmptyStringWhenTranslationNotFound(): void
+    public function test_get_translated_message_returns_empty_string_when_translation_not_found(): void
     {
         // Mock an exception class that uses the trait
-        $exception = new class ('missing.translation.key') extends \Exception
+        $exception = new class('missing.translation.key') extends \Exception
         {
             use TranslatableException;
         };
@@ -48,7 +48,7 @@ class TranslatableExceptionTest extends TestCase
     /**
      * Test that getTranslatedMessage() is called on message if it implements TranslatableEntity.
      */
-    public function testGetTranslatedMessageCalledOnTranslatableEntity(): void
+    public function test_get_translated_message_called_on_translatable_entity(): void
     {
         // Create a mock for TranslatableEntity
         $translatableEntityMock = $this->createMock(
@@ -61,13 +61,11 @@ class TranslatableExceptionTest extends TestCase
             ->willReturn('Translated Message');
 
         // Mock an exception class that uses the trait
-        $exception = new class ($translatableEntityMock)
+        $exception = new class($translatableEntityMock)
         {
             use TranslatableException;
 
-            public function __construct(protected TranslatableEntity $message)
-            {
-            }
+            public function __construct(protected TranslatableEntity $message) {}
         };
 
         $this->assertEquals('Translated Message', $exception->getTranslatedMessage());

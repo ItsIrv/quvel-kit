@@ -19,7 +19,7 @@ class CallbackRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'state'    => ['required', ...TokenRule::RULES],
+            'state' => ['required', ...TokenRule::RULES],
             'provider' => ['required', ...ProviderRule::RULES()],
         ];
     }

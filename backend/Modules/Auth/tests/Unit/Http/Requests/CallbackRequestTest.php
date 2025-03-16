@@ -17,16 +17,16 @@ class CallbackRequestTest extends TestCase
     /**
      * Test that the request passes validation with correct data.
      */
-    public function testRequestPassesValidationWithValidData(): void
+    public function test_request_passes_validation_with_valid_data(): void
     {
         // Arrange
         $validData = [
-            'state'    => bin2hex(random_bytes(32)),
+            'state' => bin2hex(random_bytes(32)),
             'provider' => 'google',
         ];
 
         // Act
-        $validator = Validator::make($validData, (new CallbackRequest())->rules());
+        $validator = Validator::make($validData, (new CallbackRequest)->rules());
 
         // Assert
         $this->assertFalse($validator->fails());
@@ -35,7 +35,7 @@ class CallbackRequestTest extends TestCase
     /**
      * Test that the request fails validation when 'state' is missing.
      */
-    public function testRequestFailsValidationWhenStateIsMissing(): void
+    public function test_request_fails_validation_when_state_is_missing(): void
     {
         // Arrange
         $invalidData = [
@@ -43,7 +43,7 @@ class CallbackRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new CallbackRequest())->rules());
+        $validator = Validator::make($invalidData, (new CallbackRequest)->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -53,7 +53,7 @@ class CallbackRequestTest extends TestCase
     /**
      * Test that the request fails validation when 'provider' is missing.
      */
-    public function testRequestFailsValidationWhenProviderIsMissing(): void
+    public function test_request_fails_validation_when_provider_is_missing(): void
     {
         // Arrange
         $invalidData = [
@@ -61,7 +61,7 @@ class CallbackRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new CallbackRequest())->rules());
+        $validator = Validator::make($invalidData, (new CallbackRequest)->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -71,16 +71,16 @@ class CallbackRequestTest extends TestCase
     /**
      * Test that 'provider' follows ProviderRule validation.
      */
-    public function testRequestFailsValidationWithInvalidProvider(): void
+    public function test_request_fails_validation_with_invalid_provider(): void
     {
         // Arrange
         $invalidData = [
-            'state'    => bin2hex(random_bytes(32)),
+            'state' => bin2hex(random_bytes(32)),
             'provider' => 'invalid-provider',
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new CallbackRequest())->rules());
+        $validator = Validator::make($invalidData, (new CallbackRequest)->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -90,16 +90,16 @@ class CallbackRequestTest extends TestCase
     /**
      * Test that 'state' follows TokenRule validation.
      */
-    public function testRequestFailsValidationWithInvalidState(): void
+    public function test_request_fails_validation_with_invalid_state(): void
     {
         // Arrange
         $invalidData = [
-            'state'    => 'invalid-token',
+            'state' => 'invalid-token',
             'provider' => 'google',
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new CallbackRequest())->rules());
+        $validator = Validator::make($invalidData, (new CallbackRequest)->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -108,8 +108,10 @@ class CallbackRequestTest extends TestCase
 
     /**
      * Test that prepareForValidation correctly merges route parameters.
+     *
+     * @throws \ReflectionException
      */
-    public function testPrepareForValidationMergesRouteParameters(): void
+    public function test_prepare_for_validation_merges_route_parameters(): void
     {
         // Arrange: Create a request instance without a provider field
         $request = new CallbackRequest([], [], [], [], [], [
@@ -121,9 +123,6 @@ class CallbackRequestTest extends TestCase
         {
             /**
              * Simulates retrieving a route parameter.
-             *
-             * @param  string  $key
-             * @return string|null
              */
             public function parameter(string $key): ?string
             {
@@ -138,7 +137,6 @@ class CallbackRequestTest extends TestCase
 
         // Use reflection to call the protected prepareForValidation method
         $reflection = new ReflectionMethod($request, 'prepareForValidation');
-        $reflection->setAccessible(true);
         $reflection->invoke($request);
 
         // Assert: The 'provider' field should now be set in the request data

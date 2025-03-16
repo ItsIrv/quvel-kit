@@ -18,20 +18,20 @@ class RedirectRequestTest extends TestCase
 {
     private RedirectRequest $request;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
-        $this->request = new RedirectRequest();
+        $this->request = new RedirectRequest;
     }
 
     /**
      * Test that the request passes validation with valid data.
      */
-    public function testRedirectRequestPassesWithValidData(): void
+    public function test_redirect_request_passes_with_valid_data(): void
     {
         // Arrange
         $validData = [
-            'nonce'    => str_repeat('a', 85),
+            'nonce' => str_repeat('a', 85),
             'provider' => 'google',
         ];
 
@@ -46,7 +46,7 @@ class RedirectRequestTest extends TestCase
      * Test that the request fails validation with invalid data.
      */
     #[DataProvider('invalidDataProvider')]
-    public function testRedirectRequestFailsWithInvalidData(array $invalidData, array $expectedErrors): void
+    public function test_redirect_request_fails_with_invalid_data(array $invalidData, array $expectedErrors): void
     {
         // Act
         $validator = Validator::make($invalidData, $this->request->rules());
@@ -64,8 +64,8 @@ class RedirectRequestTest extends TestCase
     public static function invalidDataProvider(): array
     {
         return [
-            'missing provider'     => [['nonce' => str_repeat('a', 85)], ['provider']],
-            'both fields missing'  => [[], ['provider']],
+            'missing provider' => [['nonce' => str_repeat('a', 85)], ['provider']],
+            'both fields missing' => [[], ['provider']],
             'invalid nonce format' => [['nonce' => 'invalid_nonce', 'provider' => 'google'], ['nonce']],
         ];
     }
@@ -73,7 +73,7 @@ class RedirectRequestTest extends TestCase
     /**
      * Test that the request rules include the correct rule objects.
      */
-    public function testRedirectRequestUsesCorrectRules(): void
+    public function test_redirect_request_uses_correct_rules(): void
     {
         // Arrange & Act
         $rules = $this->request->rules();
@@ -89,8 +89,9 @@ class RedirectRequestTest extends TestCase
 
     /**
      * Test that `prepareForValidation()` correctly merges route parameters.
+     * @throws \ReflectionException
      */
-    public function testPrepareForValidationMergesRouteParameters(): void
+    public function test_prepare_for_validation_merges_route_parameters(): void
     {
         // Arrange: Create a request instance without a provider field
         $request = new RedirectRequest([], [], [], [], [], [
@@ -102,9 +103,6 @@ class RedirectRequestTest extends TestCase
         {
             /**
              * Simulates retrieving a route parameter.
-             *
-             * @param  string  $key
-             * @return string|null
              */
             public function parameter(string $key): ?string
             {
@@ -119,7 +117,6 @@ class RedirectRequestTest extends TestCase
 
         // Use reflection to call the protected prepareForValidation method
         $reflection = new ReflectionMethod($request, 'prepareForValidation');
-        $reflection->setAccessible(true);
         $reflection->invoke($request);
 
         // Assert: The 'provider' field should now be set in the request data

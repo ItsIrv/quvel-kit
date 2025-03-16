@@ -17,15 +17,14 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 class UserAuthenticationService
 {
     public function __construct(
-        private readonly AuthFactory       $auth,
-        private readonly UserFindService   $userFindService,
+        private readonly AuthFactory $auth,
+        private readonly UserFindService $userFindService,
         private readonly UserCreateService $userCreateService,
-    )
-    {
-    }
+    ) {}
 
     /**
      * Attempt to authenticate a user with email and password.
+     *
      * @throws BadRequestException
      */
     public function attempt(string $email, string $password): bool
@@ -45,7 +44,9 @@ class UserAuthenticationService
 
     /**
      * Handle user authentication via OAuth.
+     *
      * @return array{0: User, 1: OAuthStatusEnum}
+     *
      * @throws OAuthException
      */
     public function handleOAuthLogin(string $provider, SocialiteUser $providerUser): array
@@ -66,7 +67,7 @@ class UserAuthenticationService
             }
 
             // Ensure email is verified
-            if (!$user->email_verified_at) {
+            if (! $user->email_verified_at) {
                 throw new OAuthException(
                     OAuthStatusEnum::EMAIL_NOT_VERIFIED,
                 );

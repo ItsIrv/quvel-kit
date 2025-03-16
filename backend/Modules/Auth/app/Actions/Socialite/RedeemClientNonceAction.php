@@ -3,8 +3,8 @@
 namespace Modules\Auth\Actions\Socialite;
 
 use Exception;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Http\JsonResponse;
 use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
@@ -20,17 +20,16 @@ class RedeemClientNonceAction
         private readonly ClientNonceService $clientNonceService,
         private readonly UserAuthenticationService $userAuthenticationService,
         private readonly ResponseFactory $responseFactory,
-    ) {
-    }
+    ) {}
 
     public function __invoke(RedeemNonceRequest $request): JsonResponse
     {
         try {
             $signedNonce = $request->validated('nonce');
-            $nonce       = $this->clientNonceService->getNonce($signedNonce);
-            $userId      = $this->clientNonceService->getUserIdFromNonce($nonce);
+            $nonce = $this->clientNonceService->getNonce($signedNonce);
+            $userId = $this->clientNonceService->getUserIdFromNonce($nonce);
 
-            if (!$userId) {
+            if (! $userId) {
                 throw new OAuthException(OAuthStatusEnum::INVALID_NONCE);
             }
 
@@ -39,7 +38,7 @@ class RedeemClientNonceAction
             $this->clientNonceService->forget($nonce);
 
             return $this->responseFactory->json([
-                'user'    => $user,
+                'user' => $user,
                 'message' => OAuthStatusEnum::LOGIN_OK->getTranslatedMessage(),
             ]);
         } catch (Exception $e) {

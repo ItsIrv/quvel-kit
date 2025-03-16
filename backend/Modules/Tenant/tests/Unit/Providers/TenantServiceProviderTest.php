@@ -4,7 +4,6 @@ namespace Modules\Tenant\Tests\Unit\Providers;
 
 use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Mockery;
 use Modules\Tenant\Contexts\TenantContext;
@@ -18,7 +17,6 @@ use Modules\Tenant\Services\TenantResolverService;
 use Modules\Tenant\Services\TenantSessionService;
 use Modules\Tenant\ValueObjects\TenantConfig;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use ReflectionClass;
 use Tests\TestCase;
@@ -31,14 +29,14 @@ class TenantServiceProviderTest extends TestCase
     /**
      * Test that the service provider registers services correctly.
      */
-    public function testRegistersServices(): void
+    public function test_registers_services(): void
     {
         $app = $this->createMock(
             Application::class,
         );
 
         $singletons = [];
-        $registers  = [];
+        $registers = [];
 
         $app->method('singleton')
             ->willReturnCallback(function ($class) use (&$singletons): void {
@@ -74,13 +72,13 @@ class TenantServiceProviderTest extends TestCase
     /**
      * Test booting the service provider.
      */
-    public function testBoot(): void
+    public function test_boot(): void
     {
         // Use an assertion flag
         $bootMiddlewareCalled = false;
 
         // Extend the real provider and override `bootMiddleware`
-        $provider = new class ($this->app) extends TenantServiceProvider
+        $provider = new class($this->app) extends TenantServiceProvider
         {
             public bool $bootMiddlewareCalled = false;
 
@@ -100,7 +98,7 @@ class TenantServiceProviderTest extends TestCase
     /**
      * Test registering middleware.
      */
-    public function testBootMiddleware(): void
+    public function test_boot_middleware(): void
     {
         // Mock the Route facade properly
         Route::shouldReceive('aliasMiddleware')
@@ -116,8 +114,10 @@ class TenantServiceProviderTest extends TestCase
 
     /**
      * Test `bindTenantConfigs` correctly updates config values per request.
+     *
+     * @throws \ReflectionException
      */
-    public function testBindTenantConfigs(): void
+    public function test_bind_tenant_configs(): void
     {
         // Mock TenantConfig
         $tenantConfig = new TenantConfig(
@@ -168,14 +168,16 @@ class TenantServiceProviderTest extends TestCase
 
         // Use reflection to invoke private `bindTenantConfigs()`
         $reflection = new ReflectionClass($provider);
-        $method     = $reflection->getMethod('bindTenantConfigs');
-        $method->setAccessible(true);
+        $method = $reflection->getMethod('bindTenantConfigs');
 
         // Run the method
         $method->invoke($provider);
     }
 
-    public function testBindTenantConfigsLogsCriticalErrorWhenConfigNotFound(): void
+    /**
+     * @throws \ReflectionException
+     */
+    public function test_bind_tenant_configs_logs_critical_error_when_config_not_found(): void
     {
         // Mock Tenant returning null for effective config
         $mockTenant = Mockery::mock(Tenant::class);
@@ -202,7 +204,7 @@ class TenantServiceProviderTest extends TestCase
         // Mock Log Facade to capture log messages
         \Illuminate\Support\Facades\Log::shouldReceive('critical')->once()->with(
             Mockery::on(function ($message) {
-                return str_contains($message, "Tenant Config Could Not Be Applied: Tenant config not found");
+                return str_contains($message, 'Tenant Config Could Not Be Applied: Tenant config not found');
             }),
         );
 
@@ -211,9 +213,7 @@ class TenantServiceProviderTest extends TestCase
 
         // Use reflection to invoke private `bindTenantConfigs()`
         $reflection = new ReflectionClass($provider);
-        $method     = $reflection->getMethod('bindTenantConfigs');
-        $method->setAccessible(true);
-
+        $method = $reflection->getMethod('bindTenantConfigs');
         // Run the method (expecting log entry, NOT an exception)
         $method->invoke($provider);
     }

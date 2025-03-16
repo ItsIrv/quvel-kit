@@ -15,9 +15,9 @@ class UserTest extends TestCase
     /**
      * Test if a User model can be instantiated.
      */
-    public function testUserModelInstantiation(): void
+    public function test_user_model_instantiation(): void
     {
-        $user = new User();
+        $user = new User;
         $this->assertInstanceOf(
             User::class,
             $user,
@@ -27,9 +27,9 @@ class UserTest extends TestCase
     /**
      * Test if the fillable attributes are set correctly.
      */
-    public function testFillableAttributes(): void
+    public function test_fillable_attributes(): void
     {
-        $user     = new User();
+        $user = new User;
         $expected = [
             'name',
             'email',
@@ -47,9 +47,9 @@ class UserTest extends TestCase
     /**
      * Test if the hidden attributes are set correctly.
      */
-    public function testHiddenAttributes(): void
+    public function test_hidden_attributes(): void
     {
-        $user     = new User();
+        $user = new User;
         $expected = [
             'password',
             'remember_token',
@@ -64,13 +64,13 @@ class UserTest extends TestCase
     /**
      * Test if the casts are set correctly.
      */
-    public function testCasts(): void
+    public function test_casts(): void
     {
-        $user     = new User();
+        $user = new User;
         $expected = [
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'id'                => 'int',
+            'password' => 'hashed',
+            'id' => 'int',
         ];
 
         $this->assertEquals(
@@ -82,14 +82,14 @@ class UserTest extends TestCase
     /**
      * Test factory usage to generate a user.
      */
-    public function testUserFactoryCreatesAUser(): void
+    public function test_user_factory_creates_a_user(): void
     {
         // TODO: Create trait for mocking TenantContext.
         $user = User::factory()->create();
 
         $this->assertInstanceOf(User::class, $user);
         $this->assertDatabaseHas('users', [
-            'id'    => $user->id,
+            'id' => $user->id,
             'email' => $user->email,
         ]);
     }

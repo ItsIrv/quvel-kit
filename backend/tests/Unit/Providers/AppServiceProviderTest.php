@@ -4,11 +4,13 @@ namespace Tests\Unit\Providers;
 
 use App\Providers\AppServiceProvider;
 use App\Services\FrontendService;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\URL;
 use Modules\Tenant\Contexts\TenantContext;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Before;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\MockObject\Exception;
 use Tests\TestCase;
 
 #[CoversClass(AppServiceProvider::class)]
@@ -27,7 +29,7 @@ class AppServiceProviderTest extends TestCase
     /**
      * Ensures the register method binds correct services.
      */
-    public function testRegisterMethodRuns(): void
+    public function test_register_method_runs(): void
     {
         $this->assertTrue(
             $this->app->bound(
@@ -38,8 +40,10 @@ class AppServiceProviderTest extends TestCase
 
     /**
      * Test that FrontendService is properly configured with the app URL from tenant config.
+     *
+     * @throws BindingResolutionException|Exception
      */
-    public function testFrontendServiceGetsCorrectAppUrl(): void
+    public function test_frontend_service_gets_correct_app_url(): void
     {
         // Mock the TenantContext class
         $mockTenantContext = $this->createMock(TenantContext::class);
@@ -58,7 +62,7 @@ class AppServiceProviderTest extends TestCase
 
         // Verify the FrontendService was created with the correct app URL
         // by testing one of its methods that uses the frontendUrl property
-        $expectedFullUrl = "{$expectedAppUrl}/login";
+        $expectedFullUrl = "$expectedAppUrl/login";
         $this->assertEquals(
             $expectedFullUrl,
             $frontendService->getPageUrl('login'),
@@ -68,7 +72,7 @@ class AppServiceProviderTest extends TestCase
     /**
      * Test that FrontendService resolves as a scoped service, not a singleton.
      */
-    public function testFrontendServiceIsScoped(): void
+    public function test_frontend_service_is_scoped(): void
     {
         // Create two request contexts with different tenant configs
         $firstMockContext = $this->createMock(TenantContext::class);
@@ -103,7 +107,7 @@ class AppServiceProviderTest extends TestCase
     /**
      * Ensures boot forces HTTPS.
      */
-    public function testBootForcesHttps(): void
+    public function test_boot_forces_https(): void
     {
         URL::shouldReceive('forceScheme')
             ->once()

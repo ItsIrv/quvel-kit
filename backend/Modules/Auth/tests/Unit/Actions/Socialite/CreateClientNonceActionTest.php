@@ -17,15 +17,17 @@ use Tests\TestCase;
 class CreateClientNonceActionTest extends TestCase
 {
     private Mockery\MockInterface|ClientNonceService $clientNonceService;
+
     private Mockery\MockInterface|NonceSessionService $nonceSessionService;
+
     private CreateClientNonceAction $action;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
         // Mock dependencies
-        $this->clientNonceService  = Mockery::mock(ClientNonceService::class);
+        $this->clientNonceService = Mockery::mock(ClientNonceService::class);
         $this->nonceSessionService = Mockery::mock(NonceSessionService::class);
 
         // Instantiate the action with mocked dependencies
@@ -38,7 +40,7 @@ class CreateClientNonceActionTest extends TestCase
     /**
      * Test that CreateClientNonceAction generates a nonce and stores it in session.
      */
-    public function testCreatesClientNonce(): void
+    public function test_creates_client_nonce(): void
     {
         // Arrange
         $nonce = 'test-nonce-123';

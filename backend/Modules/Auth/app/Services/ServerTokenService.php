@@ -17,25 +17,25 @@ class ServerTokenService
         private readonly CacheRepository $cache,
         private readonly ConfigRepository $config,
         private readonly HmacService $hmacService,
-    ) {
-    }
+    ) {}
 
     /**
      * Get cache key for a given token.
      */
     private function getCacheKey(string $token): string
     {
-        return self::CACHE_KEY_PREFIX . $token;
+        return self::CACHE_KEY_PREFIX.$token;
     }
 
     /**
      * Create a secure server token and map it to a client nonce.
+     *
      * @throws RandomException
      */
     public function create(string $nonce): string
     {
         $serverToken = $this->generateRandomToken();
-        $ttl         = $this->config->get('auth.oauth.token_ttl', 1);
+        $ttl = $this->config->get('auth.oauth.token_ttl', 1);
 
         $this->cache->put(
             $this->getCacheKey($serverToken),
@@ -48,6 +48,7 @@ class ServerTokenService
 
     /**
      * Generate a random token.
+     *
      * @throws RandomException
      */
     public function generateRandomToken(): string
@@ -65,6 +66,7 @@ class ServerTokenService
 
     /**
      * Retrieve client nonce from server token.
+     *
      * @throws InvalidArgumentException
      */
     public function getClientNonce(string $signedServerToken): ?string
@@ -82,13 +84,14 @@ class ServerTokenService
 
     /**
      * Remove client nonce from cache.
+     *
      * @throws OAuthException
      */
     public function forget(string $signedServerToken): bool
     {
         $serverToken = $this->hmacService->extractAndVerify($signedServerToken);
 
-        if (!$serverToken) {
+        if (! $serverToken) {
             throw new OAuthException(OAuthStatusEnum::INVALID_TOKEN);
         }
 

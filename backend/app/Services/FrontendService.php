@@ -20,25 +20,28 @@ class FrontendService
      */
     public function redirect(string $to): RedirectResponse
     {
-        return Redirect::away("{$this->frontendUrl}$to");
+        return Redirect::away("$this->frontendUrl$to");
     }
 
     /**
      * Redirect to a specific frontend page with optional parameters.
-     * @param array<string, string> $payload
+     *
+     * @param  array<string, string>  $payload
      */
     public function redirectPage(string $page, array $payload = []): RedirectResponse
     {
-        $uri = "/{$page}";
-        if (!empty($payload)) {
-            $uri .= '?' . http_build_query($payload);
+        $uri = "/$page";
+        if (! empty($payload)) {
+            $uri .= '?'.http_build_query($payload);
         }
+
         return $this->redirect($uri);
     }
 
     /**
      * Redirect to the login page with optional parameters.
-     * @param array<string, string> $payload
+     *
+     * @param  array<string, string>  $payload
      */
     public function redirectLogin(array $payload = []): RedirectResponse
     {
@@ -54,23 +57,24 @@ class FrontendService
     public function redirectLoginStatus(string $type, string $message): RedirectResponse
     {
         return $this->redirectLogin([
-            'type'    => $type,
+            'type' => $type,
             'message' => $message,
         ]);
     }
 
     /**
      * Get the full URL of a frontend page with optional parameters.
-     * @param array<string, string> $payload
+     *
+     * @param  array<string, string>  $payload
      */
     public function getPageUrl(string $page, array $payload = []): string
     {
-        $uri = "/{$page}";
+        $uri = "/$page";
 
-        if (!empty($payload)) {
-            $uri .= '?' . http_build_query($payload);
+        if (! empty($payload)) {
+            $uri .= '?'.http_build_query($payload);
         }
 
-        return "{$this->frontendUrl}$uri";
+        return "$this->frontendUrl$uri";
     }
 }

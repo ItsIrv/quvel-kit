@@ -15,13 +15,14 @@ use Tests\TestCase;
 class UserFindServiceTest extends TestCase
 {
     private UserFindService $userFindService;
+
     private User $user;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->userFindService = new UserFindService();
+        $this->userFindService = new UserFindService;
         $this->user = User::factory()->create([
             'name' => 'John Doe',
             'email' => 'johndoe@example.com',
@@ -32,7 +33,7 @@ class UserFindServiceTest extends TestCase
     /**
      * Test finding a user by ID.
      */
-    public function testFindByIdReturnsUser(): void
+    public function test_find_by_id_returns_user(): void
     {
         $foundUser = $this->userFindService->findById($this->user->id);
 
@@ -42,7 +43,7 @@ class UserFindServiceTest extends TestCase
     /**
      * Test that findById throws ModelNotFoundException for non-existing user.
      */
-    public function testFindByIdThrowsExceptionWhenUserNotFound(): void
+    public function test_find_by_id_throws_exception_when_user_not_found(): void
     {
         $this->expectException(ModelNotFoundException::class);
         $this->userFindService->findById(9999);
@@ -51,7 +52,7 @@ class UserFindServiceTest extends TestCase
     /**
      * Test finding a user by email.
      */
-    public function testFindByEmailReturnsUser(): void
+    public function test_find_by_email_returns_user(): void
     {
         $foundUser = $this->userFindService->findByEmail($this->user->email);
         $this->assertInstanceOf(User::class, $foundUser);
@@ -61,7 +62,7 @@ class UserFindServiceTest extends TestCase
     /**
      * Test findByEmail returns null when user is not found.
      */
-    public function testFindByEmailReturnsNullWhenUserNotFound(): void
+    public function test_find_by_email_returns_null_when_user_not_found(): void
     {
         $foundUser = $this->userFindService->findByEmail('nonexistent@example.com');
         $this->assertNull($foundUser);
@@ -70,7 +71,7 @@ class UserFindServiceTest extends TestCase
     /**
      * Test finding a user by any field.
      */
-    public function testFindByFieldReturnsUser(): void
+    public function test_find_by_field_returns_user(): void
     {
         $foundUser = $this->userFindService->findByField('email', $this->user->email);
         $this->assertInstanceOf(User::class, $foundUser);
@@ -80,7 +81,7 @@ class UserFindServiceTest extends TestCase
     /**
      * Test findByField returns null when user is not found.
      */
-    public function testFindByFieldReturnsNullWhenUserNotFound(): void
+    public function test_find_by_field_returns_null_when_user_not_found(): void
     {
         $foundUser = $this->userFindService->findByField('email', 'nonexistent@example.com');
         $this->assertNull($foundUser);

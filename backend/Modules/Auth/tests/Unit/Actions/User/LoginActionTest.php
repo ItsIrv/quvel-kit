@@ -8,10 +8,10 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Mockery;
 use Modules\Auth\Actions\User\LoginAction;
-use Modules\Auth\Enums\AuthStatusEnum;
-use Modules\Auth\Exceptions\SignInUserException;
 use Modules\Auth\app\Http\Requests\LoginRequest;
 use Modules\Auth\app\Services\UserAuthenticationService;
+use Modules\Auth\Enums\AuthStatusEnum;
+use Modules\Auth\Exceptions\SignInUserException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -22,18 +22,21 @@ use Tests\TestCase;
 class LoginActionTest extends TestCase
 {
     private Mockery\MockInterface|UserFindService $userFindService;
+
     private Mockery\MockInterface|UserAuthenticationService $userAuthenticationService;
+
     private Mockery\MockInterface|ResponseFactory $responseFactory;
+
     private LoginAction $action;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
         // Mock dependencies
-        $this->userFindService           = Mockery::mock(UserFindService::class);
+        $this->userFindService = Mockery::mock(UserFindService::class);
         $this->userAuthenticationService = Mockery::mock(UserAuthenticationService::class);
-        $this->responseFactory           = Mockery::mock(ResponseFactory::class);
+        $this->responseFactory = Mockery::mock(ResponseFactory::class);
 
         $this->action = new LoginAction(
             $this->userFindService,
@@ -45,11 +48,11 @@ class LoginActionTest extends TestCase
     /**
      * Test successful login.
      */
-    public function testSuccessfulLogin(): void
+    public function test_successful_login(): void
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'password'];
-        $user      = Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
 
         $user->shouldReceive('getAttribute')
             ->with('password')
@@ -80,14 +83,14 @@ class LoginActionTest extends TestCase
 
         $expectedResponse = new JsonResponse([
             'message' => AuthStatusEnum::LOGIN_SUCCESS->getTranslatedMessage(),
-            'user'    => ['id' => 1, 'email' => 'test@example.com'],
+            'user' => ['id' => 1, 'email' => 'test@example.com'],
         ], 201);
 
         $this->responseFactory->shouldReceive('json')
             ->once()
             ->with([
                 'message' => AuthStatusEnum::LOGIN_SUCCESS->getTranslatedMessage(),
-                'user'    => $user,
+                'user' => $user,
             ], 201)
             ->andReturn($expectedResponse);
 
@@ -101,7 +104,7 @@ class LoginActionTest extends TestCase
     /**
      * Test login fails when the user is not found.
      */
-    public function testLoginFailsWhenUserNotFound(): void
+    public function test_login_fails_when_user_not_found(): void
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'password'];
@@ -124,11 +127,11 @@ class LoginActionTest extends TestCase
     /**
      * Test login fails when user registered via social login.
      */
-    public function testLoginFailsWhenUserHasNoPassword(): void
+    public function test_login_fails_when_user_has_no_password(): void
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'password'];
-        $user      = Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->shouldReceive('password')->andReturn(null);
         $user->shouldReceive('provider_id')->andReturn('google');
         $user->shouldReceive('getAttribute')->andReturn('hashed-password');
@@ -151,11 +154,11 @@ class LoginActionTest extends TestCase
     /**
      * Test login fails when incorrect password is provided.
      */
-    public function testLoginFailsWhenPasswordIsIncorrect(): void
+    public function test_login_fails_when_password_is_incorrect(): void
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'wrong-password'];
-        $user      = Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
 
         $user->shouldReceive('getAttribute')
             ->with('provider_id')
@@ -188,11 +191,11 @@ class LoginActionTest extends TestCase
     /**
      * Test login fails when user email is not verified.
      */
-    public function testLoginFailsWhenEmailNotVerified(): void
+    public function test_login_fails_when_email_not_verified(): void
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'password'];
-        $user      = Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
 
         $user->shouldReceive('getAttribute')
             ->with('provider_id')

@@ -6,8 +6,6 @@ trait TranslatableEnum
 {
     /**
      * Get the translated message.
-     *
-     * @return string
      */
     public function getTranslatedMessage(): string
     {

@@ -10,6 +10,7 @@ use Modules\Tenant\Http\Middleware\TenantMiddleware;
 use Modules\Tenant\Services\TenantFindService;
 use Modules\Tenant\Services\TenantResolverService;
 use Modules\Tenant\Services\TenantSessionService;
+use RuntimeException;
 
 /**
  * Provider for the Tenant module.
@@ -55,11 +56,11 @@ class TenantServiceProvider extends ModuleServiceProvider
         $this->app->rebinding('request', function (Application $app): void {
             try {
                 $tenantContext = $app->make(TenantContext::class);
-                $tenant        = $tenantContext->get();
-                $tenantConfig  = $tenant->getEffectiveConfig();
+                $tenant = $tenantContext->get();
+                $tenantConfig = $tenant->getEffectiveConfig();
 
-                if (!$tenantConfig) {
-                    throw new \Exception("Tenant config not found");
+                if (! $tenantConfig) {
+                    throw new RuntimeException('Tenant config not found');
                 }
 
                 $appConfig = $app['config'];
@@ -81,7 +82,7 @@ class TenantServiceProvider extends ModuleServiceProvider
                 // OAuth Config (Google Login)
                 $appConfig->set(
                     'services.google.redirect',
-                    "{$tenantConfig->apiUrl}/auth/provider/google/callback",
+                    "$tenantConfig->apiUrl/auth/provider/google/callback",
                 );
 
                 // Ensure session domain is properly scoped to the backend
@@ -95,11 +96,11 @@ class TenantServiceProvider extends ModuleServiceProvider
                     if (count($parts) > 2) {
                         array_shift($parts);
                     }
-                    $sessionDomain = '.' . implode('.', $parts);
+                    $sessionDomain = '.'.implode('.', $parts);
                     $appConfig->set('session.domain', $sessionDomain);
                 }
             } catch (\Exception $e) {
-                \Log::critical("Tenant Config Could Not Be Applied: " . $e->getMessage());
+                \Log::critical('Tenant Config Could Not Be Applied: '.$e->getMessage());
             }
         });
     }

@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 use Modules\Auth\Actions\Socialite\CallbackAction;
 use Modules\Auth\Actions\Socialite\CreateClientNonceAction;
@@ -8,8 +7,8 @@ use Modules\Auth\Actions\Socialite\RedeemClientNonceAction;
 use Modules\Auth\Actions\Socialite\RedirectAction;
 use Modules\Auth\Actions\User\GetSessionAction;
 use Modules\Auth\Actions\User\LoginAction;
-use Modules\Auth\Actions\User\RegisterAction;
 use Modules\Auth\Actions\User\LogoutAction;
+use Modules\Auth\Actions\User\RegisterAction;
 
 /*
  *--------------------------------------------------------------------------

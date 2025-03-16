@@ -197,7 +197,7 @@ export class TaskService extends Service implements BootableService {
         if (typeof resolvedNotification === 'string') {
           showNotification(isError ? 'negative' : 'positive', resolvedNotification);
         } else {
-          let responseMessage = '';
+          let responseMessage: string;
 
           // Try to get messages from result or errors
           if (isError && currentErrors.value.has('message')) {
@@ -205,11 +205,7 @@ export class TaskService extends Service implements BootableService {
               currentErrors.value.get('message') || container.i18n.t('common.task.error');
           } else {
             // On success try to get message from result
-            if (typeof (currentResult.value as { message: string }).message === 'string') {
-              responseMessage = (currentResult.value as { message: string }).message;
-            } else {
-              responseMessage = container.i18n.t('common.task.success');
-            }
+            responseMessage = (currentResult.value as { message: string }).message;
           }
 
           showNotification(isError ? 'negative' : 'positive', container.i18n.t(responseMessage));

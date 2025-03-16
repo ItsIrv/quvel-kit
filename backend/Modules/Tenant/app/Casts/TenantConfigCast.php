@@ -13,6 +13,7 @@ class TenantConfigCast implements CastsAttributes
 {
     /**
      * Cast the stored value into a `TenantConfig` object.
+     *
      * @throws JsonException
      */
     public function get($model, string $key, mixed $value, array $attributes): ?TenantConfig
@@ -27,7 +28,8 @@ class TenantConfigCast implements CastsAttributes
     /**
      * Cast the `TenantConfig` object back into JSON for storage.
      *
-     * @param TenantConfig|array<string, mixed>|null $value
+     * @param  TenantConfig|array<string, mixed>|null  $value
+     *
      * @throws JsonException
      */
     public function set($model, string $key, mixed $value, array $attributes): ?string

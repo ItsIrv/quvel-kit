@@ -10,9 +10,9 @@ use Illuminate\Contracts\Auth\Guard;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Mockery;
 use Mockery\MockInterface;
+use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
-use Modules\Auth\app\Services\UserAuthenticationService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -23,11 +23,14 @@ use Tests\TestCase;
 class UserAuthenticationServiceTest extends TestCase
 {
     private AuthFactory|MockInterface $auth;
+
     private UserFindService|MockInterface $userFindService;
+
     private UserCreateService|MockInterface $userCreateService;
+
     private UserAuthenticationService $service;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -42,7 +45,7 @@ class UserAuthenticationServiceTest extends TestCase
         );
     }
 
-    public function testAttemptSuccessful(): void
+    public function test_attempt_successful(): void
     {
         $guard = Mockery::mock(Guard::class);
         $email = 'test@example.com';
@@ -61,7 +64,7 @@ class UserAuthenticationServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testAttemptFailure(): void
+    public function test_attempt_failure(): void
     {
         $guard = Mockery::mock(Guard::class);
         $email = 'test@example.com';
@@ -80,7 +83,7 @@ class UserAuthenticationServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testLogout(): void
+    public function test_logout(): void
     {
         $guard = Mockery::mock(Guard::class);
 
@@ -95,7 +98,7 @@ class UserAuthenticationServiceTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function testLogInWithId(): void
+    public function test_log_in_with_id(): void
     {
         $guard = Mockery::mock(Guard::class);
         $userId = 1;
@@ -117,7 +120,7 @@ class UserAuthenticationServiceTest extends TestCase
     /**
      * @throws OAuthException
      */
-    public function testHandleOAuthLoginExistingUser(): void
+    public function test_handle_o_auth_login_existing_user(): void
     {
         $provider = 'google';
         $providerUser = Mockery::mock(SocialiteUser::class);
@@ -151,7 +154,7 @@ class UserAuthenticationServiceTest extends TestCase
     /**
      * @throws OAuthException
      */
-    public function testHandleOAuthLoginNewUser(): void
+    public function test_handle_o_auth_login_new_user(): void
     {
         $provider = 'google';
         $providerUser = Mockery::mock(SocialiteUser::class);
@@ -190,7 +193,7 @@ class UserAuthenticationServiceTest extends TestCase
         $this->assertEquals(OAuthStatusEnum::USER_CREATED, $status);
     }
 
-    public function testHandleOAuthLoginEmailNotVerified(): void
+    public function test_handle_o_auth_login_email_not_verified(): void
     {
         $provider = 'google';
         $providerUser = Mockery::mock(SocialiteUser::class);
@@ -221,7 +224,7 @@ class UserAuthenticationServiceTest extends TestCase
         $this->service->handleOAuthLogin($provider, $providerUser);
     }
 
-    public function testHandleOAuthLoginThrowsEmailTakenException(): void
+    public function test_handle_o_auth_login_throws_email_taken_exception(): void
     {
         $provider = 'google';
         $providerUser = Mockery::mock(SocialiteUser::class);

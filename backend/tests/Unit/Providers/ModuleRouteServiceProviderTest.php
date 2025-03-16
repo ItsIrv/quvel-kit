@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Providers;
 
+use App\Providers\ModuleRouteServiceProvider;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Mockery;
-use App\Providers\ModuleRouteServiceProvider;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -19,10 +19,11 @@ class ModuleRouteServiceProviderTest extends TestCase
      */
     private function createStubProvider(string $moduleName): ModuleRouteServiceProvider
     {
-        return new class ($moduleName) extends ModuleRouteServiceProvider
+        return new class($moduleName) extends ModuleRouteServiceProvider
         {
             public function __construct(protected string $name)
             {
+                parent::__construct($this->name);
             }
 
             public function mapWebRoutes(): void
@@ -66,9 +67,9 @@ class ModuleRouteServiceProviderTest extends TestCase
     /**
      * Tests mapping web routes.
      */
-    public function testMapWebRoutes(): void
+    public function test_map_web_routes(): void
     {
-        $moduleName   = 'Tenant';
+        $moduleName = 'Tenant';
         $expectedPath = module_path($moduleName, '/routes/web.php');
 
         $mock = $this->createGroupMock($expectedPath);
@@ -85,9 +86,9 @@ class ModuleRouteServiceProviderTest extends TestCase
     /**
      * Tests mapping API routes.
      */
-    public function testMapApiRoutes(): void
+    public function test_map_api_routes(): void
     {
-        $moduleName   = 'Tenant';
+        $moduleName = 'Tenant';
         $expectedPath = module_path($moduleName, '/routes/api.php');
 
         $mock = $this->createGroupMock($expectedPath);
@@ -114,14 +115,14 @@ class ModuleRouteServiceProviderTest extends TestCase
     /**
      * Tests mapping channel routes.
      */
-    public function testMapChannelRoutes(): void
+    public function test_map_channel_routes(): void
     {
-        $moduleName   = 'Tenant';
+        $moduleName = 'Tenant';
         $expectedPath = module_path($moduleName, '/routes/channels.php');
 
         // Ensure the directory exists
         $directory = dirname($expectedPath);
-        if (!File::exists($directory)) {
+        if (! File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
 
@@ -130,7 +131,7 @@ class ModuleRouteServiceProviderTest extends TestCase
 
         // Capture the return value of require
         $provider = $this->createStubProvider($moduleName);
-        $result   = require $expectedPath; // Instead of capturing output
+        $result = require $expectedPath; // Instead of capturing output
 
         // Assert that the channels.php file was correctly loaded
         $this->assertEquals('channels loaded', $result);

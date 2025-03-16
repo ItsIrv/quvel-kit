@@ -3,7 +3,7 @@ import { useMeta } from 'quasar';
 /**
  * Configure meta tags for a page, allowing full customization.
  * @param {string} pageTitle - The page title (first param for simplicity)
- * @param {Partial<MetaOptions>} overrides - Optional overrides to modify meta data
+ * @param {Partial<unknown>} overrides - Optional overrides to modify metadata
  */
 export function useMetaConfig(pageTitle?: string, overrides?: Partial<unknown>): void {
   useMeta({
@@ -37,7 +37,7 @@ export function useMetaConfig(pageTitle?: string, overrides?: Partial<unknown>):
       structuredData: {
         type: 'application/ld+json',
         innerHTML: JSON.stringify({
-          '@context': 'http://schema.org',
+          '@context': 'https://schema.org',
           '@type': 'WebSite',
           name: 'QuVel Kit',
           url: 'https://quvelkit.com',

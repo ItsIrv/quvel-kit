@@ -43,7 +43,7 @@ class HmacService
      */
     public function extractAndVerify(string $signedValue): ?string
     {
-        if (!str_contains($signedValue, '.')) {
+        if (! str_contains($signedValue, '.')) {
             return null;
         }
 

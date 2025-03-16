@@ -1,13 +1,13 @@
 <?php
 
-namespace Modules\User\Tests\Unit\Services\User;
+namespace Tests\Unit\Services\User;
 
-use App\Models\User;
 use App\Services\User\UserCreateService;
 use Illuminate\Contracts\Hashing\Hasher;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\TestCase;
 
@@ -17,26 +17,30 @@ use Tests\TestCase;
 class UserCreateServiceTest extends TestCase
 {
     private UserCreateService $userCreateService;
+
     private Hasher|MockObject $hasherMock;
 
+    /**
+     * @throws Exception
+     */
     #[Before]
     public function setupTest(): void
     {
-        $this->hasherMock        = $this->createMock(Hasher::class);
-        $this->userCreateService = new UserCreateService();
+        $this->hasherMock = $this->createMock(Hasher::class);
+        $this->userCreateService = new UserCreateService;
     }
 
     /**
      * Test that create successfully creates a user with hashed password.
      */
-    public function testCreateUserSuccessfully(): void
+    public function test_create_user_successfully(): void
     {
-        $name  = $this->faker->name;
+        $name = $this->faker->name;
         $email = $this->faker->email;
 
         $userData = [
-            'name'     => $name,
-            'email'    => $email,
+            'name' => $name,
+            'email' => $email,
             'password' => 'password123',
         ];
 
@@ -51,14 +55,13 @@ class UserCreateServiceTest extends TestCase
         // Create the user
         $user = $this->userCreateService->create($userData);
 
-        $this->assertInstanceOf(User::class, $user);
         $this->assertEquals($name, $user->name);
         $this->assertEquals($email, $user->email);
 
         // Assert it exists in the database
         $this->assertDatabaseHas('users', [
-            'id'    => $user->id,
-            'name'  => $name,
+            'id' => $user->id,
+            'name' => $name,
             'email' => $email,
         ]);
     }

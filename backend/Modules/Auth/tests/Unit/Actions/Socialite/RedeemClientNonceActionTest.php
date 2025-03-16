@@ -8,10 +8,10 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Mockery;
 use Modules\Auth\Actions\Socialite\RedeemClientNonceAction;
+use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Http\Requests\RedeemNonceRequest;
 use Modules\Auth\Services\ClientNonceService;
-use Modules\Auth\app\Services\UserAuthenticationService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -22,18 +22,21 @@ use Tests\TestCase;
 class RedeemClientNonceActionTest extends TestCase
 {
     private Mockery\MockInterface|ClientNonceService $clientNonceService;
+
     private Mockery\MockInterface|UserAuthenticationService $userAuthenticationService;
+
     private Mockery\MockInterface|ResponseFactory $responseFactory;
+
     private RedeemClientNonceAction $action;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
         // Mock dependencies
-        $this->clientNonceService        = Mockery::mock(ClientNonceService::class);
+        $this->clientNonceService = Mockery::mock(ClientNonceService::class);
         $this->userAuthenticationService = Mockery::mock(UserAuthenticationService::class);
-        $this->responseFactory           = Mockery::mock(ResponseFactory::class);
+        $this->responseFactory = Mockery::mock(ResponseFactory::class);
 
         // Instantiate the action with mocked dependencies
         $this->action = new RedeemClientNonceAction(
@@ -46,13 +49,13 @@ class RedeemClientNonceActionTest extends TestCase
     /**
      * Test successful nonce redemption and user login.
      */
-    public function testRedeemClientNonceSuccessfully(): void
+    public function test_redeem_client_nonce_successfully(): void
     {
         // Arrange
         $signedNonce = 'signed-nonce-123';
-        $nonce       = 'nonce-456';
-        $userId      = 1;
-        $userArray   = ['id' => $userId, 'name' => 'Test User'];
+        $nonce = 'nonce-456';
+        $userId = 1;
+        $userArray = ['id' => $userId, 'name' => 'Test User'];
 
         $user = Mockery::mock(User::class);
         $user->shouldReceive('jsonSerialize')->once()->andReturn($userArray);
@@ -61,7 +64,7 @@ class RedeemClientNonceActionTest extends TestCase
         $serializedUser = $user->jsonSerialize();
 
         $expectedResponse = new JsonResponse([
-            'user'    => $serializedUser,
+            'user' => $serializedUser,
             'message' => OAuthStatusEnum::LOGIN_OK->getTranslatedMessage(),
         ]);
 
@@ -89,7 +92,7 @@ class RedeemClientNonceActionTest extends TestCase
 
         $this->responseFactory->shouldReceive('json')
             ->with([
-                'user'    => $user,
+                'user' => $user,
                 'message' => OAuthStatusEnum::LOGIN_OK->getTranslatedMessage(),
             ])
             ->once()
@@ -105,11 +108,11 @@ class RedeemClientNonceActionTest extends TestCase
     /**
      * Test that an OAuthException is thrown when the nonce is invalid.
      */
-    public function testRedeemClientNonceWithInvalidNonce(): void
+    public function test_redeem_client_nonce_with_invalid_nonce(): void
     {
         // Arrange
         $signedNonce = 'invalid-nonce-123';
-        $nonce       = 'nonce-456';
+        $nonce = 'nonce-456';
 
         $request = Mockery::mock(RedeemNonceRequest::class);
         $request->shouldReceive('validated')->with('nonce')->once()->andReturn($signedNonce);
@@ -144,7 +147,7 @@ class RedeemClientNonceActionTest extends TestCase
     /**
      * Test that a general Exception is handled correctly.
      */
-    public function testRedeemClientNonceHandlesGeneralException(): void
+    public function test_redeem_client_nonce_handles_general_exception(): void
     {
         // Arrange
         $signedNonce = 'signed-nonce-123';

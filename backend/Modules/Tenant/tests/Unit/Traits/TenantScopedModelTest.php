@@ -5,8 +5,8 @@ namespace Modules\Tenant\Tests\Unit\Traits;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Modules\Tenant\Exceptions\TenantMismatchException;
-use Modules\Tenant\Traits\TenantScopedModel;
 use Modules\Tenant\Tests\Models\TestTenantModel;
+use Modules\Tenant\Traits\TenantScopedModel;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -16,7 +16,7 @@ use Tests\TestCase;
 #[Group('tenant-traits')]
 class TenantScopedModelTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -29,7 +29,7 @@ class TenantScopedModelTest extends TestCase
         });
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         // Drop test schema after test execution
         Schema::dropIfExists('test_tenant_models');
@@ -40,7 +40,7 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that a model with the TenantScopedModel trait automatically sets the tenant_id on creation.
      */
-    public function testTenantIdSetOnCreation(): void
+    public function test_tenant_id_set_on_creation(): void
     {
         $model = TestTenantModel::create();
 
@@ -50,11 +50,11 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that saving a model with a different tenant_id throws a TenantMismatchException.
      */
-    public function testSaveThrowsExceptionForDifferentTenantId(): void
+    public function test_save_throws_exception_for_different_tenant_id(): void
     {
         $this->expectException(TenantMismatchException::class);
 
-        $model            = new TestTenantModel();
+        $model = new TestTenantModel;
         $model->tenant_id = $this->tenant->id + 1; // Different tenant ID
         $model->save();
     }
@@ -62,9 +62,9 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that updating a model with the correct tenant_id works.
      */
-    public function testUpdateWithCorrectTenantId(): void
+    public function test_update_with_correct_tenant_id(): void
     {
-        $model        = TestTenantModel::create();
+        $model = TestTenantModel::create();
         $updateResult = $model->update(['name' => 'Updated Name']);
 
         $this->assertTrue($updateResult);
@@ -74,11 +74,11 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that updating a model with a different tenant_id throws TenantMismatchException.
      */
-    public function testUpdateThrowsExceptionForDifferentTenantId(): void
+    public function test_update_throws_exception_for_different_tenant_id(): void
     {
         $this->expectException(TenantMismatchException::class);
 
-        $model            = TestTenantModel::create();
+        $model = TestTenantModel::create();
         $model->tenant_id = $this->tenant->id + 1;
         $model->update(['name' => 'Should Fail']);
     }
@@ -86,9 +86,9 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that deleting a model with the correct tenant_id works.
      */
-    public function testDeleteWithCorrectTenantId(): void
+    public function test_delete_with_correct_tenant_id(): void
     {
-        $model        = TestTenantModel::create();
+        $model = TestTenantModel::create();
         $deleteResult = $model->delete();
 
         $this->assertTrue($deleteResult);
@@ -98,11 +98,11 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that deleting a model with a different tenant_id throws TenantMismatchException.
      */
-    public function testDeleteThrowsExceptionForDifferentTenantId(): void
+    public function test_delete_throws_exception_for_different_tenant_id(): void
     {
         $this->expectException(TenantMismatchException::class);
 
-        $model            = TestTenantModel::create();
+        $model = TestTenantModel::create();
         $model->tenant_id = $this->tenant->id + 1;
         $model->delete();
     }

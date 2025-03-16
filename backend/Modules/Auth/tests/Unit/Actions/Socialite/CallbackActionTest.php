@@ -3,13 +3,16 @@
 namespace Modules\Auth\Tests\Unit\Actions\Socialite;
 
 use App\Models\User;
+use App\Services\FrontendService;
 use Exception;
+use Illuminate\Events\Dispatcher as EventDispatcher;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
-use Illuminate\Events\Dispatcher as EventDispatcher;
+use Illuminate\View\Factory as ViewFactory;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Mockery;
 use Modules\Auth\Actions\Socialite\CallbackAction;
+use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Events\OAuthLoginSuccess;
 use Modules\Auth\Exceptions\OAuthException;
@@ -17,9 +20,6 @@ use Modules\Auth\Http\Requests\CallbackRequest;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
-use Modules\Auth\app\Services\UserAuthenticationService;
-use App\Services\FrontendService;
-use Illuminate\View\Factory as ViewFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -30,26 +30,33 @@ use Tests\TestCase;
 class CallbackActionTest extends TestCase
 {
     private Mockery\MockInterface|SocialiteService $socialiteService;
+
     private Mockery\MockInterface|ServerTokenService $serverTokenService;
+
     private Mockery\MockInterface|ClientNonceService $clientNonceService;
+
     private Mockery\MockInterface|UserAuthenticationService $userAuthenticationService;
+
     private Mockery\MockInterface|FrontendService $frontendService;
+
     private Mockery\MockInterface|EventDispatcher $eventDispatcher;
+
     private Mockery\MockInterface|ViewFactory $viewFactory;
+
     private CallbackAction $action;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
         // Mock Dependencies
-        $this->socialiteService          = Mockery::mock(SocialiteService::class);
-        $this->serverTokenService        = Mockery::mock(ServerTokenService::class);
-        $this->clientNonceService        = Mockery::mock(ClientNonceService::class);
+        $this->socialiteService = Mockery::mock(SocialiteService::class);
+        $this->serverTokenService = Mockery::mock(ServerTokenService::class);
+        $this->clientNonceService = Mockery::mock(ClientNonceService::class);
         $this->userAuthenticationService = Mockery::mock(UserAuthenticationService::class);
-        $this->frontendService           = Mockery::mock(FrontendService::class);
-        $this->eventDispatcher           = Mockery::mock(EventDispatcher::class);
-        $this->viewFactory               = Mockery::mock(ViewFactory::class);
+        $this->frontendService = Mockery::mock(FrontendService::class);
+        $this->eventDispatcher = Mockery::mock(EventDispatcher::class);
+        $this->viewFactory = Mockery::mock(ViewFactory::class);
 
         // Instantiate the action with mocks
         $this->action = new CallbackAction(
@@ -66,13 +73,13 @@ class CallbackActionTest extends TestCase
     /**
      * Test successful OAuth callback with stateless login.
      */
-    public function testSuccessfulOAuthCallbackStateless(): void
+    public function test_successful_o_auth_callback_stateless(): void
     {
         // Arrange
-        $provider      = 'google';
-        $signedToken   = 'signed-token-123';
-        $clientNonce   = 'nonce-456';
-        $user          = User::first();
+        $provider = 'google';
+        $signedToken = 'signed-token-123';
+        $clientNonce = 'nonce-456';
+        $user = User::first();
         $socialiteUser = Mockery::mock(SocialiteUser::class);
 
         $request = Mockery::mock(CallbackRequest::class);
@@ -129,11 +136,11 @@ class CallbackActionTest extends TestCase
     /**
      * Test successful OAuth callback with stateful login.
      */
-    public function testSuccessfulOAuthCallbackStateful(): void
+    public function test_successful_o_auth_callback_stateful(): void
     {
         // Arrange
-        $provider      = 'google';
-        $user          = User::first();
+        $provider = 'google';
+        $user = User::first();
         $socialiteUser = Mockery::mock(SocialiteUser::class);
 
         $request = Mockery::mock(CallbackRequest::class);
@@ -176,7 +183,7 @@ class CallbackActionTest extends TestCase
     /**
      * Test OAuth callback when OAuthException occurs.
      */
-    public function testOAuthCallbackHandlesOAuthException(): void
+    public function test_o_auth_callback_handles_o_auth_exception(): void
     {
         // Arrange
         $provider = 'google';
@@ -213,7 +220,7 @@ class CallbackActionTest extends TestCase
     /**
      * Test OAuth callback when a general Exception occurs.
      */
-    public function testOAuthCallbackHandlesGeneralException(): void
+    public function test_o_auth_callback_handles_general_exception(): void
     {
         // Arrange
         $provider = 'google';
@@ -250,14 +257,14 @@ class CallbackActionTest extends TestCase
     /**
      * Test that `handleFailedLogin` is executed when OAuth login fails.
      */
-    public function testOAuthCallbackHandlesFailedLogin(): void
+    public function test_o_auth_callback_handles_failed_login(): void
     {
         // Arrange
-        $provider      = 'google';
-        $signedToken   = 'signed-token-123';
-        $clientNonce   = 'nonce-456';
+        $provider = 'google';
+        $signedToken = 'signed-token-123';
+        $clientNonce = 'nonce-456';
         $socialiteUser = Mockery::mock(SocialiteUser::class);
-        $failedStatus  = OAuthStatusEnum::EMAIL_NOT_VERIFIED; // Simulating a failed login
+        $failedStatus = OAuthStatusEnum::EMAIL_NOT_VERIFIED; // Simulating a failed login
 
         $request = Mockery::mock(CallbackRequest::class);
         $request->shouldReceive('validated')

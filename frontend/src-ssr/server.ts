@@ -127,19 +127,19 @@ const pngRE = /\.png$/;
  * (if any) for preloading indicated file
  */
 export const renderPreloadTag = defineSsrRenderPreloadTag((file /* , { ssrContext } */): string => {
-  if (jsRE.test(file) === true) {
+  if (jsRE.test(file)) {
     return `<link rel="modulepreload" href="${file}" crossorigin>`;
   }
 
-  if (cssRE.test(file) === true) {
+  if (cssRE.test(file)) {
     return `<link rel="stylesheet" href="${file}" crossorigin>`;
   }
 
-  if (woffRE.test(file) === true) {
+  if (woffRE.test(file)) {
     return `<link rel="preload" href="${file}" as="font" type="font/woff" crossorigin>`;
   }
 
-  if (woff2RE.test(file) === true) {
+  if (woff2RE.test(file)) {
     return `<link rel="preload" href="${file}" as="font" type="font/woff2" crossorigin>`;
   }
 

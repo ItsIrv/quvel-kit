@@ -22,11 +22,14 @@ use Tests\TestCase;
 class ClientNonceServiceTest extends TestCase
 {
     private CacheRepository|MockInterface $cache;
+
     private ConfigRepository|MockInterface $config;
+
     private HmacService|MockInterface $hmacService;
+
     private ClientNonceService $service;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -44,7 +47,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws OAuthException|InvalidArgumentException|RandomException
      */
-    public function testCreateNonceSuccessfully(): void
+    public function test_create_nonce_successfully(): void
     {
         $nonce = 'fixed_nonce_value';
         $signedNonce = 'signed_nonce';
@@ -61,13 +64,13 @@ class ClientNonceServiceTest extends TestCase
             ->andReturn($nonce);
 
         $this->cache->shouldReceive('has')
-            ->with('client_nonce_' . $nonce)
+            ->with('client_nonce_'.$nonce)
             ->once()
             ->andReturn(false);
 
         $this->cache->shouldReceive('put')
             ->once()
-            ->with('client_nonce_' . $nonce, ClientNonceService::TOKEN_CREATED, 1);
+            ->with('client_nonce_'.$nonce, ClientNonceService::TOKEN_CREATED, 1);
 
         $this->config->shouldReceive('get')
             ->with('auth.oauth.nonce_ttl', 1)
@@ -86,7 +89,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws OAuthException|InvalidArgumentException|RandomException
      */
-    public function testCreateNonceThrowsExceptionAfterMaxRetries(): void
+    public function test_create_nonce_throws_exception_after_max_retries(): void
     {
         $this->cache->shouldReceive('has')
             ->times(1)
@@ -101,7 +104,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * Test retrieving a signed nonce.
      */
-    public function testGetSignedNonce(): void
+    public function test_get_signed_nonce(): void
     {
         $nonce = 'test_nonce';
         $signedNonce = 'signed_nonce';
@@ -119,7 +122,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws OAuthException|InvalidArgumentException
      */
-    public function testGetNonceSuccessfully(): void
+    public function test_get_nonce_successfully(): void
     {
         $signedNonce = 'signed_nonce';
         $nonce = 'test_nonce';
@@ -131,7 +134,7 @@ class ClientNonceServiceTest extends TestCase
             ->andReturn($nonce);
 
         $this->cache->shouldReceive('get')
-            ->with('client_nonce_' . $nonce)
+            ->with('client_nonce_'.$nonce)
             ->once()
             ->andReturn($expectedState);
 
@@ -143,7 +146,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws InvalidArgumentException
      */
-    public function testGetNonceThrowsException(): void
+    public function test_get_nonce_throws_exception(): void
     {
         $this->expectException(OAuthException::class);
         $this->expectExceptionMessage(OAuthStatusEnum::INVALID_NONCE->value);
@@ -159,7 +162,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws InvalidArgumentException
      */
-    public function testGetNonceThrowsExceptionOnInvalidState(): void
+    public function test_get_nonce_throws_exception_on_invalid_state(): void
     {
         $this->expectException(OAuthException::class);
         $this->expectExceptionMessage(OAuthStatusEnum::INVALID_NONCE->value);
@@ -177,7 +180,7 @@ class ClientNonceServiceTest extends TestCase
         $this->service->getNonce('invalid_nonce', -999);
     }
 
-    public function testAssignUserToNonce(): void
+    public function test_assign_user_to_nonce(): void
     {
         $nonce = 'test_nonce';
         $userId = 123;
@@ -187,18 +190,18 @@ class ClientNonceServiceTest extends TestCase
             ->andReturn(1);
 
         $this->cache->shouldReceive('put')
-            ->with('client_nonce_' . $nonce, $userId, 1)
+            ->with('client_nonce_'.$nonce, $userId, 1)
             ->once();
 
         $this->service->assignUserToNonce($nonce, $userId);
     }
 
-    public function testForgetNonce(): void
+    public function test_forget_nonce(): void
     {
         $nonce = 'test_nonce';
 
         $this->cache->shouldReceive('forget')
-            ->with('client_nonce_' . $nonce)
+            ->with('client_nonce_'.$nonce)
             ->once()
             ->andReturn(true);
 
@@ -207,7 +210,7 @@ class ClientNonceServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testAssignRedirectedToNonce(): void
+    public function test_assign_redirected_to_nonce(): void
     {
         $nonce = 'test_nonce';
 
@@ -217,7 +220,7 @@ class ClientNonceServiceTest extends TestCase
 
         $this->cache->shouldReceive('put')
             ->once()
-            ->with('client_nonce_' . $nonce, ClientNonceService::TOKEN_REDIRECTED, 1);
+            ->with('client_nonce_'.$nonce, ClientNonceService::TOKEN_REDIRECTED, 1);
 
         $this->service->assignRedirectedToNonce($nonce);
     }
@@ -225,13 +228,13 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws OAuthException|InvalidArgumentException
      */
-    public function testGetUserIdFromNonceSuccessfully(): void
+    public function test_get_user_id_from_nonce_successfully(): void
     {
         $nonce = 'test_nonce';
         $userId = 123;
 
         $this->cache->shouldReceive('get')
-            ->with('client_nonce_' . $nonce)
+            ->with('client_nonce_'.$nonce)
             ->once()
             ->andReturn($userId);
 
@@ -243,12 +246,12 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws InvalidArgumentException
      */
-    public function testGetUserIdFromNonceThrowsExceptionOnInvalidUserId(): void
+    public function test_get_user_id_from_nonce_throws_exception_on_invalid_user_id(): void
     {
         $nonce = 'test_nonce';
 
         $this->cache->shouldReceive('get')
-            ->with('client_nonce_' . $nonce)
+            ->with('client_nonce_'.$nonce)
             ->once()
             ->andReturn(ClientNonceService::TOKEN_CREATED);
 

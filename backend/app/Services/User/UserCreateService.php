@@ -12,8 +12,7 @@ class UserCreateService
     /**
      * Create a new user instance.
      *
-     * @param array<string, mixed> $data
-     * @return User
+     * @param  array<string, mixed>  $data
      */
     public function create(array $data): User
     {

@@ -17,6 +17,7 @@ export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance
 /**
  * Creates an Axios instance with the given configuration.
  *
+ * @param ssrContext
  * @param configOverrides - Optional overrides for API configuration.
  * @returns An Axios instance.
  */

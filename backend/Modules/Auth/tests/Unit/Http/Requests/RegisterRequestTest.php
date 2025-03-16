@@ -19,22 +19,22 @@ class RegisterRequestTest extends TestCase
 {
     private RegisterRequest $request;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
-        $this->request = new RegisterRequest();
+        $this->request = new RegisterRequest;
     }
 
     /**
      * Test that the request passes validation with valid data.
      */
-    public function testRegisterRequestPassesWithValidData(): void
+    public function test_register_request_passes_with_valid_data(): void
     {
         // Arrange
         $validData = [
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => 'StrongPass123!',
-            'name'     => 'Test User',
+            'name' => 'Test User',
         ];
 
         // Act
@@ -48,7 +48,7 @@ class RegisterRequestTest extends TestCase
      * Test that the request fails validation with missing or invalid fields.
      */
     #[DataProvider('invalidDataProvider')]
-    public function testRegisterRequestFailsWithInvalidData(array $invalidData, array $expectedErrors): void
+    public function test_register_request_fails_with_invalid_data(array $invalidData, array $expectedErrors): void
     {
         // Act
         $validator = Validator::make($invalidData, $this->request->rules());
@@ -66,23 +66,18 @@ class RegisterRequestTest extends TestCase
     public static function invalidDataProvider(): array
     {
         return [
-            'missing email'    =>
-                [['password' => 'StrongPass123!', 'name' => 'Test User'], ['email']],
-            'missing password' =>
-                [['email' => 'test@example.com', 'name' => 'Test User'], ['password']],
-            'missing name'     =>
-                [['email' => 'test@example.com', 'password' => 'StrongPass123!'], ['name']],
-            'invalid email'    =>
-                [['email' => 'invalid-email', 'password' => 'StrongPass123!', 'name' => 'Test User'], ['email']],
-            'short password'   =>
-                [['email' => 'test@example.com', 'password' => 'short', 'name' => 'Test User'], ['password']],
+            'missing email' => [['password' => 'StrongPass123!', 'name' => 'Test User'], ['email']],
+            'missing password' => [['email' => 'test@example.com', 'name' => 'Test User'], ['password']],
+            'missing name' => [['email' => 'test@example.com', 'password' => 'StrongPass123!'], ['name']],
+            'invalid email' => [['email' => 'invalid-email', 'password' => 'StrongPass123!', 'name' => 'Test User'], ['email']],
+            'short password' => [['email' => 'test@example.com', 'password' => 'short', 'name' => 'Test User'], ['password']],
         ];
     }
 
     /**
      * Test that rules use correct rule objects.
      */
-    public function testRegisterRequestUsesCorrectRules(): void
+    public function test_register_request_uses_correct_rules(): void
     {
         // Arrange & Act
         $rules = $this->request->rules();
