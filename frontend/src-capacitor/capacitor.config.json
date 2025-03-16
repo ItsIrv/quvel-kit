@@ -1,5 +1,9 @@
 {
   "appId": "quvel.irv.codes",
   "appName": "QuVel Kit",
-  "webDir": "www"
+  "webDir": "www",
+  "server": {
+    "url": "https://quvel.127.0.0.1.nip.io:3002",
+    "cleartext": false
+  }
 }

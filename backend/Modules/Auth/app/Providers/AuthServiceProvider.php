@@ -5,6 +5,8 @@ namespace Modules\Auth\Providers;
 use App\Providers\ModuleServiceProvider;
 use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Services\ClientNonceService;
+use Modules\Auth\Services\HmacService;
+use Modules\Auth\Services\NonceSessionService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
 
@@ -25,9 +27,11 @@ class AuthServiceProvider extends ModuleServiceProvider
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
 
+        $this->app->singleton(HmacService::class);
         $this->app->singleton(ClientNonceService::class);
         $this->app->singleton(ServerTokenService::class);
         $this->app->singleton(UserAuthenticationService::class);
+        $this->app->singleton(NonceSessionService::class);
 
         $this->app->scoped(SocialiteService::class);
     }

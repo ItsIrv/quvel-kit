@@ -9,6 +9,8 @@ import { ApiService } from 'src/services/ApiService';
 import { I18nService } from 'src/services/I18nService';
 import { createI18n } from 'src/utils/i18nUtil';
 import { ConfigService } from 'src/services/ConfigService';
+import { WebSocketService } from 'src/services/WebSocketService';
+import { createWebsocketConfig } from 'src/utils/websocketUtil';
 
 /**
  * Creates the service container per request.
@@ -17,13 +19,15 @@ import { ConfigService } from 'src/services/ConfigService';
  */
 export function createContainer(ssrContext?: QSsrContext | null): ServiceContainer {
   const configService = new ConfigService(ssrContext?.req?.tenantConfig);
+  const configOverrides = configService.getAll();
 
   return new ServiceContainer(
-    new ApiService(createApi(ssrContext, configService.getAll())),
+    configService,
+    new ApiService(createApi(ssrContext, configOverrides)),
     new I18nService(createI18n(ssrContext)),
     new ValidationService(),
     new TaskService(),
-    configService,
+    new WebSocketService(createWebsocketConfig(configOverrides)),
     new Map(),
   );
 }

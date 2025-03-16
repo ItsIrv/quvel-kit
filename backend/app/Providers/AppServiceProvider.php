@@ -16,7 +16,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // FrontendService must be scoped per request, not a singleton.
         $this->app->scoped(FrontendService::class, function ($app): FrontendService {
             /** @var TenantContext $tenantContext */
             $tenantContext = $app->make(TenantContext::class);

@@ -35,7 +35,7 @@ class TenantResolverServiceTest extends TestCase
             TenantSessionService::class,
         );
 
-        $this->requestMock = Mockery::mock(Request::capture());
+        $this->requestMock = Mockery::mock(Request::class);
 
         $this->tenantResolverService = new TenantResolverService(
             $this->tenantFindService,
@@ -71,10 +71,14 @@ class TenantResolverServiceTest extends TestCase
             ->method('getTenant')
             ->willReturn(null);
 
+        $this->requestMock->shouldReceive('getHost')
+            ->with()
+            ->andReturn('host.com');
+
         $this->tenantFindService->expects(
             $this->once(),
         )->method('findTenantByDomain')
-            ->with($this->requestMock->getHost())
+            ->with('host.com')
             ->willReturn($this->tenant);
 
         $this->assertSame(

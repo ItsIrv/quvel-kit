@@ -12,16 +12,6 @@ use Modules\Auth\app\Rules\PasswordRule;
 class LoginRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized.
-     *
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
-
-    /**
      * Get the validation rules.
      *
      * @return array<string, mixed>

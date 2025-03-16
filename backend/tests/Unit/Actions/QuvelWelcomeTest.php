@@ -3,6 +3,7 @@
 namespace Tests\Unit\Actions;
 
 use App\Actions\QuvelWelcome;
+use App\Services\FrontendService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use PHPUnit\Framework\Attributes\Before;
@@ -12,6 +13,7 @@ use Tests\TestCase;
 
 #[CoversClass(QuvelWelcome::class)]
 #[Group('welcome')]
+#[Group('app-actions')]
 class QuvelWelcomeTest extends TestCase
 {
     private QuvelWelcome $action;
@@ -29,7 +31,9 @@ class QuvelWelcomeTest extends TestCase
     {
         $this->app->detectEnvironment(fn () => 'local');
 
-        $response = ($this->action)();
+        $response = ($this->action)(
+            new FrontendService("https://quvel.app"),
+        );
 
         $this->assertInstanceOf(
             View::class,
@@ -47,9 +51,12 @@ class QuvelWelcomeTest extends TestCase
      */
     public function testRedirectsToFrontendUrlInProduction(): void
     {
+        $url = "https://quvel.app";
         $this->app->detectEnvironment(fn () => 'production');
 
-        $response = ($this->action)();
+        $response = ($this->action)(
+            new FrontendService($url),
+        );
 
         $this->assertInstanceOf(
             RedirectResponse::class,
@@ -57,7 +64,7 @@ class QuvelWelcomeTest extends TestCase
         );
 
         $this->assertEquals(
-            config('quvel.frontend_url'),
+            "$url/",
             $response->getTargetUrl(),
         );
 

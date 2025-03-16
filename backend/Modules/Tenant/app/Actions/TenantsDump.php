@@ -3,7 +3,6 @@
 namespace Modules\Tenant\Actions;
 
 use Illuminate\Cache\Repository as CacheRepository;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Modules\Tenant\Services\TenantFindService;
 use Modules\Tenant\Transformers\TenantDumpTransformer;
@@ -22,18 +21,13 @@ class TenantsDump
      * @return AnonymousResourceCollection
      */
     public function __invoke(
-        Request $request,
         TenantFindService $tenantFindService,
         CacheRepository $cache,
     ): AnonymousResourceCollection {
         // TODO: Decide how we want to internalize this.
-        if ($request->ip() !== '127.0.0.1') {
-            // throw new UnauthorizedException();
-        }
-
         $tenants = [];
 
-        if ($cache->has(self::CACHE_KEY) && !app()->isLocal()) {
+        if ($cache->has(self::CACHE_KEY)) {
             $tenants = $cache->get(self::CACHE_KEY);
         } else {
             $tenants = $tenantFindService->findAll();

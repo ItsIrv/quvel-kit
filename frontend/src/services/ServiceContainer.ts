@@ -5,6 +5,7 @@ import type { ValidationService } from 'src/services/ValidationService';
 import type { TaskService } from './TaskService';
 import type { Service } from './Service';
 import { ConfigService } from './ConfigService';
+import { WebSocketService } from './WebSocketService';
 
 /**
  * The service container manages core services and allows dynamic service registration.
@@ -14,11 +15,12 @@ export class ServiceContainer {
   private readonly bootedServices = new Set<string>(); // Track booted services
 
   constructor(
+    readonly config: ConfigService,
     readonly api: ApiService,
     readonly i18n: I18nService,
     readonly validation: ValidationService,
     readonly task: TaskService,
-    readonly config: ConfigService,
+    readonly ws: WebSocketService,
     private readonly services: Map<string, unknown> = new Map(),
   ) {
     this.registerServices();

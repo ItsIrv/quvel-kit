@@ -2,6 +2,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia';
 import type { User } from 'src/models/User';
 import type { IUser } from 'src/types/user.types';
 import { createUserFromApi } from 'src/factories/userFactory';
+import { showNotification } from 'src/utils/notifyUtil';
 
 /**
  * Type for the authenticated user.
@@ -36,6 +37,7 @@ interface SessionActions {
   logout(): Promise<void>;
   login(email: string, password: string): Promise<User>;
   signUp(email: string, password: string, name: string): Promise<void>;
+  loginWithOAuth(provider: string, stateless: boolean): Promise<void>;
   setNonce(nonce: string): void;
   getNonce(): string | null;
   clearNonce(): void;
@@ -126,6 +128,62 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
           password,
           name,
         });
+      },
+
+      /**
+       * OAuth Flow: Request nonce, store it, and redirect.
+       */
+      async loginWithOAuth(provider: string, stateless: boolean) {
+        const redirectBase = `${this.$container.config.get('api_url')}/auth/provider/${provider}/redirect`;
+
+        if (!stateless) {
+          window.location.href = redirectBase;
+          return;
+        }
+
+        try {
+          const wsService = this.$container.ws;
+          wsService.unsubscribeAll();
+
+          const { nonce } = await this.$container.api.get<{ nonce: string }>(
+            `/auth/provider/${provider}/create-nonce`,
+          );
+
+          this.setNonce(nonce);
+
+          wsService.subscribe(`auth.nonce.${nonce}`, '.oauth.success', async () => {
+            try {
+              const { user } = await this.$container.api.post<{ user: IUser }>(
+                `/auth/provider/${provider}/redeem-nonce`,
+                {
+                  nonce,
+                },
+              );
+
+              this.setSession(user);
+
+              showNotification('positive', this.$container.i18n.t('auth.success.loggedIn'));
+
+              wsService.unsubscribeAll();
+            } catch {
+              showNotification('negative', this.$container.i18n.t('auth.errors.login'));
+            }
+          });
+
+          // Open provider authentication in a new popup window
+          const authUrl = `${redirectBase}?nonce=${encodeURIComponent(nonce)}`;
+          const popup = window.open(
+            authUrl,
+            '_self',
+            'width=500,height=600,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,noreferrer,noopener',
+          );
+
+          if (!popup) {
+            showNotification('negative', this.$container.i18n.t('auth.errors.popupBlocked'));
+          }
+        } catch {
+          showNotification('negative', this.$container.i18n.t('common.task.error'));
+        }
       },
 
       /**

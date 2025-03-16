@@ -22,20 +22,9 @@ return [
     'allowed_origins'          => [
         // Quasar on Docker
         'https://quvel.127.0.0.1.nip.io',
-        // Quasar Local Machine
-        'https://quvel.127.0.0.1.nip.io:3000',
-        'https://second-tenant.quvel.127.0.0.1.nip.io',
-        // Local SSR
-        'https://second-tenant.quvel.127.0.0.1.nip.io:3000',
-        // Local SPA
-        'https://second-tenant.quvel.127.0.0.1.nip.io:3001',
-        // Local Capacitor
-        'https://second-tenant.quvel.127.0.0.1.nip.io:3002',
-        // Local Electron
-        'http://second-tenant.quvel.127.0.0.1.nip.io:3003',
-        // Local Network
-        'https://quvel.192.168.86.20.nip.io', // REPLACE_WITH_LOCAL_IP
-        'https://api.quvel.192.168.86.20.nip.io', // REPLACE_WITH_LOCAL_IP
+        'https://quvel.192.168.86.20.nip.io',// REPLACE_WITH_LOCAL_IP
+        // LAN Network
+        'https://cap-tenant.quvel.192.168.86.20.nip.io', // REPLACE_WITH_LOCAL_IP
     ],
 
     'allowed_origins_patterns' => [],

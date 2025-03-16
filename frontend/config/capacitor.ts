@@ -6,7 +6,7 @@ export default defineConfig(() => {
     devServer: {
       strictPort: true,
       port: 3002,
-      host: 'second-tenant.quvel.127.0.0.1.nip.io',
+      host: 'quvel.127.0.0.1.nip.io',
       https: getCerts(),
     },
     capacitor: {

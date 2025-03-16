@@ -11,8 +11,10 @@ trait TranslatableEnum
      */
     public function getTranslatedMessage(): string
     {
-        assert(is_string(__($this->value)));
+        $translated = __($this->value);
 
-        return __($this->value);
+        assert(is_string($translated));
+
+        return $translated;
     }
 }

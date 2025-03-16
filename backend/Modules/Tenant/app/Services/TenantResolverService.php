@@ -19,8 +19,8 @@ class TenantResolverService
      * @param TenantSessionService $tenantSessionService
      */
     public function __construct(
-        private readonly TenantFindService $tenantFindService,
-        private readonly TenantSessionService $tenantSessionService,
+        private TenantFindService    $tenantFindService,
+        private TenantSessionService $tenantSessionService,
     ) {
     }
 

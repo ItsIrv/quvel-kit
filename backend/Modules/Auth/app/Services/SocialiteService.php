@@ -14,7 +14,7 @@ class SocialiteService
 {
     public function __construct(
         private readonly SocialiteManager $socialiteManager,
-        private readonly TenantContext $tenantContext,
+        private readonly TenantContext    $tenantContext,
     ) {
     }
 
@@ -23,13 +23,12 @@ class SocialiteService
      */
     public function getRedirectResponse(
         string $provider,
-        bool $stateless,
-        string $serverToken = '',
+        string $signedServerToken = '',
     ): RedirectResponse {
         $driver = $this->buildOAuthDriver($provider);
 
-        return $stateless
-            ? $driver->stateless()->with(['state' => $serverToken])->redirect()
+        return $signedServerToken !== ''
+            ? $driver->stateless()->with(['state' => $signedServerToken])->redirect()
             : $driver->redirect();
     }
 
@@ -73,6 +72,10 @@ class SocialiteService
         return "{$this->tenantContext->getConfig()?->apiUrl}/auth/provider/{$provider}/callback";
     }
 
+    /**
+     * Gets the base configuration for the provider.
+     * @return array<string, mixed>
+     */
     private function getProviderConfig(string $provider): array
     {
         return config("services.{$provider}", []);

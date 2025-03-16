@@ -32,6 +32,7 @@ export default {
   },
   errors: {
     mismatch: 'Password does not match.',
+    login: 'Failed to log in, please try again later',
   },
   success: {
     loggedIn: 'You are logged in.',

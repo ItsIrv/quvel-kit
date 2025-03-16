@@ -16,6 +16,8 @@ import PasswordConfirmField from 'src/components/Form/PasswordConfirmField.vue';
 import NameField from 'src/components/Form/NameField.vue';
 import SlowExpand from 'src/components/Transitions/SlowExpand.vue';
 import BackInOutUp from '../Transitions/BackInOutUp.vue';
+import { useQuasar } from 'quasar';
+import { watch } from 'vue';
 
 type AuthDialogType = 'login' | 'signup';
 
@@ -27,13 +29,15 @@ defineProps<{ modelValue: boolean }>();
 /**
  * Emits
  */
-const emit = defineEmits(['update:modelValue']);
+const $emit = defineEmits(['update:modelValue']);
 
 /**
  * Services
  */
 const container = useContainer();
 const sessionStore = useSessionStore();
+const quasar = useQuasar();
+
 /**
  * Refs
  */
@@ -41,6 +45,7 @@ const email = ref('');
 const name = ref('');
 const password = ref('');
 const passwordConfirm = ref('');
+const isOAuthRedirecting = ref(false);
 const dialogType = ref<AuthDialogType>('login');
 const authForm = ref<HTMLFormElement>();
 
@@ -56,7 +61,7 @@ const loginTask = container.task.newFrozenTask({
   task: async () => await sessionStore.login(email.value, password.value),
   errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
   successHandlers: () => {
-    emit('update:modelValue', false);
+    $emit('update:modelValue', false);
     resetForms();
   },
 });
@@ -73,7 +78,7 @@ const signupTask = container.task.newFrozenTask({
   task: async () => await sessionStore.signUp(email.value, password.value, name.value),
   errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
   successHandlers: () => {
-    emit('update:modelValue', false);
+    $emit('update:modelValue', false);
     resetForms();
   },
 });
@@ -81,7 +86,7 @@ const signupTask = container.task.newFrozenTask({
 /**
  * Indicates whether the login or signup task is currently active.
  */
-const isBusy = computed(() => loginTask.isActive.value || signupTask.isActive.value);
+const isBusy = computed(() => loginTask.isActive.value || signupTask.isActive.value || isOAuthRedirecting.value);
 
 /**
  * Indicates whether the current dialog is the login dialog.
@@ -136,23 +141,21 @@ function onBeforeShow() {
   setDialogType('login');
 }
 
-function generateNonce(length: number): string {
-  const array = new Uint8Array(length);
-  crypto.getRandomValues(array);
-
-  return btoa(String.fromCharCode(...array))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-}
-
 function loginWithOAuth(provider: string) {
-  const nonce = generateNonce(100);
-  sessionStore.setNonce(nonce);
+  void sessionStore.loginWithOAuth(provider, quasar.platform.is.capacitor);
 
-  const redirectUrl = `${process.env.VITE_API_URL}/auth/provider/${provider}/redirect?nonce=${encodeURIComponent(nonce)}&stateless=0`;
-  window.location.href = redirectUrl;
+  isOAuthRedirecting.value = true;
+
+  setTimeout(() => {
+    isOAuthRedirecting.value = false;
+  }, 5000);
 }
+
+watch(() => sessionStore.user, () => {
+  if (sessionStore.user) {
+    $emit('update:modelValue', false);
+  }
+});
 </script>
 
 <template>
@@ -179,6 +182,8 @@ function loginWithOAuth(provider: string) {
             class="GenericBorder AccentGradient Button"
             :label="$t('auth.forms.oauth.logInWith', { provider: $t('auth.forms.oauth.google') })"
             unelevated
+            :disable="isBusy"
+            :loading="isOAuthRedirecting"
             @click="loginWithOAuth('google')"
           />
 
@@ -276,7 +281,7 @@ function loginWithOAuth(provider: string) {
             unelevated
             class="PrimaryButton hover:bg-primary-600"
             type="submit"
-            :loading="isBusy"
+            :loading="loginTask.isActive.value || signupTask.isActive.value"
             :disabled="isBusy"
           >
             {{ $t(`auth.forms.${dialogType}.button`) }}

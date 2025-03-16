@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\app\Services;
 
+use App\Models\User;
 use App\Services\User\UserCreateService;
 use App\Services\User\UserFindService;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
@@ -16,25 +17,22 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 class UserAuthenticationService
 {
     public function __construct(
-        private readonly AuthFactory $auth,
-        private readonly UserFindService $userFindService,
+        private readonly AuthFactory       $auth,
+        private readonly UserFindService   $userFindService,
         private readonly UserCreateService $userCreateService,
-    ) {
+    )
+    {
     }
 
     /**
      * Attempt to authenticate a user with email and password.
-     *
-     * @param string $email
-     * @param string $password
-     * @return bool
      * @throws BadRequestException
      */
     public function attempt(string $email, string $password): bool
     {
         // @phpstan-ignore-next-line Laravel provides attempt
         return $this->auth->guard()->attempt([
-            'email'    => $email,
+            'email' => $email,
             'password' => $password,
         ]);
     }
@@ -47,10 +45,8 @@ class UserAuthenticationService
 
     /**
      * Handle user authentication via OAuth.
-     *
-     * @property string $provider
-     * @property SocialiteUser $providerUser
-     * @return array{0: \App\Models\User, 1: OAuthStatusEnum}
+     * @return array{0: User, 1: OAuthStatusEnum}
+     * @throws OAuthException
      */
     public function handleOAuthLogin(string $provider, SocialiteUser $providerUser): array
     {
@@ -83,11 +79,11 @@ class UserAuthenticationService
         // If no user exists, create a new one
         $user = $this->userCreateService->create(
             [
-                'email'       => $providerUser->getEmail(),
+                'email' => $providerUser->getEmail(),
                 'provider_id' => $providerIdentifier,
-                'name'        => $providerUser->getName(),
-                'avatar'      => $providerUser->getAvatar() ?? null,
-                'password'    => null,
+                'name' => $providerUser->getName(),
+                'avatar' => $providerUser->getAvatar(),
+                'password' => null,
             ],
         );
 
@@ -96,12 +92,10 @@ class UserAuthenticationService
 
     /**
      * Log in a user using their ID.
-     *
-     * @param int $id The ID of the user to log in.
      */
-    public function logInWithId(int $id): void
+    public function logInWithId(int $id): User|bool
     {
         // @phpstan-ignore-next-line laravel provides loginUsingId
-        $this->auth->guard()->loginUsingId($id);
+        return $this->auth->guard()->loginUsingId($id);
     }
 }
