@@ -13,10 +13,12 @@ class ClientNonceService
 {
     /**
      *  Prefix for the cache key.
-     * @var string
      */
     private const string CACHE_KEY_PREFIX = 'client_nonce_';
 
+    /**
+     * Maximum number of attempts to generate a unique nonce.
+     */
     private const int MAX_RETRIES = 2;
 
     /**

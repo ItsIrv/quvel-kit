@@ -6,7 +6,7 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class HmacService
 {
-    private string $hmacSecret;
+    private readonly string $hmacSecret;
 
     public function __construct(
         private readonly ConfigRepository $config,
@@ -48,10 +48,6 @@ class HmacService
         }
 
         $parts = explode('.', $signedValue, 2);
-
-        if (count($parts) !== 2) {
-            return null;
-        }
 
         [$value, $hmac] = $parts;
 

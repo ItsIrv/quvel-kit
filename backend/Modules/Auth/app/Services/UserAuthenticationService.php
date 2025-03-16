@@ -26,10 +26,6 @@ class UserAuthenticationService
 
     /**
      * Attempt to authenticate a user with email and password.
-     *
-     * @param string $email
-     * @param string $password
-     * @return bool
      * @throws BadRequestException
      */
     public function attempt(string $email, string $password): bool
@@ -49,11 +45,8 @@ class UserAuthenticationService
 
     /**
      * Handle user authentication via OAuth.
-     *
      * @return array{0: User, 1: OAuthStatusEnum}
      * @throws OAuthException
-     * @property string $provider
-     * @property SocialiteUser $providerUser
      */
     public function handleOAuthLogin(string $provider, SocialiteUser $providerUser): array
     {
