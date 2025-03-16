@@ -35,7 +35,7 @@ class HmacService
      */
     public function signWithHmac(string $value): string
     {
-        return "{$value}.{$this->sign($value)}";
+        return "$value.{$this->sign($value)}";
     }
 
     /**

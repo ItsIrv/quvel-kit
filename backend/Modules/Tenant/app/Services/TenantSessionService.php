@@ -10,7 +10,7 @@ use Modules\Tenant\Models\Tenant;
  */
 class TenantSessionService
 {
-    private const TENANT_KEY = 'tenant';
+    private const string TENANT_KEY = 'tenant';
 
     /**
      * Tenant session service constructor.

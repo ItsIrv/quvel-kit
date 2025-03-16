@@ -8,8 +8,8 @@ use Illuminate\Contracts\Session\Session;
 
 class NonceSessionService
 {
-    private const SESSION_KEY   = 'auth.nonce';
-    private const TIMESTAMP_KEY = 'auth.nonce.timestamp';
+    private const string SESSION_KEY   = 'auth.nonce';
+    private const string TIMESTAMP_KEY = 'auth.nonce.timestamp';
 
     public function __construct(
         private readonly Session $session,

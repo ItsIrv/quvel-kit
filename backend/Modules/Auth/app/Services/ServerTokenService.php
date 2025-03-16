@@ -6,10 +6,12 @@ use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
+use Psr\SimpleCache\InvalidArgumentException;
+use Random\RandomException;
 
 class ServerTokenService
 {
-    private const CACHE_KEY_PREFIX = 'server_token_';
+    private const string CACHE_KEY_PREFIX = 'server_token_';
 
     public function __construct(
         private readonly CacheRepository $cache,
@@ -28,6 +30,7 @@ class ServerTokenService
 
     /**
      * Create a secure server token and map it to a client nonce.
+     * @throws RandomException
      */
     public function create(string $nonce): string
     {
@@ -45,6 +48,7 @@ class ServerTokenService
 
     /**
      * Generate a random token.
+     * @throws RandomException
      */
     public function generateRandomToken(): string
     {
@@ -61,6 +65,7 @@ class ServerTokenService
 
     /**
      * Retrieve client nonce from server token.
+     * @throws InvalidArgumentException
      */
     public function getClientNonce(string $signedServerToken): ?string
     {
@@ -77,6 +82,7 @@ class ServerTokenService
 
     /**
      * Remove client nonce from cache.
+     * @throws OAuthException
      */
     public function forget(string $signedServerToken): bool
     {

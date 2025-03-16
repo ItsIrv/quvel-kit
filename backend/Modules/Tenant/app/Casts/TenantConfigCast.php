@@ -3,6 +3,7 @@
 namespace Modules\Tenant\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use JsonException;
 use Modules\Tenant\ValueObjects\TenantConfig;
 
 /**
@@ -12,9 +13,7 @@ class TenantConfigCast implements CastsAttributes
 {
     /**
      * Cast the stored value into a `TenantConfig` object.
-     *
-     * @param  mixed  $value
-     * @return TenantConfig|null
+     * @throws JsonException
      */
     public function get($model, string $key, mixed $value, array $attributes): ?TenantConfig
     {
@@ -22,14 +21,14 @@ class TenantConfigCast implements CastsAttributes
             return null;
         }
 
-        return TenantConfig::fromArray(json_decode($value, true) ?? []);
+        return TenantConfig::fromArray(json_decode($value, true, 512, JSON_THROW_ON_ERROR) ?? []);
     }
 
     /**
      * Cast the `TenantConfig` object back into JSON for storage.
      *
-     * @param  TenantConfig|array<string, mixed>|null  $value
-     * @return string|null
+     * @param TenantConfig|array<string, mixed>|null $value
+     * @throws JsonException
      */
     public function set($model, string $key, mixed $value, array $attributes): ?string
     {

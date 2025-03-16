@@ -17,10 +17,11 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 class UserAuthenticationService
 {
     public function __construct(
-        private readonly AuthFactory $auth,
-        private readonly UserFindService $userFindService,
+        private readonly AuthFactory       $auth,
+        private readonly UserFindService   $userFindService,
         private readonly UserCreateService $userCreateService,
-    ) {
+    )
+    {
     }
 
     /**
@@ -35,7 +36,7 @@ class UserAuthenticationService
     {
         // @phpstan-ignore-next-line Laravel provides attempt
         return $this->auth->guard()->attempt([
-            'email'    => $email,
+            'email' => $email,
             'password' => $password,
         ]);
     }
@@ -49,9 +50,10 @@ class UserAuthenticationService
     /**
      * Handle user authentication via OAuth.
      *
+     * @return array{0: User, 1: OAuthStatusEnum}
+     * @throws OAuthException
      * @property string $provider
      * @property SocialiteUser $providerUser
-     * @return array{0: \App\Models\User, 1: OAuthStatusEnum}
      */
     public function handleOAuthLogin(string $provider, SocialiteUser $providerUser): array
     {
@@ -84,11 +86,11 @@ class UserAuthenticationService
         // If no user exists, create a new one
         $user = $this->userCreateService->create(
             [
-                'email'       => $providerUser->getEmail(),
+                'email' => $providerUser->getEmail(),
                 'provider_id' => $providerIdentifier,
-                'name'        => $providerUser->getName(),
-                'avatar'      => $providerUser->getAvatar() ?? null,
-                'password'    => null,
+                'name' => $providerUser->getName(),
+                'avatar' => $providerUser->getAvatar(),
+                'password' => null,
             ],
         );
 
