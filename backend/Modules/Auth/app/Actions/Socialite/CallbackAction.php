@@ -3,7 +3,7 @@
 namespace Modules\Auth\Actions\Socialite;
 
 use App\Services\FrontendService;
-use Exception;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -16,7 +16,7 @@ use Modules\Auth\Http\Requests\CallbackRequest;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
-use Psr\SimpleCache\InvalidArgumentException;
+use Throwable;
 
 /**
  * Handles the callback from the socialite provider.
@@ -31,12 +31,13 @@ class CallbackAction
         private readonly FrontendService $frontendService,
         private readonly EventDispatcher $eventDispatcher,
         private readonly ViewFactory $viewFactory,
+        private readonly ResponseFactory $responseFactory,
     ) {}
 
     /**
      * Handle OAuth provider callback.
      *
-     * @throws InvalidArgumentException
+     * @throws OAuthException|Throwable
      */
     public function __invoke(CallbackRequest $request, string $provider): RedirectResponse|Response
     {
@@ -54,16 +55,20 @@ class CallbackAction
 
             return match ($status) {
                 OAuthStatusEnum::LOGIN_OK => $stateless
-                ? $this->handleStatelessLogin(
-                    $signedToken,
-                    $clientNonce,
-                    $user,
-                )
-                : $this->handleSessionLogin($user),
+                    ? $this->handleStatelessLogin(
+                        $signedToken,
+                        $clientNonce,
+                        $user,
+                    )
+                    : $this->handleSessionLogin($user),
                 default => $this->handleFailedLogin($status),
             };
-        } catch (Exception $e) {
-            return $this->handleException($e);
+        } catch (Throwable $e) {
+            if (! $e instanceof OAuthException) {
+                $e = new OAuthException(OAuthStatusEnum::INTERNAL_ERROR, $e);
+            }
+
+            throw $e;
         }
     }
 
@@ -98,7 +103,9 @@ class CallbackAction
             $this->clientNonceService->getSignedNonce($clientNonce),
         ));
 
-        return response($this->viewFactory->make('auth::callback'));
+        return $this->responseFactory->make(
+            $this->viewFactory->make('auth::callback')
+        );
     }
 
     /**
@@ -122,21 +129,6 @@ class CallbackAction
         return $this->frontendService->redirectPage(
             '',
             ['message' => $status->getTranslatedMessage()],
-        );
-    }
-
-    /**
-     * Handle exceptions.
-     */
-    private function handleException(Exception $e): RedirectResponse
-    {
-        return $this->frontendService->redirectPage(
-            '',
-            [
-                'message' => $e instanceof OAuthException
-                    ? $e->getTranslatedMessage()
-                    : $e->getMessage(),
-            ],
         );
     }
 }

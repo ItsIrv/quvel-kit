@@ -172,11 +172,8 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
           // Open provider authentication in a new popup window
           const authUrl = `${redirectBase}?nonce=${encodeURIComponent(nonce)}`;
-          const popup = window.open(authUrl, '_self', 'width=500,height=600');
 
-          if (!popup) {
-            showNotification('negative', this.$container.i18n.t('auth.status.errors.popupBlocked'));
-          }
+          window.open(authUrl, '_self', 'width=500,height=600');
         } catch {
           showNotification('negative', this.$container.i18n.t('common.task.error'));
         }

@@ -2,7 +2,6 @@
 
 namespace Modules\Auth\Actions\Socialite;
 
-use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\app\Services\UserAuthenticationService;
@@ -10,7 +9,7 @@ use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\RedeemNonceRequest;
 use Modules\Auth\Services\ClientNonceService;
-use Psr\SimpleCache\InvalidArgumentException;
+use Throwable;
 
 /**
  * Redeems a client nonce and logs in the user.
@@ -24,7 +23,10 @@ class RedeemClientNonceAction
     ) {}
 
     /**
-     * @throws InvalidArgumentException
+     * Redeems a client nonce and logs in the user.
+     *
+     * @throws OAuthException
+     * @throws Throwable
      */
     public function __invoke(RedeemNonceRequest $request): JsonResponse
     {
@@ -45,10 +47,12 @@ class RedeemClientNonceAction
                 'user' => $user,
                 'message' => OAuthStatusEnum::LOGIN_OK->getTranslatedMessage(),
             ]);
-        } catch (Exception $e) {
-            return $this->responseFactory->json([
-                'error' => $e instanceof OAuthException ? $e->getTranslatedMessage() : $e->getMessage(),
-            ], 400);
+        } catch (Throwable $e) {
+            if (! $e instanceof OAuthException) {
+                $e = new OAuthException(OAuthStatusEnum::INTERNAL_ERROR, $e);
+            }
+
+            throw $e;
         }
     }
 }

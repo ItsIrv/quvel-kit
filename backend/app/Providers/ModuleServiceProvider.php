@@ -12,9 +12,9 @@ class ModuleServiceProvider extends ServiceProvider
 {
     use PathNamespace;
 
-    protected string $name = 'Tenant';
+    protected string $name;
 
-    protected string $nameLower = 'tenant';
+    protected string $nameLower;
 
     /**
      * Bootstrap any application services.

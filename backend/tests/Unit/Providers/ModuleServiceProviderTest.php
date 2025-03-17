@@ -35,8 +35,15 @@ class ModuleServiceProviderTest extends TestCase
 
         // Inject the mocked app
         $reflection = new ReflectionClass($mockProvider);
+
         $property = $reflection->getProperty('app');
         $property->setValue($mockProvider, $mockApp);
+
+        $property = $reflection->getProperty('name');
+        $property->setValue($mockProvider, 'Tenant');
+
+        $property = $reflection->getProperty('nameLower');
+        $property->setValue($mockProvider, 'tenant');
 
         return $mockProvider;
     }

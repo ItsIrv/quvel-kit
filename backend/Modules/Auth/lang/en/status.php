@@ -13,6 +13,7 @@ return [
         'providerIdTaken' => 'This :provider ID is already in use.',
         'invalidConfig' => 'Invalid configuration.',
         'activeFlowExists' => 'An active flow already exists.',
+        'internalError' => 'Internal error.',
     ],
     'warnings' => [
         'emailNotVerified' => 'This account has not been verified.',
