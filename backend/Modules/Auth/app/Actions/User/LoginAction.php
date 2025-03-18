@@ -6,9 +6,9 @@ use App\Services\User\UserFindService;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\app\Http\Requests\LoginRequest;
-use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\AuthStatusEnum;
 use Modules\Auth\Exceptions\LoginActionException;
+use Modules\Auth\Services\UserAuthenticationService;
 
 /**
  * Action to sign in a user.

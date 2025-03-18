@@ -110,7 +110,7 @@ class ClientNonceService
             $this->getCacheKey($nonce),
         );
 
-        if ($userId <= 0) {
+        if (! is_int($userId) || $userId <= 0) {
             throw new OAuthException(OAuthStatusEnum::INVALID_NONCE);
         }
 

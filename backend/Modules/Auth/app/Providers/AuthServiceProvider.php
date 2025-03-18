@@ -3,12 +3,12 @@
 namespace Modules\Auth\Providers;
 
 use App\Providers\ModuleServiceProvider;
-use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\HmacService;
 use Modules\Auth\Services\NonceSessionService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
+use Modules\Auth\Services\UserAuthenticationService;
 
 /**
  * Provider for the Auth module.

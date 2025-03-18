@@ -4,8 +4,8 @@ namespace Modules\Auth\Actions\User;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
-use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\AuthStatusEnum;
+use Modules\Auth\Services\UserAuthenticationService;
 
 /**
  * Action to logout a user.

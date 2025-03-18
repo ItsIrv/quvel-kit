@@ -173,7 +173,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
           // Open provider authentication in a new popup window
           const authUrl = `${redirectBase}?nonce=${encodeURIComponent(nonce)}`;
 
-          window.open(authUrl, '_self', 'width=500,height=600');
+          window.open(authUrl, '_blank', 'width=500,height=600');
         } catch {
           showNotification('negative', this.$container.i18n.t('common.task.error'));
         }

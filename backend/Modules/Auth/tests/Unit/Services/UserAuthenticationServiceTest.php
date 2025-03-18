@@ -10,9 +10,9 @@ use Illuminate\Contracts\Auth\Guard;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Mockery;
 use Mockery\MockInterface;
-use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
+use Modules\Auth\Services\UserAuthenticationService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -41,7 +41,7 @@ class UserAuthenticationServiceTest extends TestCase
         $this->service = new UserAuthenticationService(
             $this->auth,
             $this->userFindService,
-            $this->userCreateService
+            $this->userCreateService,
         );
     }
 

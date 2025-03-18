@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Auth\app\Services;
+namespace Modules\Auth\Services;
 
 use App\Models\User;
 use App\Services\User\UserCreateService;

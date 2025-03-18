@@ -7,15 +7,11 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
-use Illuminate\View\Factory as ViewFactory;
-use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Events\OAuthLoginSuccess;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\CallbackRequest;
-use Modules\Auth\Services\ClientNonceService;
-use Modules\Auth\Services\ServerTokenService;
-use Modules\Auth\Services\SocialiteService;
+use Modules\Auth\Services\AuthCoordinator;
 use Throwable;
 
 /**
@@ -24,13 +20,9 @@ use Throwable;
 class CallbackAction
 {
     public function __construct(
-        private readonly SocialiteService $socialiteService,
-        private readonly ServerTokenService $serverTokenService,
-        private readonly ClientNonceService $clientNonceService,
-        private readonly UserAuthenticationService $userAuthenticationService,
+        private readonly AuthCoordinator $authCoordinator,
         private readonly FrontendService $frontendService,
         private readonly EventDispatcher $eventDispatcher,
-        private readonly ViewFactory $viewFactory,
         private readonly ResponseFactory $responseFactory,
     ) {}
 
@@ -42,27 +34,25 @@ class CallbackAction
     public function __invoke(CallbackRequest $request, string $provider): RedirectResponse|Response
     {
         try {
-            $signedToken = $request->validated('state', '');
-            $clientNonce = $this->serverTokenService->getClientNonce(
-                $signedToken,
-            );
-            $stateless = $clientNonce !== null;
-
-            [$user, $status] = $this->authenticateUser(
+            $result = $this->authCoordinator->authenticateCallback(
                 $provider,
-                $stateless,
+                $request->validated('state', '')
             );
 
-            return match ($status) {
-                OAuthStatusEnum::LOGIN_OK => $stateless
-                    ? $this->handleStatelessLogin(
-                        $signedToken,
-                        $clientNonce,
-                        $user,
-                    )
-                    : $this->handleSessionLogin($user),
-                default => $this->handleFailedLogin($status),
-            };
+            if ($result->isStateless()) {
+                $this->eventDispatcher->dispatch(
+                    new OAuthLoginSuccess($result->getSignedNonce() ?? '')
+                );
+
+                return $this->responseFactory->view('auth::callback');
+            }
+
+            return $this->frontendService->redirectPage(
+                '',
+                [
+                    'message' => $result->getStatus()->value,
+                ]
+            );
         } catch (Throwable $e) {
             if (! $e instanceof OAuthException) {
                 $e = new OAuthException(OAuthStatusEnum::INTERNAL_ERROR, $e);
@@ -70,65 +60,5 @@ class CallbackAction
 
             throw $e;
         }
-    }
-
-    /**
-     * Authenticate the user via OAuth.
-     *
-     * @throws OAuthException
-     */
-    private function authenticateUser(string $provider, bool $stateless): array
-    {
-        $providerUser = $this->socialiteService->getProviderUser(
-            $provider,
-            $stateless,
-        );
-
-        return $this->userAuthenticationService->handleOAuthLogin(
-            $provider,
-            $providerUser,
-        );
-    }
-
-    /**
-     * Handle a successful login in stateless mode.
-     *
-     * @throws OAuthException
-     */
-    private function handleStatelessLogin(string $signedToken, string $clientNonce, $user): Response
-    {
-        $this->serverTokenService->forget($signedToken);
-        $this->clientNonceService->assignUserToNonce($clientNonce, $user->id);
-        $this->eventDispatcher->dispatch(new OAuthLoginSuccess(
-            $this->clientNonceService->getSignedNonce($clientNonce),
-        ));
-
-        return $this->responseFactory->make(
-            $this->viewFactory->make('auth::callback')
-        );
-    }
-
-    /**
-     * Handle a successful login in session-based mode.
-     */
-    private function handleSessionLogin($user): RedirectResponse
-    {
-        $this->userAuthenticationService->logInWithId($user->id);
-
-        return $this->frontendService->redirectPage(
-            '',
-            ['message' => OAuthStatusEnum::LOGIN_OK->getTranslatedMessage()],
-        );
-    }
-
-    /**
-     * Handle a failed login attempt.
-     */
-    private function handleFailedLogin(OAuthStatusEnum $status): RedirectResponse
-    {
-        return $this->frontendService->redirectPage(
-            '',
-            ['message' => $status->getTranslatedMessage()],
-        );
     }
 }

@@ -2,20 +2,15 @@
 
 namespace Modules\Auth\Tests\Unit\Actions\Socialite;
 
-use App\Services\FrontendService;
-use Exception;
 use Illuminate\Http\RedirectResponse;
 use Mockery;
 use Modules\Auth\Actions\Socialite\RedirectAction;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\RedirectRequest;
-use Modules\Auth\Services\ClientNonceService;
-use Modules\Auth\Services\ServerTokenService;
-use Modules\Auth\Services\SocialiteService;
+use Modules\Auth\Services\AuthCoordinator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
-use Psr\SimpleCache\InvalidArgumentException;
 use Tests\TestCase;
 
 #[CoversClass(RedirectAction::class)]
@@ -23,13 +18,7 @@ use Tests\TestCase;
 #[Group('auth-actions')]
 class RedirectActionTest extends TestCase
 {
-    private Mockery\MockInterface|SocialiteService $socialiteService;
-
-    private Mockery\MockInterface|ServerTokenService $serverTokenService;
-
-    private Mockery\MockInterface|ClientNonceService $clientNonceService;
-
-    private Mockery\MockInterface|FrontendService $frontendService;
+    private Mockery\MockInterface|AuthCoordinator $authCoordinator;
 
     private RedirectAction $action;
 
@@ -37,170 +26,108 @@ class RedirectActionTest extends TestCase
     {
         parent::setUp();
 
-        // Mock Dependencies
-        $this->socialiteService = Mockery::mock(SocialiteService::class);
-        $this->serverTokenService = Mockery::mock(ServerTokenService::class);
-        $this->clientNonceService = Mockery::mock(ClientNonceService::class);
-        $this->frontendService = Mockery::mock(FrontendService::class);
-
-        // Instantiate the action with mocks
-        $this->action = new RedirectAction(
-            $this->socialiteService,
-            $this->serverTokenService,
-            $this->clientNonceService,
-            $this->frontendService,
-        );
+        $this->authCoordinator = Mockery::mock(AuthCoordinator::class);
+        $this->action = new RedirectAction($this->authCoordinator);
     }
 
-    /**
-     * Test that stateful OAuth redirect works.
-     *
-     * @throws InvalidArgumentException
-     */
-    public function test_stateful_o_auth_redirect(): void
-    {
-        // Arrange
-        $provider = 'google';
-
-        $request = Mockery::mock(RedirectRequest::class);
-        $request->shouldReceive('has')
-            ->with('nonce')
-            ->once()
-            ->andReturn(false);
-
-        $this->socialiteService->shouldReceive('getRedirectResponse')
-            ->with($provider)
-            ->once()
-            ->andReturn(new RedirectResponse('https://google.com/oauth'));
-
-        // Act
-        $response = $this->action->__invoke($request, $provider);
-
-        // Assert
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('https://google.com/oauth', $response->getTargetUrl());
-    }
-
-    /**
-     * Test that stateless OAuth redirect works.
-     *
-     * @throws InvalidArgumentException
-     */
-    public function test_stateless_o_auth_redirect(): void
+    public function test_redirect_action_with_nonce(): void
     {
         // Arrange
         $provider = 'google';
         $nonce = 'nonce-value';
-        $token = 'signed-token';
+        $mockReq = Mockery::mock(RedirectRequest::class);
+        $expectedRedirect = new RedirectResponse('https://example.com/with-nonce');
 
-        $request = Mockery::mock(RedirectRequest::class);
-        $request->shouldReceive('has')
-            ->with('nonce')
-            ->once()
-            ->andReturn(true);
-
-        $request->shouldReceive('validated')
+        // The request should return the validated nonce
+        $mockReq->shouldReceive('validated')
             ->with('nonce')
             ->once()
             ->andReturn($nonce);
 
-        $this->clientNonceService->shouldReceive('getNonce')
-            ->with($nonce, ClientNonceService::TOKEN_CREATED)
+        // Coordinator should get called with the provider + nonce
+        $this->authCoordinator
+            ->shouldReceive('buildRedirectResponse')
             ->once()
-            ->andReturn($nonce);
-
-        $this->clientNonceService->shouldReceive('assignRedirectedToNonce')
-            ->with($nonce)
-            ->once();
-
-        $this->serverTokenService->shouldReceive('create')
-            ->with($nonce)
-            ->once()
-            ->andReturn($token);
-
-        $this->socialiteService->shouldReceive('getRedirectResponse')
-            ->with($provider, $token)
-            ->once()
-            ->andReturn(new RedirectResponse("https://google.com/oauth?state=$token"));
+            ->with($provider, $nonce)
+            ->andReturn($expectedRedirect);
 
         // Act
-        $response = $this->action->__invoke($request, $provider);
+        $response = $this->action->__invoke($mockReq, $provider);
 
         // Assert
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals("https://google.com/oauth?state=$token", $response->getTargetUrl());
+        $this->assertSame($expectedRedirect, $response);
     }
 
-    /**
-     * Test that an OAuthException is handled correctly.
-     *
-     * @throws InvalidArgumentException
-     */
-    public function test_o_auth_redirect_handles_o_auth_exception(): void
+    public function test_redirect_action_without_nonce(): void
     {
         // Arrange
         $provider = 'google';
+        $mockReq = Mockery::mock(RedirectRequest::class);
+        $expectedRedirect = new RedirectResponse('https://example.com/no-nonce');
 
-        $request = Mockery::mock(RedirectRequest::class);
-        $request->shouldReceive('has')
+        // The request might return null if 'nonce' is not present
+        $mockReq->shouldReceive('validated')
             ->with('nonce')
             ->once()
-            ->andReturn(false);
+            ->andReturn(null);
 
-        // Get the actual error message from the exception
-        $exception = new OAuthException(OAuthStatusEnum::INVALID_CONFIG);
-        $expectedErrorMessage = $exception->getTranslatedMessage();
-
-        $this->socialiteService->shouldReceive('getRedirectResponse')
-            ->with($provider)
+        // Coordinator should get called with provider + null
+        $this->authCoordinator
+            ->shouldReceive('buildRedirectResponse')
             ->once()
-            ->andThrow($exception);
-
-        $this->frontendService->shouldReceive('redirectPage')
-            ->with('', ['message' => $expectedErrorMessage])
-            ->once()
-            ->andReturn(new RedirectResponse('/login?error=oauth'));
+            ->with($provider, null)
+            ->andReturn($expectedRedirect);
 
         // Act
-        $response = $this->action->__invoke($request, $provider);
+        $response = $this->action->__invoke($mockReq, $provider);
 
         // Assert
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('/login?error=oauth', $response->getTargetUrl());
+        $this->assertSame($expectedRedirect, $response);
     }
 
-    /**
-     * Test that a general Exception is handled correctly.
-     *
-     * @throws InvalidArgumentException
-     */
-    public function test_o_auth_redirect_handles_general_exception(): void
+    public function test_oauth_exception_is_thrown_as_is(): void
     {
         // Arrange
         $provider = 'google';
+        $mockReq = Mockery::mock(RedirectRequest::class);
+        $mockReq->shouldReceive('validated')->andReturn(null);
 
-        $request = Mockery::mock(RedirectRequest::class);
-        $request->shouldReceive('has')
-            ->with('nonce')
-            ->once()
-            ->andReturn(false);
+        $oauthEx = new OAuthException(OAuthStatusEnum::INVALID_CONFIG);
 
-        $this->socialiteService->shouldReceive('getRedirectResponse')
-            ->with($provider)
+        // The coordinator throws an OAuthException
+        $this->authCoordinator
+            ->shouldReceive('buildRedirectResponse')
             ->once()
-            ->andThrow(new Exception('Something went wrong'));
+            ->andThrow($oauthEx);
 
-        $this->frontendService->shouldReceive('redirectPage')
-            ->with('', ['message' => 'Something went wrong'])
-            ->once()
-            ->andReturn(new RedirectResponse('/login?error=oauth'));
+        // Expect the exact same exception to bubble up
+        $this->expectException(OAuthException::class);
+        $this->expectExceptionMessage(OAuthStatusEnum::INVALID_CONFIG->value);
 
         // Act
-        $response = $this->action->__invoke($request, $provider);
+        $this->action->__invoke($mockReq, $provider);
+    }
 
-        // Assert
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals(302, $response->status());
-        $this->assertEquals('/login?error=oauth', $response->getTargetUrl());
+    public function test_general_exception_is_wrapped_in_oauth_exception(): void
+    {
+        // Arrange
+        $provider = 'google';
+        $mockReq = Mockery::mock(RedirectRequest::class);
+        $mockReq->shouldReceive('validated')->andReturn(null);
+
+        $generalEx = new \Exception('Some general error');
+
+        $this->authCoordinator
+            ->shouldReceive('buildRedirectResponse')
+            ->once()
+            ->andThrow($generalEx);
+
+        // We'll verify that the action wraps it in an OAuthException
+        $this->expectException(OAuthException::class);
+        // The message will be OAuthStatusEnum::INTERNAL_ERROR->value
+        $this->expectExceptionMessage(OAuthStatusEnum::INTERNAL_ERROR->value);
+
+        // Act
+        $this->action->__invoke($mockReq, $provider);
     }
 }

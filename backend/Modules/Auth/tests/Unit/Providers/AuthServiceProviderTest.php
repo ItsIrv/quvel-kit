@@ -3,7 +3,6 @@
 namespace Modules\Auth\Tests\Unit\Providers;
 
 use Illuminate\Foundation\Application;
-use Modules\Auth\app\Services\UserAuthenticationService;
 use Modules\Auth\Providers\AuthServiceProvider;
 use Modules\Auth\Providers\EventServiceProvider;
 use Modules\Auth\Providers\RouteServiceProvider;
@@ -12,6 +11,7 @@ use Modules\Auth\Services\HmacService;
 use Modules\Auth\Services\NonceSessionService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
+use Modules\Auth\Services\UserAuthenticationService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;

@@ -11,13 +11,19 @@ class OAuthLoginSuccess implements ShouldBroadcast
 {
     use SerializesModels;
 
-    public function __construct(public string $fullNonce) {}
+    public function __construct(public string $signedNonce) {}
 
+    /**
+     * @return Channel[]
+     */
     public function broadcastOn(): array
     {
-        return [new Channel("auth.nonce.$this->fullNonce")];
+        return [new Channel("auth.nonce.$this->signedNonce")];
     }
 
+    /**
+     * @return array<string, bool>
+     */
     public function broadcastWith(): array
     {
         return ['success' => true];

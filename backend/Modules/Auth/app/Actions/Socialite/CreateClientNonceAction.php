@@ -6,8 +6,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
-use Modules\Auth\Services\ClientNonceService;
-use Modules\Auth\Services\NonceSessionService;
+use Modules\Auth\Services\AuthCoordinator;
 use Throwable;
 
 /**
@@ -16,8 +15,7 @@ use Throwable;
 class CreateClientNonceAction
 {
     public function __construct(
-        private readonly ClientNonceService $clientNonceService,
-        private readonly NonceSessionService $nonceSessionService,
+        private readonly AuthCoordinator $authCoordinator,
         private readonly ResponseFactory $responseFactory,
     ) {}
 
@@ -27,11 +25,8 @@ class CreateClientNonceAction
     public function __invoke(): JsonResponse
     {
         try {
-            $nonce = $this->clientNonceService->create();
-            $this->nonceSessionService->setNonce($nonce);
-
             return $this->responseFactory->json([
-                'nonce' => $nonce,
+                'nonce' => $this->authCoordinator->createClientNonce(),
             ]);
         } catch (Throwable $e) {
             if (! $e instanceof OAuthException) {
