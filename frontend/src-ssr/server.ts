@@ -143,15 +143,15 @@ export const renderPreloadTag = defineSsrRenderPreloadTag((file /* , { ssrContex
     return `<link rel="preload" href="${file}" as="font" type="font/woff2" crossorigin>`;
   }
 
-  if (gifRE.test(file) === true) {
+  if (gifRE.test(file)) {
     return `<link rel="preload" href="${file}" as="image" type="image/gif" crossorigin>`;
   }
 
-  if (jpgRE.test(file) === true) {
+  if (jpgRE.test(file)) {
     return `<link rel="preload" href="${file}" as="image" type="image/jpeg" crossorigin>`;
   }
 
-  if (pngRE.test(file) === true) {
+  if (pngRE.test(file)) {
     return `<link rel="preload" href="${file}" as="image" type="image/png" crossorigin>`;
   }
 

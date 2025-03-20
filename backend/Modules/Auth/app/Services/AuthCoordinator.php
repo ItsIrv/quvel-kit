@@ -111,7 +111,7 @@ class AuthCoordinator
 
         $user = $this->userAuthenticationService->logInWithId($userId);
 
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             throw new OAuthException(OAuthStatusEnum::INTERNAL_ERROR);
         }
 

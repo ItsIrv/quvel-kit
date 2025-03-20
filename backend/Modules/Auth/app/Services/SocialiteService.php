@@ -2,14 +2,11 @@
 
 namespace Modules\Auth\Services;
 
-use Exception;
 use Illuminate\Http\RedirectResponse;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\SocialiteManager;
 use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\GoogleProvider;
-use Modules\Auth\Enums\OAuthStatusEnum;
-use Modules\Auth\Exceptions\OAuthException;
 use Modules\Tenant\Contexts\TenantContext;
 
 class SocialiteService
@@ -35,18 +32,12 @@ class SocialiteService
 
     /**
      * Get user data from provider callback.
-     *
-     * @throws OAuthException
      */
     public function getProviderUser(string $provider, bool $stateless): SocialiteUser
     {
         $driver = $this->buildOAuthDriver($provider);
 
-        try {
-            return $stateless ? $driver->stateless()->user() : $driver->user();
-        } catch (Exception $e) {
-            throw new OAuthException(OAuthStatusEnum::INVALID_USER);
-        }
+        return $stateless ? $driver->stateless()->user() : $driver->user();
     }
 
     /**

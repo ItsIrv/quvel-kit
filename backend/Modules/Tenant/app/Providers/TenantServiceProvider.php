@@ -3,7 +3,10 @@
 namespace Modules\Tenant\Providers;
 
 use App\Providers\ModuleServiceProvider;
+use Exception;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Http\Middleware\TenantMiddleware;
@@ -53,6 +56,7 @@ class TenantServiceProvider extends ModuleServiceProvider
      */
     private function bindTenantConfigs(): void
     {
+        /** @phpstan-ignore-next-line */
         $this->app->rebinding('request', function (Application $app): void {
             try {
                 $tenantContext = $app->make(TenantContext::class);
@@ -63,6 +67,7 @@ class TenantServiceProvider extends ModuleServiceProvider
                     throw new RuntimeException('Tenant config not found');
                 }
 
+                /** @var Repository $appConfig */
                 $appConfig = $app['config'];
 
                 // Backend Configuration (API)
@@ -93,14 +98,16 @@ class TenantServiceProvider extends ModuleServiceProvider
 
                 if ($apiHost) {
                     $parts = explode('.', $apiHost);
+
                     if (count($parts) > 2) {
                         array_shift($parts);
                     }
+
                     $sessionDomain = '.'.implode('.', $parts);
                     $appConfig->set('session.domain', $sessionDomain);
                 }
-            } catch (\Exception $e) {
-                \Log::critical('Tenant Config Could Not Be Applied: '.$e->getMessage());
+            } catch (Exception $e) {
+                Log::critical('Tenant Config Could Not Be Applied: '.$e->getMessage());
             }
         });
     }

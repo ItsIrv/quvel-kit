@@ -19,15 +19,21 @@ class ProviderRule implements ValidationRule
         assert(is_array($validProviders));
 
         if (! in_array($value, $validProviders, true)) {
-            $fail(__(
+            $error = __(
                 OAuthStatusEnum::INVALID_PROVIDER->value,
                 ['provider' => $attribute],
-            ));
+            );
+
+            assert(is_string($error));
+
+            $fail($error);
         }
     }
 
     /**
      * Static method for cleaner rule usage.
+     *
+     * @return array<ProviderRule>
      */
     public static function RULES(): array
     {
