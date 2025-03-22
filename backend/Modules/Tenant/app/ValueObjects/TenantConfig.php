@@ -15,6 +15,7 @@ class TenantConfig implements Arrayable
 {
     public function __construct(
         public readonly string $apiUrl,
+        // TODO: This is the frontend URL. Rename to frontendUrl for clarity.
         public readonly string $appUrl,
         public readonly string $appName,
         public readonly string $appEnv,
@@ -22,6 +23,7 @@ class TenantConfig implements Arrayable
         public readonly bool $debug = false,
         public readonly string $mailFromName = '',
         public readonly string $mailFromAddress = '',
+        public readonly string $appScheme = 'deeplink',  // 'internal', 'external', 'deeplink'
         /** @var array<string, TenantConfigVisibility> */
         public readonly array $visibility = [],
     ) {}
@@ -43,9 +45,7 @@ class TenantConfig implements Arrayable
             mailFromName: $data['mail_from_name'] ?? '',
             mailFromAddress: $data['mail_from_address'] ?? '',
             visibility: array_map(
-                function ($value): TenantConfigVisibility {
-                    return TenantConfigVisibility::tryFrom($value) ?? TenantConfigVisibility::PRIVATE;
-                },
+                static fn($value) => TenantConfigVisibility::tryFrom($value) ?? TenantConfigVisibility::PRIVATE,
                 $data['__visibility'] ?? []
             ),
         );
@@ -66,7 +66,7 @@ class TenantConfig implements Arrayable
             'mail_from_name' => $this->mailFromName,
             'mail_from_address' => $this->mailFromAddress,
             '__visibility' => array_map(
-                fn (TenantConfigVisibility $v): string => $v->value,
+                static fn (TenantConfigVisibility $v): string => $v->value,
                 $this->visibility,
             ),
         ];

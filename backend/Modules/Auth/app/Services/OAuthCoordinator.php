@@ -10,7 +10,7 @@ use Modules\Auth\Exceptions\OAuthException;
 use Psr\SimpleCache\InvalidArgumentException;
 use Random\RandomException;
 
-class AuthCoordinator
+class OAuthCoordinator
 {
     public function __construct(
         private readonly SocialiteService $socialiteService,

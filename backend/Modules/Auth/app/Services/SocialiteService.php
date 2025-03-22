@@ -42,6 +42,8 @@ class SocialiteService
 
     /**
      * Build the OAuth driver with a dynamic redirect URI.
+     *
+     * TODO: We should be able to remove this due to per-request config routing.
      */
     private function buildOAuthDriver(string $provider): AbstractProvider
     {

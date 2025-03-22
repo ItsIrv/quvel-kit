@@ -6,7 +6,7 @@ use Illuminate\Http\RedirectResponse;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\RedirectRequest;
-use Modules\Auth\Services\AuthCoordinator;
+use Modules\Auth\Services\OAuthCoordinator;
 use Throwable;
 
 /**
@@ -15,7 +15,7 @@ use Throwable;
 class RedirectAction
 {
     public function __construct(
-        private readonly AuthCoordinator $authCoordinator,
+        private readonly OAuthCoordinator $authCoordinator,
     ) {}
 
     /**

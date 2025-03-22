@@ -11,7 +11,7 @@ use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Events\OAuthLoginSuccess;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\CallbackRequest;
-use Modules\Auth\Services\AuthCoordinator;
+use Modules\Auth\Services\OAuthCoordinator;
 use Throwable;
 
 /**
@@ -20,7 +20,7 @@ use Throwable;
 class CallbackAction
 {
     public function __construct(
-        private readonly AuthCoordinator $authCoordinator,
+        private readonly OAuthCoordinator $authCoordinator,
         private readonly FrontendService $frontendService,
         private readonly EventDispatcher $eventDispatcher,
         private readonly ResponseFactory $responseFactory,

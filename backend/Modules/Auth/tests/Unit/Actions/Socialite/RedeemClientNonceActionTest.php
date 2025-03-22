@@ -11,7 +11,7 @@ use Modules\Auth\Actions\Socialite\RedeemClientNonceAction;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\RedeemNonceRequest;
-use Modules\Auth\Services\AuthCoordinator;
+use Modules\Auth\Services\OAuthCoordinator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -22,7 +22,7 @@ use Throwable;
 #[Group('auth-actions')]
 class RedeemClientNonceActionTest extends TestCase
 {
-    private Mockery\MockInterface|AuthCoordinator $authCoordinator;
+    private Mockery\MockInterface|OAuthCoordinator $authCoordinator;
 
     private Mockery\MockInterface|ResponseFactory $responseFactory;
 
@@ -33,7 +33,7 @@ class RedeemClientNonceActionTest extends TestCase
         parent::setUp();
 
         // Mock dependencies
-        $this->authCoordinator = Mockery::mock(AuthCoordinator::class);
+        $this->authCoordinator = Mockery::mock(OAuthCoordinator::class);
         $this->responseFactory = Mockery::mock(ResponseFactory::class);
 
         // Instantiate the action with mocked dependencies
@@ -62,7 +62,7 @@ class RedeemClientNonceActionTest extends TestCase
         $request = Mockery::mock(RedeemNonceRequest::class);
         $request->shouldReceive('validated')->once()->with('nonce', '')->andReturn($signedNonce);
 
-        // AuthCoordinator returns the User
+        // OAuthCoordinator returns the User
         $this->authCoordinator
             ->shouldReceive('redeemClientNonce')
             ->once()

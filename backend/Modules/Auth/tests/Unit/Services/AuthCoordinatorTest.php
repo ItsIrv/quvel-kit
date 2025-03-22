@@ -7,7 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Mockery;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
-use Modules\Auth\Services\AuthCoordinator;
+use Modules\Auth\Services\OAuthCoordinator;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\NonceSessionService;
 use Modules\Auth\Services\ServerTokenService;
@@ -19,7 +19,7 @@ use Psr\SimpleCache\InvalidArgumentException;
 use Random\RandomException;
 use Tests\TestCase;
 
-#[CoversClass(AuthCoordinator::class)]
+#[CoversClass(OAuthCoordinator::class)]
 #[Group('auth-module')]
 #[Group('auth-services')]
 class AuthCoordinatorTest extends TestCase
@@ -34,7 +34,7 @@ class AuthCoordinatorTest extends TestCase
 
     private Mockery\MockInterface|UserAuthenticationService $userAuthenticationService;
 
-    private AuthCoordinator $authCoordinator;
+    private OAuthCoordinator $authCoordinator;
 
     protected function setUp(): void
     {
@@ -46,7 +46,7 @@ class AuthCoordinatorTest extends TestCase
         $this->nonceSessionService = Mockery::mock(NonceSessionService::class);
         $this->userAuthenticationService = Mockery::mock(UserAuthenticationService::class);
 
-        $this->authCoordinator = new AuthCoordinator(
+        $this->authCoordinator = new OAuthCoordinator(
             socialiteService: $this->socialiteService,
             serverTokenService: $this->serverTokenService,
             clientNonceService: $this->clientNonceService,

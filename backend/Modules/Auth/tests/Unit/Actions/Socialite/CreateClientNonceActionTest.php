@@ -9,7 +9,7 @@ use Mockery;
 use Modules\Auth\Actions\Socialite\CreateClientNonceAction;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
-use Modules\Auth\Services\AuthCoordinator;
+use Modules\Auth\Services\OAuthCoordinator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -20,7 +20,7 @@ use Throwable;
 #[Group('auth-actions')]
 class CreateClientNonceActionTest extends TestCase
 {
-    private Mockery\MockInterface|AuthCoordinator $authCoordinator;
+    private Mockery\MockInterface|OAuthCoordinator $authCoordinator;
 
     private Mockery\MockInterface|ResponseFactory $responseFactory;
 
@@ -31,7 +31,7 @@ class CreateClientNonceActionTest extends TestCase
         parent::setUp();
 
         // Mock dependencies
-        $this->authCoordinator = Mockery::mock(AuthCoordinator::class);
+        $this->authCoordinator = Mockery::mock(OAuthCoordinator::class);
         $this->responseFactory = Mockery::mock(ResponseFactory::class);
 
         // Instantiate the action with mocked dependencies
@@ -52,7 +52,7 @@ class CreateClientNonceActionTest extends TestCase
         $expectedPayload = ['nonce' => $expectedNonce];
         $jsonResponse = new JsonResponse($expectedPayload, 200);
 
-        // The AuthCoordinator should return the nonce
+        // The OAuthCoordinator should return the nonce
         $this->authCoordinator
             ->shouldReceive('createClientNonce')
             ->once()

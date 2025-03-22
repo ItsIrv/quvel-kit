@@ -8,7 +8,7 @@ use Modules\Auth\Actions\Socialite\RedirectAction;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\RedirectRequest;
-use Modules\Auth\Services\AuthCoordinator;
+use Modules\Auth\Services\OAuthCoordinator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -18,7 +18,7 @@ use Tests\TestCase;
 #[Group('auth-actions')]
 class RedirectActionTest extends TestCase
 {
-    private Mockery\MockInterface|AuthCoordinator $authCoordinator;
+    private Mockery\MockInterface|OAuthCoordinator $authCoordinator;
 
     private RedirectAction $action;
 
@@ -26,7 +26,7 @@ class RedirectActionTest extends TestCase
     {
         parent::setUp();
 
-        $this->authCoordinator = Mockery::mock(AuthCoordinator::class);
+        $this->authCoordinator = Mockery::mock(OAuthCoordinator::class);
         $this->action = new RedirectAction($this->authCoordinator);
     }
 

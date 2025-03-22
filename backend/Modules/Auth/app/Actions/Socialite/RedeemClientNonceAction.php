@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\RedeemNonceRequest;
-use Modules\Auth\Services\AuthCoordinator;
+use Modules\Auth\Services\OAuthCoordinator;
 use Throwable;
 
 /**
@@ -16,7 +16,7 @@ use Throwable;
 class RedeemClientNonceAction
 {
     public function __construct(
-        private readonly AuthCoordinator $authCoordinator,
+        private readonly OAuthCoordinator $authCoordinator,
         private readonly ResponseFactory $responseFactory,
     ) {}
 

@@ -15,7 +15,7 @@ use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Events\OAuthLoginSuccess;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\CallbackRequest;
-use Modules\Auth\Services\AuthCoordinator;
+use Modules\Auth\Services\OAuthCoordinator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -26,7 +26,7 @@ use Throwable;
 #[Group('auth-actions')]
 class CallbackActionTest extends TestCase
 {
-    private Mockery\MockInterface|AuthCoordinator $authCoordinator;
+    private Mockery\MockInterface|OAuthCoordinator $authCoordinator;
 
     private Mockery\MockInterface|FrontendService $frontendService;
 
@@ -40,7 +40,7 @@ class CallbackActionTest extends TestCase
     {
         parent::setUp();
 
-        $this->authCoordinator = Mockery::mock(AuthCoordinator::class);
+        $this->authCoordinator = Mockery::mock(OAuthCoordinator::class);
         $this->frontendService = Mockery::mock(FrontendService::class);
         $this->eventDispatcher = Mockery::mock(EventDispatcher::class);
         $this->responseFactory = Mockery::mock(ResponseFactory::class);
