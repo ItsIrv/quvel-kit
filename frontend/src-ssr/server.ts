@@ -76,7 +76,7 @@ export const listen = defineSsrListen(({ app, devHttpsApp, port }) => {
  * Should you need the result of the "listen()" call above,
  * you can use the "listenResult" param.
  *
- * Can be async: defineSsrClose(async ({ listenResult }) => { ... }))
+ * Can be async: defineSsrClose(async ({ listenResult }) => { ... })
  */
 export const close = defineSsrClose(({ listenResult }) => {
   return listenResult.close();

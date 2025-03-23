@@ -70,13 +70,13 @@ class TenantServiceProvider extends ModuleServiceProvider
                 /** @var Repository $appConfig */
                 $appConfig = $app['config'];
 
-                // Backend Configuration (API)
+                // Backend Configuration
                 $appConfig->set('app.name', $tenantConfig->appName);
                 $appConfig->set('app.env', $tenantConfig->appEnv);
                 $appConfig->set('app.debug', $tenantConfig->debug);
                 $appConfig->set('app.url', $tenantConfig->apiUrl);
 
-                // Frontend Configuration (appUrl)
+                // Frontend Configuration
                 $appConfig->set('vite.api_url', $tenantConfig->apiUrl);
                 $appConfig->set('vite.app_url', $tenantConfig->appUrl);
 
@@ -84,7 +84,7 @@ class TenantServiceProvider extends ModuleServiceProvider
                 $appConfig->set('mail.from.name', $tenantConfig->mailFromName);
                 $appConfig->set('mail.from.address', $tenantConfig->mailFromAddress);
 
-                // OAuth Config (Google Login)
+                // OAuth Config
                 $appConfig->set(
                     'services.google.redirect',
                     "$tenantConfig->apiUrl/auth/provider/google/callback",

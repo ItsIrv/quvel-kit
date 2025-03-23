@@ -10,12 +10,12 @@ enum TenantConfigVisibility: string
     case PUBLIC = 'public';
 
     /**
-     * Exposed to SSR context only.
+     * Exposed down to the SSR level.
      */
     case PROTECTED = 'protected';
 
     /**
-     * Never exposed publicly. For internal backend use only.
+     * Never exposed. For internal backend use only.
      */
     case PRIVATE = 'private';
 }

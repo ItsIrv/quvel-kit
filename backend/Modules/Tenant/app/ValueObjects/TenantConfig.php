@@ -13,25 +13,73 @@ use Modules\Tenant\Enums\TenantConfigVisibility;
  */
 class TenantConfig implements Arrayable
 {
+    /** The base API endpoint (e.g., https://api.quvel.app) */
+    public readonly string $apiUrl;
+
+    /** The main application (UI) URL, typically the frontend app (e.g., https://quvel.app) */
+    public readonly string $appUrl;
+
+    /** The name of the app used for branding */
+    public readonly string $appName;
+
+    /** The Laravel environment (e.g., local, staging, production) */
+    public readonly string $appEnv;
+
+    /** Internal-only API URL for capacitor-to-laravel SSR calls */
+    public readonly ?string $internalApiUrl;
+
+    /** Whether debug mode is enabled */
+    public readonly bool $debug;
+
+    /** Name used in 'from' header for tenant emails */
+    public readonly string $mailFromName;
+
+    /** Email address used in 'from' header for tenant emails */
+    public readonly string $mailFromAddress;
+
+    /**
+     * @var string|null Capacitor scheme
+     * - _DEEP deep link, https://<appUrl>
+     * - <value> custom scheme <value>://<appUrl>
+     * - null no scheme
+     */
+    public readonly ?string $capacitorScheme;
+
+    /**
+     * Visibility settings per field
+     * @var array<string, TenantConfigVisibility>
+     */
+    public readonly array $visibility;
+
     public function __construct(
-        public readonly string $apiUrl,
-        // TODO: This is the frontend URL. Rename to frontendUrl for clarity.
-        public readonly string $appUrl,
-        public readonly string $appName,
-        public readonly string $appEnv,
-        public readonly ?string $internalApiUrl = null,
-        public readonly bool $debug = false,
-        public readonly string $mailFromName = '',
-        public readonly string $mailFromAddress = '',
-        public readonly string $appScheme = 'deeplink',  // 'internal', 'external', 'deeplink'
-        /** @var array<string, TenantConfigVisibility> */
-        public readonly array $visibility = [],
-    ) {}
+        string  $apiUrl,
+        string  $appUrl,
+        string  $appName,
+        string  $appEnv,
+        ?string $internalApiUrl = null,
+        bool    $debug = false,
+        string  $mailFromName = '',
+        string  $mailFromAddress = '',
+        array   $visibility = [],
+        string  $capacitorScheme = null,
+    )
+    {
+        $this->apiUrl = $apiUrl;
+        $this->appUrl = $appUrl;
+        $this->appName = $appName;
+        $this->appEnv = $appEnv;
+        $this->internalApiUrl = $internalApiUrl;
+        $this->debug = $debug;
+        $this->mailFromName = $mailFromName;
+        $this->mailFromAddress = $mailFromAddress;
+        $this->visibility = $visibility;
+        $this->capacitorScheme = $capacitorScheme;
+    }
 
     /**
      * Create an instance from an array.
      *
-     * @param  array<string, mixed>  $data  The configuration data.
+     * @param array<string, mixed> $data The configuration data.
      */
     public static function fromArray(array $data): self
     {
@@ -48,6 +96,7 @@ class TenantConfig implements Arrayable
                 static fn($value) => TenantConfigVisibility::tryFrom($value) ?? TenantConfigVisibility::PRIVATE,
                 $data['__visibility'] ?? []
             ),
+            capacitorScheme: $data['capacitor_scheme'] ?? null,
         );
     }
 
@@ -66,9 +115,10 @@ class TenantConfig implements Arrayable
             'mail_from_name' => $this->mailFromName,
             'mail_from_address' => $this->mailFromAddress,
             '__visibility' => array_map(
-                static fn (TenantConfigVisibility $v): string => $v->value,
+                static fn(TenantConfigVisibility $v): string => $v->value,
                 $this->visibility,
             ),
+            'capacitor_scheme' => $this->capacitorScheme,
         ];
     }
 }

@@ -22,14 +22,6 @@ const props = defineProps({
 });
 
 /**
- * Checks if `message` is already inside `errors`, avoiding duplicates.
- */
-// const isMessageInErrors = computed(() => {
-
-//   return false;
-// });
-
-/**
  * Extracts the most relevant error message.
  * - If `message` is already inside `errors`, we ignore `message` to prevent duplication.
  * - If `errors` exist, extract the first error.
@@ -48,12 +40,7 @@ const errorMessage = computed(() => {
 
 <template>
   <FadeInOut>
-    <q-banner
-      v-if="errorMessage"
-      class="bg-negative text-white"
-      dense
-      rounded
-    >
+    <q-banner v-if="errorMessage" class="bg-negative text-white" dense rounded>
       {{ errorMessage }}
     </q-banner>
   </FadeInOut>

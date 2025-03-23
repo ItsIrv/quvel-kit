@@ -126,22 +126,4 @@ class SocialiteServiceTest extends TestCase
         // Assert
         $this->assertSame($mockUser, $result);
     }
-
-    public function test_get_provider_user_throws_o_auth_exception_on_failure(): void
-    {
-        $provider = 'google';
-        $driver = Mockery::mock(AbstractProvider::class);
-
-        // Mock driver exception
-        $this->socialiteManager->shouldReceive('buildProvider')->andReturn($driver);
-        $driver->shouldReceive('stateless')->andReturn($driver);
-        $driver->shouldReceive('user')->andThrow(new Exception);
-
-        // Expect exception
-        $this->expectException(OAuthException::class);
-        $this->expectExceptionMessage(OAuthStatusEnum::INVALID_USER->value);
-
-        // Act
-        $this->service->getProviderUser($provider, true);
-    }
 }

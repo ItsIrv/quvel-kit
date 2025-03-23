@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Services\FrontendService;
 use App\Services\User\UserCreateService;
 use App\Services\User\UserFindService;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Modules\Tenant\Contexts\TenantContext;
@@ -21,7 +22,8 @@ class AppServiceProvider extends ServiceProvider
             $tenantContext = $app->make(TenantContext::class);
 
             return new FrontendService(
-                $tenantContext->getConfigValue('appUrl'),
+                $app->make(Redirector::class),
+                $tenantContext->get()->config,
             );
         });
 

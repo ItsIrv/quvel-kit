@@ -2,9 +2,10 @@ import { createAxios } from 'src/utils/axiosUtil';
 import { Tenant, TenantConfig } from '../types/tenant.types';
 
 export class TenantCacheService {
+  private static readonly REFRESH_INTERVAL = 1000 * 60;
   private static instance: TenantCacheService;
-  private tenants: Map<string, Tenant> = new Map();
-  private parents: Map<string, Tenant> = new Map();
+  private readonly tenants: Map<string, Tenant> = new Map();
+  private readonly parents: Map<string, Tenant> = new Map();
 
   private constructor() {}
 
@@ -18,7 +19,7 @@ export class TenantCacheService {
       await this.instance.loadTenants();
 
       // Refresh cache every minute
-      setInterval(() => void this.instance.loadTenants(), 1000 * 60 * 1); // 1 minute
+      setInterval(() => void this.instance.loadTenants(), this.REFRESH_INTERVAL); // 1 minute
     }
     return this.instance;
   }

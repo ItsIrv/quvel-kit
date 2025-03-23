@@ -23,7 +23,7 @@ class CallbackAction
         private readonly OAuthCoordinator $authCoordinator,
         private readonly FrontendService $frontendService,
         private readonly EventDispatcher $eventDispatcher,
-        private readonly ResponseFactory $responseFactory,
+        private readonly ResponseFactory $responseFactory
     ) {}
 
     /**
@@ -44,7 +44,9 @@ class CallbackAction
                     new OAuthLoginSuccess($result->getSignedNonce() ?? '')
                 );
 
-                return $this->responseFactory->view('auth::callback');
+                return $this->frontendService->redirectToDeviceOrFallback(
+                    fn () => $this->responseFactory->view('auth::callback')
+                );
             }
 
             return $this->frontendService->redirectPage(

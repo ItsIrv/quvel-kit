@@ -31,16 +31,6 @@ class UserFindService
     }
 
     /**
-     * Find a user by username.
-     *
-     * @param  string  $username
-     */
-    // public function findByUsername(string $username): ?User
-    // {
-    //     return User::where('username', '=', $username)->first();
-    // }
-
-    /**
      * Find a user by a field and value.
      */
     public function findByField(string $field, string $value): ?User

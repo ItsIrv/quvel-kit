@@ -202,7 +202,7 @@ watch(
       <q-form class="my-4" ref="authForm" @submit.prevent="onAuthFormSubmit">
         <EmailField
           v-model="email"
-          :error-message="(loginTask.errors.value.get('email') as string) ?? ''"
+          :error-message="loginTask.errors.value.get('email') ?? ''"
           :error="loginTask.errors.value.has('email')"
         />
 
@@ -210,14 +210,14 @@ watch(
           <NameField
             v-if="isSignup"
             v-model="name"
-            :error-message="(loginTask.errors.value.get('name') as string) ?? ''"
+            :error-message="loginTask.errors.value.get('name') ?? ''"
             :error="loginTask.errors.value.has('name')"
           />
         </BackInOutUp>
 
         <PasswordField
           v-model="password"
-          :error-message="(loginTask.errors.value.get('password') as string) ?? ''"
+          :error-message="loginTask.errors.value.get('password') ?? ''"
           :error="loginTask.errors.value.has('password')"
         />
 
