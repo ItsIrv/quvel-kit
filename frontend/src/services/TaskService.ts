@@ -133,7 +133,7 @@ export class TaskService extends Service implements BootableService {
      */
     function handleTaskCompletion<Payload>(
       data: unknown,
-      handlers?: SuccessCallbackOrValue<Payload> | ErrorCallbackOrValue<unknown>,
+      handlers?: SuccessCallbackOrValue<Payload> | ErrorCallbackOrValue,
       notification?: Resolvable<boolean | string>,
       isError = false,
     ): void {
@@ -141,7 +141,7 @@ export class TaskService extends Service implements BootableService {
 
       const t = container.i18n.instance.global.t?.bind(container);
       const te = container.i18n.instance.global.te?.bind(container);
-      const errorContext: ErrorHandlerContext<unknown> = {
+      const errorContext: ErrorHandlerContext = {
         error: data,
         errors: currentErrors.value || {},
         i18n: {

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Modules\Tenant\Casts\TenantConfigCast;
-use Modules\Tenant\database\factories\TenantFactory;
+use Modules\Tenant\Database\Factories\TenantFactory;
 use Modules\Tenant\ValueObjects\TenantConfig;
 
 /**
@@ -19,7 +19,7 @@ use Modules\Tenant\ValueObjects\TenantConfig;
  * @property string $name
  * @property string $domain
  * @property int|null $parent_id
- * @property TenantConfig|null $config
+ * @property TenantConfig $config
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Tenant|null $parent

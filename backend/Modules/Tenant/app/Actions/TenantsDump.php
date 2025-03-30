@@ -12,9 +12,9 @@ use Modules\Tenant\Transformers\TenantDumpTransformer;
  */
 class TenantsDump
 {
-    private const CACHE_KEY = 'tenants';
+    private const string CACHE_KEY = 'tenants';
 
-    private const CACHE_TTL = 60; // 1 minute
+    private const int CACHE_TTL = 60; // 1 minute
 
     /**
      * Execute the action.

@@ -7,7 +7,7 @@ declare global {
 }
 
 export class ConfigService {
-  private config: TenantConfig;
+  private readonly config: TenantConfig;
 
   constructor(ssrConfig?: TenantConfig) {
     // Check if running in browser and `window.__TENANT_CONFIG__` is available

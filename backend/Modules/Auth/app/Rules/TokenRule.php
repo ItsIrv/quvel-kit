@@ -4,7 +4,10 @@ namespace Modules\Auth\Rules;
 
 class TokenRule
 {
-    public const RULES = [
+    /**
+     * @var array<string>
+     */
+    public const array RULES = [
         'string',
         'min:40',
         'max:200',

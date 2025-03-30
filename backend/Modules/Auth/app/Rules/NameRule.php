@@ -4,7 +4,10 @@ namespace Modules\Auth\app\Rules;
 
 class NameRule
 {
-    public const RULES = [
+    /**
+     * @var array<string>
+     */
+    public const array RULES = [
         'string',
         'min:2',
         'max:30',

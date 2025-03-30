@@ -3,7 +3,6 @@
 namespace Modules\Tenant\Tests\Feature\Actions;
 
 use Illuminate\Cache\Repository as CacheRepository;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Mockery;
 use Modules\Tenant\Actions\TenantsDump;
 use Modules\Tenant\Models\Tenant;
@@ -41,7 +40,6 @@ class TenantsDumpFeatureTest extends TestCase
         $result = $action->__invoke($tenantFindServiceMock, $cacheMock);
 
         // Assert correct response type
-        $this->assertInstanceOf(AnonymousResourceCollection::class, $result);
         $this->assertEquals(TenantDumpTransformer::collection($cachedTenants), $result);
     }
 
@@ -73,7 +71,6 @@ class TenantsDumpFeatureTest extends TestCase
         $result = $action->__invoke($tenantFindServiceMock, $cacheMock);
 
         // Assert correct response type
-        $this->assertInstanceOf(AnonymousResourceCollection::class, $result);
         $this->assertEquals(TenantDumpTransformer::collection($freshTenants), $result);
     }
 }

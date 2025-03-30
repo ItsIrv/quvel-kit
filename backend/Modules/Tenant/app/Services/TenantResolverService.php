@@ -16,8 +16,8 @@ class TenantResolverService
      * Create a new TenantResolverService instance.
      */
     public function __construct(
-        private TenantFindService $tenantFindService,
-        private TenantSessionService $tenantSessionService,
+        private readonly TenantFindService $tenantFindService,
+        private readonly TenantSessionService $tenantSessionService,
     ) {}
 
     /**

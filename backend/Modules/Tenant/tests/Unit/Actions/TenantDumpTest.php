@@ -30,7 +30,6 @@ class TenantDumpTest extends TestCase
 
         $result = $action->__invoke($tenantContext);
 
-        $this->assertInstanceOf(TenantDumpTransformer::class, $result);
         $this->assertEquals($this->tenant, $result->resource);
     }
 }

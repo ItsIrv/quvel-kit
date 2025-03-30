@@ -38,7 +38,6 @@ class GetSessionActionTest extends TestCase
         $result = $this->action->__invoke($request);
 
         // Assert
-        $this->assertInstanceOf(UserResource::class, $result);
         $this->assertEquals(new UserResource($user), $result);
     }
 }

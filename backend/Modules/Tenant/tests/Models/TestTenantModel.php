@@ -12,6 +12,4 @@ class TestTenantModel extends Model
     protected $table = 'test_tenant_models';
 
     protected $fillable = ['name', 'tenant_id'];
-
-    public $timestamps = true;
 }
