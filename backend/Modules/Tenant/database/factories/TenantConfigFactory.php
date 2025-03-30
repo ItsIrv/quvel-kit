@@ -25,7 +25,7 @@ class TenantConfigFactory
             appUrl: 'https://'.str_replace('api.', '', $apiDomain),
             appName: $appName,
             appEnv: $appEnv,
-            internalApiUrl: $internalApiDomain ? "https://$internalApiDomain:8000" : null,
+            internalApiUrl: $internalApiDomain ? "http://$internalApiDomain:8000" : null,
             debug: true,
             mailFromName: $mailFromName,
             mailFromAddress: $mailFromAddress,

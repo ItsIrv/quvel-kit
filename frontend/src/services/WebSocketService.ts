@@ -8,88 +8,102 @@ declare global {
 }
 
 export class WebSocketService {
-  private echo!: Echo<'pusher'>;
+  private echo: Echo<'pusher'> | null = null;
+  private isConnected = false;
+
+  private readonly apiKey: string;
+  private readonly cluster: string;
+  private readonly apiUrl: string;
 
   constructor({ apiKey, cluster, apiUrl }: { apiKey: string; cluster: string; apiUrl: string }) {
-    if (typeof window !== 'undefined') {
-      this.setUpEcho(apiKey, cluster, apiUrl);
+    this.apiKey = apiKey;
+    this.cluster = cluster;
+    this.apiUrl = apiUrl;
+
+    if (typeof window !== 'undefined' && !window.Pusher) {
+      window.Pusher = Pusher;
     }
   }
 
-  private setUpEcho(apiKey: string, cluster: string, apiUrl: string) {
-    if (!window.Pusher) {
-      window.Pusher = Pusher;
-    }
+  /**
+   * Manually connect to WebSockets.
+   */
+  public connect(): void {
+    if (this.isConnected || this.echo) return;
 
     this.echo = new Echo({
       broadcaster: 'pusher',
-      key: apiKey,
-      cluster,
+      key: this.apiKey,
+      cluster: this.cluster,
       forceTLS: true,
       encrypted: true,
       disableStats: true,
-      authEndpoint: `${apiUrl}/broadcasting/auth`,
+      authEndpoint: `${this.apiUrl}/broadcasting/auth`,
       auth: {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
         },
       },
     });
+
+    this.isConnected = true;
   }
 
   /**
-   * Subscribe to an event on a given public channel.
+   * Automatically connect if not already.
    */
-  subscribe<T>(channelName: string, event: string, callback: (data: T) => unknown) {
+  private ensureConnected(): void {
+    if (!this.isConnected) {
+      this.connect();
+    }
+  }
+
+  /**
+   * Subscribe to an event on a public channel.
+   */
+  public subscribe<T>(channelName: string, event: string, callback: (data: T) => unknown) {
+    this.ensureConnected();
     return this.echo?.channel(channelName).listen(event, callback) || null;
   }
 
-  /**
-   * Subscribe to a private channel.
-   */
-  subscribePrivate(channelName: string, event: string, callback: (data: unknown) => unknown) {
+  public subscribePrivate(
+    channelName: string,
+    event: string,
+    callback: (data: unknown) => unknown,
+  ) {
+    this.ensureConnected();
     return this.echo?.private(channelName).listen(event, callback) || null;
   }
 
-  /**
-   * Subscribe to a presence channel.
-   */
-  subscribePresence(channelName: string, callback: (data: unknown) => unknown) {
+  public subscribePresence(channelName: string, callback: (data: unknown) => unknown) {
+    this.ensureConnected();
     return this.echo?.join(channelName).listen('.presence', callback) || null;
   }
 
-  /**
-   * Subscribe to an encrypted private channel.
-   */
-  subscribeEncrypted(channelName: string, event: string, callback: (data: unknown) => unknown) {
+  public subscribeEncrypted(
+    channelName: string,
+    event: string,
+    callback: (data: unknown) => unknown,
+  ) {
+    this.ensureConnected();
     return this.echo?.encryptedPrivate(channelName).listen(event, callback) || null;
   }
 
-  /**
-   * Get the socket ID.
-   */
-  getSocketId(): string | undefined {
+  public getSocketId(): string | undefined {
     return this.echo?.socketId();
   }
 
-  /**
-   * Unsubscribe from a channel.
-   */
-  unsubscribe(channelName: string) {
+  public unsubscribe(channelName: string) {
     this.echo?.leave(channelName);
   }
 
-  /**
-   * Unsubscribe from all channels.
-   */
-  unsubscribeAll() {
+  public unsubscribeAll() {
     this.echo?.leaveAllChannels();
   }
 
-  /**
-   * Disconnect from WebSockets.
-   */
-  disconnect() {
+  public disconnect() {
     this.echo?.disconnect();
+    this.echo = null;
+    this.isConnected = false;
   }
 }

@@ -28,7 +28,7 @@ class LogoutAction
         $this->userAuthenticationService->logout();
 
         return $this->responseFactory->json([
-            'message' => AuthStatusEnum::LOGOUT_SUCCESS->getTranslatedMessage(),
+            'message' => AuthStatusEnum::LOGOUT_SUCCESS->value,
         ]);
     }
 }

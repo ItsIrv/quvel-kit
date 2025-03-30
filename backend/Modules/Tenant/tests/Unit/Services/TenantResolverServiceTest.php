@@ -11,6 +11,7 @@ use Modules\Tenant\Services\TenantSessionService;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\TestCase;
 
@@ -25,8 +26,11 @@ class TenantResolverServiceTest extends TestCase
 
     private TenantResolverService $tenantResolverService;
 
-    private Request|MockObject $requestMock;
+    private Request|Mockery\MockInterface $requestMock;
 
+    /**
+     * @throws Exception
+     */
     #[Before]
     protected function setUpTest(): void
     {
@@ -48,6 +52,8 @@ class TenantResolverServiceTest extends TestCase
 
     /**
      * Test that resolveTenant returns tenant from session if available.
+     *
+     * @throws TenantNotFoundException
      */
     public function test_resolve_tenant_returns_tenant_from_session_if_available(): void
     {
@@ -65,6 +71,8 @@ class TenantResolverServiceTest extends TestCase
 
     /**
      * Test that resolveTenant returns tenant from find service if available.
+     *
+     * @throws TenantNotFoundException
      */
     public function test_resolve_tenant_returns_tenant_from_find_service_if_available(): void
     {

@@ -45,10 +45,11 @@ export class TaskService extends Service implements BootableService {
    */
   newTask<Result = unknown, Payload = unknown>(
     options: TaskOptions<Result, Payload>,
+    mutableProps: (keyof TaskOptions<Result, Payload>)[] = [],
   ): {
     isActive: ComputedRef<boolean>;
-    run: typeof runTask;
-    reset: typeof resetTask;
+    run: (customOptions?: Partial<TaskOptions<Result, Payload>>) => Promise<Result | false>;
+    reset: () => void;
     state: Ref<TaskState>;
     error: Ref<unknown>;
     errors: Ref<ErrorBag>;
@@ -60,9 +61,6 @@ export class TaskService extends Service implements BootableService {
     const currentState = ref<TaskState>('fresh');
     const container = this.container as ServiceContainer;
 
-    /**
-     * Resets the task state.
-     */
     function resetTask(): void {
       currentError.value = undefined;
       currentErrors.value = new Map();
@@ -70,25 +68,33 @@ export class TaskService extends Service implements BootableService {
       currentState.value = 'fresh';
     }
 
-    /**
-     * Runs the task with optional overrides.
-     */
     async function runTask(
       customOptions?: Partial<TaskOptions<Result, Payload>>,
     ): Promise<Result | false> {
       resetTask();
-
       currentState.value = 'active';
 
-      // Merge provided options with initial options
-      const taskOptions: TaskOptions<Result, Payload> = { ...options, ...customOptions };
+      // Enforce frozen behavior if mutableProps are defined
+      let taskOptions: TaskOptions<Result, Payload> = options;
 
-      // Check if the task should run
+      if (mutableProps.length > 0 && customOptions) {
+        const filteredOptions: Partial<TaskOptions<Result, Payload>> = {};
+
+        for (const key of Object.keys(customOptions) as Array<keyof TaskOptions<Result, Payload>>) {
+          if (mutableProps.includes(key)) {
+            filteredOptions[key] = customOptions[key] as never;
+          }
+        }
+
+        taskOptions = { ...options, ...filteredOptions };
+      } else if (customOptions) {
+        taskOptions = { ...options, ...customOptions };
+      }
+
       if ((await resolveValue(taskOptions.shouldRun)) === false) {
         return false;
       }
 
-      // Show loading indicator if applicable
       const shouldShowLoading = await resolveValue(taskOptions.showLoading);
       if (shouldShowLoading === true) {
         showLoading(0, taskOptions.loadingOptions);
@@ -128,17 +134,12 @@ export class TaskService extends Service implements BootableService {
       }
     }
 
-    /**
-     * Handles success or error processing, including executing handlers and showing notifications.
-     */
     function handleTaskCompletion<Payload>(
       data: unknown,
       handlers?: SuccessCallbackOrValue<Payload> | ErrorCallbackOrValue,
       notification?: Resolvable<boolean | string>,
       isError = false,
     ): void {
-      let handledCalls = 0;
-
       const t = container.i18n.instance.global.t?.bind(container);
       const te = container.i18n.instance.global.te?.bind(container);
       const errorContext: ErrorHandlerContext = {
@@ -162,8 +163,6 @@ export class TaskService extends Service implements BootableService {
             } else {
               (handler as unknown as SuccessHandler).callback(handlerKey, successContext);
             }
-
-            handledCalls++;
           }
         }
       } else {
@@ -174,16 +173,9 @@ export class TaskService extends Service implements BootableService {
         }
       }
 
-      if (isError && handledCalls === 0 && data instanceof Error) {
-        // addError('message', data.message);
-      }
-
       void showResolvedNotification(notification, isError);
     }
 
-    /**
-     * Shows notification if configured.
-     */
     async function showResolvedNotification(
       notification: Resolvable<boolean | string> | undefined,
       isError: boolean,
@@ -196,12 +188,10 @@ export class TaskService extends Service implements BootableService {
         } else {
           let responseMessage: string;
 
-          // Try to get messages from result or errors
           if (isError && currentErrors.value.has('message')) {
             responseMessage =
               currentErrors.value.get('message') || container.i18n.t('common.task.error');
           } else {
-            // On success try to get message from result
             responseMessage = (currentResult.value as { message: string }).message;
           }
 
@@ -220,65 +210,6 @@ export class TaskService extends Service implements BootableService {
       error: currentError,
       errors: currentErrors,
       result: currentResult,
-    };
-  }
-
-  /**
-   * Creates a new frozen task with a whitelist of allowed property overrides in run().
-   * This is useful for tasks that should not be changed, such as global helper tasks.
-   *
-   * @param options The options for the task.
-   * @param mutableProps The properties that can be overridden.
-   * @returns The frozen task.
-   */
-  newFrozenTask<Result = unknown, Payload = unknown>(
-    options: TaskOptions<Result, Payload>,
-    mutableProps: (keyof TaskOptions<Result, Payload>)[] = [],
-  ): {
-    isActive: ComputedRef<boolean>;
-    run: (customOptions?: Partial<TaskOptions<Result, Payload>>) => Promise<Result | false>;
-    reset: () => void;
-    state: Ref<TaskState>;
-    error: Ref<unknown>;
-    errors: Ref<ErrorBag>;
-    result: Ref<Result | undefined>;
-  } {
-    const task = this.newTask<Result, Payload>(options);
-
-    /**
-     * Runs the frozen task while ensuring only allowed properties are overridden.
-     */
-    async function run(
-      customOptions?: Partial<TaskOptions<Result, Payload>>,
-    ): Promise<Result | false> {
-      if (!customOptions) {
-        return await task.run();
-      }
-
-      // Create a filtered options object with only allowed keys
-      const filteredOptions: Partial<TaskOptions<Result, Payload>> = {};
-
-      for (const key of Object.keys(customOptions) as Array<keyof TaskOptions<Result, Payload>>) {
-        if (mutableProps.includes(key)) {
-          filteredOptions[key] = customOptions[key] as never;
-        }
-      }
-
-      return await task.run(filteredOptions);
-    }
-
-    function reset(): void {
-      task.reset();
-    }
-
-    return {
-      run,
-      reset,
-      isActive: task.isActive,
-      state: task.state,
-      error: task.error,
-      errors: task.errors,
-      result: task.result,
     };
   }
 }

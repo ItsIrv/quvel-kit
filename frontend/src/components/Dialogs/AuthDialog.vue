@@ -54,7 +54,7 @@ const authForm = ref<HTMLFormElement>();
  *
  * Handles user login and updates session state.
  */
-const loginTask = container.task.newFrozenTask({
+const loginTask = container.task.newTask({
   showNotification: {
     success: () => container.i18n.t('auth.status.success.loggedIn'),
   },
@@ -71,7 +71,7 @@ const loginTask = container.task.newFrozenTask({
  *
  * Handles user signup.
  */
-const signupTask = container.task.newFrozenTask({
+const signupTask = container.task.newTask({
   showNotification: {
     success: () => container.i18n.t('auth.status.success.signedUp'),
   },

@@ -81,12 +81,14 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        */
       async fetchSession(): Promise<void> {
         if (!this.hasRun) {
-          const { data } = await this.$container.api.get<{ data: IUser }>('/auth/session');
+          try {
+            const { data } = await this.$container.api.get<{ data: IUser }>('/auth/session');
 
-          this.setSession(data);
+            this.setSession(data);
+          } finally {
+            this.hasRun = true;
+          }
         }
-
-        this.hasRun = true;
       },
 
       /**
@@ -157,16 +159,13 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
             '.oauth.result',
             ({ status }) => {
               wsService.unsubscribeAll();
+              status = normalizeOAuthStatus(status);
 
               if (status !== OAuthStatusEnum.LOGIN_OK) {
-                showNotification(
-                  mapStatusToType(status),
-                  this.$container.i18n.t(normalizeOAuthStatus(status)),
-                  {
-                    timeout: 8000,
-                    closeBtn: true,
-                  },
-                );
+                showNotification(mapStatusToType(status), this.$container.i18n.t(status), {
+                  timeout: 8000,
+                  closeBtn: true,
+                });
 
                 return;
               }
@@ -187,6 +186,8 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
                     ),
                   successHandlers: ({ user }): void => {
                     this.setSession(user);
+
+                    wsService.disconnect();
                   },
                 })
                 .run();

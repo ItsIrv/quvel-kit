@@ -51,7 +51,7 @@ class LoginAction
         }
 
         return $this->responseFactory->json([
-            'message' => AuthStatusEnum::LOGIN_SUCCESS->getTranslatedMessage(),
+            'message' => AuthStatusEnum::LOGIN_SUCCESS->value,
             'user' => $user,
         ], 201);
     }

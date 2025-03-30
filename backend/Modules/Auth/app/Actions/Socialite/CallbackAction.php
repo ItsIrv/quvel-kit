@@ -51,7 +51,7 @@ class CallbackAction
             return $this->frontendService->redirect(
                 '',
                 [
-                    'message' => $result->getStatus()->getTranslatedMessage(),
+                    'message' => $result->getStatus()->value,
                 ],
             );
         } catch (Throwable $e) {

@@ -20,11 +20,11 @@ return new class extends Migration
                 ->nullable()
                 ->after('id')
                 ->constrained('tenants')
-                ->cascadeOnDelete()
-                ->index();
+                ->cascadeOnDelete();
 
             // Ensure emails are unique per tenant
             $table->unique(['tenant_id', 'email'], 'users_tenant_email_unique');
+            $table->index('tenant_id');
         });
     }
 

@@ -7,8 +7,6 @@ import { useContainer } from 'src/composables/useContainer';
  */
 export function piniaPlugin({ store }: PiniaPluginContext, ssrContext?: QSsrContext | null): void {
   // Use SSR context if available, otherwise fallback to useContainer
-  const container = ssrContext?.$container || useContainer();
-
   // Attach the full container to all stores
-  store.$container = container;
+  store.$container = ssrContext?.$container || useContainer();
 }

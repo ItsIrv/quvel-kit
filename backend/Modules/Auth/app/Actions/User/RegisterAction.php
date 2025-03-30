@@ -43,7 +43,7 @@ class RegisterAction
         $this->userCreateService->create($loginData);
 
         return $this->responseFactory->json(
-            ['message' => AuthStatusEnum::REGISTER_SUCCESS->getTranslatedMessage()],
+            ['message' => AuthStatusEnum::REGISTER_SUCCESS->value],
             201,
         );
     }

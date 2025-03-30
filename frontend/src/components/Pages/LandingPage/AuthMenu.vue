@@ -27,7 +27,7 @@ const isDropdownOpen = ref(false);
  *
  * Handles user logout and updates session state.
  */
-const logoutTask = container.task.newFrozenTask({
+const logoutTask = container.task.newTask({
   showNotification: {
     success: container.i18n.t('auth.status.success.loggedOut'),
   },
