@@ -82,14 +82,14 @@ class LoginActionTest extends TestCase
             ->andReturn(true);
 
         $expectedResponse = new JsonResponse([
-            'message' => AuthStatusEnum::LOGIN_SUCCESS->getTranslatedMessage(),
+            'message' => AuthStatusEnum::LOGIN_SUCCESS->value,
             'user' => ['id' => 1, 'email' => 'test@example.com'],
         ], 201);
 
         $this->responseFactory->shouldReceive('json')
             ->once()
             ->with([
-                'message' => AuthStatusEnum::LOGIN_SUCCESS->getTranslatedMessage(),
+                'message' => AuthStatusEnum::LOGIN_SUCCESS->value,
                 'user' => $user,
             ], 201)
             ->andReturn($expectedResponse);

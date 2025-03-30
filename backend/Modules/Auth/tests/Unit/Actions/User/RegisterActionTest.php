@@ -66,12 +66,12 @@ class RegisterActionTest extends TestCase
             ->once();
 
         $expectedResponse = new JsonResponse([
-            'message' => AuthStatusEnum::REGISTER_SUCCESS->getTranslatedMessage(),
+            'message' => AuthStatusEnum::REGISTER_SUCCESS->value,
         ], 201);
 
         $this->responseFactory->shouldReceive('json')
             ->once()
-            ->with(['message' => AuthStatusEnum::REGISTER_SUCCESS->getTranslatedMessage()], 201)
+            ->with(['message' => AuthStatusEnum::REGISTER_SUCCESS->value], 201)
             ->andReturn($expectedResponse);
 
         // Act

@@ -38,4 +38,11 @@ export class I18nService extends Service {
   t(key: string, params: Record<string, unknown> = {}): string {
     return this.i18n.global.t(key, params);
   }
+
+  /**
+   * Checks if a translation exists.
+   */
+  te(key: string): boolean {
+    return this.i18n.global.te(key);
+  }
 }

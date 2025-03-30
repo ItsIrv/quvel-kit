@@ -93,7 +93,7 @@ class CallbackActionTest extends TestCase
 
         $this->frontendService
             ->shouldReceive('redirect')
-            ->with('', ['message' => OAuthStatusEnum::LOGIN_OK->getTranslatedMessage()])
+            ->with('', ['message' => OAuthStatusEnum::LOGIN_OK->value])
             ->once()
             ->andReturn(new RedirectResponse('mock-callback-view', 302));
 
@@ -138,7 +138,7 @@ class CallbackActionTest extends TestCase
         $this->frontendService
             ->shouldReceive('redirect')
             ->once()
-            ->with('', ['message' => $expectedStatus->getTranslatedMessage()])
+            ->with('', ['message' => $expectedStatus->value])
             ->andReturn($redirectResponse);
 
         // Act

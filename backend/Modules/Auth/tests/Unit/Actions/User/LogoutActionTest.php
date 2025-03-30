@@ -47,12 +47,12 @@ class LogoutActionTest extends TestCase
             ->andReturnNull();
 
         $expectedResponse = new JsonResponse([
-            'message' => AuthStatusEnum::LOGOUT_SUCCESS->getTranslatedMessage(),
+            'message' => AuthStatusEnum::LOGOUT_SUCCESS->value,
         ]);
 
         $this->responseFactory->shouldReceive('json')
             ->once()
-            ->with(['message' => AuthStatusEnum::LOGOUT_SUCCESS->getTranslatedMessage()])
+            ->with(['message' => AuthStatusEnum::LOGOUT_SUCCESS->value])
             ->andReturn($expectedResponse);
 
         // Act
