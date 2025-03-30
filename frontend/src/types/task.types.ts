@@ -49,7 +49,7 @@ export interface ErrorHandler<Payload = unknown, Err = unknown> extends Handler<
  * @template Payload The payload type of the task.
  * @template Result The result type of the task.
  */
-export interface SuccessHandler<Payload = unknown, Result = unknown> extends Handler<Payload> {
+export interface SuccessHandler<Result = unknown, Payload = unknown> extends Handler<Payload> {
   callback: (payload: Payload, context: SuccessHandlerContext<Result>) => void;
 }
 
@@ -59,8 +59,8 @@ export interface SuccessHandler<Payload = unknown, Result = unknown> extends Han
  * @template Result The result type of the task.
  */
 export type SuccessCallbackOrValue<Result = unknown, Payload = unknown> =
-  | Array<SuccessHandler<Result>>
-  | ((payload: Payload) => unknown);
+  | Array<SuccessHandler<Result, Payload>>
+  | ((result: Result) => unknown);
 
 /**
  * Allows defining an error callback or a list of error handlers.
@@ -137,7 +137,7 @@ export interface TaskOptions<Result = unknown, Payload = unknown> {
   /**
    * Handlers executed on successful task execution.
    */
-  successHandlers?: SuccessCallbackOrValue<Payload>;
+  successHandlers?: SuccessCallbackOrValue<Result>;
 
   /**
    * Handlers executed when an error occurs.

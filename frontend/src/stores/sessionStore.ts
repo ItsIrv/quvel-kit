@@ -32,10 +32,15 @@ type SessionGetters = {
  */
 interface SessionActions {
   setSession(data: IUser): void;
+
   fetchSession(): Promise<void>;
+
   logout(): Promise<void>;
+
   login(email: string, password: string): Promise<User>;
+
   signUp(email: string, password: string, name: string): Promise<void>;
+
   loginWithOAuth(provider: string, stateless: boolean): Promise<void>;
 }
 
@@ -139,6 +144,8 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
         try {
           const wsService = this.$container.ws;
+          const taskService = this.$container.task;
+
           wsService.unsubscribeAll();
 
           const { nonce } = await this.$container.api.post<{ nonce: string }>(
@@ -148,10 +155,10 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
           wsService.subscribe<{ status: OAuthStatusEnum }>(
             `auth.nonce.${nonce}`,
             '.oauth.result',
-            async ({ status }) => {
+            ({ status }) => {
               wsService.unsubscribeAll();
 
-              if (status !== OAuthStatusEnum.CLIENT_TOKEN_GRANTED) {
+              if (status !== OAuthStatusEnum.LOGIN_OK) {
                 showNotification(
                   mapStatusToType(status),
                   this.$container.i18n.t(normalizeOAuthStatus(status)),
@@ -164,23 +171,25 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
                 return;
               }
 
-              try {
-                const { user } = await this.$container.api.post<{ user: IUser }>(
-                  `/auth/provider/${provider}/redeem-nonce`,
-                  {
-                    nonce,
+              void taskService
+                .newTask<{ user: IUser }>({
+                  showLoading: true,
+                  showNotification: {
+                    success: () => this.$container.i18n.t('auth.status.success.loggedIn'),
+                    error: () => this.$container.i18n.t('auth.status.errors.login'),
                   },
-                );
-
-                this.setSession(user);
-
-                showNotification(
-                  'positive',
-                  this.$container.i18n.t('auth.status.success.loggedIn'),
-                );
-              } catch {
-                showNotification('negative', this.$container.i18n.t('auth.status.errors.login'));
-              }
+                  task: async (): Promise<{ user: IUser }> =>
+                    await this.$container.api.post<{ user: IUser }>(
+                      `/auth/provider/${provider}/redeem-nonce`,
+                      {
+                        nonce,
+                      },
+                    ),
+                  successHandlers: ({ user }): void => {
+                    this.setSession(user);
+                  },
+                })
+                .run();
             },
           );
 

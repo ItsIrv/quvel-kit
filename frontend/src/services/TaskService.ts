@@ -150,7 +150,7 @@ export class TaskService extends Service implements BootableService {
         },
       };
 
-      const context: SuccessHandlerContext<Payload> = { result: data as Payload };
+      const successContext: SuccessHandlerContext<Payload> = { result: data as Payload };
 
       if (Array.isArray(handlers)) {
         for (const handler of handlers) {
@@ -160,7 +160,7 @@ export class TaskService extends Service implements BootableService {
             if (isError) {
               (handler as unknown as ErrorHandler).callback(handlerKey, errorContext);
             } else {
-              (handler as unknown as SuccessHandler).callback(handlerKey, context);
+              (handler as unknown as SuccessHandler).callback(handlerKey, successContext);
             }
 
             handledCalls++;
@@ -168,12 +168,9 @@ export class TaskService extends Service implements BootableService {
         }
       } else {
         if (isError) {
-          handlers?.(data, errorContext);
+          handlers?.(data as Payload, errorContext);
         } else {
-          (handlers as (data: Result, context: SuccessHandlerContext<Payload>) => unknown)?.(
-            data as Result,
-            context,
-          );
+          (handlers as (data: Result) => unknown)?.(data as Result);
         }
       }
 
@@ -283,12 +280,5 @@ export class TaskService extends Service implements BootableService {
       errors: task.errors,
       result: task.result,
     };
-  }
-
-  withLoading<Result = unknown, Payload = unknown>(options: TaskOptions<Result, Payload>) {
-    return this.newTask<Result, Payload>({
-      ...options,
-      showLoading: true,
-    });
   }
 }

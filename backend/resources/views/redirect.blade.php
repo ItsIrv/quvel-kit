@@ -2,7 +2,6 @@
 
 @php
     $hasScheme = !empty($schemeUrl);
-    $countdownSeconds = 3;
 @endphp
 
 @section('content')
@@ -14,7 +13,7 @@
 
     @if ($hasScheme)
         <p class="text-sm text-gray-400 mb-6" id="redirect-msg">
-            Redirecting to the app in <span id="countdown">{{ $countdownSeconds }}</span> seconds...
+            You will be redirected back to the app shortly.
         </p>
 
         <a
@@ -27,7 +26,7 @@
         <p class="text-gray-300 text-sm mb-6" id="close-msg">
             Please return to the app to continue.
             <span class="block mt-1 text-sm text-gray-500">
-                This window will close in <span id="countdown">{{ $countdownSeconds }}</span> seconds...
+                This window will close in <span id="countdown">10</span> seconds...
             </span>
         </p>
     @endif
@@ -36,40 +35,41 @@
 @push('scripts')
     <script>
         (function () {
-            const seconds = {{ $countdownSeconds }};
-            const redirectUrl = {!! $hasScheme ? json_encode($schemeUrl, JSON_THROW_ON_ERROR) : 'null' !!};
+            const hasScheme = {{ $hasScheme ? 'true' : 'false' }};
+            const schemeUrl = {!! json_encode($schemeUrl ?? '', JSON_THROW_ON_ERROR) !!};
+            const redirectMsg = document.getElementById('redirect-msg');
             const countdownEl = document.getElementById('countdown');
-            const messageEl = document.getElementById('{{ $hasScheme ? 'redirect-msg' : 'close-msg' }}');
 
-            let counter = seconds;
+            if (hasScheme) {
+                // Attempt redirect immediately
+                window.location.href = schemeUrl;
 
-            if (redirectUrl && counter === 0) {
-                window.location.href = redirectUrl;
-                return;
-            }
-
-            const interval = setInterval(() => {
-                counter--;
-                if (countdownEl) countdownEl.textContent = counter;
-
-                if (counter <= 0) {
-                    clearInterval(interval);
-
-                    if (redirectUrl) {
-                        window.location.href = redirectUrl;
-                    } else {
-                        window.close();
+                // Fallback after 10s
+                setTimeout(() => {
+                    if (redirectMsg) {
+                        redirectMsg.insertAdjacentHTML(
+                            'beforeend',
+                            '<br><span class="text-gray-400 text-sm">If the app didn’t open, you can tap the button above or close this tab manually.</span>'
+                        );
                     }
 
-                    setTimeout(() => {
-                        messageEl.insertAdjacentHTML(
-                            'beforeend',
-                            '<br><span class="text-gray-400 text-sm">If this did not happen automatically, you may close this window manually.</span>'
-                        );
-                    }, 1000);
-                }
-            }, 1000);
+                    window.close();
+                }, 10000);
+            } else {
+                let seconds = 10;
 
+                const interval = setInterval(() => {
+                    seconds--;
+                    if (countdownEl) countdownEl.textContent = seconds;
+
+                    if (seconds <= 0) {
+                        clearInterval(interval);
+                        window.close();
+                    }
+                }, 1000);
+            }
+
+            // Safari edge case: tab close
             window.addEventListener('unload', () => {
                 window.close();
             });
