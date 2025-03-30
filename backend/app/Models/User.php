@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Traits\TenantScopedModel;
 
 /**
@@ -62,5 +64,16 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * @return BelongsTo<Tenant, User>
+     */
+    public function tenant(): BelongsTo
+    {
+        /**
+         * @var BelongsTo<Tenant, User>
+         */
+        return $this->belongsTo(Tenant::class);
     }
 }

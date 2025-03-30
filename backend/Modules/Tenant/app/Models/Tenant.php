@@ -2,6 +2,7 @@
 
 namespace Modules\Tenant\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -84,5 +85,14 @@ class Tenant extends Model
     public function getEffectiveConfig(): ?TenantConfig
     {
         return $this->parent->config ?? $this->config;
+    }
+
+    /**
+     * @return HasMany<User, Tenant>
+     */
+    public function users(): HasMany
+    {
+        /** @var HasMany<User, Tenant> */
+        return $this->hasMany(User::class);
     }
 }

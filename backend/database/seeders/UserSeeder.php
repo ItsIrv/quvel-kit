@@ -19,8 +19,6 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $tenant = Tenant::first();
-
-        // Set the context for the TenantScopedModel requirements on User
         app(TenantContext::class)->set($tenant);
 
         // Main user

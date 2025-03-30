@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table): void {
+        Schema::table('users', static function (Blueprint $table): void {
             $table->string('password')->nullable()->change();
             $table->string('provider_id')->nullable()->after('email');
             $table->string('avatar')->nullable()->after('provider_id');
 
-            $table->unique(['tenant_id', 'provider_id']);
+            $table->unique('provider_id');
         });
     }
 
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table): void {
+        Schema::table('users', static function (Blueprint $table): void {
             $table->string('password')->nullable(false)->change();
             $table->dropColumn(['provider_id', 'avatar']);
         });

@@ -24,7 +24,7 @@ trait TenantScopedModel
 
         static::creating(
             /** @phpstan-ignore-next-line */
-            fn (Model $model): mixed => $model->tenant_id ??= $model->getTenant()->id
+            static fn (Model $model): mixed => $model->tenant_id ??= $model->getTenant()->id
         );
     }
 
@@ -74,6 +74,9 @@ trait TenantScopedModel
             ->update($attributes, $options);
     }
 
+    /**
+     * @throws TenantMismatchException
+     */
     private function guardWithTenantId(): void
     {
         $tenantId = static::getTenant()->id;

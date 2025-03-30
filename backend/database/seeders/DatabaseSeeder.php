@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Tenant\Database\Seeders\TenantDatabaseSeeder;
+use Nwidart\Modules\Facades\Module;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,7 +12,35 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(TenantDatabaseSeeder::class);
+        $allModules = Module::toCollection();
+
+        $prioritized = $allModules->filter(fn ($m) => $m->get('seed_priority') !== null)
+            ->sortBy(fn ($m) => $m->get('seed_priority'));
+
+        $nonPrioritized = $allModules->filter(fn ($m) => $m->get('seed_priority') === null);
+
+        foreach ($prioritized as $module) {
+            $this->seedModule($module);
+        }
+
+        // Then seed UserSeeder
+        echo "Seeding: UserSeeder\n";
         $this->call(UserSeeder::class);
+
+        foreach ($nonPrioritized as $module) {
+            $this->seedModule($module);
+        }
+    }
+
+    protected function seedModule($module): void
+    {
+        $name = $module->getName();
+        $className = "Modules\\$name\\Database\\Seeders\\{$name}DatabaseSeeder";
+
+        echo "Seeding module: {$name}\n";
+
+        if (class_exists($className)) {
+            $this->call($className);
+        }
     }
 }
