@@ -5,6 +5,7 @@ namespace Modules\Auth\Exceptions;
 use App\Services\FrontendService;
 use Exception;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Throwable;
 
@@ -20,9 +21,9 @@ class OAuthException extends Exception
         parent::__construct($status->value, 0, $previous);
     }
 
-    public function render(): RedirectResponse
+    public function render(): RedirectResponse|Response
     {
-        return app(FrontendService::class)->redirectPage(
+        return app(FrontendService::class)->redirect(
             '',
             [
                 'message' => $this->getMessage(),

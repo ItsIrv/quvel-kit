@@ -3,12 +3,11 @@
 namespace Modules\Auth\Actions\Socialite;
 
 use App\Services\FrontendService;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Modules\Auth\Enums\OAuthStatusEnum;
-use Modules\Auth\Events\OAuthLoginSuccess;
+use Modules\Auth\Events\OAuthLoginResult;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\CallbackRequest;
 use Modules\Auth\Services\OAuthCoordinator;
@@ -23,7 +22,6 @@ class CallbackAction
         private readonly OAuthCoordinator $authCoordinator,
         private readonly FrontendService $frontendService,
         private readonly EventDispatcher $eventDispatcher,
-        private readonly ResponseFactory $responseFactory
     ) {}
 
     /**
@@ -36,24 +34,25 @@ class CallbackAction
         try {
             $result = $this->authCoordinator->authenticateCallback(
                 $provider,
-                $request->validated('state', '')
+                $request->validated('state', ''),
             );
 
             if ($result->isStateless()) {
                 $this->eventDispatcher->dispatch(
-                    new OAuthLoginSuccess($result->getSignedNonce() ?? '')
+                    new OAuthLoginResult(
+                        $result->getSignedNonce() ?? '',
+                        $result,
+                    ),
                 );
 
-                return $this->frontendService->redirectToDeviceOrFallback(
-                    fn () => $this->responseFactory->view('auth::callback')
-                );
+                $this->frontendService->setIsCapacitor(true);
             }
 
-            return $this->frontendService->redirectPage(
+            return $this->frontendService->redirect(
                 '',
                 [
-                    'message' => $result->getStatus()->value,
-                ]
+                    'message' => $result->getStatus()->getTranslatedMessage(),
+                ],
             );
         } catch (Throwable $e) {
             if (! $e instanceof OAuthException) {

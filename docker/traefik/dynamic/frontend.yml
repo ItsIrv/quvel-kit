@@ -12,7 +12,7 @@ http:
       entryPoints: websecure
       service: web-ws
       tls: {}
-      middlewares:
+      middlewa1res:
         - websocket-headers
 
     capacitor:

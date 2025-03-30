@@ -2,72 +2,78 @@
 
 namespace App\Services;
 
-use Illuminate\Routing\Redirector;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
 use Modules\Tenant\ValueObjects\TenantConfig;
 
 class FrontendService
 {
+    private bool $isCapacitor;
+
     public function __construct(
-        private readonly Redirector $redirector,
         private readonly TenantConfig $config,
-    ) {}
+        private readonly Redirector $redirector,
+        Request $request,
+        private readonly ResponseFactory $responseFactory,
+    ) {
+        $this->isCapacitor = $request->hasHeader('X-Capacitor');
+    }
 
-    /**
-     * Redirect to a frontend-relative path (e.g. "/dashboard")
-     */
-    public function redirect(string $to): RedirectResponse
+    public function setIsCapacitor(bool $isCapacitor): void
     {
-        $path = ltrim($to, '/');
-
-        return $this->redirector->away("{$this->config->appUrl}/$path");
+        $this->isCapacitor = $isCapacitor;
     }
 
     /**
-     * Redirect to a frontend page with optional query parameters.
+     * Redirect to a frontend route, handling capacitor schemes if necessary.
      *
-     * @param array<string, string> $payload
+     * @param  array<string, string>  $query
      */
-    public function redirectPage(string $page, array $payload = []): RedirectResponse
+    public function redirect(string $path, array $query = []): RedirectResponse|Response
     {
-        $uri = '/'.ltrim($page, '/');
+        $finalUrl = $this->buildUrl($path, $query);
 
-        if (! empty($payload)) {
-            $uri .= '?'.http_build_query($payload);
+        if (! $this->isCapacitor || $this->config->capacitorScheme === '_deep') {
+            return $this->redirector->away($finalUrl);
         }
 
-        return $this->redirect($uri);
+        return $this->responseFactory->view('redirect', [
+            'message' => null,
+            'schemeUrl' => $finalUrl,
+        ]);
     }
 
     /**
-     * Get the full URL of a frontend page with optional parameters.
+     * Get the full app URL, applying scheme override if capacitor is detected.
+     *
+     * @param  array<string, string>  $query
      */
-    public function getPageUrl(string $page, array $payload = []): string
+    public function getPageUrl(string $path, array $query = []): string
     {
-        $uri = '/'.ltrim($page, '/');
-
-        if (! empty($payload)) {
-            $uri .= '?'.http_build_query($payload);
-        }
-
-        return "{$this->config->appUrl}$uri";
+        return $this->buildUrl($path, $query);
     }
 
     /**
-     * Redirect back to the device using capacitor scheme, or fallback to given response.
+     * Build the final URL with scheme and query string support.
+     *
+     * @param  array<string, string>  $query
      */
-    public function redirectToDeviceOrFallback(callable $fallback): RedirectResponse|Response
+    private function buildUrl(string $path, array $query = []): string
     {
-        if ($this->config->capacitorScheme === '_DEEP') {
-            return $this->redirect('/');
+        $url = rtrim($this->config->appUrl, '/').'/'.ltrim($path, '/');
+
+        if (! empty($query)) {
+            $url .= '?'.http_build_query($query);
         }
 
-        if (! empty($this->config->capacitorScheme)) {
-            $url = "{$this->config->capacitorScheme}://{$this->config->appUrl}";
-            return $this->redirector->away($url);
+        // If it's a capacitor request and a custom scheme is defined
+        if ($this->isCapacitor && $this->config->capacitorScheme && $this->config->capacitorScheme !== '_deep') {
+            $url = preg_replace('/^https?/', $this->config->capacitorScheme, $url) ?? $url;
         }
 
-        return $fallback();
+        return $url;
     }
 }

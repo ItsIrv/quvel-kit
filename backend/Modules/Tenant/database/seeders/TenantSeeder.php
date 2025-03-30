@@ -40,6 +40,7 @@ class TenantSeeder extends Seeder
                 $lanApiDomain,
                 'api-lan',
                 'QuVel - LAN',
+                capacitorScheme: 'quvel',
             ),
         );
 
@@ -109,7 +110,7 @@ class TenantSeeder extends Seeder
                 'tenant_id' => $tenant->id,
                 'password' => Hash::make(config('quvel.default_password')),
                 'email_verified_at' => now(),
-                'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . random_int(1, 100),
+                'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed='.random_int(1, 100),
             ],
         );
     }

@@ -71,7 +71,7 @@ class RedeemClientNonceActionTest extends TestCase
 
         $expectedResponseData = [
             'user' => $mockUser,
-            'message' => OAuthStatusEnum::LOGIN_OK->getTranslatedMessage(),
+            'message' => OAuthStatusEnum::CLIENT_TOKEN_GRANTED->getTranslatedMessage(),
         ];
         $expectedJsonResponse = new JsonResponse($expectedResponseData);
 

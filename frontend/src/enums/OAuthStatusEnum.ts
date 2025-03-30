@@ -1,0 +1,36 @@
+const OAuthStatusEnum = {
+  INVALID_NONCE: 'auth::status.errors.invalidNonce',
+  INVALID_TOKEN: 'auth::status.errors.invalidToken',
+  INVALID_PROVIDER: 'auth::status.errors.invalidProvider',
+  INVALID_USER: 'auth::status.errors.invalidUser',
+  EMAIL_TAKEN: 'auth::status.errors.emailTaken',
+  INVALID_CONFIG: 'auth::status.errors.invalidConfig',
+  INTERNAL_ERROR: 'auth::status.errors.internalError',
+  EMAIL_NOT_VERIFIED: 'auth::status.warnings.emailNotVerified',
+  LOGIN_OK: 'auth::status.success.loginOk',
+  USER_CREATED: 'auth::status.success.userCreated',
+  CLIENT_TOKEN_GRANTED: 'auth::status.success.clientTokenGranted',
+} as const;
+
+const normalizeOAuthStatus = (status: OAuthStatusEnum): string => {
+  return status.replace('auth::', 'auth.');
+};
+
+const mapStatusToType = (status: OAuthStatusEnum): 'positive' | 'warning' | 'negative' | 'info' => {
+  const type = status.split('.')[1]; // get `success`, `errors`, `warnings`
+
+  switch (type) {
+    case 'success':
+      return 'positive';
+    case 'warnings':
+      return 'warning';
+    case 'errors':
+      return 'negative';
+    default:
+      return 'info';
+  }
+};
+
+type OAuthStatusEnum = (typeof OAuthStatusEnum)[keyof typeof OAuthStatusEnum];
+
+export { mapStatusToType, normalizeOAuthStatus, OAuthStatusEnum, OAuthStatusEnum as default };

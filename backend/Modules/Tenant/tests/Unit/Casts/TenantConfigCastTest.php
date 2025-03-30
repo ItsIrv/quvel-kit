@@ -2,6 +2,7 @@
 
 namespace Modules\Tenant\Tests\Unit\Casts;
 
+use JsonException;
 use Modules\Tenant\Casts\TenantConfigCast;
 use Modules\Tenant\Enums\TenantConfigVisibility;
 use Modules\Tenant\Models\Tenant;
@@ -17,6 +18,8 @@ class TenantConfigCastTest extends TestCase
 {
     /**
      * Test that TenantConfigCast returns null when value is empty.
+     *
+     * @throws JsonException
      */
     public function test_get_returns_null_when_value_is_empty(): void
     {
@@ -32,6 +35,8 @@ class TenantConfigCastTest extends TestCase
 
     /**
      * Test that TenantConfigCast correctly casts JSON string to TenantConfig object.
+     *
+     * @throws JsonException
      */
     public function test_get_casts_json_to_tenant_config(): void
     {
@@ -50,9 +55,10 @@ class TenantConfigCastTest extends TestCase
                 'api_url' => TenantConfigVisibility::PUBLIC->value,
                 'app_name' => TenantConfigVisibility::PUBLIC->value,
             ],
+            'capacitor_scheme' => null,
         ];
 
-        $jsonValue = json_encode($configData);
+        $jsonValue = json_encode($configData, JSON_THROW_ON_ERROR);
         $result = $cast->get($model, 'config', $jsonValue, []);
 
         $this->assertInstanceOf(TenantConfig::class, $result);
@@ -73,10 +79,13 @@ class TenantConfigCastTest extends TestCase
             TenantConfigVisibility::PUBLIC,
             $result->visibility['app_name'],
         );
+        $this->assertNull($result->capacitorScheme);
     }
 
     /**
      * Test that TenantConfigCast returns null when set value is null.
+     *
+     * @throws JsonException
      */
     public function test_set_returns_null_when_value_is_null(): void
     {
@@ -89,6 +98,8 @@ class TenantConfigCastTest extends TestCase
 
     /**
      * Test that TenantConfigCast correctly casts TenantConfig object to JSON string.
+     *
+     * @throws JsonException
      */
     public function test_set_casts_tenant_config_to_json(): void
     {
@@ -114,7 +125,7 @@ class TenantConfigCastTest extends TestCase
 
         $this->assertIsString($result);
 
-        $decodedResult = json_decode($result, true);
+        $decodedResult = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
         $this->assertEquals('https://api.example.com', $decodedResult['api_url']);
         $this->assertEquals('https://app.example.com', $decodedResult['app_url']);
         $this->assertEquals('Example App', $decodedResult['app_name']);
@@ -130,6 +141,8 @@ class TenantConfigCastTest extends TestCase
 
     /**
      * Test that TenantConfigCast correctly casts array to JSON string.
+     *
+     * @throws JsonException
      */
     public function test_set_casts_array_to_json(): void
     {
@@ -155,7 +168,7 @@ class TenantConfigCastTest extends TestCase
 
         $this->assertIsString($result);
 
-        $decodedResult = json_decode($result, true);
+        $decodedResult = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
         $this->assertEquals('https://api.example.com', $decodedResult['api_url']);
         $this->assertEquals('https://app.example.com', $decodedResult['app_url']);
         $this->assertEquals('Example App', $decodedResult['app_name']);

@@ -7,12 +7,11 @@ use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
 use Mockery;
 use Modules\Auth\Actions\Socialite\CallbackAction;
-use Modules\Auth\DTO\OAuthAuthenticationResult;
+use Modules\Auth\DTO\OAuthCallbackResult;
 use Modules\Auth\Enums\OAuthStatusEnum;
-use Modules\Auth\Events\OAuthLoginSuccess;
+use Modules\Auth\Events\OAuthLoginResult;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\CallbackRequest;
 use Modules\Auth\Services\OAuthCoordinator;
@@ -32,8 +31,6 @@ class CallbackActionTest extends TestCase
 
     private Mockery\MockInterface|EventDispatcher $eventDispatcher;
 
-    private Mockery\MockInterface|ResponseFactory $responseFactory;
-
     private CallbackAction $action;
 
     protected function setUp(): void
@@ -49,7 +46,6 @@ class CallbackActionTest extends TestCase
             authCoordinator: $this->authCoordinator,
             frontendService: $this->frontendService,
             eventDispatcher: $this->eventDispatcher,
-            responseFactory: $this->responseFactory,
         );
     }
 
@@ -57,7 +53,11 @@ class CallbackActionTest extends TestCase
      * @throws Throwable
      * @throws OAuthException
      */
-    public function test_stateless_flow_returns_callback_view(): void
+    /**
+     * @throws Throwable
+     * @throws OAuthException
+     */
+    public function test_stateless_flow_success(): void
     {
         // Arrange
         $provider = 'google';
@@ -70,9 +70,10 @@ class CallbackActionTest extends TestCase
             ->andReturn($signedState);
 
         // Suppose the coordinator returns a stateless result
-        $mockResult = Mockery::mock(OAuthAuthenticationResult::class);
+        $mockResult = Mockery::mock(OAuthCallbackResult::class);
         $mockResult->shouldReceive('isStateless')->once()->andReturn(true);
         $mockResult->shouldReceive('getSignedNonce')->once()->andReturn('signed-nonce-value');
+        $mockResult->shouldReceive('getStatus')->once()->andReturn(OAuthStatusEnum::LOGIN_OK);
 
         $this->authCoordinator
             ->shouldReceive('authenticateCallback')
@@ -83,22 +84,26 @@ class CallbackActionTest extends TestCase
         $this->eventDispatcher
             ->shouldReceive('dispatch')
             ->once()
-            ->with(Mockery::type(OAuthLoginSuccess::class));
+            ->with(Mockery::type(OAuthLoginResult::class));
 
-        $mockResponse = new Response('mock-callback-view', 200);
-        $this->responseFactory
-            ->shouldReceive('view')
+        $this->frontendService
+            ->shouldReceive('setIsCapacitor')
+            ->with(true)
+            ->once();
+
+        $this->frontendService
+            ->shouldReceive('redirect')
+            ->with('', ['message' => OAuthStatusEnum::LOGIN_OK->getTranslatedMessage()])
             ->once()
-            ->with('auth::callback')
-            ->andReturn($mockResponse);
+            ->andReturn(new RedirectResponse('mock-callback-view', 302));
 
         // Act
         $response = $this->action->__invoke($mockRequest, $provider);
 
         // Assert
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertEquals(200, $response->status());
-        $this->assertStringContainsString('mock-callback-view', $response->getContent());
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals(302, $response->status()); // Updated expected status code
+        $this->assertStringContainsString('mock-callback-view', $response->getTargetUrl());
     }
 
     /**
@@ -119,7 +124,7 @@ class CallbackActionTest extends TestCase
             ->andReturn($signedState);
 
         // Coordinator returns a stateful result
-        $mockResult = Mockery::mock(OAuthAuthenticationResult::class);
+        $mockResult = Mockery::mock(OAuthCallbackResult::class);
         $mockResult->shouldReceive('isStateless')->once()->andReturn(false);
         $mockResult->shouldReceive('getStatus')->once()->andReturn($expectedStatus);
 
@@ -131,9 +136,9 @@ class CallbackActionTest extends TestCase
 
         $redirectResponse = new RedirectResponse('/somewhere');
         $this->frontendService
-            ->shouldReceive('redirectPage')
+            ->shouldReceive('redirect')
             ->once()
-            ->with('', ['message' => $expectedStatus->value])
+            ->with('', ['message' => $expectedStatus->getTranslatedMessage()])
             ->andReturn($redirectResponse);
 
         // Act

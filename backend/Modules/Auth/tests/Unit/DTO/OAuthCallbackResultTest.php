@@ -3,17 +3,17 @@
 namespace Modules\Auth\Tests\Unit\DTO;
 
 use App\Models\User;
-use Modules\Auth\DTO\OAuthAuthenticationResult;
+use Modules\Auth\DTO\OAuthCallbackResult;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
-#[CoversClass(OAuthAuthenticationResult::class)]
+#[CoversClass(OAuthCallbackResult::class)]
 #[Group('auth-module')]
 #[Group('auth-dto')]
-class OAuthAuthenticationResultTest extends TestCase
+class OAuthCallbackResultTest extends TestCase
 {
     /**
      * Data provider for different statuses + stateless vs. stateful scenarios.
@@ -56,7 +56,7 @@ class OAuthAuthenticationResultTest extends TestCase
         $user = new User(['id' => 99]);
 
         // Act
-        $result = new OAuthAuthenticationResult($user, $status, $signedNonce);
+        $result = new OAuthCallbackResult($user, $status, $signedNonce);
 
         // Assert
         $this->assertSame($user, $result->getUser());

@@ -7,6 +7,7 @@ use App\Services\FrontendService;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\URL;
 use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Models\Tenant;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -49,10 +50,10 @@ class AppServiceProviderTest extends TestCase
         $mockTenantContext = $this->createMock(TenantContext::class);
 
         // Set up the mock to return a specific app URL
-        $expectedAppUrl = 'https://test-app.example.com';
-        $mockTenantContext->method('getConfigValue')
-            ->with('appUrl')
-            ->willReturn($expectedAppUrl);
+        $expectedAppUrl = $this->tenant->config->appUrl;
+        $mockTenantContext->method('get')
+            ->with()
+            ->willReturn($this->tenant);
 
         // Replace the TenantContext in the container with our mock
         $this->app->instance(TenantContext::class, $mockTenantContext);
@@ -76,14 +77,16 @@ class AppServiceProviderTest extends TestCase
     {
         // Create two request contexts with different tenant configs
         $firstMockContext = $this->createMock(TenantContext::class);
-        $firstMockContext->method('getConfigValue')
-            ->with('appUrl')
-            ->willReturn('https://first-tenant.example.com');
+        $firstMockContext->method('get')
+            ->with()
+            ->willReturn($this->tenant);
+
+        $secondTenant = Tenant::find(1);
 
         $secondMockContext = $this->createMock(TenantContext::class);
-        $secondMockContext->method('getConfigValue')
-            ->with('appUrl')
-            ->willReturn('https://second-tenant.example.com');
+        $secondMockContext->method('get')
+            ->with()
+            ->willReturn($secondTenant);
 
         // First request context
         $this->app->instance(TenantContext::class, $firstMockContext);

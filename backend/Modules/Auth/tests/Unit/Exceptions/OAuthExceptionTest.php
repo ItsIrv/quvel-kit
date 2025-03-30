@@ -29,9 +29,9 @@ class OAuthExceptionTest extends TestCase
         // Suppose redirectPage returns a RedirectResponse
         $redirectResponse = new RedirectResponse('/redirect?message='.$status->value);
 
-        // Expect the call "redirectPage('', ['message' => 'auth::status.errors.invalidNonce'])"
+        // Expect the call "redirect('', ['message' => 'auth::status.errors.invalidNonce'])"
         $mockFrontendService
-            ->shouldReceive('redirectPage')
+            ->shouldReceive('redirect')
             ->once()
             ->with('', ['message' => $status->value])
             ->andReturn($redirectResponse);

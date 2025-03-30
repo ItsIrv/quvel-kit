@@ -5,7 +5,7 @@ namespace Modules\Auth\DTO;
 use App\Models\User;
 use Modules\Auth\Enums\OAuthStatusEnum;
 
-class OAuthAuthenticationResult
+class OAuthCallbackResult
 {
     public function __construct(
         private readonly User $user,

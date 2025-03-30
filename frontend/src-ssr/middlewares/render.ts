@@ -2,28 +2,31 @@ import { type RenderError } from '#q-app';
 import { defineSsrMiddleware } from '#q-app/wrappers';
 import type { Request, Response } from 'express';
 import { TenantCacheService } from '../services/TenantCache';
-import { TenantConfig } from '../types/tenant.types';
+import { TenantConfigProtected } from '../types/tenant.types';
 
 const tenantService = TenantCacheService.getInstance();
 
 /**
  * Filters out non-public fields from the tenant config.
  */
-/**
- * Filters out non-public fields from the tenant config.
- */
-function filterTenantConfig(config: TenantConfig): Partial<TenantConfig> {
-  const filteredConfig = { ...config };
+function filterTenantConfig(config: TenantConfigProtected): Partial<TenantConfigProtected> {
+  const publicConfig: Partial<TenantConfigProtected> = {};
 
-  Object.keys(filteredConfig).forEach((key) => {
-    const typedKey = key as keyof TenantConfig;
+  if (config.__visibility) {
+    Object.keys(config.__visibility).forEach((key) => {
+      const typedKey = key as keyof TenantConfigProtected;
 
-    if (config.__visibility?.[typedKey] !== 'public') {
-      delete filteredConfig[typedKey];
-    }
-  });
+      if (config.__visibility![typedKey] === 'public') {
+        const value = config[typedKey];
 
-  return filteredConfig;
+        if (typeof value === 'string') {
+          publicConfig[typedKey] = value;
+        }
+      }
+    });
+  }
+
+  return publicConfig;
 }
 
 export default defineSsrMiddleware(({ app, resolve, render, serve }) => {

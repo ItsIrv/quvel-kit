@@ -5,13 +5,17 @@ namespace Modules\Auth\Events;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Queue\SerializesModels;
+use Modules\Auth\DTO\OAuthCallbackResult;
 
 // TODO: Need to pick a random channel name instead of the full nonce.
-class OAuthLoginSuccess implements ShouldBroadcast
+class OAuthLoginResult implements ShouldBroadcast
 {
     use SerializesModels;
 
-    public function __construct(public string $signedNonce) {}
+    public function __construct(
+        public readonly string $signedNonce,
+        private readonly OAuthCallbackResult $result
+    ) {}
 
     /**
      * @return Channel[]
@@ -22,11 +26,11 @@ class OAuthLoginSuccess implements ShouldBroadcast
     }
 
     /**
-     * @return array<string, bool>
+     * @return array<string, string>
      */
     public function broadcastWith(): array
     {
-        return ['success' => true];
+        return ['status' => $this->result->getStatus()->value];
     }
 
     /**
@@ -34,6 +38,6 @@ class OAuthLoginSuccess implements ShouldBroadcast
      */
     public function broadcastAs(): string
     {
-        return 'oauth.success';
+        return 'oauth.result';
     }
 }

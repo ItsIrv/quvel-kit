@@ -11,18 +11,18 @@ class TenantConfigFactory
      * Generate a tenant configuration.
      */
     public static function create(
-        string  $apiDomain,
+        string $apiDomain,
         ?string $internalApiDomain = null,
-        string  $appName = 'QuVel',
-        string  $appEnv = 'local',
-        string  $mailFromName = 'QuVel Support',
-        string  $mailFromAddress = 'support@quvel.app',
-        bool    $toArray = true,
-    ): array|TenantConfig
-    {
+        string $appName = 'QuVel',
+        string $appEnv = 'local',
+        string $mailFromName = 'QuVel Support',
+        string $mailFromAddress = 'support@quvel.app',
+        ?string $capacitorScheme = null,
+        bool $toArray = true,
+    ): array|TenantConfig {
         $config = new TenantConfig(
             apiUrl: "https://$apiDomain",
-            appUrl: 'https://' . str_replace('api.', '', $apiDomain),
+            appUrl: 'https://'.str_replace('api.', '', $apiDomain),
             appName: $appName,
             appEnv: $appEnv,
             internalApiUrl: $internalApiDomain ? "https://$internalApiDomain:8000" : null,
@@ -35,6 +35,7 @@ class TenantConfigFactory
                 'app_url' => TenantConfigVisibility::PUBLIC,
                 'app_name' => TenantConfigVisibility::PUBLIC,
             ],
+            capacitorScheme: $capacitorScheme,
         );
 
         return $toArray ? $config->toArray() : $config;

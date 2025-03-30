@@ -6,6 +6,8 @@ use App\Actions\QuvelWelcome;
 use App\Services\FrontendService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Mockery;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -18,10 +20,13 @@ class QuvelWelcomeTest extends TestCase
 {
     private QuvelWelcome $action;
 
+    private FrontendService|MockInterface $frontendService;
+
     #[Before]
     public function setupTest(): void
     {
         $this->action = new QuvelWelcome;
+        $this->frontendService = Mockery::mock(FrontendService::class);
     }
 
     /**
@@ -31,9 +36,7 @@ class QuvelWelcomeTest extends TestCase
     {
         $this->app->detectEnvironment(fn () => 'local');
 
-        $response = ($this->action)(
-            new FrontendService('https://quvel.app'),
-        );
+        $response = ($this->action)($this->frontendService);
 
         $this->assertInstanceOf(
             View::class,
@@ -52,11 +55,15 @@ class QuvelWelcomeTest extends TestCase
     public function test_redirects_to_frontend_url_in_production(): void
     {
         $url = 'https://quvel.app';
+
         $this->app->detectEnvironment(fn () => 'production');
 
-        $response = ($this->action)(
-            new FrontendService($url),
-        );
+        $this->frontendService->shouldReceive('redirect')
+            ->once()
+            ->with('')
+            ->andReturn(new RedirectResponse($url));
+
+        $response = ($this->action)($this->frontendService);
 
         $this->assertInstanceOf(
             RedirectResponse::class,
@@ -64,7 +71,7 @@ class QuvelWelcomeTest extends TestCase
         );
 
         $this->assertEquals(
-            "$url/",
+            $url,
             $response->getTargetUrl(),
         );
 

@@ -40,7 +40,7 @@ export class WebSocketService {
   /**
    * Subscribe to an event on a given public channel.
    */
-  subscribe(channelName: string, event: string, callback: (data: unknown) => unknown) {
+  subscribe<T>(channelName: string, event: string, callback: (data: T) => unknown) {
     return this.echo?.channel(channelName).listen(event, callback) || null;
   }
 

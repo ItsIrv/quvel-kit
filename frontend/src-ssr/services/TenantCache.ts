@@ -1,5 +1,5 @@
 import { createAxios } from 'src/utils/axiosUtil';
-import { Tenant, TenantConfig } from '../types/tenant.types';
+import { Tenant, TenantConfigProtected } from '../types/tenant.types';
 
 export class TenantCacheService {
   private static readonly REFRESH_INTERVAL = 1000 * 60;
@@ -30,12 +30,12 @@ export class TenantCacheService {
   private async loadTenants(): Promise<void> {
     try {
       const response = await createAxios().get<{
-        data: (Tenant & { config: TenantConfig })[];
+        data: (Tenant & { config: TenantConfigProtected })[];
       }>('http://quvel-app:8000/tenant/cache');
 
       response.data.data.forEach((tenant) => {
         // Ensure config is properly formatted
-        const formattedConfig: TenantConfig = {
+        const formattedConfig: TenantConfigProtected = {
           api_url: tenant.config.api_url ?? '',
           app_url: tenant.config.app_url ?? '',
           app_name: tenant.config.app_name ?? '',
@@ -65,7 +65,7 @@ export class TenantCacheService {
   /**
    * Find a tenant's config by domain. Always returns the parent domain config if available.
    */
-  public getTenantConfigByDomain(domain: string): TenantConfig | null {
+  public getTenantConfigByDomain(domain: string): TenantConfigProtected | null {
     const tenant = this.tenants.get(domain);
 
     if (!tenant) {

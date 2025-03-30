@@ -4,7 +4,7 @@ namespace Modules\Auth\Services;
 
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Modules\Auth\DTO\OAuthAuthenticationResult;
+use Modules\Auth\DTO\OAuthCallbackResult;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
 use Psr\SimpleCache\InvalidArgumentException;
@@ -65,7 +65,7 @@ class OAuthCoordinator
      * @throws OAuthException
      * @throws InvalidArgumentException
      */
-    public function authenticateCallback(string $provider, string $signedToken): OAuthAuthenticationResult
+    public function authenticateCallback(string $provider, string $signedToken): OAuthCallbackResult
     {
         $clientNonce = $this->serverTokenService->getClientNonce($signedToken);
         $stateless = $clientNonce !== null;
@@ -85,7 +85,7 @@ class OAuthCoordinator
                 : $this->completeSessionLogin($user->id);
         }
 
-        return new OAuthAuthenticationResult(
+        return new OAuthCallbackResult(
             $user,
             $status,
             $stateless ? $this->clientNonceService->getSignedNonce($clientNonce) : null,
@@ -101,9 +101,8 @@ class OAuthCoordinator
     public function redeemClientNonce(string $requestNonce): User
     {
         $nonce = $this->clientNonceService->getNonce($requestNonce);
-        $this->clientNonceService->forget($nonce);
-
         $userId = $this->clientNonceService->getUserIdFromNonce($nonce);
+        $this->clientNonceService->forget($nonce);
 
         if (! $userId) {
             throw new OAuthException(OAuthStatusEnum::INTERNAL_ERROR);

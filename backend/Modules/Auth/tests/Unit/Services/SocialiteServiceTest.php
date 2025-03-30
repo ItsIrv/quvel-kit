@@ -2,14 +2,12 @@
 
 namespace Modules\Auth\Tests\Unit\Services;
 
-use Exception;
 use Illuminate\Http\RedirectResponse;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\SocialiteManager;
 use Laravel\Socialite\Two\AbstractProvider;
 use Mockery;
 use Mockery\MockInterface;
-use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Services\SocialiteService;
 use Modules\Tenant\database\factories\TenantConfigFactory;

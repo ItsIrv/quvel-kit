@@ -3,6 +3,7 @@ import type { User } from 'src/models/User';
 import type { IUser } from 'src/types/user.types';
 import { createUserFromApi } from 'src/factories/userFactory';
 import { showNotification } from 'src/utils/notifyUtil';
+import OAuthStatusEnum, { mapStatusToType, normalizeOAuthStatus } from 'src/enums/OAuthStatusEnum';
 
 /**
  * Type for the authenticated user.
@@ -16,8 +17,6 @@ interface SessionState {
   user: StateUser;
   // Don't try to re-authenticate when hydrating
   hasRun: boolean;
-  // Oauth nonce
-  nonce: string | null;
 }
 
 /**
@@ -38,9 +37,6 @@ interface SessionActions {
   login(email: string, password: string): Promise<User>;
   signUp(email: string, password: string, name: string): Promise<void>;
   loginWithOAuth(provider: string, stateless: boolean): Promise<void>;
-  setNonce(nonce: string): void;
-  getNonce(): string | null;
-  clearNonce(): void;
 }
 
 /**
@@ -52,7 +48,6 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
     state: (): SessionState => ({
       user: null,
       hasRun: false,
-      nonce: null,
     }),
 
     getters: {
@@ -138,6 +133,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
         if (!stateless) {
           window.location.href = redirectBase;
+
           return;
         }
 
@@ -149,56 +145,49 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
             `/auth/provider/${provider}/create-nonce`,
           );
 
-          this.setNonce(nonce);
-
-          wsService.subscribe(`auth.nonce.${nonce}`, '.oauth.success', async () => {
-            try {
-              const { user } = await this.$container.api.post<{ user: IUser }>(
-                `/auth/provider/${provider}/redeem-nonce`,
-                {
-                  nonce,
-                },
-              );
-
-              this.setSession(user);
-
-              showNotification('positive', this.$container.i18n.t('auth.status.success.loggedIn'));
-
+          wsService.subscribe<{ status: OAuthStatusEnum }>(
+            `auth.nonce.${nonce}`,
+            '.oauth.result',
+            async ({ status }) => {
               wsService.unsubscribeAll();
-            } catch {
-              showNotification('negative', this.$container.i18n.t('auth.status.errors.login'));
-            }
-          });
 
-          // Open provider authentication in a new popup window
-          const authUrl = `${redirectBase}?nonce=${encodeURIComponent(nonce)}`;
+              if (status !== OAuthStatusEnum.CLIENT_TOKEN_GRANTED) {
+                showNotification(
+                  mapStatusToType(status),
+                  this.$container.i18n.t(normalizeOAuthStatus(status)),
+                  {
+                    timeout: 8000,
+                    closeBtn: true,
+                  },
+                );
 
-          window.open(authUrl, '_blank', 'width=500,height=600');
+                return;
+              }
+
+              try {
+                const { user } = await this.$container.api.post<{ user: IUser }>(
+                  `/auth/provider/${provider}/redeem-nonce`,
+                  {
+                    nonce,
+                  },
+                );
+
+                this.setSession(user);
+
+                showNotification(
+                  'positive',
+                  this.$container.i18n.t('auth.status.success.loggedIn'),
+                );
+              } catch {
+                showNotification('negative', this.$container.i18n.t('auth.status.errors.login'));
+              }
+            },
+          );
+
+          window.location.href = `${redirectBase}?nonce=${encodeURIComponent(nonce)}`;
         } catch {
           showNotification('negative', this.$container.i18n.t('common.task.error'));
         }
-      },
-
-      /**
-       * Stores the OAuth nonce in the session store
-       * @param nonce - The OAuth nonce
-       */
-      setNonce(nonce: string) {
-        this.nonce = nonce;
-      },
-
-      /**
-       * Retrieves the stored nonce
-       */
-      getNonce(): string | null {
-        return this.nonce;
-      },
-
-      /**
-       * Clears the nonce after use
-       */
-      clearNonce() {
-        this.nonce = null;
       },
     },
   },

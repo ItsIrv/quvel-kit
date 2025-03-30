@@ -145,6 +145,9 @@ class UserAuthenticationServiceTest extends TestCase
             ->with('email_verified_at')
             ->andReturn('2023-01-01 00:00:00');
 
+        $user->shouldReceive('hasVerifiedEmail')
+            ->andReturn(true);
+
         [$resultUser, $status] = $this->service->handleOAuthLogin($provider, $providerUser);
 
         $this->assertSame($user, $resultUser);
@@ -218,10 +221,13 @@ class UserAuthenticationServiceTest extends TestCase
             ->with('email_verified_at')
             ->andReturn(null);
 
-        $this->expectException(OAuthException::class);
-        $this->expectExceptionMessage(OAuthStatusEnum::EMAIL_NOT_VERIFIED->value);
+        $user->shouldReceive('hasVerifiedEmail')
+            ->andReturn(false);
 
-        $this->service->handleOAuthLogin($provider, $providerUser);
+        [$resultUser, $status] = $this->service->handleOAuthLogin($provider, $providerUser);
+
+        $this->assertSame($user, $resultUser);
+        $this->assertEquals(OAuthStatusEnum::EMAIL_NOT_VERIFIED, $status);
     }
 
     public function test_handle_o_auth_login_throws_email_taken_exception(): void
@@ -245,9 +251,9 @@ class UserAuthenticationServiceTest extends TestCase
             ->with('provider_id')
             ->andReturn($differentProviderId);
 
-        $this->expectException(OAuthException::class);
-        $this->expectExceptionMessage(OAuthStatusEnum::EMAIL_TAKEN->value);
+        [$resultUser, $status] = $this->service->handleOAuthLogin($provider, $providerUser);
 
-        $this->service->handleOAuthLogin($provider, $providerUser);
+        $this->assertSame($user, $resultUser);
+        $this->assertEquals(OAuthStatusEnum::EMAIL_TAKEN, $status);
     }
 }

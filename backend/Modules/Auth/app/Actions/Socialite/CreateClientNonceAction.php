@@ -16,10 +16,8 @@ class CreateClientNonceAction
 {
     public function __construct(
         private readonly OAuthCoordinator $authCoordinator,
-        private readonly ResponseFactory  $responseFactory,
-    )
-    {
-    }
+        private readonly ResponseFactory $responseFactory,
+    ) {}
 
     /**
      * @throws OAuthException|Throwable
@@ -31,7 +29,7 @@ class CreateClientNonceAction
                 'nonce' => $this->authCoordinator->createClientNonce(),
             ]);
         } catch (Throwable $e) {
-            if (!$e instanceof OAuthException) {
+            if (! $e instanceof OAuthException) {
                 $e = new OAuthException(OAuthStatusEnum::INTERNAL_ERROR, $e);
             }
 

@@ -39,31 +39,33 @@ class TenantConfig implements Arrayable
 
     /**
      * @var string|null Capacitor scheme
-     * - _DEEP deep link, https://<appUrl>
-     * - <value> custom scheme <value>://<appUrl>
-     * - null no scheme
+     *                  - <value> custom scheme <value>://<appUrl>
+     *                  - null - use appUrl
      */
     public readonly ?string $capacitorScheme;
 
     /**
      * Visibility settings per field
+     *
      * @var array<string, TenantConfigVisibility>
      */
     public readonly array $visibility;
 
+    /**
+     * @param  array<string, TenantConfigVisibility>  $visibility
+     */
     public function __construct(
-        string  $apiUrl,
-        string  $appUrl,
-        string  $appName,
-        string  $appEnv,
+        string $apiUrl,
+        string $appUrl,
+        string $appName,
+        string $appEnv,
         ?string $internalApiUrl = null,
-        bool    $debug = false,
-        string  $mailFromName = '',
-        string  $mailFromAddress = '',
-        array   $visibility = [],
-        string  $capacitorScheme = null,
-    )
-    {
+        bool $debug = false,
+        string $mailFromName = '',
+        string $mailFromAddress = '',
+        array $visibility = [],
+        ?string $capacitorScheme = null,
+    ) {
         $this->apiUrl = $apiUrl;
         $this->appUrl = $appUrl;
         $this->appName = $appName;
@@ -79,7 +81,7 @@ class TenantConfig implements Arrayable
     /**
      * Create an instance from an array.
      *
-     * @param array<string, mixed> $data The configuration data.
+     * @param  array<string, mixed>  $data  The configuration data.
      */
     public static function fromArray(array $data): self
     {
@@ -93,7 +95,7 @@ class TenantConfig implements Arrayable
             mailFromName: $data['mail_from_name'] ?? '',
             mailFromAddress: $data['mail_from_address'] ?? '',
             visibility: array_map(
-                static fn($value) => TenantConfigVisibility::tryFrom($value) ?? TenantConfigVisibility::PRIVATE,
+                static fn ($value) => TenantConfigVisibility::tryFrom($value) ?? TenantConfigVisibility::PRIVATE,
                 $data['__visibility'] ?? []
             ),
             capacitorScheme: $data['capacitor_scheme'] ?? null,
@@ -115,7 +117,7 @@ class TenantConfig implements Arrayable
             'mail_from_name' => $this->mailFromName,
             'mail_from_address' => $this->mailFromAddress,
             '__visibility' => array_map(
-                static fn(TenantConfigVisibility $v): string => $v->value,
+                static fn (TenantConfigVisibility $v): string => $v->value,
                 $this->visibility,
             ),
             'capacitor_scheme' => $this->capacitorScheme,

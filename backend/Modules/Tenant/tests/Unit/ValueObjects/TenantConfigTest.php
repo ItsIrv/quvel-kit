@@ -108,6 +108,7 @@ class TenantConfigTest extends TestCase
                 'api_url' => TenantConfigVisibility::PUBLIC->value,
                 'internal_api_url' => TenantConfigVisibility::PROTECTED->value,
             ],
+            'capacitor_scheme' => null,
         ];
 
         $this->assertEquals($expected, $result);

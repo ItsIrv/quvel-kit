@@ -4,19 +4,23 @@ namespace Modules\Auth\Tests\Unit\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Modules\Auth\Events\OAuthLoginSuccess;
+use Modules\Auth\DTO\OAuthCallbackResult;
+use Modules\Auth\Enums\OAuthStatusEnum;
+use Modules\Auth\Events\OAuthLoginResult;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
-#[CoversClass(OAuthLoginSuccess::class)]
+#[CoversClass(OAuthLoginResult::class)]
 #[Group('auth-module')]
 #[Group('auth-events')]
-class OAuthLoginSuccessTest extends TestCase
+class OAuthLoginResultTest extends TestCase
 {
     private string $nonce;
 
-    private OAuthLoginSuccess $event;
+    private OAuthLoginResult $event;
+
+    private OAuthCallbackResult $result;
 
     protected function setUp(): void
     {
@@ -24,11 +28,12 @@ class OAuthLoginSuccessTest extends TestCase
 
         // Mocking a valid long nonce
         $this->nonce = 'nonce'.bin2hex(random_bytes(32));
-        $this->event = new OAuthLoginSuccess($this->nonce);
+        $this->result = \Mockery::mock(OAuthCallbackResult::class);
+        $this->event = new OAuthLoginResult($this->nonce, $this->result);
     }
 
     /**
-     * Test that OAuthLoginSuccess event implements ShouldBroadcast.
+     * Test that OAuthLoginResult event implements ShouldBroadcast.
      */
     public function test_event_implements_should_broadcast(): void
     {
@@ -37,7 +42,7 @@ class OAuthLoginSuccessTest extends TestCase
     }
 
     /**
-     * Test that OAuthLoginSuccess event broadcasts to the correct channel.
+     * Test that OAuthLoginResult event broadcasts to the correct channel.
      */
     public function test_event_broadcasts_to_correct_channel(): void
     {
@@ -49,20 +54,22 @@ class OAuthLoginSuccessTest extends TestCase
     }
 
     /**
-     * Test that OAuthLoginSuccess event broadcasts the correct payload.
+     * Test that OAuthLoginResult event broadcasts the correct payload.
      */
     public function test_event_broadcasts_correct_payload(): void
     {
+        $this->result->shouldReceive('getStatus')->andReturn(OAuthStatusEnum::LOGIN_OK);
+
         // Assert
-        $this->assertEquals(['success' => true], $this->event->broadcastWith());
+        $this->assertEquals(['status' => OAuthStatusEnum::LOGIN_OK->value], $this->event->broadcastWith());
     }
 
     /**
-     * Test that OAuthLoginSuccess event has the correct broadcast name.
+     * Test that OAuthLoginResult event has the correct broadcast name.
      */
     public function test_event_has_correct_name(): void
     {
         // Assert
-        $this->assertEquals('oauth.success', $this->event->broadcastAs());
+        $this->assertEquals('oauth.result', $this->event->broadcastAs());
     }
 }

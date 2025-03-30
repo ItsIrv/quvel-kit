@@ -8,7 +8,6 @@ use App\Services\User\UserFindService;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Modules\Auth\Enums\OAuthStatusEnum;
-use Modules\Auth\Exceptions\OAuthException;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 /**
@@ -46,8 +45,6 @@ class UserAuthenticationService
      * Handle user authentication via OAuth.
      *
      * @return array{0: User, 1: OAuthStatusEnum}
-     *
-     * @throws OAuthException
      */
     public function handleOAuthLogin(string $provider, SocialiteUser $providerUser): array
     {
@@ -61,16 +58,12 @@ class UserAuthenticationService
         if ($user) {
             // Ensure provider ID consistency (avoid hijacking)
             if ($user->provider_id !== $providerIdentifier) {
-                throw new OAuthException(
-                    OAuthStatusEnum::EMAIL_TAKEN,
-                );
+                return [$user, OAuthStatusEnum::EMAIL_TAKEN];
             }
 
             // Ensure email is verified
-            if (! $user->email_verified_at) {
-                throw new OAuthException(
-                    OAuthStatusEnum::EMAIL_NOT_VERIFIED,
-                );
+            if (! $user->hasVerifiedEmail()) {
+                return [$user, OAuthStatusEnum::EMAIL_NOT_VERIFIED];
             }
 
             // Login successful
