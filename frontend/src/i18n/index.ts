@@ -1,5 +1,5 @@
-import enUS from './en-US';
-import esMX from './es-MX';
+import enUS from '../modules/Core/i18n/en-US';
+import esMX from '../modules/Core/i18n/es-MX';
 
 export default {
   'en-US': enUS,

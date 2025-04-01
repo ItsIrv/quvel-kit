@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { useSessionStore } from 'src/stores/sessionStore';
-import { useXsrf } from 'src/composables/useXsrf';
-import { useMetaConfig } from './composables/useMetaConfig';
+import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
+import { useXsrf } from 'src/modules/Core/composables/useXsrf';
+import { useMetaConfig } from 'src/modules/Core/composables/useMetaConfig';
 import { onMounted } from 'vue';
-import { loadTheme } from './utils/themeUtil';
-import { useOAuthMessageHandler } from 'src/composables/useOAuthMessageHandler';
+import { loadTheme } from 'src/modules/Core/utils/themeUtil';
+import { useOAuthMessageHandler } from 'src/modules/Auth/composables/useOAuthMessageHandler';
 
 defineOptions({
   /**
@@ -12,9 +12,13 @@ defineOptions({
    *
    * TODO: We want to avoid fetching the user on every page load in production.
    */
-  async preFetch({ store }) {
+  async preFetch({ store, ssrContext }) {
     try {
-      await useSessionStore(store).fetchSession();
+      if (ssrContext) {
+        await useSessionStore(store).fetchSession();
+      } else {
+        void useSessionStore(store).fetchSession();
+      }
     } catch {
       // TODO: Handle flow on unauthorized.
     }

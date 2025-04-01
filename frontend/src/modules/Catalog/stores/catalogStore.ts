@@ -1,7 +1,11 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { CatalogService } from 'src/modules/Catalog/sevices/CatalogService';
 import { CatalogItem } from 'src/modules/Catalog/models/CatalogItem';
-import { LengthAwareRequest, PaginationLinks, PaginationMeta } from 'src/types/laravel.types';
+import {
+  LengthAwareRequest,
+  PaginationLinks,
+  PaginationMeta,
+} from 'src/modules/Core/types/laravel.types';
 
 /**
  * Interface defining the structure of the catalog state.
@@ -22,6 +26,7 @@ interface CatalogState {
  */
 type CatalogGetters = {
   getItems: (state: CatalogState) => CatalogItem[];
+  hasItems: (state: CatalogState) => boolean;
 };
 
 /**
@@ -53,15 +58,23 @@ export const useCatalogStore = defineStore<'catalog', CatalogState, CatalogGette
        * Retrieves all loaded catalog items.
        */
       getItems: (state) => state.catalogItems.items,
+      hasItems: (state) => state.catalogItems.items.length > 0 && state.catalogItems.meta !== null,
     },
 
     actions: {
       /**
        * Fetches catalog items from the backend using the CatalogService.
        */
-      async fetchCatalogItems(options: LengthAwareRequest = {}): Promise<void> {
+      async fetchCatalogItems(
+        options: LengthAwareRequest = {},
+        clearPrevious: boolean = true,
+      ): Promise<void> {
         const service = this.$container.getService<CatalogService>('catalog');
         if (!service) return;
+
+        if (clearPrevious) {
+          this.catalogItems.items = [];
+        }
 
         try {
           const { data, meta, links } = await service.fetchCatalogs(options);

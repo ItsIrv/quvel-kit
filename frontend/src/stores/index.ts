@@ -1,6 +1,6 @@
 import { defineStore } from '#q-app/wrappers';
 import { createPinia } from 'pinia';
-import { piniaPlugin } from './piniaPlugin';
+import { serviceContainer } from 'src/modules/Core/stores/plugins/serviceContainer';
 
 /*
  * If not building with SSR mode, you can
@@ -14,7 +14,7 @@ export default defineStore(({ ssrContext }) => {
   const pinia = createPinia();
 
   // You can add Pinia plugins here
-  pinia.use((context) => piniaPlugin(context, ssrContext));
+  pinia.use((context) => serviceContainer(context, ssrContext));
 
   return pinia;
 });

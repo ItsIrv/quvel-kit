@@ -1,4 +1,4 @@
-import { createAxios } from 'src/utils/axiosUtil';
+import { createAxios } from 'src/modules/Core/utils/axiosUtil';
 import { Tenant, TenantConfigProtected } from '../types/tenant.types';
 
 export class TenantCacheService {

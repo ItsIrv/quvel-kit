@@ -1,0 +1,88 @@
+<script lang="ts" setup>
+import AuthDialog from 'src/modules/Auth/components/Dialogs/AuthDialog.vue';
+import MenuRightDrawer from 'src/modules/Quvel/components/Pages/LandingPage/MenuRightDrawer.vue';
+import MenuLeftDrawer from 'src/modules/Quvel/components/Pages/LandingPage/MenuLeftDrawer.vue';
+import PageHeader from 'src/modules/Quvel/components/Pages/LandingPage/PageHeader.vue';
+import PageFooter from 'src/modules/Quvel/components/Pages/LandingPage/PageFooter.vue';
+import { useCatalogStore } from 'src/modules/Catalog/stores/catalogStore';
+import CatalogSection from 'src/modules/Catalog/components/CatalogSection.vue';
+import { ref } from 'vue';
+
+defineOptions({
+  /**
+   * Pre-fetch some catalogs.
+   *
+   */
+  async preFetch({ store, ssrContext }) {
+    try {
+      if (ssrContext) {
+        // SSR needs to wait for the catalog to be pre-fetched
+        await useCatalogStore(store).fetchCatalogItems();
+      } else {
+        // On the client we can fetch the catalog without waiting on it
+        void useCatalogStore(store).fetchCatalogItems();
+      }
+    } catch {
+      //
+    }
+  },
+});
+
+/**
+ * Refs
+ */
+const showAuthForm = ref(false);
+const isRightDrawerOpen = ref(false);
+const isLeftDrawerOpen = ref(false);
+
+/**
+ * Methods
+ */
+
+/**
+ * Opens the login dialog
+ */
+function onLoginClick() {
+  showAuthForm.value = true;
+  isRightDrawerOpen.value = false;
+  isLeftDrawerOpen.value = false;
+}
+
+/**
+ * Opens the left drawer
+ */
+function onOpenLeftDrawer() {
+  isLeftDrawerOpen.value = true;
+}
+
+/**
+ * Opens the right drawer
+ */
+function onOpenRightDrawer() {
+  isRightDrawerOpen.value = true;
+}
+</script>
+
+<template>
+  <div class="LandingPage MainGradient min-h-screen flex flex-col">
+    <!-- Header -->
+    <PageHeader
+      @login-click="onLoginClick"
+      @open-right-drawer="onOpenRightDrawer"
+      @open-left-drawer="onOpenLeftDrawer"
+    />
+
+    <!-- Scrollable section -->
+    <div class="flex-grow overflow-hidden mt-[100px]">
+      <CatalogSection />
+    </div>
+
+    <!-- Footer -->
+    <PageFooter />
+  </div>
+
+  <!-- Drawers and dialogs -->
+  <MenuRightDrawer v-model="isRightDrawerOpen" @login-click="onLoginClick" />
+  <MenuLeftDrawer v-model="isLeftDrawerOpen" />
+  <AuthDialog v-model="showAuthForm" />
+</template>

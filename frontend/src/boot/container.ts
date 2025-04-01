@@ -1,16 +1,16 @@
 import { defineBoot } from '#q-app/wrappers';
 import type { QSsrContext } from '@quasar/app-vite';
-import { ContainerKey, setClientContainer } from 'src/composables/useContainer';
-import { createApi } from 'src/utils/axiosUtil';
-import { TaskService } from 'src/services/TaskService';
-import { ServiceContainer } from 'src/services/ServiceContainer';
-import { ValidationService } from 'src/services/ValidationService';
-import { ApiService } from 'src/services/ApiService';
-import { I18nService } from 'src/services/I18nService';
-import { createI18n } from 'src/utils/i18nUtil';
-import { ConfigService } from 'src/services/ConfigService';
-import { WebSocketService } from 'src/services/WebSocketService';
-import { createWebsocketConfig } from 'src/utils/websocketUtil';
+import { ContainerKey, setClientContainer } from 'src/modules/Core/composables/useContainer';
+import { createApi } from 'src/modules/Core/utils/axiosUtil';
+import { TaskService } from 'src/modules/Core/services/TaskService';
+import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
+import { ValidationService } from 'src/modules/Core/services/ValidationService';
+import { ApiService } from 'src/modules/Core/services/ApiService';
+import { I18nService } from 'src/modules/Core/services/I18nService';
+import { createI18n } from 'src/modules/Core/utils/i18nUtil';
+import { ConfigService } from 'src/modules/Core/services/ConfigService';
+import { WebSocketService } from 'src/modules/Core/services/WebSocketService';
+import { createWebsocketConfig } from 'src/modules/Core/utils/websocketUtil';
 import { CatalogService } from 'src/modules/Catalog/sevices/CatalogService';
 
 /**

@@ -1,8 +1,8 @@
-import { BootableService } from 'src/types/service.types';
-import type { ServiceContainer } from 'src/services/ServiceContainer';
-import { ApiService } from 'src/services/ApiService';
+import { BootableService } from 'src/modules/Core/types/service.types';
+import type { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
+import { ApiService } from 'src/modules/Core/services/ApiService';
 import { CatalogItem } from 'src/modules/Catalog/models/CatalogItem';
-import { LengthAwarePaginator, LengthAwareRequest } from 'src/types/laravel.types';
+import { LengthAwarePaginator, LengthAwareRequest } from 'src/modules/Core/types/laravel.types';
 
 /**
  * Provides methods to fetch catalogs from the backend.
