@@ -78,6 +78,9 @@ class TenantSeeder extends Seeder
 
         // Create a test user for LAN Tenant
         $this->createTenantUser($secondTenant);
+
+        // Set tenant context back to main for the rest of the seeders
+        app(TenantContext::class)->set($mainTenant);
     }
 
     /**

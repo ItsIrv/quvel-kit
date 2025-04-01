@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Catalog\Http\Controllers\CatalogController;
+use Modules\Catalog\Http\Controllers\CatalogItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +14,6 @@ use Modules\Catalog\Http\Controllers\CatalogController;
 |
 */
 
-Route::group([], function () {
-    Route::resource('catalog', CatalogController::class)->names('catalog');
+Route::group([], static function () {
+    Route::resource('catalogs', CatalogItemController::class)->names('catalogs');
 });

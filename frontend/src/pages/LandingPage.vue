@@ -1,12 +1,26 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
 import AuthDialog from 'src/components/Dialogs/AuthDialog.vue';
 import MenuRightDrawer from 'src/components/Pages/LandingPage/MenuRightDrawer.vue';
 import MenuLeftDrawer from 'src/components/Pages/LandingPage/MenuLeftDrawer.vue';
 import PageHeader from 'src/components/Pages/LandingPage/PageHeader.vue';
-import SectionFeatures from 'src/components/Pages/LandingPage/SectionFeatures.vue';
-import SectionResources from 'src/components/Pages/LandingPage/SectionResources.vue';
 import PageFooter from 'src/components/Pages/LandingPage/PageFooter.vue';
+import { useCatalogStore } from 'src/modules/Catalog/stores/catalogStore';
+import CatalogSection from 'src/modules/Catalog/components/CatalogSection.vue';
+import { ref } from 'vue';
+
+defineOptions({
+  /**
+   * Pre-fetch some catalogs.
+   *
+   */
+  async preFetch({ store }) {
+    try {
+      await useCatalogStore(store).fetchCatalogItems();
+    } catch {
+      //
+    }
+  },
+});
 
 /**
  * Refs
@@ -44,7 +58,7 @@ function onOpenRightDrawer() {
 </script>
 
 <template>
-  <div class="LandingPage MainGradient min-h-screen flex flex-col items-center">
+  <div class="LandingPage MainGradient min-h-screen flex flex-col">
     <!-- Header -->
     <PageHeader
       @login-click="onLoginClick"
@@ -52,27 +66,17 @@ function onOpenRightDrawer() {
       @open-left-drawer="onOpenLeftDrawer"
     />
 
-    <!-- Main Features Section -->
-    <SectionFeatures />
-
-    <!-- Handy Resources Section -->
-    <SectionResources />
+    <!-- Scrollable section -->
+    <div class="flex-grow overflow-hidden mt-[100px]">
+      <CatalogSection />
+    </div>
 
     <!-- Footer -->
     <PageFooter />
   </div>
 
-  <!-- Right Drawer -->
-  <MenuRightDrawer
-    v-model="isRightDrawerOpen"
-    @login-click="onLoginClick"
-  />
-
-  <!-- Left Drawer -->
+  <!-- Drawers and dialogs -->
+  <MenuRightDrawer v-model="isRightDrawerOpen" @login-click="onLoginClick" />
   <MenuLeftDrawer v-model="isLeftDrawerOpen" />
-
-  <!-- Login Dialog -->
   <AuthDialog v-model="showAuthForm" />
 </template>
-
-<style lang="scss" scoped></style>

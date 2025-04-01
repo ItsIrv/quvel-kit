@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import LanguageSwitcher from 'src/components/Misc/LanguageSwitcher.vue';
 import ThemeSwitcher from 'src/components/Misc/ThemeSwitcher.vue';
-
 </script>
 
 <template>
   <footer class="mt-4 py-6">
-    <p class="text-sm">
+    <p class="text-sm text-center">
       Created by
       <a
         href="https://irv.codes"

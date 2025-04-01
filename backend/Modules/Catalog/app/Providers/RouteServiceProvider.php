@@ -2,9 +2,9 @@
 
 namespace Modules\Catalog\Providers;
 
-use App\Providers\ModuleServiceProvider;
+use App\Providers\ModuleRouteServiceProvider;
 
-class RouteServiceProvider extends ModuleServiceProvider
+class RouteServiceProvider extends ModuleRouteServiceProvider
 {
     protected string $name = 'Catalog';
 }

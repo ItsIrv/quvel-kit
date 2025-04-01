@@ -11,6 +11,7 @@ import { createI18n } from 'src/utils/i18nUtil';
 import { ConfigService } from 'src/services/ConfigService';
 import { WebSocketService } from 'src/services/WebSocketService';
 import { createWebsocketConfig } from 'src/utils/websocketUtil';
+import { CatalogService } from 'src/modules/Catalog/sevices/CatalogService';
 
 /**
  * Creates the service container per request.
@@ -28,7 +29,7 @@ export function createContainer(ssrContext?: QSsrContext | null): ServiceContain
     new ValidationService(),
     new TaskService(),
     new WebSocketService(createWebsocketConfig(configOverrides)),
-    new Map(),
+    new Map([['catalog', new CatalogService()]]),
   );
 }
 
