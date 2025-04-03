@@ -16,8 +16,8 @@ import { hideLoading, showLoading } from 'src/modules/Core/utils/loadingUtil';
 import type { BootableService } from 'src/modules/Core/types/service.types';
 import { Service } from './Service';
 import type { ServiceContainer } from './ServiceContainer';
-import { ErrorBag } from 'src/modules/Core/types/error.types';
 import { LaravelErrorHandler } from 'src/modules/Core/utils/errorUtil';
+import { ErrorBag } from 'src/modules/Core/types/laravel.types';
 
 /**
  * Task Service - Manages async operations with built-in error handling, notifications, and loading.

@@ -14,16 +14,10 @@ defineOptions({
    *
    */
   async preFetch({ store, ssrContext }) {
-    try {
-      if (ssrContext) {
-        // SSR needs to wait for the catalog to be pre-fetched
-        await useCatalogStore(store).fetchCatalogItems();
-      } else {
-        // On the client we can fetch the catalog without waiting on it
-        void useCatalogStore(store).fetchCatalogItems();
-      }
-    } catch {
-      //
+    if (ssrContext) {
+      await useCatalogStore(store).fetchCatalogItems();
+    } else {
+      void useCatalogStore(store).fetchCatalogItems();
     }
   },
 });

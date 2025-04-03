@@ -2,7 +2,10 @@ import { BootableService } from 'src/modules/Core/types/service.types';
 import type { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
 import { ApiService } from 'src/modules/Core/services/ApiService';
 import { CatalogItem } from 'src/modules/Catalog/models/CatalogItem';
-import { LengthAwarePaginator, LengthAwareRequest } from 'src/modules/Core/types/laravel.types';
+import {
+  LengthAwarePaginatorResponse,
+  LengthAwareRequest,
+} from 'src/modules/Core/types/laravel.types';
 
 /**
  * Provides methods to fetch catalogs from the backend.
@@ -19,7 +22,7 @@ export class CatalogService implements BootableService {
    */
   async fetchCatalogs(
     options: LengthAwareRequest = {},
-  ): Promise<LengthAwarePaginator<CatalogItem>> {
+  ): Promise<LengthAwarePaginatorResponse<CatalogItem>> {
     const { filter = {}, sort, per_page, page } = options;
     const params: Record<string, string | number> = {};
 
@@ -32,6 +35,6 @@ export class CatalogService implements BootableService {
     if (per_page) params.per_page = per_page;
     if (page) params.page = page;
 
-    return await this.api.get<LengthAwarePaginator<CatalogItem>>('catalogs', { params });
+    return await this.api.get<LengthAwarePaginatorResponse<CatalogItem>>('catalogs', { params });
   }
 }

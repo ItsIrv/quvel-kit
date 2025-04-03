@@ -1,4 +1,4 @@
-import { ErrorBag } from './error.types';
+import { ErrorBag } from 'src/modules/Core/types/laravel.types';
 
 /**
  * Represents the state of a task.

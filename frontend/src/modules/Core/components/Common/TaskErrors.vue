@@ -8,8 +8,8 @@
  * - `taskErrors`: The errors from a task, including the main error and additional errors.
  */
 import { computed } from 'vue';
-import { ErrorBag } from 'src/modules/Core/types/error.types';
 import FadeInOut from 'src/modules/Core/components/Transitions/FadeInOut.vue';
+import { ErrorBag } from 'src/modules/Core/types/laravel.types';
 
 /**
  * Props for the component.

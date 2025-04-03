@@ -6,7 +6,7 @@ const catalogStore = useCatalogStore();
 const isClient = ref(false);
 
 async function onPageChange(page: number) {
-  await catalogStore.fetchCatalogItems({ page: page.toString() });
+  await catalogStore.fetchCatalogItems({ page });
 }
 
 onMounted(() => {

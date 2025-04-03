@@ -3,16 +3,17 @@ export default {
     submit: 'Enviar',
     cancel: 'Cancelar',
     confirm: 'Confirmar',
-    back: 'Atrás',
+    back: 'Volver',
   },
   navigation: {
     home: 'Inicio',
     dashboard: 'Panel',
-    settings: 'Configuraciones',
+    settings: 'Configuración',
   },
-  messages: {
-    success: '¡La acción fue exitosa!',
-    failed: 'Error en la acción. Inténtelo de nuevo.',
+  task: {
+    success: '¡Acción completada con éxito!',
+    error: 'Error en la acción. Inténtalo de nuevo.',
   },
   language: 'Idioma',
+  placeholder: 'Marcador de posición',
 };

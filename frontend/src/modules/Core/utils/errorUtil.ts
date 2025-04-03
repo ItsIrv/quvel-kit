@@ -1,6 +1,7 @@
 import type { AxiosError } from 'axios';
 import type { ErrorHandler, ErrorHandlerContext } from 'src/modules/Core/types/task.types';
-import type { LaravelErrorResponse } from 'src/modules/Core/types/error.types';
+
+import { LaravelErrorResponse } from 'src/modules/Core/types/laravel.types';
 
 /**
  * Handles Laravel errors by extracting `message` and top-level `errors` into the ErrorBag.

@@ -1,14 +1,14 @@
 export default {
   title: 'Bienvenido a {appName}',
-  description: 'Un kit de inicio híbrido full-stack para Laravel y Quasar.',
-  subtitle: 'Creado para aplicaciones web, móviles y de escritorio modernas.',
+  description: 'Un kit de inicio full-stack híbrido para Laravel y Quasar.',
+  subtitle: 'Construido para aplicaciones modernas web, móviles y de escritorio.',
   links: {
-    github: 'Repositorio de GitHub',
+    github: 'Repositorio en GitHub',
     docs: 'Documentación',
     api: 'API Playground',
-    vitest: 'Vitest UI',
+    vitest: 'Interfaz de Vitest',
     coverage: 'Cobertura de Laravel',
     traefik: 'Panel de Traefik',
-    frontend: 'Zona de Pruebas Frontend',
+    frontend: 'Playground de frontend',
   },
 };

@@ -38,9 +38,7 @@ export async function withLoading<T>(
   try {
     showLoading(options?.timeout, { message: options?.message ?? '' });
 
-    const result = await task();
-
-    return result;
+    return await task();
   } finally {
     hideLoading();
   }

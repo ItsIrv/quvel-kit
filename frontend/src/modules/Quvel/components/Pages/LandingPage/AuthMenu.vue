@@ -29,7 +29,7 @@ const isDropdownOpen = ref(false);
  */
 const logoutTask = container.task.newTask({
   showNotification: {
-    success: container.i18n.t('auth.status.success.loggedOut'),
+    success: () => container.i18n.t('auth.status.success.loggedOut'),
   },
   task: async () => {
     await sessionStore.logout();
@@ -96,7 +96,7 @@ function onDropdownToggle() {
   <template v-else>
     <!-- Login Button -->
     <q-btn :ripple="false" class="PrimaryButton" unelevated @click="emits('login-click')">
-      Login
+      {{ $t('auth.forms.login.button') }}
     </q-btn>
   </template>
 </template>

@@ -1,5 +1,8 @@
+/**
+ * Interface defining the structure of a CatalogItem.
+ */
 export interface CatalogItem {
-  id?: string; // Optional, depending on whether the item has an ID yet
+  id?: string;
   user_id: number;
   name: string;
   description: string;
@@ -12,6 +15,6 @@ export interface CatalogItem {
   user?: {
     name: string;
   };
-  created_at?: string; // Optional, assuming Eloquent adds timestamps
-  updated_at?: string; // Optional, assuming Eloquent adds timestamps
+  created_at?: string;
+  updated_at?: string;
 }

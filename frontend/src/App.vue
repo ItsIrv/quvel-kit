@@ -15,8 +15,11 @@ defineOptions({
   async preFetch({ store, ssrContext }) {
     try {
       if (ssrContext) {
+        // On SSR, we have to await
         await useSessionStore(store).fetchSession();
       } else {
+        // On the client we don't have to await unless we want to.
+        // If you do await this will block rendering of the page to until the user is fetched.
         void useSessionStore(store).fetchSession();
       }
     } catch {
