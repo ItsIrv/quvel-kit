@@ -2,6 +2,13 @@ import { acceptHMRUpdate, defineStore } from 'pinia';
 import { CatalogService } from 'src/modules/Catalog/sevices/CatalogService';
 import { CatalogItem } from 'src/modules/Catalog/models/CatalogItem';
 import { LengthAwareRequest, LengthAwareState } from 'src/modules/Core/types/laravel.types';
+import {
+  createLengthAwareActions,
+  createLengthAwareGetters,
+  createLengthAwareState,
+  LengthAwareActions,
+  LengthAwareGetters,
+} from 'src/modules/Core/stores/helpers/Pagination/LengthAware';
 
 /**
  * Interface defining the structure of the catalog state.
@@ -13,17 +20,12 @@ interface CatalogState {
 /**
  * Interface defining getters for the catalog store.
  */
-type CatalogGetters = {
-  getItems: (state: CatalogState) => CatalogItem[];
-  hasItems: (state: CatalogState) => boolean;
-};
+type CatalogGetters = LengthAwareGetters<CatalogItem, 'catalogItems'>;
 
 /**
  * Interface defining actions for the catalog store.
  */
-interface CatalogActions {
-  fetchCatalogItems(options?: LengthAwareRequest): Promise<void>;
-}
+type CatalogActions = LengthAwareActions<'catalogItems'>;
 
 /**
  * Pinia store for managing the catalog items.
@@ -32,66 +34,24 @@ export const useCatalogStore = defineStore<'catalog', CatalogState, CatalogGette
   'catalog',
   {
     state: (): CatalogState => ({
-      catalogItems: {
-        type: 'length-aware',
-        data: [],
-        meta: {
-          current_page: 1,
-          from: 1,
-          last_page: 1,
-          per_page: 1,
-          to: 1,
-          total: 1,
-          links: [],
-          path: '',
-        },
-        links: {
-          first: '',
-          last: '',
-          prev: '',
-          next: '',
-        },
-        currentPage: 1,
-        hasMore: true,
-        isLoadingMore: false,
-      },
+      catalogItems: createLengthAwareState<CatalogItem>(),
     }),
 
     getters: {
-      /**
-       * Retrieves all loaded catalog items.
-       */
-      getItems: (state) => state.catalogItems.data,
-      hasItems: (state) => state.catalogItems.data.length > 0,
+      ...createLengthAwareGetters<CatalogItem, 'catalogItems'>('catalogItems'),
     },
 
     actions: {
-      /**
-       * Fetches catalog items from the backend using the CatalogService.
-       */
-      async fetchCatalogItems(
-        options: LengthAwareRequest = {},
-        clearPrevious = true,
-      ): Promise<void> {
-        const service = this.$container.getService<CatalogService>('catalog');
-        if (!service) return;
+      ...createLengthAwareActions<'catalogItems'>({
+        stateKey: 'catalogItems',
+        prefix: 'catalogItems',
+        async fetcher(options: LengthAwareRequest) {
+          const service = this.$container.getService<CatalogService>('catalog');
+          if (!service) throw new Error('[CatalogStore] CatalogService not found');
 
-        if (clearPrevious) {
-          this.catalogItems.data = [];
-        }
-
-        try {
-          const { data, meta, links } = await service.fetchCatalogs(options);
-
-          this.catalogItems.data = data;
-          this.catalogItems.meta = meta;
-          this.catalogItems.links = links;
-          this.catalogItems.currentPage = meta.current_page;
-          this.catalogItems.hasMore = meta.current_page < meta.last_page;
-        } catch (e) {
-          console.error('[CatalogStore] fetchCatalogItems failed', e);
-        }
-      },
+          return await service.fetchCatalogs(options);
+        },
+      }),
     },
   },
 );

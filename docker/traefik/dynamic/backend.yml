@@ -16,9 +16,12 @@ http:
     api-local:
       loadBalancer:
         servers:
-          - url: 'http://quvel-app:8000'
+          - url: 'http://host.docker.internal:8000' # If serving from local machine
+#          - url: 'http://quvel-app:8000' # If serving from Docker
+
 
     api-lan:
       loadBalancer:
         servers:
-          - url: 'http://api-lan:8000'
+          - url: 'http://host.docker.internal:8000' # If serving from local machine
+#          - url: 'http://api-lan:8000' # If serving from Docker

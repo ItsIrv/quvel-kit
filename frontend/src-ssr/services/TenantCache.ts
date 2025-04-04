@@ -2,7 +2,7 @@ import { createAxios } from 'src/modules/Core/utils/axiosUtil';
 import { Tenant, TenantConfigProtected } from '../types/tenant.types';
 
 export class TenantCacheService {
-  private static readonly REFRESH_INTERVAL = 1000 * 60;
+  private static readonly REFRESH_INTERVAL_MS = 1000 * 60;
   private static instance: TenantCacheService;
   private readonly tenants: Map<string, Tenant> = new Map();
   private readonly parents: Map<string, Tenant> = new Map();
@@ -19,7 +19,7 @@ export class TenantCacheService {
       await this.instance.loadTenants();
 
       // Refresh cache every minute
-      setInterval(() => void this.instance.loadTenants(), this.REFRESH_INTERVAL); // 1 minute
+      setInterval(() => void this.instance.loadTenants(), this.REFRESH_INTERVAL_MS); // 1 minute
     }
     return this.instance;
   }
@@ -31,7 +31,14 @@ export class TenantCacheService {
     try {
       const response = await createAxios().get<{
         data: (Tenant & { config: TenantConfigProtected })[];
-      }>('http://quvel-app:8000/tenant/cache');
+      }>(
+        // 'http://quvel-app:8000/tenant/cache'
+        'https://api.quvel.127.0.0.1.nip.io/tenant/cache',
+      );
+
+      if (!Array.isArray(response.data.data)) {
+        return;
+      }
 
       response.data.data.forEach((tenant) => {
         // Ensure config is properly formatted

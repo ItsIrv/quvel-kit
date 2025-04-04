@@ -29,7 +29,7 @@ class CallbackAction
      *
      * @throws OAuthException|Throwable
      */
-public function __invoke(CallbackRequest $request, string $provider): RedirectResponse|Response
+    public function __invoke(CallbackRequest $request, string $provider): RedirectResponse|Response
     {
         try {
             $result = $this->authCoordinator->authenticateCallback(

@@ -6,7 +6,7 @@ const catalogStore = useCatalogStore();
 const isClient = ref(false);
 
 async function onPageChange(page: number) {
-  await catalogStore.fetchCatalogItems({ page });
+  await catalogStore.catalogItemsFetch({ page });
 }
 
 onMounted(() => {
@@ -16,12 +16,12 @@ onMounted(() => {
 
 <template>
   <section class="CatalogSection max-w-6xl mx-auto px-4">
-    <q-inner-loading :showing="!catalogStore.hasItems" />
+    <q-inner-loading :showing="!catalogStore.hasCatalogItems" />
 
     <div class="py-8">
       <!-- Grid of Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <template v-for="item in catalogStore.getItems" :key="item.id">
+        <template v-for="item in catalogStore.getCatalogItems" :key="item.id">
           <q-card class="GenericCardGradient">
             <q-img :src="item.image" alt="Catalog Item Picture" />
 
@@ -40,7 +40,7 @@ onMounted(() => {
       <!-- Pagination -->
       <div class="mt-10 flex justify-center">
         <q-pagination
-          v-if="catalogStore.hasItems"
+          v-if="catalogStore.hasCatalogItems"
           color="primary"
           :max="catalogStore.catalogItems.meta?.last_page ?? 0"
           :max-pages="5"

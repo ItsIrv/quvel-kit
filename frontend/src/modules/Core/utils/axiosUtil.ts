@@ -27,7 +27,8 @@ export function createApi(
 ): AxiosInstance {
   const baseURL =
     ssrContext !== null
-      ? (configOverrides?.internal_api_url ?? '')
+      ? // ? (configOverrides?.internal_api_url ?? '')
+        (configOverrides?.api_url ?? '') // When hosting SSR on local machine don't use docker url
       : (configOverrides?.api_url ?? process.env.VITE_API_URL ?? '');
 
   const axiosConfig: AxiosRequestConfig = {

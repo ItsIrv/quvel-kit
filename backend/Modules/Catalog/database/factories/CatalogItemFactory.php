@@ -11,14 +11,21 @@ class CatalogItemFactory extends Factory
 
     public function definition(): array
     {
-        $prefixes = ['Smart', 'Quick', 'Eco', 'Easy', 'Flex', 'Sync', 'Auto', 'Pro', 'Go', 'Nova'];
-        $nouns = ['Tracker', 'Planner', 'Manager', 'Assistant', 'Portal', 'Tool', 'App', 'Board', 'Flow', 'Suite'];
-        $categories = ['finance', 'tasks', 'health', 'studies', 'projects', 'events', 'budgets', 'time', 'living', 'work'];
+        $prefixes = [
+            'Wander', 'Urban', 'Coastal', 'Forest', 'Alpine', 'Scenic', 'Nomad', 'Rustic', 'Harbor', 'Trail',
+        ];
 
-        // Generate two random words and title-case them
+        $nouns = [
+            'Explorer', 'Retreat', 'Escape', 'Journey', 'Vista', 'Getaway', 'Path', 'View', 'Haven', 'Trek',
+        ];
+
+        $categories = [
+            'travel', 'landscapes', 'cities', 'nature', 'adventure', 'photography', 'outdoors', 'experiences', 'moments', 'wellness',
+        ];
+
         $nameWords = $this->faker->words(2);
         $name = collect($nameWords)
-            ->map(fn($w) => ucfirst($w))
+            ->map(fn ($w) => ucfirst($w))
             ->implode(' ');
 
         $prefix = $this->faker->randomElement($prefixes);
@@ -26,16 +33,20 @@ class CatalogItemFactory extends Factory
         $category = $this->faker->randomElement($categories);
 
         $descriptions = [
-            'The :prefix :noun is your all-in-one solution for managing :category.',
-            'Easily stay on top of your :category with the :prefix :noun.',
-            'Simplify your :category workflows using the :prefix :noun.',
-            'The :prefix :noun helps you organize your :category like never before.',
-            'Boost your productivity in :category using the :prefix :noun.',
-            'Built for simplicity, the :prefix :noun transforms how you handle :category.',
-            'From chaos to clarity — that’s what the :prefix :noun brings to your :category.',
-            'Discover a smarter way to handle :category with the :prefix :noun.',
-            'Say goodbye to hassle. The :prefix :noun is here for your :category needs.',
-            'Your :category deserves the power of the :prefix :noun.',
+            'The :prefix :noun helps you rediscover the beauty of :category.',
+            'Capture breathtaking :category moments with the :prefix :noun.',
+            'Explore the unknown. The :prefix :noun is your gateway to :category.',
+            'Let the :prefix :noun guide your next :category adventure.',
+            'The :prefix :noun brings scenic :category right to your fingertips.',
+            'From peaceful views to thrilling escapes, the :prefix :noun captures it all.',
+            'Find calm in the chaos with the :prefix :noun, built for :category lovers.',
+            'Step into serenity. The :prefix :noun redefines :category experiences.',
+            'Designed for explorers, the :prefix :noun unlocks unforgettable :category.',
+            'Elevate your senses. The :prefix :noun delivers raw, stunning :category.',
+            'Your journey to stunning :category begins with the :prefix :noun.',
+            'The :prefix :noun was made for those who breathe in :category landscapes.',
+            'Plan your next story with the :prefix :noun — a tribute to :category.',
+            'The essence of :category, now curated by the :prefix :noun.',
         ];
 
         $rawDescription = $this->faker->randomElement($descriptions);
@@ -44,7 +55,7 @@ class CatalogItemFactory extends Factory
             [':prefix', ':noun', ':category'],
             [$prefix, $noun, $category],
             $rawDescription
-        ) . ' ' . $this->faker->sentence();
+        ).' '.$this->faker->sentence();
 
         return [
             'uuid' => $this->faker->uuid,

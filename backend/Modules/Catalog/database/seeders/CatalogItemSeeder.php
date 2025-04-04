@@ -21,7 +21,7 @@ class CatalogItemSeeder extends Seeder
                 ->inRandomOrder()
                 ->first();
 
-            if (!$user) {
+            if (! $user) {
                 continue;
             }
 

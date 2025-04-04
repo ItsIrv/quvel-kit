@@ -15,9 +15,9 @@ defineOptions({
    */
   async preFetch({ store, ssrContext }) {
     if (ssrContext) {
-      await useCatalogStore(store).fetchCatalogItems();
+      await useCatalogStore(store).catalogItemsFetch();
     } else {
-      void useCatalogStore(store).fetchCatalogItems();
+      void useCatalogStore(store).catalogItemsFetch();
     }
   },
 });
