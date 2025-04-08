@@ -3,8 +3,10 @@ import type { ServiceContainer } from 'src/modules/Core/services/ServiceContaine
 import { ApiService } from 'src/modules/Core/services/ApiService';
 import { CatalogItem } from 'src/modules/Catalog/models/CatalogItem';
 import {
+  CursorPaginatorResponse,
   LengthAwarePaginatorResponse,
-  LengthAwareRequest,
+  PaginationRequest,
+  SimplePaginatorResponse,
 } from 'src/modules/Core/types/laravel.types';
 
 /**
@@ -21,7 +23,7 @@ export class CatalogService implements BootableService {
    * Fetches catalogs from the backend.
    */
   async fetchCatalogs(
-    options: LengthAwareRequest = {},
+    options: PaginationRequest = {},
   ): Promise<LengthAwarePaginatorResponse<CatalogItem>> {
     const { filter = {}, sort, per_page, page } = options;
     const params: Record<string, string | number> = {};
@@ -36,5 +38,41 @@ export class CatalogService implements BootableService {
     if (page) params.page = page;
 
     return await this.api.get<LengthAwarePaginatorResponse<CatalogItem>>('catalogs', { params });
+  }
+
+  async fetchCatalogsSimple(
+    options: PaginationRequest = {},
+  ): Promise<SimplePaginatorResponse<CatalogItem>> {
+    const { filter = {}, sort, per_page, page } = options;
+    const params: Record<string, string | number> = {};
+
+    // Laravel expects filter[search]=value style
+    Object.entries(filter).forEach(([key, value]) => {
+      params[`filter[${key}]`] = value;
+    });
+
+    if (sort) params.sort = sort;
+    if (per_page) params.per_page = per_page;
+    if (page) params.page = page;
+
+    return await this.api.get<SimplePaginatorResponse<CatalogItem>>('catalogs', { params });
+  }
+
+  async fetchCatalogsCursor(
+    options: PaginationRequest = {},
+  ): Promise<CursorPaginatorResponse<CatalogItem>> {
+    const { filter = {}, sort, per_page, page } = options;
+    const params: Record<string, string | number> = {};
+
+    // Laravel expects filter[search]=value style
+    Object.entries(filter).forEach(([key, value]) => {
+      params[`filter[${key}]`] = value;
+    });
+
+    if (sort) params.sort = sort;
+    if (per_page) params.per_page = per_page;
+    if (page) params.page = page;
+
+    return await this.api.get<CursorPaginatorResponse<CatalogItem>>('catalogs', { params });
   }
 }

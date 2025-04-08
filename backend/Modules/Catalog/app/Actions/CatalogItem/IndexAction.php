@@ -12,7 +12,12 @@ class IndexAction
      *
      * @param  array<string, mixed>  $filters
      */
-    public function __invoke(array $filters = [], ?string $sort = null, int $perPage = 15, bool $isAuthenticated = false): LengthAwarePaginator
+    public function __invoke(
+        array $filters = [],
+        ?string $sort = null,
+        int $perPage = 15,
+        bool $isAuthenticated = false
+    ): LengthAwarePaginator
     {
         $query = CatalogItem::query()
             ->with('user');
