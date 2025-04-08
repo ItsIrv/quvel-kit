@@ -7,7 +7,7 @@ http:
       tls: {}
 
     api-lan:
-      rule: 'Host(`api.quvel.192.168.86.20.nip.io`)' # REPLACE_WITH_LOCAL_IP
+      rule: 'Host(`api.quvel.192.168.86.228.nip.io`)' # REPLACE_WITH_LOCAL_IP
       entryPoints: websecure
       service: api-lan
       tls: {}

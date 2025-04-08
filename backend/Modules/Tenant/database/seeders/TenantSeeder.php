@@ -89,9 +89,10 @@ class TenantSeeder extends Seeder
     private function createTenant(string $domain, string $name, ?array $config = null, ?Tenant $parent = null): Tenant
     {
         return Tenant::updateOrCreate(
-            ['domain' => $domain],
+            ['name' => $name],
+
             [
-                'name' => $name,
+                'domain' => $domain,
                 'public_id' => Str::ulid()->toString(),
                 'config' => $config,
                 'parent_id' => $parent?->id,

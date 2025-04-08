@@ -13,13 +13,47 @@ import {
   SimpleState,
   StoreContext,
   Fetcher,
+  CursorMeta,
+  LengthAwareMeta,
+  SimpleMeta,
 } from 'src/modules/Core/types/laravel.types';
 
 /* -----------------------------------
- * Utility: Capitalize string
+ * Utilities
  * ----------------------------------- */
+
+/**
+ * Capitalizes the first letter of a string
+ */
 function capitalize<T extends string>(s: T): Capitalize<T> {
   return (s.charAt(0).toUpperCase() + s.slice(1)) as Capitalize<T>;
+}
+
+/**
+ * Checks if an object is a cursor paginator.
+ */
+export function isCursorPagination(meta: unknown): meta is CursorMeta {
+  return !!meta && typeof meta === 'object' && 'next_cursor' in meta && 'prev_cursor' in meta;
+}
+
+/**
+ * Checks if an object is a length-aware paginator.
+ */
+export function isLengthAwarePagination(meta: unknown): meta is LengthAwareMeta {
+  return !!meta && typeof meta === 'object' && 'total' in meta && 'last_page' in meta;
+}
+
+/**
+ * Checks if an object is a simple paginator
+ */
+export function isSimplePagination(meta: unknown): meta is SimpleMeta {
+  return (
+    !!meta &&
+    typeof meta === 'object' &&
+    'current_page' in meta &&
+    !('total' in meta) &&
+    !('next_cursor' in meta)
+  );
 }
 
 /* -----------------------------------

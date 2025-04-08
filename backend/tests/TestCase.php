@@ -40,7 +40,7 @@ abstract class TestCase extends BaseTestCase
         $this->tenant = Tenant::where(
             'domain',
             '=',
-            'api.quvel.192.168.86.20.nip.io',
+            'api.quvel.192.168.86.228.nip.io',
         )->first();
 
         // Set TenantContext for tests

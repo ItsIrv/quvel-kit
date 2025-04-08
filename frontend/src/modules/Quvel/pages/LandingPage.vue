@@ -6,12 +6,12 @@ import PageHeader from 'src/modules/Quvel/components/Pages/LandingPage/PageHeade
 import PageFooter from 'src/modules/Quvel/components/Pages/LandingPage/PageFooter.vue';
 import { useCatalogStore } from 'src/modules/Catalog/stores/catalogStore';
 import CatalogSection from 'src/modules/Catalog/components/CatalogSection.vue';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 
 defineOptions({
   /**
    * Pre-fetch some catalogs.
-   *
    */
   async preFetch({ store, ssrContext }) {
     if (ssrContext) {
@@ -21,6 +21,12 @@ defineOptions({
     }
   },
 });
+
+/**
+ * Services
+ */
+const catalogStore = useCatalogStore();
+const sessionStore = useSessionStore();
 
 /**
  * Refs
@@ -55,6 +61,16 @@ function onOpenLeftDrawer() {
 function onOpenRightDrawer() {
   isRightDrawerOpen.value = true;
 }
+
+/**
+ * Watchers
+ */
+watch(
+  () => sessionStore.isAuthenticated,
+  () => {
+    void catalogStore.catalogItemsFetch();
+  },
+);
 </script>
 
 <template>

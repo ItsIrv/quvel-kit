@@ -20,7 +20,7 @@ import {
   PaginationRequest,
   SimplePaginatorResponse,
   SimpleState,
-} from 'src/modules/Core/stores/helpers/Pagination';
+} from 'src/modules/Core/helpers/Pagination';
 
 /**
  * Interface defining the structure of the catalog state.
