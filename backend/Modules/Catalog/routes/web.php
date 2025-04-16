@@ -15,5 +15,7 @@ use Modules\Catalog\Http\Controllers\CatalogItemController;
 */
 
 Route::group([], static function () {
-    Route::resource('catalogs', CatalogItemController::class)->names('catalogs');
+    Route::resource('catalogs', CatalogItemController::class)
+        ->only(['index'])
+        ->names('catalogs');
 });

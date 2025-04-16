@@ -83,9 +83,7 @@ watch(
     />
 
     <!-- Scrollable section -->
-    <div class="flex-grow overflow-hidden mt-[100px]">
-      <CatalogSection />
-    </div>
+    <CatalogSection />
 
     <!-- Footer -->
     <PageFooter />

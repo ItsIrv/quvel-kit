@@ -2,25 +2,30 @@
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import { useXsrf } from 'src/modules/Core/composables/useXsrf';
 import { useMetaConfig } from 'src/modules/Core/composables/useMetaConfig';
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { loadTheme } from 'src/modules/Core/utils/themeUtil';
 import { useOAuthMessageHandler } from 'src/modules/Auth/composables/useOAuthMessageHandler';
+import { useContainer } from 'src/modules/Core/composables/useContainer';
+import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
 
 defineOptions({
   /**
    * Pre-fetch the user on page load.
-   *
    * TODO: We want to avoid fetching the user on every page load in production.
    */
   async preFetch({ store, ssrContext }) {
     try {
       if (ssrContext) {
         // On SSR, we have to await
-        await useSessionStore(store).fetchSession();
+        await Promise.all([
+          useSessionStore(store).fetchSession(),
+          useNotificationStore(store).fetchNotifications(),
+        ]);
       } else {
         // On the client we don't have to await unless we want to.
         // If you do await this will block rendering of the page to until the user is fetched.
         void useSessionStore(store).fetchSession();
+        void useNotificationStore(store).fetchNotifications();
       }
     } catch {
       // TODO: Handle flow on unauthorized.
@@ -28,9 +33,37 @@ defineOptions({
   },
 });
 
+/**
+ * Composables
+ */
 useXsrf();
 useMetaConfig('A Modern Hybrid App Framework');
 useOAuthMessageHandler();
+
+/**
+ * Services
+ */
+const container = useContainer();
+const sessionStore = useSessionStore();
+const notificationStore = useNotificationStore();
+
+/**
+ * Watchers
+ */
+watch(
+  () => sessionStore.getUser?.id,
+  (userId) => {
+    if (userId) {
+      notificationStore.subscribeToSocket(userId);
+    } else {
+      notificationStore.unsubscribeFromSocket();
+      container.ws.disconnect();
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 
 onMounted(() => {
   loadTheme();
@@ -41,7 +74,6 @@ onMounted(() => {
   <router-view
     :class="{
       NativeMobile: $q.platform.is.nativeMobile,
-      Mobile: $q.platform.is.mobile,
     }"
   />
 </template>

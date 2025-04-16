@@ -2,13 +2,13 @@
 http:
   routers:
     web:
-      rule: 'Host(`quvel.127.0.0.1.nip.io`) || Host(`quvel.192.168.86.228.nip.io`)' # REPLACE_WITH_LOCAL_IP
+      rule: 'Host(`quvel.127.0.0.1.nip.io`) || Host(`quvel.192.168.86.245.nip.io`)' # REPLACE_WITH_LOCAL_IP
       entryPoints: websecure
       service: web
       tls: {}
 
     web-ws:
-      rule: '(Host(`quvel.127.0.0.1.nip.io`) || Host(`quvel.192.168.86.228.nip.io`)) && PathPrefix(`/hmr`)' # REPLACE_WITH_LOCAL_IP
+      rule: '(Host(`quvel.127.0.0.1.nip.io`) || Host(`quvel.192.168.86.245.nip.io`)) && PathPrefix(`/hmr`)' # REPLACE_WITH_LOCAL_IP
       entryPoints: websecure
       service: web-ws
       tls: {}
@@ -16,7 +16,7 @@ http:
         - websocket-headers
 
     capacitor:
-      rule: 'Host(`cap-tenant.quvel.127.0.0.1.nip.io`) || Host(`cap-tenant.quvel.192.168.86.228.nip.io`)' # REPLACE_WITH_LOCAL_IP
+      rule: 'Host(`cap-tenant.quvel.127.0.0.1.nip.io`) || Host(`cap-tenant.quvel.192.168.86.245.nip.io`)' # REPLACE_WITH_LOCAL_IP
       entryPoints: websecure
       service: capacitor
       tls: {}
@@ -25,20 +25,23 @@ http:
     web:
       loadBalancer:
         servers:
-#          - url: 'https://quvel-frontend:9000'
-          - url: 'https://host.docker.internal:3000' # If serving from local machine
+#           - url: 'https://127.0.0.1.nip.io:3000'
+           - url: 'https://host.docker.internal:3000' # If serving from local machine
+#           - url: 'https://quvel-frontend:9000'
         serversTransport: 'insecureTransport' # Supports self-signed certificates
 
     web-ws:
       loadBalancer:
         servers:
-          - url: 'https://quvel-frontend:9001'
+          - url: 'https://127.0.0.1.nip.io:3000'
+#          - url: 'https://quvel-frontend:9001'
         serversTransport: 'insecureTransport' # Supports self-signed certificates
 
     capacitor:
       loadBalancer:
         servers:
-          - url: 'https://host.docker.internal:3002'
+          - url: 'https://127.0.0.1.nip.io:3002'
+#          - url: 'https://host.docker.internal:3002'
         serversTransport: 'insecureTransport' # Supports self-signed certificates
 
   middlewares:

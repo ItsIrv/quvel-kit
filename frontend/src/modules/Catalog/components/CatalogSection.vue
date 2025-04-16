@@ -1,21 +1,15 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
 import { useCatalogStore } from 'src/modules/Catalog/stores/catalogStore';
 
 const catalogStore = useCatalogStore();
-const isClient = ref(false);
 
 async function onPageChange(page: number) {
   await catalogStore.catalogItemsFetch({ page });
 }
-
-onMounted(() => {
-  isClient.value = true;
-});
 </script>
 
 <template>
-  <section class="CatalogSection max-w-6xl mx-auto px-4">
+  <section class="CatalogSection max-w-6xl mx-auto px-4 mt-[100px]">
     <q-inner-loading :showing="!catalogStore.hasCatalogItems" />
 
     <div class="py-8">

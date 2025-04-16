@@ -23,9 +23,9 @@ return [
         // Quasar on Docker
         'https://quvel.127.0.0.1.nip.io',
         'https://quvel.127.0.0.1.nip.io:3000',
-        'https://quvel.192.168.86.228.nip.io', // REPLACE_WITH_LOCAL_IP
+        'https://quvel.192.168.86.245.nip.io', // REPLACE_WITH_LOCAL_IP
         // LAN Network
-        'https://cap-tenant.quvel.192.168.86.228.nip.io', // REPLACE_WITH_LOCAL_IP
+        'https://cap-tenant.quvel.192.168.86.245.nip.io', // REPLACE_WITH_LOCAL_IP
     ],
 
     'allowed_origins_patterns' => [],

@@ -50,7 +50,7 @@ type CatalogActions = PaginationActions<'catalogItems', LengthAwarePaginatorResp
   PaginationActions<'catalogCursor', CursorPaginatorResponse<CatalogItem>>;
 
 /**
- * Pinia store for managing the catalog items.
+ * Example store for using the pagination helpers.
  */
 export const useCatalogStore = defineStore<'catalog', CatalogState, CatalogGetters, CatalogActions>(
   'catalog',
@@ -71,9 +71,7 @@ export const useCatalogStore = defineStore<'catalog', CatalogState, CatalogGette
       ...createLengthAwareActions<'catalogItems', CatalogItem>({
         stateKey: 'catalogItems',
         async fetcher(options: PaginationRequest) {
-          const service = this.$container.getService<CatalogService>('catalog');
-
-          if (!service) throw new Error();
+          const service = this.$container.getService<CatalogService>('catalog') as CatalogService;
 
           return await service.fetchCatalogs(options);
         },
@@ -81,9 +79,7 @@ export const useCatalogStore = defineStore<'catalog', CatalogState, CatalogGette
       ...createSimpleActions<'catalogSimple', CatalogItem>({
         stateKey: 'catalogSimple',
         async fetcher(options: PaginationRequest) {
-          const service = this.$container.getService<CatalogService>('catalog');
-
-          if (!service) throw new Error();
+          const service = this.$container.getService<CatalogService>('catalog') as CatalogService;
 
           return await service.fetchCatalogsSimple(options);
         },
@@ -91,9 +87,7 @@ export const useCatalogStore = defineStore<'catalog', CatalogState, CatalogGette
       ...createCursorActions<'catalogCursor', CatalogItem>({
         stateKey: 'catalogCursor',
         async fetcher(options: PaginationRequest) {
-          const service = this.$container.getService<CatalogService>('catalog');
-
-          if (!service) throw new Error();
+          const service = this.$container.getService<CatalogService>('catalog') as CatalogService;
 
           return await service.fetchCatalogsCursor(options);
         },

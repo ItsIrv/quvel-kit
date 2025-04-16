@@ -20,7 +20,11 @@ trait TenantScopedModel
      */
     protected static function bootTenantScopedModel(): void
     {
-        static::addGlobalScope(new TenantScope);
+        if (app()->runningInConsole()) {
+            return;
+        }
+
+        static::addGlobalScope(new TenantScope());
 
         static::creating(
             /** @phpstan-ignore-next-line */

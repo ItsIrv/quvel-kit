@@ -20,59 +20,65 @@ export class CatalogService implements BootableService {
   }
 
   /**
-   * Fetches catalogs from the backend.
+   * Internal helper to build Laravel-style query params.
    */
-  async fetchCatalogs(
+  private buildParams({ filter = {}, sort, per_page, page }: PaginationRequest = {}): Record<
+    string,
+    string | number
+  > {
+    const params: Record<string, string | number> = {};
+
+    Object.entries(filter).forEach(([key, value]) => {
+      params[`filter[${key}]`] = value;
+    });
+
+    if (sort) params.sort = sort;
+    if (per_page) params.per_page = per_page;
+    if (page) params.page = page;
+
+    return params;
+  }
+
+  /**
+   * Internal generic fetcher for paginated responses.
+   */
+  private async fetch<T>(
+    options: PaginationRequest = {},
+  ): Promise<
+    T extends 'length'
+      ? LengthAwarePaginatorResponse<CatalogItem>
+      : T extends 'simple'
+        ? SimplePaginatorResponse<CatalogItem>
+        : CursorPaginatorResponse<CatalogItem>
+  > {
+    const params = this.buildParams(options);
+    return await this.api.get('catalogs', { params });
+  }
+
+  /**
+   * Fetches length-aware paginated catalogs.
+   */
+  fetchCatalogs(
     options: PaginationRequest = {},
   ): Promise<LengthAwarePaginatorResponse<CatalogItem>> {
-    const { filter = {}, sort, per_page, page } = options;
-    const params: Record<string, string | number> = {};
-
-    // Laravel expects filter[search]=value style
-    Object.entries(filter).forEach(([key, value]) => {
-      params[`filter[${key}]`] = value;
-    });
-
-    if (sort) params.sort = sort;
-    if (per_page) params.per_page = per_page;
-    if (page) params.page = page;
-
-    return await this.api.get<LengthAwarePaginatorResponse<CatalogItem>>('catalogs', { params });
+    return this.fetch<'length'>(options);
   }
 
-  async fetchCatalogsSimple(
+  /**
+   * Fetches simple paginated catalogs.
+   */
+  fetchCatalogsSimple(
     options: PaginationRequest = {},
   ): Promise<SimplePaginatorResponse<CatalogItem>> {
-    const { filter = {}, sort, per_page, page } = options;
-    const params: Record<string, string | number> = {};
-
-    // Laravel expects filter[search]=value style
-    Object.entries(filter).forEach(([key, value]) => {
-      params[`filter[${key}]`] = value;
-    });
-
-    if (sort) params.sort = sort;
-    if (per_page) params.per_page = per_page;
-    if (page) params.page = page;
-
-    return await this.api.get<SimplePaginatorResponse<CatalogItem>>('catalogs', { params });
+    return this.fetch<'simple'>(options);
   }
 
-  async fetchCatalogsCursor(
+  /**
+   * Fetches cursor paginated catalogs.
+   */
+  fetchCatalogsCursor(
     options: PaginationRequest = {},
   ): Promise<CursorPaginatorResponse<CatalogItem>> {
-    const { filter = {}, sort, per_page, page } = options;
-    const params: Record<string, string | number> = {};
-
-    // Laravel expects filter[search]=value style
-    Object.entries(filter).forEach(([key, value]) => {
-      params[`filter[${key}]`] = value;
-    });
-
-    if (sort) params.sort = sort;
-    if (per_page) params.per_page = per_page;
-    if (page) params.page = page;
-
-    return await this.api.get<CursorPaginatorResponse<CatalogItem>>('catalogs', { params });
+    return this.fetch<'cursor'>(options);
   }
 }

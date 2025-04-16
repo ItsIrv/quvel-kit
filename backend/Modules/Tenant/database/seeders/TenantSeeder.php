@@ -108,7 +108,7 @@ class TenantSeeder extends Seeder
     private function createTenantUser(Tenant $tenant): void
     {
         User::updateOrCreate(
-            ['email' => 'lan-user@quvel.app'],
+            ['email' => 'lan@quvel.app'],
             [
                 'name' => 'LAN Tenant User',
                 'tenant_id' => $tenant->id,

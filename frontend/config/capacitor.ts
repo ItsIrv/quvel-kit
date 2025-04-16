@@ -4,7 +4,7 @@ import { getCerts } from './utils';
 export default defineConfig(() => {
   return {
     devServer: {
-      allowedHosts: ['quvel.127.0.0.1.nip.io', 'cap-tenant.quvel.192.168.86.228.nip.io'],
+      allowedHosts: ['quvel.127.0.0.1.nip.io', 'cap-tenant.quvel.192.168.86.245.nip.io'],
       strictPort: true,
       port: 3002,
       host: 'quvel.127.0.0.1.nip.io',

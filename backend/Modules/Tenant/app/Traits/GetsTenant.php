@@ -9,8 +9,6 @@ trait GetsTenant
 {
     /**
      * Get the resolved tenant from the request.
-     *
-     * This method is isolated for easier testing.
      */
     public static function getTenant(): Tenant
     {

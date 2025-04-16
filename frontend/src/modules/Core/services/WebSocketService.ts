@@ -1,5 +1,8 @@
 import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
+import Pusher, { Channel } from 'pusher-js';
+import { BootableService } from 'src/modules/Core/types/service.types';
+import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
+import { ApiService } from 'src/modules/Core/services/ApiService';
 
 declare global {
   interface Window {
@@ -7,90 +10,124 @@ declare global {
   }
 }
 
-export class WebSocketService {
+export class WebSocketService implements BootableService {
+  private api: ApiService | null = null;
   private echo: Echo<'pusher'> | null = null;
+  private connectionPromise: Promise<void> | null = null;
   private isConnected = false;
 
   private readonly apiKey: string;
   private readonly cluster: string;
-  private readonly apiUrl: string;
 
-  constructor({ apiKey, cluster, apiUrl }: { apiKey: string; cluster: string; apiUrl: string }) {
+  private queuedSubscriptions: (() => void)[] = [];
+
+  constructor({ apiKey, cluster }: { apiKey: string; cluster: string; apiUrl: string }) {
     this.apiKey = apiKey;
     this.cluster = cluster;
-    this.apiUrl = apiUrl;
 
     if (typeof window !== 'undefined' && !window.Pusher) {
       window.Pusher = Pusher;
     }
   }
 
-  /**
-   * Manually connect to WebSockets.
-   */
-  public connect(): void {
-    if (this.isConnected || this.echo) return;
-
-    this.echo = new Echo({
-      broadcaster: 'pusher',
-      key: this.apiKey,
-      cluster: this.cluster,
-      forceTLS: true,
-      encrypted: true,
-      disableStats: true,
-      authEndpoint: `${this.apiUrl}/broadcasting/auth`,
-      auth: {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
-        },
-      },
-    });
-
-    this.isConnected = true;
+  public register(container: ServiceContainer): void {
+    this.api = container.api;
   }
 
-  /**
-   * Automatically connect if not already.
-   */
-  private ensureConnected(): void {
+  public boot(): void {}
+
+  public connect(): Promise<void> {
+    if (typeof window === 'undefined') {
+      return Promise.resolve();
+    }
+
+    if (this.isConnected) return Promise.resolve();
+
+    if (this.connectionPromise) return this.connectionPromise;
+
+    this.connectionPromise = new Promise<void>((resolve, reject) => {
+      this.echo = new Echo({
+        broadcaster: 'pusher',
+        key: this.apiKey,
+        cluster: this.cluster,
+        authorizer: (channel: Channel) => {
+          const apiService = this.api as ApiService;
+
+          return {
+            authorize: async (socketId: string, callback: (b: boolean, d: unknown) => void) => {
+              const data = await apiService.post('/broadcasting/auth', {
+                socket_id: socketId,
+                channel_name: channel.name,
+              });
+
+              return callback(false, data);
+            },
+          };
+        },
+      });
+
+      this.echo.connector.pusher.connection.bind('connected', () => {
+        this.isConnected = true;
+        resolve();
+
+        this.queuedSubscriptions.forEach((fn) => fn());
+        this.queuedSubscriptions = [];
+      });
+
+      this.echo.connector.pusher.connection.bind('error', (err: unknown) => {
+        console.error('[WebSocket Error]', err);
+        reject(new Error('WebSocket connection error'));
+      });
+    });
+
+    return this.connectionPromise;
+  }
+
+  private ensureConnected(): Promise<void> {
+    return this.connect();
+  }
+
+  private queueOrExecute(subscriptionFn: () => void) {
     if (!this.isConnected) {
-      this.connect();
+      this.queuedSubscriptions.push(subscriptionFn);
+    } else {
+      subscriptionFn();
     }
   }
 
-  /**
-   * Subscribe to an event on a public channel.
-   */
   public subscribe<T>(channelName: string, event: string, callback: (data: T) => unknown) {
-    this.ensureConnected();
-    return this.echo?.channel(channelName).listen(event, callback) || null;
+    void this.ensureConnected();
+    this.queueOrExecute(() => {
+      this.echo?.channel(channelName).listen(event, callback);
+    });
   }
 
-  public subscribePrivate(
-    channelName: string,
-    event: string,
-    callback: (data: unknown) => unknown,
-  ) {
-    this.ensureConnected();
-    return this.echo?.private(channelName).listen(event, callback) || null;
+  public subscribePrivate<T>(channelName: string, event: string, callback: (data: T) => unknown) {
+    void this.ensureConnected();
+    this.queueOrExecute(() => {
+      this.echo?.private(channelName).listen(event, callback);
+    });
   }
 
-  public subscribePresence(channelName: string, callback: (data: unknown) => unknown) {
-    this.ensureConnected();
-    return this.echo?.join(channelName).listen('.presence', callback) || null;
+  public subscribePresence<T>(channelName: string, callback: (data: T) => unknown) {
+    void this.ensureConnected();
+    this.queueOrExecute(() => {
+      this.echo?.join(channelName).listen('.presence', callback);
+    });
   }
 
-  public subscribeEncrypted(
-    channelName: string,
-    event: string,
-    callback: (data: unknown) => unknown,
-  ) {
-    this.ensureConnected();
-    return this.echo?.encryptedPrivate(channelName).listen(event, callback) || null;
+  public subscribeEncrypted<T>(channelName: string, event: string, callback: (data: T) => unknown) {
+    void this.ensureConnected();
+    this.queueOrExecute(() => {
+      this.echo?.encryptedPrivate(channelName).listen(event, callback);
+    });
   }
 
-  public getSocketId(): string | undefined {
-    return this.echo?.socketId();
+  public subscribePrivateNotification<T>(channelName: string, callback: (data: T) => unknown) {
+    void this.ensureConnected();
+    this.queueOrExecute(() => {
+      this.echo?.private(channelName).notification(callback);
+    });
   }
 
   public unsubscribe(channelName: string) {
@@ -104,6 +141,8 @@ export class WebSocketService {
   public disconnect() {
     this.echo?.disconnect();
     this.echo = null;
+    this.connectionPromise = null;
     this.isConnected = false;
+    this.queuedSubscriptions = [];
   }
 }

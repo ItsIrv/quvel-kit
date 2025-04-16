@@ -35,15 +35,10 @@ type SessionGetters = {
  */
 interface SessionActions {
   setSession(data: IUser): void;
-
   fetchSession(): Promise<void>;
-
   logout(): Promise<void>;
-
   login(email: string, password: string): Promise<User>;
-
   signUp(email: string, password: string, name: string): Promise<void>;
-
   loginWithOAuth(provider: string, stateless: boolean): Promise<void>;
 }
 
@@ -73,7 +68,6 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
     actions: {
       /**
        * Sets the user session.
-       * @param data - User data from API response.
        */
       setSession(data: IUser) {
         this.user = createUserFromApi(data);
@@ -105,12 +99,8 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
       /**
        * Logs in the user and sets the session.
-       * @param email - User's email.
-       * @param password - User's password.
        */
       async login(email: string, password: string): Promise<User> {
-        // TODO: Add helpers for validating data from the backend. This could be
-        // for integrity, or for security when working with external sources.
         const { user } = await this.$container.api.post<{ message: string; user: IUser }>(
           '/auth/login',
           { email, password },
@@ -123,9 +113,6 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
       /**
        * Signs up a new user and sets the session.
-       * @param email - User's email.
-       * @param password - User's password.
-       * @param name - User's name.
        */
       async signUp(email: string, password: string, name: string): Promise<void> {
         await this.$container.api.post<{ message: string; user: IUser }>('/auth/register', {
@@ -138,25 +125,26 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
       /**
        * OAuth Flow: Request nonce, store it, and redirect.
        */
+
       async loginWithOAuth(provider: string, stateless: boolean) {
         const redirectBase = `${this.$container.config.get('api_url')}/auth/provider/${provider}/redirect`;
 
         if (!stateless) {
           window.location.href = redirectBase;
-
           return;
         }
 
-        try {
+        const createNonce = async (): Promise<{ nonce: string }> => {
+          return await this.$container.api.post<{ nonce: string }>(
+            `/auth/provider/${provider}/create-nonce`,
+          );
+        };
+
+        const handleOAuthFlow = (nonce: string) => {
           const wsService = this.$container.ws;
           const taskService = this.$container.task;
 
           wsService.unsubscribeAll();
-
-          const { nonce } = await this.$container.api.post<{ nonce: string }>(
-            `/auth/provider/${provider}/create-nonce`,
-          );
-
           wsService.subscribe<{ status: OAuthStatusEnum }>(
             `auth.nonce.${nonce}`,
             '.oauth.result',
@@ -169,7 +157,6 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
                   timeout: 8000,
                   closeBtn: true,
                 });
-
                 return;
               }
 
@@ -183,20 +170,22 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
                   task: async (): Promise<{ user: IUser }> =>
                     await this.$container.api.post<{ user: IUser }>(
                       `/auth/provider/${provider}/redeem-nonce`,
-                      {
-                        nonce,
-                      },
+                      { nonce },
                     ),
                   successHandlers: ({ user }): void => {
                     this.setSession(user);
-
                     wsService.disconnect();
                   },
                 })
                 .run();
             },
           );
+        };
 
+        try {
+          const { nonce } = await createNonce();
+
+          void handleOAuthFlow(nonce);
           window.location.href = `${redirectBase}?nonce=${encodeURIComponent(nonce)}`;
         } catch {
           showNotification('negative', this.$container.i18n.t('common.task.error'));
