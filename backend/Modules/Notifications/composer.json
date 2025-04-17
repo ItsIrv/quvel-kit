@@ -1,0 +1,30 @@
+{
+    "name": "itsirv/notifications",
+    "description": "Notifications Module for QuVel Kit. Includes endpoints for users to interact with notifications.",
+    "authors": [
+        {
+            "name": "Irving Gomez",
+            "email": "gomirv.work@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Notifications\\": "app/",
+            "Modules\\Notifications\\Database\\Factories\\": "database/factories/",
+            "Modules\\Notifications\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Notifications\\Tests\\": "tests/"
+        }
+    }
+}
