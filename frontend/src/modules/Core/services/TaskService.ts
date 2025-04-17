@@ -182,21 +182,19 @@ export class TaskService extends Service implements BootableService {
     ): Promise<void> {
       const resolvedNotification = await resolveValue(notification);
 
-      if (resolvedNotification === true || typeof resolvedNotification === 'string') {
-        if (typeof resolvedNotification === 'string') {
-          showNotification(isError ? 'negative' : 'positive', resolvedNotification);
-        } else {
-          let responseMessage: string;
+      if (resolvedNotification === true) {
+        showNotification(
+          isError ? 'negative' : 'positive',
+          isError ? container.i18n.t('common.task.error') : container.i18n.t('common.task.success'),
+        );
 
-          if (isError && currentErrors.value.has('message')) {
-            responseMessage =
-              currentErrors.value.get('message') || container.i18n.t('common.task.error');
-          } else {
-            responseMessage = (currentResult.value as { message: string }).message;
-          }
+        return;
+      }
 
-          showNotification(isError ? 'negative' : 'positive', container.i18n.t(responseMessage));
-        }
+      if (typeof resolvedNotification === 'string') {
+        showNotification(isError ? 'negative' : 'positive', resolvedNotification);
+
+        return;
       }
     }
 

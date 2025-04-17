@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Tenant\Transformers;
+namespace Modules\Tenant\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -21,7 +21,7 @@ use Modules\Tenant\ValueObjects\TenantConfig;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
-class TenantDumpTransformer extends JsonResource
+class TenantDumpResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -58,7 +58,7 @@ class TenantDumpTransformer extends JsonResource
         // Filter config based on visibility rules
         $filteredConfig = array_filter(
             $configArray,
-            function ($key) use ($visibility): bool {
+            static function ($key) use ($visibility): bool {
                 return isset($visibility[$key]) && $visibility[$key] !== TenantConfigVisibility::PRIVATE->value;
             },
             ARRAY_FILTER_USE_KEY,

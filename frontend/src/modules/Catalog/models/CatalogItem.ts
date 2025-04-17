@@ -11,7 +11,7 @@ export interface CatalogItem {
   metadata: {
     tags: string[];
     rating: number;
-  };
+  } | null;
   user?: {
     name: string;
   };

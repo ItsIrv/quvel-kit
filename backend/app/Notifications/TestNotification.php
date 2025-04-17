@@ -3,8 +3,8 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\BroadcastMessage;
+use Illuminate\Notifications\Notification;
 
 class TestNotification extends Notification
 {
@@ -17,7 +17,14 @@ class TestNotification extends Notification
 
     public function via(): array
     {
-        return ['broadcast'];
+        return ['broadcast', 'database'];
+    }
+
+    public function toDatabase(): array
+    {
+        return [
+            'message' => 'Test Notification',
+        ];
     }
 
     public function toBroadcast(): BroadcastMessage

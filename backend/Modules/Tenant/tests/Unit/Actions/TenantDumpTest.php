@@ -4,7 +4,6 @@ namespace Modules\Tenant\Tests\Unit\Actions;
 
 use Modules\Tenant\Actions\TenantDump;
 use Modules\Tenant\Contexts\TenantContext;
-use Modules\Tenant\Transformers\TenantDumpTransformer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;

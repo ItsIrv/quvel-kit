@@ -4,6 +4,7 @@ import { useQuasar } from 'quasar';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 import BackInOutUp from 'src/modules/Core/components/Transitions/BackInOutUp.vue';
+import NotificationBell from 'src/modules/Notifications/components/NotificationBell.vue';
 
 /**
  * Emits
@@ -54,7 +55,9 @@ function onDropdownToggle() {
 <template>
   <div v-if="sessionStore.isAuthenticated" class="relative">
     <div class="row items-center">
-      <span class="mr-6 text-xl font-bold hidden sm:!flex cursor-pointer" @click="onDropdownToggle">
+      <NotificationBell class="pr-8" />
+
+      <span class="mr-2 text-xl font-bold hidden sm:!flex cursor-pointer" @click="onDropdownToggle">
         {{ sessionStore.user?.name }}
       </span>
 

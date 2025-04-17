@@ -24,7 +24,7 @@ trait TenantScopedModel
             return;
         }
 
-        static::addGlobalScope(new TenantScope());
+        static::addGlobalScope(new TenantScope);
 
         static::creating(
             /** @phpstan-ignore-next-line */

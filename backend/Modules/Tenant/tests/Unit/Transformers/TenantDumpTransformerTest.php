@@ -4,13 +4,13 @@ namespace Modules\Tenant\Tests\Unit\Transformers;
 
 use Illuminate\Http\Request;
 use Modules\Tenant\database\factories\TenantConfigFactory;
+use Modules\Tenant\Http\Middleware\TenantDumpResource;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\Transformers\TenantDumpTransformer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
-#[CoversClass(TenantDumpTransformer::class)]
+#[CoversClass(TenantDumpResource::class)]
 #[Group('tenant-module')]
 #[Group('tenant-transformers')]
 class TenantDumpTransformerTest extends TestCase
@@ -30,7 +30,7 @@ class TenantDumpTransformerTest extends TestCase
             'updated_at' => $tenant->updated_at,
         ], true);
 
-        $transformer = new TenantDumpTransformer($tenant);
+        $transformer = new TenantDumpResource($tenant);
         $result = $transformer->toArray(new Request);
 
         $this->assertEquals([
@@ -49,7 +49,7 @@ class TenantDumpTransformerTest extends TestCase
      */
     public function test_to_array_includes_parent_id_when_tenant_has_parent(): void
     {
-        $transformer = new TenantDumpTransformer($this->tenant->children()->first());
+        $transformer = new TenantDumpResource($this->tenant->children()->first());
         $result = $transformer->toArray(new Request);
 
         $this->assertEquals($this->tenant->public_id, $result['parent_id']);
@@ -70,7 +70,7 @@ class TenantDumpTransformerTest extends TestCase
 
         $tenant = Tenant::factory()->make(['config' => $tenantConfigArray]);
 
-        $transformer = new TenantDumpTransformer($tenant);
+        $transformer = new TenantDumpResource($tenant);
         $result = $transformer->toArray(new Request);
 
         $this->assertArrayNotHasKey('mail_from_name', $result['config']);
@@ -93,7 +93,7 @@ class TenantDumpTransformerTest extends TestCase
     {
         $tenant = Tenant::factory()->make(['config' => null]);
 
-        $transformer = new TenantDumpTransformer($tenant);
+        $transformer = new TenantDumpResource($tenant);
         $result = $transformer->toArray(new Request);
 
         $this->assertEquals([], $result['config']);

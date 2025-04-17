@@ -37,7 +37,7 @@ defineOptions({
  * Composables
  */
 useXsrf();
-useMetaConfig('A Modern Hybrid App Framework');
+useMetaConfig();
 useOAuthMessageHandler();
 
 /**

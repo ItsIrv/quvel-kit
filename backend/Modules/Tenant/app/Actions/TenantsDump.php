@@ -4,8 +4,8 @@ namespace Modules\Tenant\Actions;
 
 use Illuminate\Cache\Repository as CacheRepository;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Modules\Tenant\Http\Middleware\TenantDumpResource;
 use Modules\Tenant\Services\TenantFindService;
-use Modules\Tenant\Transformers\TenantDumpTransformer;
 
 /**
  * Action for frontend SSR to fetch all tenants and allow dynamic config on client.
@@ -33,6 +33,6 @@ class TenantsDump
             $cache->put(self::CACHE_KEY, $tenants, self::CACHE_TTL);
         }
 
-        return TenantDumpTransformer::collection($tenants);
+        return TenantDumpResource::collection($tenants);
     }
 }

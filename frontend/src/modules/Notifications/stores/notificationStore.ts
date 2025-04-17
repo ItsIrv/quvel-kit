@@ -1,12 +1,13 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { INotification } from 'src/modules/Notifications/types/notification.types';
+import { Notification } from 'src/modules/Notifications/models/Notification';
 
 /**
  * Interface for the notification state.
  */
 interface NotificationState {
-  items: INotification[];
-  hasLoaded: boolean;
+  items: Notification[];
+  hasRun: boolean;
   userId: number | null;
 }
 
@@ -25,11 +26,7 @@ interface NotificationActions {
   subscribeToSocket(userId: number): void;
   unsubscribeFromSocket(): void;
   push(notification: INotification): void;
-  markAllAsRead(): void;
-}
-
-function isNotification(data: unknown): data is INotification {
-  return typeof data === 'object' && data !== null && 'message' in data;
+  markAllAsRead(): Promise<void>;
 }
 
 /**
@@ -43,7 +40,7 @@ export const useNotificationStore = defineStore<
 >('notifications', {
   state: (): NotificationState => ({
     items: [],
-    hasLoaded: false,
+    hasRun: false,
     userId: null,
   }),
 
@@ -60,10 +57,11 @@ export const useNotificationStore = defineStore<
      */
     async fetchNotifications() {
       try {
-        const { data } = await this.$container.api.get<{ data: INotification[] }>('/notifications');
+        this.items = (
+          await this.$container.api.get<{ data: INotification[] }>('/notifications')
+        ).data.map((notification) => Notification.fromApi(notification));
 
-        this.items = data;
-        this.hasLoaded = true;
+        this.hasRun = true;
       } catch {
         // TODO: Global error handling
       }
@@ -75,8 +73,8 @@ export const useNotificationStore = defineStore<
     subscribeToSocket(userId: number) {
       this.userId = userId;
       this.$container.ws.subscribePrivateNotification(`App.Models.User.${userId}`, (data) => {
-        if (isNotification(data)) {
-          this.push(data);
+        if (Notification.isModel(data)) {
+          this.push(Notification.fromApi(data));
         }
       });
     },
@@ -92,20 +90,18 @@ export const useNotificationStore = defineStore<
 
     /**
      * Push a new incoming notification.
-     * @param notification - Real-time notification object.
      */
-    push(notification: INotification) {
+    push(notification: Notification) {
       this.items.unshift(notification);
     },
 
     /**
      * Mark all notifications as read locally.
      */
-    markAllAsRead() {
-      this.items = this.items.map((n) => ({
-        ...n,
-        read_at: n.read_at || new Date().toISOString(),
-      }));
+    async markAllAsRead() {
+      await this.$container.api.post('/notifications/mark-all-read');
+
+      this.items.forEach((n) => (n.read_at = new Date().toISOString()));
     },
   },
 });

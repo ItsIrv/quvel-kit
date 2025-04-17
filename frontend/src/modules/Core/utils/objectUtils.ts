@@ -1,3 +1,5 @@
+import { Resolvable } from 'src/modules/Core/types/task.types';
+
 /**
  * Resolves a value that could be:
  * - A primitive (returned directly).
@@ -7,9 +9,7 @@
  * @param value - The value to resolve.
  * @returns A promise that resolves to the resolved value.
  */
-export async function resolveValue<T>(
-  value: T | (() => T) | (() => Promise<T>),
-): Promise<T | undefined> {
+export async function resolveValue<T>(value: Resolvable<T>): Promise<T | undefined> {
   try {
     if (typeof value === 'function') {
       const result = (value as () => T | Promise<T>)();

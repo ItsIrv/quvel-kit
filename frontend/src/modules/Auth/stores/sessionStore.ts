@@ -186,6 +186,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
           const { nonce } = await createNonce();
 
           void handleOAuthFlow(nonce);
+
           window.location.href = `${redirectBase}?nonce=${encodeURIComponent(nonce)}`;
         } catch {
           showNotification('negative', this.$container.i18n.t('common.task.error'));

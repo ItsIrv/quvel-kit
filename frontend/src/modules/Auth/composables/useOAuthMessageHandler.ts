@@ -28,7 +28,6 @@ export function useOAuthMessageHandler(): void {
 
         showNotification(mapStatusToType(decodedMessage), $container.i18n.t(decodedMessage), {
           timeout: 8000,
-          closeBtn: true,
         });
 
         router.replace({ query }).catch(() => {});

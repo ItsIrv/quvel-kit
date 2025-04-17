@@ -5,9 +5,9 @@ namespace Modules\Tenant\Tests\Feature\Actions;
 use Illuminate\Cache\Repository as CacheRepository;
 use Mockery;
 use Modules\Tenant\Actions\TenantsDump;
+use Modules\Tenant\Http\Middleware\TenantDumpResource;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Services\TenantFindService;
-use Modules\Tenant\Transformers\TenantDumpTransformer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -40,7 +40,7 @@ class TenantsDumpFeatureTest extends TestCase
         $result = $action->__invoke($tenantFindServiceMock, $cacheMock);
 
         // Assert correct response type
-        $this->assertEquals(TenantDumpTransformer::collection($cachedTenants), $result);
+        $this->assertEquals(TenantDumpResource::collection($cachedTenants), $result);
     }
 
     /**
@@ -71,6 +71,6 @@ class TenantsDumpFeatureTest extends TestCase
         $result = $action->__invoke($tenantFindServiceMock, $cacheMock);
 
         // Assert correct response type
-        $this->assertEquals(TenantDumpTransformer::collection($freshTenants), $result);
+        $this->assertEquals(TenantDumpResource::collection($freshTenants), $result);
     }
 }

@@ -17,8 +17,7 @@ class IndexAction
         ?string $sort = null,
         int $perPage = 15,
         bool $isAuthenticated = false
-    ): LengthAwarePaginator
-    {
+    ): LengthAwarePaginator {
         $query = CatalogItem::query()
             ->with('user');
 
