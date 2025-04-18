@@ -8,10 +8,18 @@ use Modules\Tenant\Models\Tenant;
 trait GetsTenant
 {
     /**
-     * Get the resolved tenant from the request.
+     * Get the resolved tenant.
      */
-    public static function getTenant(): Tenant
+    public function getTenant(): Tenant
     {
         return app(TenantContext::class)->get();
+    }
+
+    /**
+     * Get the resolved tenant ID.
+     */
+    public function getTenantId(): int
+    {
+        return $this->getTenant()->id;
     }
 }

@@ -8,6 +8,7 @@ import { useCatalogStore } from 'src/modules/Catalog/stores/catalogStore';
 import CatalogSection from 'src/modules/Catalog/components/CatalogSection.vue';
 import { ref, watch } from 'vue';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
+import TenantDevWebSocketLogger from 'src/modules/Core/components/TenantDevWebSocketLogger.vue';
 
 defineOptions({
   /**
@@ -90,7 +91,11 @@ watch(
   </div>
 
   <!-- Drawers and dialogs -->
-  <MenuRightDrawer v-model="isRightDrawerOpen" @login-click="onLoginClick" />
+  <MenuRightDrawer
+    v-model="isRightDrawerOpen"
+    @login-click="onLoginClick"
+  />
   <MenuLeftDrawer v-model="isLeftDrawerOpen" />
   <AuthDialog v-model="showAuthForm" />
+  <TenantDevWebSocketLogger />
 </template>

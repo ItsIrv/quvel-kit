@@ -48,6 +48,8 @@ export class TenantCacheService {
           app_name: tenant.config.app_name ?? '',
           internal_api_url: tenant.config.internal_api_url ?? '',
           __visibility: tenant.config.__visibility ?? {},
+          tenant_id: tenant.id ?? '',
+          tenant_name: tenant.name ?? '',
         };
 
         // Store tenant with formatted config

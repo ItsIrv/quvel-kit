@@ -24,7 +24,7 @@ trait TenantScopedModel
             return;
         }
 
-        static::addGlobalScope(new TenantScope);
+        static::addGlobalScope(new TenantScope());
 
         static::creating(
             /** @phpstan-ignore-next-line */
@@ -83,14 +83,12 @@ trait TenantScopedModel
      */
     private function guardWithTenantId(): void
     {
-        $tenantId = static::getTenant()->id;
+        $tenantId = $this->getTenantId();
 
-        if (empty($this->tenant_id)) {
+        if (isset($this->tenant_id) && $this->tenant_id !== $tenantId) {
+            throw new TenantMismatchException();
+        } else {
             $this->tenant_id = $tenantId;
-        }
-
-        if ($this->tenant_id !== $tenantId) {
-            throw new TenantMismatchException;
         }
     }
 }

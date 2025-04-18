@@ -20,6 +20,8 @@ export class ConfigService {
         api_url: import.meta.env.VITE_API_URL ?? '',
         app_url: import.meta.env.VITE_APP_URL ?? '',
         app_name: import.meta.env.VITE_APP_NAME ?? 'QuVel',
+        tenant_id: import.meta.env.VITE_TENANT_ID ?? '',
+        tenant_name: import.meta.env.VITE_TENANT_NAME ?? '',
       };
   }
 

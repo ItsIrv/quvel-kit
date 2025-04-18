@@ -4,4 +4,6 @@ export interface TenantConfig {
   app_url: string;
   app_name: string;
   internal_api_url?: string;
+  tenant_id: string;
+  tenant_name: string;
 }

@@ -27,6 +27,8 @@ export interface TenantConfigProtected {
   app_name: string;
   internal_api_url?: string;
   __visibility?: Partial<Record<keyof TenantConfigProtected, TenantConfigVisibility>>;
+  tenant_id: string;
+  tenant_name: string;
 }
 
 /**

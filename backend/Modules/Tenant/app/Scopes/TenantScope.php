@@ -21,7 +21,7 @@ class TenantScope implements Scope
         $builder->where(
             'tenant_id',
             '=',
-            self::getTenant()->id,
+            $this->getTenantId(),
         );
     }
 }

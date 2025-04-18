@@ -14,10 +14,12 @@ use Modules\Notifications\Http\Controllers\NotificationsController;
 |
 */
 
-Route::group([], static function () {
+Route::group([
+    'middleware' => ['auth'],
+], static function () {
     Route::get('notifications', [NotificationsController::class, 'listNotifications'])
         ->name('notifications.listNotifications');
 
     Route::post('notifications/mark-all-read', [NotificationsController::class, 'markAllAsRead'])
         ->name('notifications.markAllAsRead');
-})->middleware(['auth']);
+});

@@ -55,12 +55,16 @@ export class WebSocketService implements BootableService {
 
           return {
             authorize: async (socketId: string, callback: (b: boolean, d: unknown) => void) => {
-              const data = await apiService.post('/broadcasting/auth', {
-                socket_id: socketId,
-                channel_name: channel.name,
-              });
+              try {
+                const data = await apiService.post('/broadcasting/auth', {
+                  socket_id: socketId,
+                  channel_name: channel.name,
+                });
 
-              return callback(false, data);
+                return callback(false, data);
+              } catch {
+                return callback(true, null);
+              }
             },
           };
         },

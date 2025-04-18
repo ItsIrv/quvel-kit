@@ -17,8 +17,6 @@ export function useWebSocketChannelListener({
   const container = useContainer();
 
   onMounted(() => {
-    if (!container.ws) return;
-
     switch (type) {
       case 'presence':
         container.ws.subscribePresence(channel, callback);

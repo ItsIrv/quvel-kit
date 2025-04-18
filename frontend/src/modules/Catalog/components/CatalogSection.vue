@@ -30,6 +30,7 @@ async function onPageChange(page: number) {
           :max-pages="5"
           :ellipses="false"
           color="pink-4"
+          direction-links
           boundary-links
           boundary-numbers
           @update:model-value="onPageChange"
