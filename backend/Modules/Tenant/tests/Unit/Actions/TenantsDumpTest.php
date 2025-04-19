@@ -5,7 +5,7 @@ namespace Modules\Tenant\Tests\Unit\Actions;
 use Illuminate\Cache\Repository as CacheRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Modules\Tenant\Actions\TenantsDump;
-use Modules\Tenant\Http\Middleware\TenantDumpResource;
+use Modules\Tenant\Http\Resources\TenantDumpResource;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Services\TenantFindService;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -23,7 +23,7 @@ class TenantsDumpTest extends TestCase
     public function test_tenants_dump_returns_cached_tenants(): void
     {
         // Mock dependencies
-        $cache = $this->createMock(CacheRepository::class);
+        $cache             = $this->createMock(CacheRepository::class);
         $tenantFindService = $this->createMock(TenantFindService::class);
 
         // Sample tenant data as Eloquent Collection
@@ -57,7 +57,7 @@ class TenantsDumpTest extends TestCase
     public function test_tenants_dump_fetches_when_cache_empty(): void
     {
         // Mock dependencies
-        $cache = $this->createMock(CacheRepository::class);
+        $cache             = $this->createMock(CacheRepository::class);
         $tenantFindService = $this->createMock(TenantFindService::class);
 
         // Sample fresh tenant data as Eloquent Collection

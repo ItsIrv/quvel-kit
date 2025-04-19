@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Notifications;
+namespace Modules\Notifications\Notifications;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class TestNotification extends Notification implements ShouldQueue
+class TestNotification extends Notification
 {
-    public function __construct()
-    {
+    public function __construct(
+        private readonly string $message = 'Test Notification',
+    ) {
         //
     }
 
@@ -21,14 +21,14 @@ class TestNotification extends Notification implements ShouldQueue
     public function toDatabase(): array
     {
         return [
-            'message' => 'Test Notification',
+            'message' => $this->message,
         ];
     }
 
     public function toBroadcast($notifiable = null): BroadcastMessage
     {
         return new BroadcastMessage([
-            'message' => 'Test Notification',
+            'message' => $this->message,
         ]);
     }
 }

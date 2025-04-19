@@ -22,4 +22,12 @@ trait GetsTenant
     {
         return $this->getTenant()->id;
     }
+
+    /**
+     * Get the resolved tenant public ID.
+     */
+    public function getTenantPublicId(): string
+    {
+        return $this->getTenant()->public_id;
+    }
 }

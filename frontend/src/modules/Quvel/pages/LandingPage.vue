@@ -9,6 +9,7 @@ import CatalogSection from 'src/modules/Catalog/components/CatalogSection.vue';
 import { ref, watch } from 'vue';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import TenantDevWebSocketLogger from 'src/modules/Core/components/TenantDevWebSocketLogger.vue';
+import MultiChannelWebSocketManager from 'src/modules/Core/components/MultiChannelWebSocketManager.vue';
 
 defineOptions({
   /**
@@ -98,4 +99,5 @@ watch(
   <MenuLeftDrawer v-model="isLeftDrawerOpen" />
   <AuthDialog v-model="showAuthForm" />
   <TenantDevWebSocketLogger />
+  <MultiChannelWebSocketManager />
 </template>

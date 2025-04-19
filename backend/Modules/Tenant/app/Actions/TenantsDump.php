@@ -4,7 +4,7 @@ namespace Modules\Tenant\Actions;
 
 use Illuminate\Cache\Repository as CacheRepository;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Modules\Tenant\Http\Middleware\TenantDumpResource;
+use Modules\Tenant\Http\Resources\TenantDumpResource;
 use Modules\Tenant\Services\TenantFindService;
 
 /**

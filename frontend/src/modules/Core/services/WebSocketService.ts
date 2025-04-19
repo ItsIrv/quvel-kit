@@ -3,6 +3,7 @@ import Pusher, { Channel } from 'pusher-js';
 import { BootableService } from 'src/modules/Core/types/service.types';
 import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
 import { ApiService } from 'src/modules/Core/services/ApiService';
+import { PresenceHandlers } from '../types/websocket.types';
 
 declare global {
   interface Window {
@@ -15,7 +16,6 @@ export class WebSocketService implements BootableService {
   private echo: Echo<'pusher'> | null = null;
   private connectionPromise: Promise<void> | null = null;
   private isConnected = false;
-
   private readonly apiKey: string;
   private readonly cluster: string;
 
@@ -113,10 +113,45 @@ export class WebSocketService implements BootableService {
     });
   }
 
-  public subscribePresence<T>(channelName: string, callback: (data: T) => unknown) {
+  /**
+   * Subscribe to a specific event on a presence channel
+   */
+  public subscribePresence<T>(channelName: string, event: string, callback: (data: T) => unknown) {
     void this.ensureConnected();
     this.queueOrExecute(() => {
-      this.echo?.join(channelName).listen('.presence', callback);
+      this.echo?.join(channelName).listen(event, callback);
+    });
+  }
+
+  /**
+   * Subscribe to presence channel membership events
+   */
+  public subscribePresenceHandlers(channelName: string, handlers: PresenceHandlers) {
+    void this.ensureConnected();
+    this.queueOrExecute(() => {
+      const channel = this.echo?.join(channelName);
+
+      if (handlers.onListening) {
+        channel?.listen(handlers.onListening.event, handlers.onListening.callback);
+      }
+
+      if (handlers.onHere) {
+        channel?.here((members: Record<string, unknown>) => {
+          handlers.onHere?.(members);
+        });
+      }
+
+      if (handlers.onJoining) {
+        channel?.joining((member: Record<string, unknown>) => {
+          handlers.onJoining?.(member);
+        });
+      }
+
+      if (handlers.onLeaving) {
+        channel?.leaving((member: Record<string, unknown>) => {
+          handlers.onLeaving?.(member);
+        });
+      }
     });
   }
 
@@ -134,8 +169,21 @@ export class WebSocketService implements BootableService {
     });
   }
 
+  public subscribePublicNotification<T>(channelName: string, callback: (data: T) => unknown) {
+    void this.ensureConnected();
+    this.queueOrExecute(() => {
+      this.echo?.channel(channelName).notification(callback);
+    });
+  }
+
   public unsubscribe(channelName: string) {
-    this.echo?.leave(channelName);
+    if (!this.echo || !channelName) return;
+
+    try {
+      this.echo.leave(channelName);
+    } catch {
+      //
+    }
   }
 
   public unsubscribeAll() {

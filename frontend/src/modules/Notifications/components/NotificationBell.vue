@@ -19,10 +19,6 @@ const notifications = computed(() => notificationStore.items);
 const unreadCount = computed(() => notificationStore.unreadCount);
 
 function toggleDropdown() {
-  if (notifications.value.length === 0) {
-    return;
-  }
-
   isDropdownOpen.value = !isDropdownOpen.value;
 }
 
@@ -56,10 +52,17 @@ watch(
       :class="{ 'animate-bell': bellAnimation }"
       @click="toggleDropdown"
     >
-      <q-badge v-if="unreadCount > 0" color="red" floating>{{ unreadCount }}</q-badge>
+      <q-badge
+        v-if="unreadCount > 0"
+        color="red"
+        floating
+      >{{ unreadCount }}</q-badge>
     </q-btn>
 
-    <div v-if="isDropdownOpen" class="NotificationDropdown">
+    <div
+      v-if="isDropdownOpen"
+      class="NotificationDropdown"
+    >
       <q-btn
         v-if="unreadCount > 0"
         :disable="markAsReadTask.isActive.value"
@@ -70,8 +73,18 @@ watch(
         @click="markAllAsRead"
       />
 
+      <q-banner
+        v-else
+        inline-actions
+      >
+        No notifications.
+      </q-banner>
+
       <q-list>
-        <q-item v-for="notification in notifications" :key="notification.id">
+        <q-item
+          v-for="notification in notifications"
+          :key="notification.id"
+        >
           <q-item-section>
             <q-item-label>{{ notification.message }}</q-item-label>
             <q-item-label caption>{{ notification.created_at }}</q-item-label>
@@ -98,6 +111,7 @@ watch(
 }
 
 @keyframes bell-shake {
+
   from,
   to {
     transform: translate3d(0, 0, 0);

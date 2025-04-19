@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Tenant\Http\Middleware;
+namespace Modules\Tenant\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -31,11 +31,11 @@ class TenantDumpResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->public_id,
-            'name' => $this->name,
-            'domain' => $this->domain,
-            'parent_id' => $this->parent->public_id ?? null,
-            'config' => $this->getFilteredConfig(),
+            'id'         => $this->public_id,
+            'name'       => $this->name,
+            'domain'     => $this->domain,
+            'parent_id'  => $this->parent->public_id ?? null,
+            'config'     => $this->getFilteredConfig(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
@@ -48,18 +48,18 @@ class TenantDumpResource extends JsonResource
      */
     private function getFilteredConfig(): array
     {
-        if (! $this->config instanceof TenantConfig) {
+        if (!$this->config instanceof TenantConfig) {
             return [];
         }
 
         $configArray = $this->config->toArray();
-        $visibility = $configArray['__visibility'] ?? [];
+        $visibility  = $configArray['__visibility'] ?? [];
 
         // Filter config based on visibility rules
         $filteredConfig = array_filter(
             $configArray,
             static function ($key) use ($visibility): bool {
-                return isset($visibility[$key]) && $visibility[$key] !== TenantConfigVisibility::PRIVATE->value;
+                return isset($visibility[$key]) && $visibility[$key] !== TenantConfigVisibility::PRIVATE ->value;
             },
             ARRAY_FILTER_USE_KEY,
         );

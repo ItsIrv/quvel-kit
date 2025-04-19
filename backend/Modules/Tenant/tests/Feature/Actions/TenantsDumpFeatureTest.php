@@ -5,7 +5,7 @@ namespace Modules\Tenant\Tests\Feature\Actions;
 use Illuminate\Cache\Repository as CacheRepository;
 use Mockery;
 use Modules\Tenant\Actions\TenantsDump;
-use Modules\Tenant\Http\Middleware\TenantDumpResource;
+use Modules\Tenant\Http\Resources\TenantDumpResource;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Services\TenantFindService;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -36,7 +36,7 @@ class TenantsDumpFeatureTest extends TestCase
         $cacheMock->shouldReceive('get')->once()->with('tenants')->andReturn($cachedTenants);
 
         // Execute the action
-        $action = new TenantsDump;
+        $action = new TenantsDump();
         $result = $action->__invoke($tenantFindServiceMock, $cacheMock);
 
         // Assert correct response type
@@ -67,7 +67,7 @@ class TenantsDumpFeatureTest extends TestCase
             ->willReturn($freshTenants);
 
         // Execute the action
-        $action = new TenantsDump;
+        $action = new TenantsDump();
         $result = $action->__invoke($tenantFindServiceMock, $cacheMock);
 
         // Assert correct response type

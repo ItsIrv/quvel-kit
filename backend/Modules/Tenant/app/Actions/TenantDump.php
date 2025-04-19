@@ -4,7 +4,7 @@ namespace Modules\Tenant\Actions;
 
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Exceptions\TenantNotFoundException;
-use Modules\Tenant\Http\Middleware\TenantDumpResource;
+use Modules\Tenant\Http\Resources\TenantDumpResource;
 
 /**
  * Action to dump the current tenant.
