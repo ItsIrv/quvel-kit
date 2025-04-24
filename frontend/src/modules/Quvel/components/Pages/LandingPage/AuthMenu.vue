@@ -53,20 +53,30 @@ function onDropdownToggle() {
 </script>
 
 <template>
-  <div v-if="sessionStore.isAuthenticated" class="relative">
+  <div
+    v-if="sessionStore.isAuthenticated"
+    class="relative"
+  >
     <div class="row items-center">
       <NotificationBell class="pr-8" />
 
-      <span class="mr-2 text-xl font-bold hidden sm:!flex cursor-pointer" @click="onDropdownToggle">
+      <span
+        class="mr-2 text-xl font-bold hidden sm:!flex cursor-pointer"
+        @click="onDropdownToggle"
+      >
         {{ sessionStore.user?.name }}
       </span>
 
       <!-- User Avatar -->
-      <q-btn flat round dense @click="onDropdownToggle">
+      <q-btn
+        flat
+        round
+        dense
+        @click="onDropdownToggle"
+      >
         <img
-          :src="
-            sessionStore.user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=44'
-          "
+          :src="sessionStore.user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=44'
+            "
           alt="User Avatar"
           class="w-10 h-10 rounded-full border border-stone-400 dark:border-gray-600 shadow-sm"
         />
@@ -75,7 +85,10 @@ function onDropdownToggle() {
 
     <!-- Dropdown Menu -->
     <BackInOutUp>
-      <div v-if="isDropdownOpen" class="UserDropdown">
+      <div
+        v-if="isDropdownOpen"
+        class="UserDropdown"
+      >
         <!-- User Information -->
         <p class="text-sm text-gray-900 dark:text-white font-semibold">
           {{ sessionStore.user?.name }}
@@ -98,7 +111,12 @@ function onDropdownToggle() {
 
   <template v-else>
     <!-- Login Button -->
-    <q-btn :ripple="false" class="PrimaryButton" unelevated @click="emits('login-click')">
+    <q-btn
+      :ripple="false"
+      class="PrimaryButton"
+      unelevated
+      @click="emits('login-click')"
+    >
       {{ $t('auth.forms.login.button') }}
     </q-btn>
   </template>

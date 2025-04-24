@@ -33,4 +33,26 @@ class TenantFindService
     {
         return Tenant::all();
     }
+
+    /**
+     * Find tenant by ID
+     *
+     * @param int $tenantId
+     * @return Tenant|null
+     */
+    public function findById(int $tenantId): ?Tenant
+    {
+        return Tenant::find($tenantId);
+    }
+
+    /**
+     * Get tenant public ID from tenant ID
+     *
+     * @param int $tenantId
+     * @return string|null
+     */
+    public function getTenantPublicIdFromId(int $tenantId): ?string
+    {
+        return Tenant::select('public_id')->find($tenantId)?->public_id;
+    }
 }

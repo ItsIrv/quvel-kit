@@ -9,6 +9,7 @@ use Modules\Tenant\Actions\TenantsDump;
 */
 Route::group([
     'prefix' => 'tenant',
+    // TODO: Add middleware to whitelist tenant dump routes
 ], static function (): void {
     // Dumps Current Tenant
     Route::get('/', TenantDump::class)

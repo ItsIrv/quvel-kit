@@ -71,6 +71,7 @@ export const useNotificationStore = defineStore<
      * Register a socket listener on the user’s private channel.
      */
     subscribeToSocket(userId: number) {
+      return;
       this.userId = userId;
       this.$container.ws.subscribePrivateNotification(`App.Models.User.${userId}`, (data) => {
         if (Notification.isModel(data)) {

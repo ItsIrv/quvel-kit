@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
  * User resource.
  *
  * @property string $id
+ * @property string $public_id
  * @property string $name
  * @property string $email
  * @property string $avatar
@@ -26,10 +27,10 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'avatar' => $this->avatar,
+            'id'         => $this->public_id,
+            'name'       => $this->name,
+            'email'      => $this->email,
+            'avatar'     => $this->avatar,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -8,8 +8,7 @@ import { useCatalogStore } from 'src/modules/Catalog/stores/catalogStore';
 import CatalogSection from 'src/modules/Catalog/components/CatalogSection.vue';
 import { ref, watch } from 'vue';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
-import TenantDevWebSocketLogger from 'src/modules/Core/components/TenantDevWebSocketLogger.vue';
-import MultiChannelWebSocketManager from 'src/modules/Core/components/MultiChannelWebSocketManager.vue';
+import WebSocketChannelManager from 'src/modules/Core/components/WebSocketChannelManager.vue';
 
 defineOptions({
   /**
@@ -84,6 +83,8 @@ watch(
       @open-left-drawer="onOpenLeftDrawer"
     />
 
+    <WebSocketChannelManager />
+
     <!-- Scrollable section -->
     <CatalogSection />
 
@@ -96,8 +97,7 @@ watch(
     v-model="isRightDrawerOpen"
     @login-click="onLoginClick"
   />
+
   <MenuLeftDrawer v-model="isLeftDrawerOpen" />
   <AuthDialog v-model="showAuthForm" />
-  <TenantDevWebSocketLogger />
-  <MultiChannelWebSocketManager />
 </template>

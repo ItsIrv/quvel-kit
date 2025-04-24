@@ -1,10 +1,16 @@
 <template>
   <q-card class="GenericCardGradient">
-    <q-img :src="item.image" alt="Catalog Item Picture" />
+    <q-img
+      :src="item.image"
+      alt="Catalog Item Picture"
+    />
 
     <q-card-section>
       <div class="text-h6">{{ item.name }}</div>
-      <div v-if="item.user" class="text-subtitle2">Author: {{ item.user.name }}</div>
+      <div
+        v-if="item.user"
+        class="text-subtitle2"
+      >Author: {{ item.user.name }}</div>
 
       <q-badge
         :label="item.is_public ? 'Public' : 'Private'"
@@ -22,21 +28,25 @@
         />
       </div>
 
-      <div v-if="item.metadata?.tags">
-        <q-chip
-          v-for="tag in item.metadata.tags"
-          :key="tag"
-          :label="tag"
-          size="sm"
-          color="primary"
-          text-color="white"
-        />
-      </div>
     </q-card-section>
 
-    <q-card-section class="q-pt-none">
+    <q-card-section class="q-pt-none h-18">
       {{ item.description }}
     </q-card-section>
+
+    <div
+      v-if="item.metadata?.tags"
+      class="pl-3 pb-2"
+    >
+      <q-chip
+        v-for="tag in item.metadata.tags"
+        :key="tag"
+        :label="tag"
+        size="sm"
+        color="primary"
+        text-color="white"
+      />
+    </div>
   </q-card>
 </template>
 

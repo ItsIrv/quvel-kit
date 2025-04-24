@@ -20,10 +20,6 @@ trait TenantScopedModel
      */
     protected static function bootTenantScopedModel(): void
     {
-        if (app()->runningInConsole()) {
-            return;
-        }
-
         static::addGlobalScope(new TenantScope());
 
         static::creating(
@@ -90,5 +86,20 @@ trait TenantScopedModel
         } else {
             $this->tenant_id = $tenantId;
         }
+    }
+
+    /**
+     * Get the channels the model should broadcast notifications on.
+     * Includes tenant public_id and model public_id for better security and multi-tenancy support.
+     *
+     * @return string
+     */
+    public function receivesBroadcastNotificationsOn(): string
+    {
+        $modelClass     = class_basename($this);
+        $tenantPublicId = $this->tenant?->public_id ?? $this->getTenantPublicId();
+        $modelPublicId  = $this->public_id ?? $this->getKey();
+
+        return "tenant.{$tenantPublicId}.{$modelClass}.{$modelPublicId}";
     }
 }
