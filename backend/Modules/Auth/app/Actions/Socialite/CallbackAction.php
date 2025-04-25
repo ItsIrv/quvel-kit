@@ -22,7 +22,8 @@ class CallbackAction
         private readonly OAuthCoordinator $authCoordinator,
         private readonly FrontendService $frontendService,
         private readonly EventDispatcher $eventDispatcher,
-    ) {}
+    ) {
+    }
 
     /**
      * Handle OAuth provider callback.
@@ -55,7 +56,7 @@ class CallbackAction
                 ],
             );
         } catch (Throwable $e) {
-            if (! $e instanceof OAuthException) {
+            if (!$e instanceof OAuthException) {
                 $e = new OAuthException(OAuthStatusEnum::INTERNAL_ERROR, $e);
             }
 

@@ -7,8 +7,9 @@ import { Notification } from 'src/modules/Notifications/models/Notification';
  */
 interface NotificationState {
   items: Notification[];
-  hasRun: boolean;
-  userId: number | null;
+  notificationChannel: {
+    unsubscribe: () => void;
+  } | null;
 }
 
 /**
@@ -23,7 +24,7 @@ type NotificationGetters = {
  */
 interface NotificationActions {
   fetchNotifications(): Promise<void>;
-  subscribeToSocket(userId: number): void;
+  subscribeToSocket(userId: number): Promise<void>;
   unsubscribeFromSocket(): void;
   push(notification: INotification): void;
   markAllAsRead(): Promise<void>;
@@ -40,8 +41,7 @@ export const useNotificationStore = defineStore<
 >('notifications', {
   state: (): NotificationState => ({
     items: [],
-    hasRun: false,
-    userId: null,
+    notificationChannel: null,
   }),
 
   getters: {
@@ -60,8 +60,6 @@ export const useNotificationStore = defineStore<
         this.items = (
           await this.$container.api.get<{ data: INotification[] }>('/notifications')
         ).data.map((notification) => Notification.fromApi(notification));
-
-        this.hasRun = true;
       } catch {
         // TODO: Global error handling
       }
@@ -70,13 +68,19 @@ export const useNotificationStore = defineStore<
     /**
      * Register a socket listener on the user’s private channel.
      */
-    subscribeToSocket(userId: number) {
-      return;
-      this.userId = userId;
-      this.$container.ws.subscribePrivateNotification(`App.Models.User.${userId}`, (data) => {
-        if (Notification.isModel(data)) {
-          this.push(Notification.fromApi(data));
-        }
+    async subscribeToSocket(userId: number) {
+      if (this.notificationChannel) {
+        this.notificationChannel.unsubscribe();
+      }
+
+      this.notificationChannel = await this.$container.ws.subscribe({
+        channelName: `tenant.${this.$container.config.get('tenant_id')}.User.${userId}`,
+        type: 'privateNotification',
+        callback: (data: INotification) => {
+          if (Notification.isModel(data)) {
+            this.push(Notification.fromApi(data));
+          }
+        },
       });
     },
 
@@ -84,9 +88,7 @@ export const useNotificationStore = defineStore<
      * Unsubscribe from the user’s private notification channel.
      */
     unsubscribeFromSocket() {
-      if (this.userId) {
-        this.$container.ws.unsubscribe(`App.Models.User.${this.userId}`);
-      }
+      this.notificationChannel?.unsubscribe();
     },
 
     /**

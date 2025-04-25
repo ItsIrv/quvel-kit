@@ -13,14 +13,12 @@ Broadcast::channel('tenant.{tenantPublicId}.User.{publicId}', function (User $us
 });
 
 Broadcast::channel('tenant.{tenantPublicId}.chat', function (User $user, string $tenantPublicId): array|bool {
-    /*
-    if (app(TenantFindService::class)->getTenantPublicIdFromId($user->tenant_id) !== $tenantPublicId) {
+    /*if (app(TenantFindService::class)->getTenantPublicIdFromId($user->tenant_id) !== $tenantPublicId) {
         return false;
-    }
-    */
+    }*/
 
     return [
-        'id'    => $user->id,
+        'id'    => $user->public_id,
         'name'  => $user->name,
         'email' => $user->email,
     ];

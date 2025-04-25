@@ -179,7 +179,10 @@ watch(
 
       <BackInOutUp>
         <!-- Oauth providers -->
-        <div v-if="isLogin" class="grid grid-cols-2 gap-2 mt-4 mb-2">
+        <div
+          v-if="isLogin"
+          class="grid grid-cols-2 gap-2 mt-4 mb-2"
+        >
           <q-btn
             class="GenericBorder AccentGradient Button"
             :label="$t('auth.forms.oauth.logInWith', { provider: $t('auth.forms.oauth.google') })"
@@ -199,7 +202,11 @@ watch(
       </BackInOutUp>
 
       <!-- Form -->
-      <q-form class="my-4" ref="authForm" @submit.prevent="onAuthFormSubmit">
+      <q-form
+        class="my-4"
+        ref="authForm"
+        @submit.prevent="onAuthFormSubmit"
+      >
         <EmailField
           v-model="email"
           :error-message="loginTask.errors.value.get('email') ?? ''"
@@ -222,8 +229,14 @@ watch(
         />
 
         <SlowExpand>
-          <div v-if="isSignup" class="overflow-hidden">
-            <PasswordConfirmField v-model="passwordConfirm" :password-value="password" />
+          <div
+            v-if="isSignup"
+            class="overflow-hidden"
+          >
+            <PasswordConfirmField
+              v-model="passwordConfirm"
+              :password-value="password"
+            />
           </div>
         </SlowExpand>
 
@@ -238,7 +251,10 @@ watch(
           <span v-if="isLogin">
             {{ $t('auth.forms.signup.link') }}
 
-            <a class="underline cursor-pointer" @click="setDialogType('signup')">
+            <a
+              class="underline cursor-pointer"
+              @click="setDialogType('signup')"
+            >
               {{ $t('auth.forms.signup.button') }}
             </a>
           </span>
@@ -246,7 +262,10 @@ watch(
           <span v-if="isSignup">
             {{ $t('auth.forms.signup.link') }}
 
-            <a class="underline cursor-pointer" @click="setDialogType('login')">
+            <a
+              class="underline cursor-pointer"
+              @click="setDialogType('login')"
+            >
               {{ $t('auth.forms.login.button') }}
             </a>
           </span>
@@ -254,7 +273,11 @@ watch(
 
         <!-- Buttons -->
         <div class="mt-6 flex justify-end gap-4">
-          <q-btn flat class="Button" @click="$emit('update:modelValue', false)">
+          <q-btn
+            flat
+            class="Button"
+            @click="$emit('update:modelValue', false)"
+          >
             {{ $t('common.buttons.cancel') }}
           </q-btn>
 

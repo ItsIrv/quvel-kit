@@ -5,7 +5,6 @@ import { useMetaConfig } from 'src/modules/Core/composables/useMetaConfig';
 import { onMounted, watch } from 'vue';
 import { loadTheme } from 'src/modules/Core/utils/themeUtil';
 import { useOAuthMessageHandler } from 'src/modules/Auth/composables/useOAuthMessageHandler';
-import { useContainer } from 'src/modules/Core/composables/useContainer';
 import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
 
 defineOptions({
@@ -43,7 +42,6 @@ useOAuthMessageHandler();
 /**
  * Services
  */
-const container = useContainer();
 const sessionStore = useSessionStore();
 const notificationStore = useNotificationStore();
 
@@ -54,10 +52,9 @@ watch(
   () => sessionStore.getUser?.id,
   (userId) => {
     if (userId) {
-      notificationStore.subscribeToSocket(userId);
+      void notificationStore.subscribeToSocket(userId);
     } else {
       notificationStore.unsubscribeFromSocket();
-      container.ws.disconnect();
     }
   },
   {
@@ -71,9 +68,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <router-view
-    :class="{
-      NativeMobile: $q.platform.is.nativeMobile,
-    }"
-  />
+  <router-view :class="{
+    NativeMobile: $q.platform.is.nativeMobile,
+  }" />
 </template>

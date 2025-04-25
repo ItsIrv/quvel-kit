@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Actions\Socialite;
 
+use App\Http\Resources\UserResource;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\Enums\OAuthStatusEnum;
@@ -18,7 +19,8 @@ class RedeemClientNonceAction
     public function __construct(
         private readonly OAuthCoordinator $authCoordinator,
         private readonly ResponseFactory $responseFactory,
-    ) {}
+    ) {
+    }
 
     /**
      * Redeems a client nonce and logs in the user.
@@ -31,12 +33,12 @@ class RedeemClientNonceAction
         try {
             return $this->responseFactory->json([
                 'message' => OAuthStatusEnum::CLIENT_TOKEN_GRANTED->getTranslatedMessage(),
-                'user' => $this->authCoordinator->redeemClientNonce(
-                    $request->validated('nonce', '')
-                ),
+                'user'    => new UserResource($this->authCoordinator->redeemClientNonce(
+                    $request->validated('nonce', ''),
+                )),
             ]);
         } catch (Throwable $e) {
-            if (! $e instanceof OAuthException) {
+            if (!$e instanceof OAuthException) {
                 $e = new OAuthException(OAuthStatusEnum::INTERNAL_ERROR, $e);
             }
 

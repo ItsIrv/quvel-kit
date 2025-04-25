@@ -1,12 +1,4 @@
-import { Ref } from 'vue';
-
-export enum ConnectionState {
-  DISCONNECTED = 'disconnected',
-  CONNECTING = 'connecting',
-  CONNECTED = 'connected',
-  RECONNECTING = 'reconnecting',
-  ERROR = 'error',
-}
+import Echo from 'laravel-echo';
 
 /**
  * Handlers for presence channel events
@@ -34,60 +26,28 @@ export interface PresenceHandlers {
   onLeaving?: (member: Record<string, unknown>) => void;
 }
 
-/**
- * Configuration options for WebSocket channel listener
- */
-export interface WebSocketListenerOptions<T = unknown> {
-  /** Channel name or ref to channel name */
-  channel: string | Ref<string>;
+export type WebSocketChannelType =
+  | 'public'
+  | 'private'
+  | 'presence'
+  | 'encrypted'
+  | 'privateNotification'
+  | 'publicNotification';
 
-  /** Event name or ref to event name */
-  event: string | Ref<string>;
-
-  /** Callback function when data is received */
-  callback: (data: T) => void;
-
-  /** Channel type */
-  type?:
-    | 'private'
-    | 'presence'
-    | 'public'
-    | 'encrypted'
-    | 'publicNotification'
-    | 'privateNotification';
-
-  /** Initial connection state (does not auto-connect if false) */
-  autoConnect?: boolean;
-
-  /** Callback when connection state changes */
-  onConnectionStateChange?: (state: ConnectionState) => void;
-
-  /** Callback when an error occurs */
-  onError?: (error: Error) => void;
-
-  /** Handlers for presence channel events */
-  presenceHandlers?: PresenceHandlers | undefined;
-
-  /** Whether to log debug information */
-  debugMode?: boolean;
+export interface SubscribeOptions<T = unknown> {
+  channelName: string;
+  type: WebSocketChannelType;
+  event?: string;
+  callback: (data: T) => unknown;
+  presenceHandlers?: PresenceHandlers;
 }
 
-/**
- * Return type for useWebSockets composable
- */
-export interface WebSocketListenerReturn {
-  /** Current connection state */
-  connectionState: Ref<ConnectionState>;
-
-  /** Last error that occurred */
-  lastError: Ref<Error | null>;
-
-  /** Explicitly connect to the channel */
-  connect: () => Promise<void>;
-
-  /** Explicitly disconnect from the channel */
-  disconnect: () => void;
-
-  /** Reconnect to the channel (disconnect then connect) */
-  reconnect: () => Promise<void>;
-}
+export type PublicChannelType = ReturnType<Echo<'pusher'>['channel']>;
+export type PrivateChannelType = ReturnType<Echo<'pusher'>['private']>;
+export type PresenceChannelType = ReturnType<Echo<'pusher'>['join']>;
+export type EncryptedChannelType = ReturnType<Echo<'pusher'>['encryptedPrivate']>;
+export type AnyChannel =
+  | PublicChannelType
+  | PrivateChannelType
+  | PresenceChannelType
+  | EncryptedChannelType;

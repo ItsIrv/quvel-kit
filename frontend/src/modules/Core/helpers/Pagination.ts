@@ -1,3 +1,4 @@
+import { capitalize } from 'vue';
 import {
   CursorPaginatorResponse,
   CursorState,
@@ -21,13 +22,6 @@ import {
 /* -----------------------------------
  * Utilities
  * ----------------------------------- */
-
-/**
- * Capitalizes the first letter of a string
- */
-function capitalize<T extends string>(s: T): Capitalize<T> {
-  return (s.charAt(0).toUpperCase() + s.slice(1)) as Capitalize<T>;
-}
 
 /**
  * Checks if an object is a cursor paginator.

@@ -18,8 +18,9 @@ type StateUser = User | null;
  */
 interface SessionState {
   user: StateUser;
-  // Don't try to re-authenticate when hydrating
-  hasRun: boolean;
+  resultChannel: {
+    unsubscribe: () => void;
+  } | null;
 }
 
 /**
@@ -50,7 +51,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
   {
     state: (): SessionState => ({
       user: null,
-      hasRun: false,
+      resultChannel: null,
     }),
 
     getters: {
@@ -74,17 +75,15 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
       },
 
       /**
-       * Fetches the user session from the API if not previously attempted.
+       * Fetches the user session from the API.
        */
       async fetchSession(): Promise<void> {
-        if (!this.hasRun) {
-          try {
-            const { data } = await this.$container.api.get<{ data: IUser }>('/auth/session');
+        try {
+          const { data } = await this.$container.api.get<{ data: IUser }>('/auth/session');
 
-            this.setSession(data);
-          } finally {
-            this.hasRun = true;
-          }
+          this.setSession(data);
+        } catch {
+          // TODO: Global error handling
         }
       },
 
@@ -140,16 +139,22 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
           );
         };
 
-        const handleOAuthFlow = (nonce: string) => {
+        const handleOAuthFlow = async (nonce: string) => {
           const wsService = this.$container.ws;
           const taskService = this.$container.task;
+          const channelName = `auth.nonce.${nonce}`;
 
-          wsService.unsubscribeAll();
-          wsService.subscribe<{ status: OAuthStatusEnum }>(
-            `auth.nonce.${nonce}`,
-            '.oauth.result',
-            ({ status }) => {
-              wsService.unsubscribeAll();
+          if (this.resultChannel) {
+            this.resultChannel.unsubscribe();
+          }
+
+          this.resultChannel = await wsService.subscribe({
+            channelName,
+            type: 'public',
+            event: '.oauth.result',
+            callback: ({ status }: { status: OAuthStatusEnum }) => {
+              this.resultChannel!.unsubscribe();
+
               status = normalizeOAuthStatus(status);
 
               if (status !== OAuthStatusEnum.LOGIN_OK) {
@@ -174,12 +179,11 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
                     ),
                   successHandlers: ({ user }): void => {
                     this.setSession(user);
-                    wsService.disconnect();
                   },
                 })
                 .run();
             },
-          );
+          });
         };
 
         try {
