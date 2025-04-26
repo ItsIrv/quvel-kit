@@ -1,298 +1,3 @@
-<template>
-  <q-dialog
-    v-model="isDialogOpen"
-    persistent
-    maximized
-    transition-show="slide-up"
-    transition-hide="slide-down"
-  >
-    <q-card class="websocket-channel-manager">
-      <q-card-section class="bg-dark text-white q-py-sm">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <q-icon
-              name="eva-wifi-outline"
-              size="md"
-              class="q-mr-sm"
-            />
-            <h5 class="text-h6 q-my-none">WebSocket Inspector</h5>
-          </div>
-          <q-chip
-            :color="connectionStatus.color"
-            text-color="white"
-            size="sm"
-            outline
-          >
-            {{ connectionStatus.label }}
-          </q-chip>
-        </div>
-      </q-card-section>
-
-      <q-card-section class="q-pa-md bg-dark-subtle">
-        <q-form
-          @submit="addChannel"
-          class="row q-col-gutter-sm items-end"
-        >
-          <div class="col-12 col-sm-4">
-            <q-input
-              v-model="newChannel.name"
-              label="Channel Name"
-              dense
-              filled
-              dark
-              class="bg-dark-page"
-              :rules="[val => !!val || 'Required']"
-            >
-              <template v-slot:prepend>
-                <q-icon name="eva-hash-outline" />
-              </template>
-            </q-input>
-          </div>
-          <div class="col-12 col-sm-3">
-            <q-select
-              v-model="newChannel.type"
-              :options="channelTypes"
-              :emit-value="true"
-              label="Channel Type"
-              dense
-              filled
-              dark
-              class="bg-dark-page"
-              :rules="[val => !!val || 'Required']"
-            >
-              <template v-slot:prepend>
-                <q-icon name="eva-eye-outline" />
-              </template>
-            </q-select>
-          </div>
-          <div class="col-12 col-sm-3">
-            <q-input
-              v-model="newChannel.event"
-              label="Event Name"
-              dense
-              filled
-              dark
-              class="bg-dark-page"
-              :rules="[val => newChannel.type !== 'presence' ? !!val || 'Required' : true]"
-              :disable="newChannel.type === 'presence'"
-            >
-              <template v-slot:prepend>
-                <q-icon name="eva-bell-outline" />
-              </template>
-            </q-input>
-          </div>
-          <div class="col-12 col-sm-2">
-            <q-btn
-              type="submit"
-              color="primary"
-              icon="eva-plus-outline"
-              label="Subscribe"
-              no-caps
-              unelevated
-              class="full-width"
-              :loading="isAddingChannel"
-            />
-          </div>
-        </q-form>
-      </q-card-section>
-
-      <q-separator dark />
-
-      <q-card-section class="q-pa-none">
-        <div class="row">
-          <div class="col-12 col-md-3 bg-dark-subtle">
-            <q-card-section class="q-py-sm">
-              <div class="text-subtitle1 text-weight-medium flex items-center">
-                <q-icon
-                  name="eva-hash-outline"
-                  class="q-mr-xs"
-                />
-                Active Channels
-                <q-badge
-                  color="primary"
-                  class="q-ml-sm"
-                >{{ activeChannels.length }}</q-badge>
-              </div>
-            </q-card-section>
-
-            <q-separator dark />
-
-            <q-list
-              dark
-              dense
-              class="channel-list"
-            >
-              <q-item
-                v-if="activeChannels.length === 0"
-                class="text-grey-6"
-              >
-                <q-item-section>
-                  <q-item-label>No active channels</q-item-label>
-                  <q-item-label caption>Add a channel to start listening</q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item
-                v-for="(channel, index) in activeChannels"
-                :key="index"
-                clickable
-                active-class="bg-primary text-white"
-                :active="selectedChannelIndex === index"
-                @click="selectChannel(index)"
-              >
-                <q-item-section avatar>
-                  <q-icon
-                    :color="getChannelTypeColor(channel.type)"
-                    name="eva-radio-outline"
-                  />
-                </q-item-section>
-
-                <q-item-section>
-                  <q-item-label lines="1">{{ channel.name }}</q-item-label>
-                  <q-item-label caption>
-                    <q-badge
-                      :color="getChannelTypeColor(channel.type)"
-                      text-color="white"
-                      size="xs"
-                    >
-                      {{ channel.type }}
-                    </q-badge>
-                    <span
-                      v-if="channel.event"
-                      class="q-ml-xs"
-                    >{{ channel.event }}</span>
-                  </q-item-label>
-                </q-item-section>
-
-                <q-item-section side>
-                  <q-btn
-                    flat
-                    round
-                    dense
-                    color="negative"
-                    icon="eva-close-outline"
-                    @click.stop="removeChannel(index)"
-                  />
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </div>
-
-          <div class="col-12 col-md-9">
-            <q-card-section class="q-py-sm bg-dark-subtle">
-              <div class="row items-center justify-between">
-                <div class="text-subtitle1 text-weight-medium flex items-center">
-                  <q-icon
-                    name="eva-message-square-outline"
-                    class="q-mr-xs"
-                  />
-                  Message Log
-                  <q-badge
-                    color="secondary"
-                    class="q-ml-sm"
-                  >{{ filteredMessages.length }}</q-badge>
-                </div>
-
-                <div>
-                  <q-btn
-                    flat
-                    round
-                    dense
-                    color="grey"
-                    icon="eva-refresh-outline"
-                    @click="clearMessages"
-                    class="q-mr-xs"
-                  >
-                    <q-tooltip>Clear Messages</q-tooltip>
-                  </q-btn>
-                  <q-btn
-                    flat
-                    round
-                    dense
-                    color="grey"
-                    icon="eva-download-outline"
-                    @click="downloadLogs"
-                  >
-                    <q-tooltip>Download Logs</q-tooltip>
-                  </q-btn>
-                </div>
-              </div>
-            </q-card-section>
-
-            <q-separator dark />
-
-            <q-scroll-area
-              style="height: calc(100vh - 280px);"
-              ref="messageLogRef"
-              class="bg-dark-page"
-            >
-              <div
-                v-if="filteredMessages.length === 0"
-                class="text-center q-pa-md text-grey-7"
-              >
-                <q-icon
-                  name="eva-message-square-outline"
-                  size="2rem"
-                />
-                <div class="q-mt-sm">No messages received yet.</div>
-              </div>
-
-              <div
-                v-for="(message, index) in filteredMessages"
-                :key="index"
-                class="message-item q-pa-md q-my-sm"
-              >
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center">
-                    <q-badge
-                      :color="getChannelTypeColor(message.channelType)"
-                      class="q-mr-sm"
-                    >{{ message.channelType
-                    }}</q-badge>
-                    <div class="text-weight-medium">{{ message.channelName }}</div>
-                  </div>
-                  <div class="text-grey-7 text-caption">{{ formatTimestamp(message.timestamp) }}</div>
-                </div>
-
-                <div class="q-mt-xs">
-                  <q-chip
-                    size="sm"
-                    outline
-                    color="secondary"
-                    class="q-mr-sm"
-                  >{{ message.event }}</q-chip>
-                </div>
-
-                <q-card
-                  flat
-                  bordered
-                  class="q-mt-sm bg-dark-subtle"
-                >
-                  <q-card-section class="q-pa-sm">
-                    <pre class="message-content text-grey-4">{{ formatMessageData(message.data) }}</pre>
-                  </q-card-section>
-                </q-card>
-              </div>
-            </q-scroll-area>
-          </div>
-        </div>
-      </q-card-section>
-      <q-card-actions
-        align="right"
-        class="bg-dark-page q-py-sm"
-      >
-        <q-btn
-          flat
-          round
-          color="grey-5"
-          icon="eva-close-outline"
-          @click="hideManager"
-        />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
-</template>
-
 <script lang="ts">
 import { defineComponent, ref, computed, onBeforeUnmount, nextTick, onMounted } from 'vue';
 import { useWebSockets } from '../composables/useWebSockets';
@@ -621,6 +326,297 @@ export default defineComponent({
 });
 </script>
 
+<template>
+  <q-dialog
+    v-model="isDialogOpen"
+    persistent
+    maximized
+    transition-show="slide-up"
+    transition-hide="slide-down"
+  >
+    <q-card class="websocket-channel-manager">
+      <q-card-section class="bg-dark text-white q-py-sm">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <q-icon
+              name="eva-wifi-outline"
+              size="md"
+              class="q-mr-sm"
+            />
+            <h5 class="text-h6 q-my-none">WebSocket Inspector</h5>
+          </div>
+          <q-chip
+            :color="connectionStatus.color"
+            text-color="white"
+            size="sm"
+            outline
+          >
+            {{ connectionStatus.label }}
+          </q-chip>
+
+          <q-btn
+            flat
+            round
+            color="grey-5"
+            icon="eva-close-outline"
+            @click="hideManager"
+          />
+        </div>
+      </q-card-section>
+
+      <q-card-section class="q-pa-md bg-dark-subtle">
+        <q-form
+          @submit="addChannel"
+          class="row q-col-gutter-sm items-end"
+        >
+          <div class="col-12 col-sm-4">
+            <q-input
+              v-model="newChannel.name"
+              label="Channel Name"
+              dense
+              filled
+              dark
+              class="bg-dark-page"
+              :rules="[val => !!val || 'Required']"
+            >
+              <template v-slot:prepend>
+                <q-icon name="eva-hash-outline" />
+              </template>
+            </q-input>
+          </div>
+          <div class="col-12 col-sm-3">
+            <q-select
+              v-model="newChannel.type"
+              :options="channelTypes"
+              :emit-value="true"
+              label="Channel Type"
+              dense
+              filled
+              dark
+              class="bg-dark-page"
+              :rules="[val => !!val || 'Required']"
+            >
+              <template v-slot:prepend>
+                <q-icon name="eva-eye-outline" />
+              </template>
+            </q-select>
+          </div>
+          <div class="col-12 col-sm-3">
+            <q-input
+              v-model="newChannel.event"
+              label="Event Name"
+              dense
+              filled
+              dark
+              class="bg-dark-page"
+              :rules="[val => newChannel.type !== 'presence' ? !!val || 'Required' : true]"
+              :disable="newChannel.type === 'presence'"
+            >
+              <template v-slot:prepend>
+                <q-icon name="eva-bell-outline" />
+              </template>
+            </q-input>
+          </div>
+          <div class="col-12 col-sm-2">
+            <q-btn
+              type="submit"
+              color="primary"
+              icon="eva-plus-outline"
+              label="Subscribe"
+              no-caps
+              unelevated
+              class="full-width"
+              :loading="isAddingChannel"
+            />
+          </div>
+        </q-form>
+      </q-card-section>
+
+      <q-separator dark />
+
+      <q-card-section class="q-pa-none">
+        <div class="row">
+          <div class="col-12 col-md-3 bg-dark-subtle">
+            <q-card-section class="q-py-sm">
+              <div class="text-subtitle1 text-weight-medium flex items-center">
+                <q-icon
+                  name="eva-hash-outline"
+                  class="q-mr-xs"
+                />
+                Active Channels
+                <q-badge
+                  color="primary"
+                  class="q-ml-sm"
+                >{{ activeChannels.length }}</q-badge>
+              </div>
+            </q-card-section>
+
+            <q-separator dark />
+
+            <q-list
+              dark
+              dense
+              class="channel-list"
+            >
+              <q-item
+                v-if="activeChannels.length === 0"
+                class="text-grey-6"
+              >
+                <q-item-section>
+                  <q-item-label>No active channels</q-item-label>
+                  <q-item-label caption>Add a channel to start listening</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item
+                v-for="(channel, index) in activeChannels"
+                :key="index"
+                clickable
+                active-class="bg-primary text-white"
+                :active="selectedChannelIndex === index"
+                @click="selectChannel(index)"
+              >
+                <q-item-section avatar>
+                  <q-icon
+                    :color="getChannelTypeColor(channel.type)"
+                    name="eva-radio-outline"
+                  />
+                </q-item-section>
+
+                <q-item-section>
+                  <q-item-label lines="1">{{ channel.name }}</q-item-label>
+                  <q-item-label caption>
+                    <q-badge
+                      :color="getChannelTypeColor(channel.type)"
+                      text-color="white"
+                      size="xs"
+                    >
+                      {{ channel.type }}
+                    </q-badge>
+                    <span
+                      v-if="channel.event"
+                      class="q-ml-xs"
+                    >{{ channel.event }}</span>
+                  </q-item-label>
+                </q-item-section>
+
+                <q-item-section side>
+                  <q-btn
+                    flat
+                    round
+                    dense
+                    color="negative"
+                    icon="eva-close-outline"
+                    @click.stop="removeChannel(index)"
+                  />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </div>
+
+          <div class="col-12 col-md-9">
+            <q-card-section class="q-py-sm bg-dark-subtle">
+              <div class="row items-center justify-between">
+                <div class="text-subtitle1 text-weight-medium flex items-center">
+                  <q-icon
+                    name="eva-message-square-outline"
+                    class="q-mr-xs"
+                  />
+                  Message Log
+                  <q-badge
+                    color="secondary"
+                    class="q-ml-sm"
+                  >{{ filteredMessages.length }}</q-badge>
+                </div>
+
+                <div>
+                  <q-btn
+                    flat
+                    round
+                    dense
+                    color="grey"
+                    icon="eva-refresh-outline"
+                    @click="clearMessages"
+                    class="q-mr-xs"
+                  >
+                    <q-tooltip>Clear Messages</q-tooltip>
+                  </q-btn>
+                  <q-btn
+                    flat
+                    round
+                    dense
+                    color="grey"
+                    icon="eva-download-outline"
+                    @click="downloadLogs"
+                  >
+                    <q-tooltip>Download Logs</q-tooltip>
+                  </q-btn>
+                </div>
+              </div>
+            </q-card-section>
+
+            <q-separator dark />
+
+            <q-scroll-area
+              style="height: calc(100vh - 280px);"
+              ref="messageLogRef"
+              class="bg-dark-page"
+            >
+              <div
+                v-if="filteredMessages.length === 0"
+                class="text-center q-pa-md text-grey-7"
+              >
+                <q-icon
+                  name="eva-message-square-outline"
+                  size="2rem"
+                />
+                <div class="q-mt-sm">No messages received yet.</div>
+              </div>
+
+              <div
+                v-for="(message, index) in filteredMessages"
+                :key="index"
+                class="message-item q-pa-md q-my-sm"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <q-badge
+                      :color="getChannelTypeColor(message.channelType)"
+                      class="q-mr-sm"
+                    >{{ message.channelType
+                    }}</q-badge>
+                    <div class="text-weight-medium">{{ message.channelName }}</div>
+                  </div>
+                  <div class="text-grey-7 text-caption">{{ formatTimestamp(message.timestamp) }}</div>
+                </div>
+
+                <div class="q-mt-xs">
+                  <q-chip
+                    size="sm"
+                    outline
+                    color="secondary"
+                    class="q-mr-sm"
+                  >{{ message.event }}</q-chip>
+                </div>
+
+                <q-card
+                  flat
+                  bordered
+                  class="q-mt-sm bg-dark-subtle"
+                >
+                  <q-card-section class="q-pa-sm">
+                    <pre class="message-content text-grey-4">{{ formatMessageData(message.data) }}</pre>
+                  </q-card-section>
+                </q-card>
+              </div>
+            </q-scroll-area>
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+</template>
+
 <style lang="scss">
 .websocket-channel-manager {
   width: 100%;
@@ -631,7 +627,7 @@ export default defineComponent({
   color: #e0e0e0;
 
   .channel-list {
-    height: calc(100vh - 280px);
+    max-height: 300px;
     overflow-y: auto;
   }
 
