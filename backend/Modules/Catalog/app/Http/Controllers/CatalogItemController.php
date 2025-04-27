@@ -3,7 +3,7 @@
 namespace Modules\Catalog\Http\Controllers;
 
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Modules\Catalog\app\Actions\CatalogItem\IndexAction;
+use Modules\Catalog\Actions\CatalogItem\IndexAction;
 use Modules\Catalog\Http\Requests\CatalogItem\IndexRequest;
 use Modules\Catalog\Http\Resources\CatalogItemResource;
 
@@ -16,9 +16,9 @@ class CatalogItemController
     {
         $validated = $request->validated();
 
-        $filters = $validated['filter'] ?? [];
-        $sort = $validated['sort'] ?? null;
-        $perPage = $validated['per_page'] ?? 15;
+        $filters         = $validated['filter'] ?? [];
+        $sort            = $validated['sort'] ?? null;
+        $perPage         = $validated['per_page'] ?? 15;
         $isAuthenticated = $request->user() !== null;
 
         $items = $action($filters, $sort, $perPage, $isAuthenticated);

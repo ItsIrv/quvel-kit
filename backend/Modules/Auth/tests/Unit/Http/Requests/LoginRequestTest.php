@@ -3,7 +3,7 @@
 namespace Modules\Auth\Tests\Unit\Http\Requests;
 
 use Illuminate\Support\Facades\Validator;
-use Modules\Auth\app\Http\Requests\LoginRequest;
+use Modules\Auth\Http\Requests\LoginRequest;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;

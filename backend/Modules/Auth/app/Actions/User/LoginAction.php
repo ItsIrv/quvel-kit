@@ -6,7 +6,7 @@ use App\Http\Resources\UserResource;
 use App\Services\User\UserFindService;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
-use Modules\Auth\app\Http\Requests\LoginRequest;
+use Modules\Auth\Http\Requests\LoginRequest;
 use Modules\Auth\Enums\AuthStatusEnum;
 use Modules\Auth\Exceptions\LoginActionException;
 use Modules\Auth\Services\UserAuthenticationService;
@@ -33,28 +33,28 @@ class LoginAction
         $loginData = $request->validated();
 
         // Find the user by email
-        if (! $user = $this->userFindService->findByEmail($loginData['email'])) {
+        if (!$user = $this->userFindService->findByEmail($loginData['email'])) {
             throw new LoginActionException(AuthStatusEnum::USER_NOT_FOUND);
         }
 
         // Check the user signed up with password
-        if (! $user->password || $user->provider_id) {
+        if (!$user->password || $user->provider_id) {
             throw new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);
         }
 
         // Attempt to authenticate the user
-        if (! $this->userAuthenticationService->attempt($loginData['email'], $loginData['password'])) {
+        if (!$this->userAuthenticationService->attempt($loginData['email'], $loginData['password'])) {
             throw new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);
         }
 
         // Check if the user has verified their email
-        if (! $user->hasVerifiedEmail()) {
+        if (!$user->hasVerifiedEmail()) {
             throw new LoginActionException(AuthStatusEnum::EMAIL_NOT_VERIFIED);
         }
 
         return $this->responseFactory->json([
             'message' => AuthStatusEnum::LOGIN_SUCCESS->value,
-            'user' => new UserResource($user),
+            'user'    => new UserResource($user),
         ], 201);
     }
 }

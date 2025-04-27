@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Auth\app\Rules;
+namespace Modules\Auth\Rules;
 
 use Illuminate\Validation\Rules\Password;
 

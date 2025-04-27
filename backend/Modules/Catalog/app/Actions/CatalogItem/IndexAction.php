@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Catalog\app\Actions\CatalogItem;
+namespace Modules\Catalog\Actions\CatalogItem;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Modules\Catalog\Models\CatalogItem;
@@ -16,16 +16,16 @@ class IndexAction
         array $filters = [],
         ?string $sort = null,
         int $perPage = 15,
-        bool $isAuthenticated = false
+        bool $isAuthenticated = false,
     ): LengthAwarePaginator {
         $query = CatalogItem::query()
             ->with('user');
 
-        if (! $isAuthenticated) {
+        if (!$isAuthenticated) {
             $filters['is_public'] = true;
         }
 
-        if (! empty($filters['search'])) {
+        if (!empty($filters['search'])) {
             $search = $filters['search'];
 
             $query->where(function ($q) use ($search) {
@@ -39,11 +39,11 @@ class IndexAction
         }
 
         match ($sort) {
-            'name' => $query->orderBy('name'),
-            '-name' => $query->orderByDesc('name'),
-            'created_at' => $query->orderBy('created_at'),
+            'name'        => $query->orderBy('name'),
+            '-name'       => $query->orderByDesc('name'),
+            'created_at'  => $query->orderBy('created_at'),
             '-created_at' => $query->orderByDesc('created_at'),
-            default => $query->latest(),
+            default       => $query->latest(),
         };
 
         return $query->paginate($perPage)->withQueryString();

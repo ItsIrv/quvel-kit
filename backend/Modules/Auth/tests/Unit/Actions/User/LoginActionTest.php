@@ -9,7 +9,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Mockery;
 use Modules\Auth\Actions\User\LoginAction;
-use Modules\Auth\app\Http\Requests\LoginRequest;
+use Modules\Auth\Http\Requests\LoginRequest;
 use Modules\Auth\Enums\AuthStatusEnum;
 use Modules\Auth\Exceptions\LoginActionException;
 use Modules\Auth\Services\UserAuthenticationService;
@@ -35,9 +35,9 @@ class LoginActionTest extends TestCase
         parent::setUp();
 
         // Mock dependencies
-        $this->userFindService = Mockery::mock(UserFindService::class);
+        $this->userFindService           = Mockery::mock(UserFindService::class);
         $this->userAuthenticationService = Mockery::mock(UserAuthenticationService::class);
-        $this->responseFactory = Mockery::mock(ResponseFactory::class);
+        $this->responseFactory           = Mockery::mock(ResponseFactory::class);
 
         $this->action = new LoginAction(
             $this->userFindService,
@@ -53,7 +53,7 @@ class LoginActionTest extends TestCase
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'password'];
-        $user = Mockery::mock(User::class);
+        $user      = Mockery::mock(User::class);
 
         $user->shouldReceive('getAttribute')
             ->with('password')
@@ -84,14 +84,14 @@ class LoginActionTest extends TestCase
 
         $expectedResponse = new JsonResponse([
             'message' => AuthStatusEnum::LOGIN_SUCCESS->value,
-            'user' => ['id' => 1, 'email' => 'test@example.com'],
+            'user'    => ['id' => 1, 'email' => 'test@example.com'],
         ], 201);
 
         $this->responseFactory->shouldReceive('json')
             ->once()
             ->with([
                 'message' => AuthStatusEnum::LOGIN_SUCCESS->value,
-                'user' => new UserResource($user),
+                'user'    => new UserResource($user),
             ], 201)
             ->andReturn($expectedResponse);
 
@@ -132,7 +132,7 @@ class LoginActionTest extends TestCase
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'password'];
-        $user = Mockery::mock(User::class);
+        $user      = Mockery::mock(User::class);
         $user->shouldReceive('password')->andReturn(null);
         $user->shouldReceive('provider_id')->andReturn('google');
         $user->shouldReceive('getAttribute')->andReturn('hashed-password');
@@ -159,7 +159,7 @@ class LoginActionTest extends TestCase
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'wrong-password'];
-        $user = Mockery::mock(User::class);
+        $user      = Mockery::mock(User::class);
 
         $user->shouldReceive('getAttribute')
             ->with('provider_id')
@@ -196,7 +196,7 @@ class LoginActionTest extends TestCase
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'password'];
-        $user = Mockery::mock(User::class);
+        $user      = Mockery::mock(User::class);
 
         $user->shouldReceive('getAttribute')
             ->with('provider_id')

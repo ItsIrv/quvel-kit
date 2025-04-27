@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 /**
  * Service to handle user authentication.
+ *
+ * TODO: Move OAuth logic to a separate service and validate provider inputs.
  */
 class UserAuthenticationService
 {
@@ -31,7 +33,7 @@ class UserAuthenticationService
     {
         // @phpstan-ignore-next-line Laravel provides attempt
         return $this->auth->guard()->attempt([
-            'email' => $email,
+            'email'    => $email,
             'password' => $password,
         ]);
     }
@@ -63,7 +65,7 @@ class UserAuthenticationService
             }
 
             // Ensure email is verified
-            if (! $user->hasVerifiedEmail()) {
+            if (!$user->hasVerifiedEmail()) {
                 return [$user, OAuthStatusEnum::EMAIL_NOT_VERIFIED];
             }
 
@@ -74,11 +76,11 @@ class UserAuthenticationService
         // If no user exists, create a new one
         $user = $this->userCreateService->create(
             [
-                'email' => $providerUser->getEmail(),
+                'email'       => $providerUser->getEmail(),
                 'provider_id' => $providerIdentifier,
-                'name' => $providerUser->getName(),
-                'avatar' => $providerUser->getAvatar(),
-                'password' => null,
+                'name'        => $providerUser->getName(),
+                'avatar'      => $providerUser->getAvatar(),
+                'password'    => null,
             ],
         );
 

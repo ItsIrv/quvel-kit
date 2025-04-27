@@ -52,7 +52,7 @@ class RedeemClientNonceActionTest extends TestCase
     {
         // Arrange
         $signedNonce = 'signed-nonce-123';
-        $user = User::find(1);
+        $user        = User::factory()->create();
 
         // The request
         $request = Mockery::mock(RedeemNonceRequest::class);
@@ -66,7 +66,7 @@ class RedeemClientNonceActionTest extends TestCase
             ->andReturn($user);
 
         $expectedResponseData = [
-            'user' => new UserResource($user),
+            'user'    => new UserResource($user),
             'message' => OAuthStatusEnum::CLIENT_TOKEN_GRANTED->getTranslatedMessage(),
         ];
         $expectedJsonResponse = new JsonResponse($expectedResponseData);
@@ -91,7 +91,7 @@ class RedeemClientNonceActionTest extends TestCase
     public function test_redeem_client_nonce_oauth_exception_propagates(): void
     {
         // Arrange
-        $signedNonce = 'signed-nonce-123';
+        $signedNonce    = 'signed-nonce-123';
         $oauthException = new OAuthException(OAuthStatusEnum::INVALID_NONCE);
 
         $request = Mockery::mock(RedeemNonceRequest::class);
@@ -116,7 +116,7 @@ class RedeemClientNonceActionTest extends TestCase
     public function test_redeem_client_nonce_general_exception_is_wrapped(): void
     {
         // Arrange
-        $signedNonce = 'signed-nonce-123';
+        $signedNonce      = 'signed-nonce-123';
         $genericException = new Exception('Some unexpected error');
 
         $request = Mockery::mock(RedeemNonceRequest::class);

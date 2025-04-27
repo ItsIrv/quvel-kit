@@ -54,7 +54,7 @@ export default {
       loggedIn: 'Sesión iniciada correctamente.',
       loggedOut: 'Sesión cerrada correctamente.',
       loginOk: 'Inicio de sesión exitoso.',
-      registered: 'Registro completado.',
+      signedUp: 'Registro completado.',
       userCreated: 'Usuario creado exitosamente.',
     },
   },

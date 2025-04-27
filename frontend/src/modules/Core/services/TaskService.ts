@@ -101,9 +101,7 @@ export class TaskService extends Service implements BootableService {
       }
 
       try {
-        const result = await taskOptions.task(
-          (await resolveValue(taskOptions.taskPayload)) as Payload,
-        );
+        const result = await taskOptions.task(await resolveValue(taskOptions.taskPayload));
 
         currentResult.value = result;
         currentState.value = 'success';

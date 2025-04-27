@@ -6,7 +6,7 @@ use App\Services\User\UserCreateService;
 use App\Services\User\UserFindService;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
-use Modules\Auth\app\Http\Requests\RegisterRequest;
+use Modules\Auth\Http\Requests\RegisterRequest;
 use Modules\Auth\Enums\AuthStatusEnum;
 use Modules\Auth\Exceptions\RegisterActionException;
 

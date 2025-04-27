@@ -4,6 +4,7 @@ export default {
     cancel: 'Cancelar',
     confirm: 'Confirmar',
     back: 'Volver',
+    close: 'Cerrar',
   },
   navigation: {
     home: 'Inicio',

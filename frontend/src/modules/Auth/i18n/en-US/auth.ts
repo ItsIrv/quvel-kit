@@ -54,8 +54,9 @@ export default {
       loggedIn: 'You have been logged in.',
       loggedOut: 'You have been logged out.',
       loginOk: 'Login successful.',
-      registered: 'You have been registered.',
+      signedUp: 'You have been signed up.',
       userCreated: 'User created successfully.',
+      checkYourEmail: 'Check your email for a verification link.',
     },
   },
 };

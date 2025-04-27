@@ -45,6 +45,7 @@ const email = ref('');
 const name = ref('');
 const password = ref('');
 const passwordConfirm = ref('');
+const successStep = ref<false | AuthDialogType>(false);
 const isOAuthRedirecting = ref(false);
 const dialogType = ref<AuthDialogType>('login');
 const authForm = ref<HTMLFormElement>();
@@ -78,7 +79,7 @@ const signupTask = container.task.newTask({
   task: async () => await sessionStore.signUp(email.value, password.value, name.value),
   errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
   successHandlers: () => {
-    $emit('update:modelValue', false);
+    successStep.value = 'signup';
     resetForms();
   },
 });
@@ -169,7 +170,10 @@ watch(
     @update:model-value="$emit('update:modelValue', $event)"
     @before-show="onBeforeShow"
   >
-    <q-card class="AuthDialog duration-1000 relative overflow-hidden">
+    <q-card
+      v-if="!successStep"
+      class="AuthDialog duration-1000 relative overflow-hidden"
+    >
       <!-- Title -->
       <h3 class="text-h4 font-semibold text-gray-900 dark:text-white">
         <QuvelKit>
@@ -292,6 +296,36 @@ watch(
           </q-btn>
         </div>
       </q-form>
+    </q-card>
+
+    <q-card
+      class="AuthDialog duration-1000 relative overflow-hidden"
+      v-if="successStep === 'signup'"
+    >
+      <q-card-section class="flex flex-col items-center">
+        <q-icon
+          name="eva-email-outline"
+          color="green"
+          size="6em"
+          class="mb-4"
+        />
+
+        <div class="text-h6">
+          {{ $t('auth.status.success.signedUp') }}
+        </div>
+
+        <div class="text-base mb-4">
+          {{ $t('auth.status.success.checkYourEmail') }}
+        </div>
+
+        <q-btn
+          unelevated
+          class="PrimaryButton hover:bg-primary-600"
+          @click="successStep = false"
+        >
+          {{ $t('common.buttons.close') }}
+        </q-btn>
+      </q-card-section>
     </q-card>
   </q-dialog>
 </template>

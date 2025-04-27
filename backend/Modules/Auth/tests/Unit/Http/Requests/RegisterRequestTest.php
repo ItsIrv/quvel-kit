@@ -3,10 +3,10 @@
 namespace Modules\Auth\Tests\Unit\Http\Requests;
 
 use Illuminate\Support\Facades\Validator;
-use Modules\Auth\app\Http\Requests\RegisterRequest;
-use Modules\Auth\app\Rules\EmailRule;
-use Modules\Auth\app\Rules\NameRule;
-use Modules\Auth\app\Rules\PasswordRule;
+use Modules\Auth\Http\Requests\RegisterRequest;
+use Modules\Auth\Rules\EmailRule;
+use Modules\Auth\Rules\NameRule;
+use Modules\Auth\Rules\PasswordRule;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
@@ -32,9 +32,9 @@ class RegisterRequestTest extends TestCase
     {
         // Arrange
         $validData = [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'StrongPass123!',
-            'name' => 'Test User',
+            'name'     => 'Test User',
         ];
 
         // Act
@@ -66,11 +66,11 @@ class RegisterRequestTest extends TestCase
     public static function invalidDataProvider(): array
     {
         return [
-            'missing email' => [['password' => 'StrongPass123!', 'name' => 'Test User'], ['email']],
+            'missing email'    => [['password' => 'StrongPass123!', 'name' => 'Test User'], ['email']],
             'missing password' => [['email' => 'test@example.com', 'name' => 'Test User'], ['password']],
-            'missing name' => [['email' => 'test@example.com', 'password' => 'StrongPass123!'], ['name']],
-            'invalid email' => [['email' => 'invalid-email', 'password' => 'StrongPass123!', 'name' => 'Test User'], ['email']],
-            'short password' => [['email' => 'test@example.com', 'password' => 'short', 'name' => 'Test User'], ['password']],
+            'missing name'     => [['email' => 'test@example.com', 'password' => 'StrongPass123!'], ['name']],
+            'invalid email'    => [['email' => 'invalid-email', 'password' => 'StrongPass123!', 'name' => 'Test User'], ['email']],
+            'short password'   => [['email' => 'test@example.com', 'password' => 'short', 'name' => 'Test User'], ['password']],
         ];
     }
 

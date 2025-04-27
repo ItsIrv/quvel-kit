@@ -9,7 +9,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Mockery;
 use Modules\Auth\Actions\User\RegisterAction;
-use Modules\Auth\app\Http\Requests\RegisterRequest;
+use Modules\Auth\Http\Requests\RegisterRequest;
 use Modules\Auth\Enums\AuthStatusEnum;
 use Modules\Auth\Exceptions\RegisterActionException;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -34,9 +34,9 @@ class RegisterActionTest extends TestCase
         parent::setUp();
 
         // Mock dependencies
-        $this->userFindService = Mockery::mock(UserFindService::class);
+        $this->userFindService   = Mockery::mock(UserFindService::class);
         $this->userCreateService = Mockery::mock(UserCreateService::class);
-        $this->responseFactory = Mockery::mock(ResponseFactory::class);
+        $this->responseFactory   = Mockery::mock(ResponseFactory::class);
 
         $this->action = new RegisterAction(
             $this->userFindService,

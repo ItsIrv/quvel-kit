@@ -88,7 +88,7 @@ export interface TaskOptions<Result = unknown, Payload = unknown> {
    *
    * @returns The result of the task function.
    */
-  task: ((payload: Payload) => Result) | ((payload: Payload) => Promise<Result>);
+  task: ((payload?: Payload) => Result) | ((payload?: Payload) => Promise<Result>);
 
   /**
    * Optional payload resolver for the task function.

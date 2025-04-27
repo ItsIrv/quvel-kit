@@ -7,12 +7,15 @@
             "email": "gomirv.work@gmail.com"
         }
     ],
+    "require": {
+        "laravel/fortify": "^1.25"
+    },
     "extra": {
         "laravel": {
-            "providers": [],
-            "aliases": {
-
-            }
+            "providers": [
+                "Modules\\Auth\\Providers\\FortifyServiceProvider"
+            ],
+            "aliases": {}
         }
     },
     "autoload": {

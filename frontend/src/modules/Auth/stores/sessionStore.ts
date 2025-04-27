@@ -38,7 +38,7 @@ interface SessionActions {
   setSession(data: IUser): void;
   fetchSession(): Promise<void>;
   logout(): Promise<void>;
-  login(email: string, password: string): Promise<User>;
+  login(email: string, password: string): Promise<void>;
   signUp(email: string, password: string, name: string): Promise<void>;
   loginWithOAuth(provider: string, stateless: boolean): Promise<void>;
 }
@@ -99,15 +99,15 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
       /**
        * Logs in the user and sets the session.
        */
-      async login(email: string, password: string): Promise<User> {
-        const { user } = await this.$container.api.post<{ message: string; user: IUser }>(
+      async login(email: string, password: string): Promise<void> {
+        const { two_factor } = await this.$container.api.post<{ two_factor: boolean }>(
           '/auth/login',
           { email, password },
         );
 
-        this.setSession(user);
-
-        return this.user!;
+        if (two_factor === false) {
+          void this.fetchSession();
+        }
       },
 
       /**

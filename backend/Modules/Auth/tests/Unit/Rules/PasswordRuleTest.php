@@ -3,7 +3,7 @@
 namespace Modules\Auth\Tests\Unit\Rules;
 
 use Illuminate\Support\Facades\Validator;
-use Modules\Auth\app\Rules\PasswordRule;
+use Modules\Auth\Rules\PasswordRule;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
@@ -27,7 +27,7 @@ class PasswordRuleTest extends TestCase
         );
 
         // Act
-        $passes = ! $validator->fails();
+        $passes = !$validator->fails();
 
         // Assert
         $this->assertEquals($shouldPass, $passes, "Failed asserting that '$password' validation is correct.");
@@ -39,8 +39,8 @@ class PasswordRuleTest extends TestCase
     public static function passwordProvider(): array
     {
         return [
-            'valid password (8 chars)' => ['password1', true],
-            'valid password (longer)' => ['supersecure123!', true],
+            'valid password (8 chars)'     => ['password1', true],
+            'valid password (longer)'      => ['supersecure123!', true],
             'invalid password (too short)' => ['short', false],
         ];
     }
