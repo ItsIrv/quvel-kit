@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Tests\Unit\Actions\User;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\User\UserFindService;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -90,7 +91,7 @@ class LoginActionTest extends TestCase
             ->once()
             ->with([
                 'message' => AuthStatusEnum::LOGIN_SUCCESS->value,
-                'user' => $user,
+                'user' => new UserResource($user),
             ], 201)
             ->andReturn($expectedResponse);
 

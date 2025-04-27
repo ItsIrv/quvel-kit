@@ -18,7 +18,8 @@ class OAuthCoordinator
         private readonly ClientNonceService $clientNonceService,
         private readonly NonceSessionService $nonceSessionService,
         private readonly UserAuthenticationService $userAuthenticationService,
-    ) {}
+    ) {
+    }
 
     /**
      * Create a client nonce and store it in the session.

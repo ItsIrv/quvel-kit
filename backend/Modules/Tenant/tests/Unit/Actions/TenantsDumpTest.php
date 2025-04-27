@@ -23,7 +23,7 @@ class TenantsDumpTest extends TestCase
     public function test_tenants_dump_returns_cached_tenants(): void
     {
         // Mock dependencies
-        $cache             = $this->createMock(CacheRepository::class);
+        $cache = $this->createMock(CacheRepository::class);
         $tenantFindService = $this->createMock(TenantFindService::class);
 
         // Sample tenant data as Eloquent Collection
@@ -44,7 +44,7 @@ class TenantsDumpTest extends TestCase
             ->willReturn($cachedTenants);
 
         // Execute the action
-        $action = new TenantsDump;
+        $action = new TenantsDump();
         $result = $action->__invoke($tenantFindService, $cache);
 
         // Assert correct response type
@@ -57,7 +57,7 @@ class TenantsDumpTest extends TestCase
     public function test_tenants_dump_fetches_when_cache_empty(): void
     {
         // Mock dependencies
-        $cache             = $this->createMock(CacheRepository::class);
+        $cache = $this->createMock(CacheRepository::class);
         $tenantFindService = $this->createMock(TenantFindService::class);
 
         // Sample fresh tenant data as Eloquent Collection
@@ -82,7 +82,7 @@ class TenantsDumpTest extends TestCase
             ->willReturn($freshTenants);
 
         // Execute the action
-        $action = new TenantsDump;
+        $action = new TenantsDump();
         $result = $action->__invoke($tenantFindService, $cache);
 
         // Assert correct response type

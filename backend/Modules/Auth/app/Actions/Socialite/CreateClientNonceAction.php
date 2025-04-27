@@ -17,7 +17,8 @@ class CreateClientNonceAction
     public function __construct(
         private readonly OAuthCoordinator $authCoordinator,
         private readonly ResponseFactory $responseFactory,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws OAuthException|Throwable

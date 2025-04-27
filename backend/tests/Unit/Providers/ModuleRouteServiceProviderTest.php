@@ -19,8 +19,7 @@ class ModuleRouteServiceProviderTest extends TestCase
      */
     private function createStubProvider(string $moduleName): ModuleRouteServiceProvider
     {
-        return new class($moduleName) extends ModuleRouteServiceProvider
-        {
+        return new class ($moduleName) extends ModuleRouteServiceProvider {
             public function __construct(protected string $name)
             {
                 parent::__construct($this->name);
@@ -48,8 +47,7 @@ class ModuleRouteServiceProviderTest extends TestCase
      */
     private function createGroupMock(string $expectedPath): Mockery\MockInterface
     {
-        $groupMock = new class
-        {
+        $groupMock = new class () {
             public function group(string $path): void
             {
                 // Placeholder for group method

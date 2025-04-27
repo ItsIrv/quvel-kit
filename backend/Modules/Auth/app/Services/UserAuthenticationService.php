@@ -19,7 +19,8 @@ class UserAuthenticationService
         private readonly AuthFactory $auth,
         private readonly UserFindService $userFindService,
         private readonly UserCreateService $userCreateService,
-    ) {}
+    ) {
+    }
 
     /**
      * Attempt to authenticate a user with email and password.

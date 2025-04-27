@@ -6,7 +6,6 @@ import { useContainer } from './useContainer';
  * Composable for WebSocket operations
  */
 export function useWebSockets() {
-  // Get the WebSocketService from the container
   const container = useContainer();
   const wsService = container.ws;
 
@@ -17,7 +16,6 @@ export function useWebSockets() {
    * @returns The channel object
    */
   async function subscribe<T = unknown>(options: SubscribeOptions<T>): Promise<AnyChannel> {
-    // Handle different channel types with proper type casting
     let channel: AnyChannel;
 
     if (options.type === 'public' || options.type === 'publicNotification') {

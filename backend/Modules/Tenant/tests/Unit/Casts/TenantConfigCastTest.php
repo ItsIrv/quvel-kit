@@ -23,8 +23,8 @@ class TenantConfigCastTest extends TestCase
      */
     public function test_get_returns_null_when_value_is_empty(): void
     {
-        $cast = new TenantConfigCast;
-        $model = new Tenant;
+        $cast = new TenantConfigCast();
+        $model = new Tenant();
 
         $result = $cast->get($model, 'config', null, []);
         $this->assertNull($result);
@@ -40,8 +40,8 @@ class TenantConfigCastTest extends TestCase
      */
     public function test_get_casts_json_to_tenant_config(): void
     {
-        $cast = new TenantConfigCast;
-        $model = new Tenant;
+        $cast = new TenantConfigCast();
+        $model = new Tenant();
         $configData = [
             'api_url' => 'https://api.example.com',
             'app_url' => 'https://app.example.com',
@@ -89,8 +89,8 @@ class TenantConfigCastTest extends TestCase
      */
     public function test_set_returns_null_when_value_is_null(): void
     {
-        $cast = new TenantConfigCast;
-        $model = new Tenant;
+        $cast = new TenantConfigCast();
+        $model = new Tenant();
 
         $result = $cast->set($model, 'config', null, []);
         $this->assertNull($result);
@@ -103,8 +103,8 @@ class TenantConfigCastTest extends TestCase
      */
     public function test_set_casts_tenant_config_to_json(): void
     {
-        $cast = new TenantConfigCast;
-        $model = new Tenant;
+        $cast = new TenantConfigCast();
+        $model = new Tenant();
 
         $config = new TenantConfig(
             apiUrl: 'https://api.example.com',
@@ -146,8 +146,8 @@ class TenantConfigCastTest extends TestCase
      */
     public function test_set_casts_array_to_json(): void
     {
-        $cast = new TenantConfigCast;
-        $model = new Tenant;
+        $cast = new TenantConfigCast();
+        $model = new Tenant();
 
         $configArray = [
             'api_url' => 'https://api.example.com',

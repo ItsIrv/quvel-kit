@@ -35,7 +35,8 @@ class ClientNonceService
         private readonly CacheRepository $cache,
         private readonly ConfigRepository $config,
         private readonly HmacService $hmacService,
-    ) {}
+    ) {
+    }
 
     /**
      * Get cache key for a given nonce.

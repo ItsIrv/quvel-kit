@@ -19,7 +19,7 @@ class TenantMismatchExceptionTest extends TestCase
      */
     public function test_exception_message(): void
     {
-        $exception = new TenantMismatchException;
+        $exception = new TenantMismatchException();
 
         $this->assertEquals(
             TenantError::TENANT_MISMATCH->value,

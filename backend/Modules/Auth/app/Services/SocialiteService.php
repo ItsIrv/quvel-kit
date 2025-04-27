@@ -14,7 +14,8 @@ class SocialiteService
     public function __construct(
         private readonly SocialiteManager $socialiteManager,
         private readonly TenantContext $tenantContext,
-    ) {}
+    ) {
+    }
 
     /**
      * Get OAuth provider redirect URL.

@@ -19,7 +19,7 @@ class TenantNotFoundExceptionTest extends TestCase
      */
     public function test_exception_message(): void
     {
-        $exception = new TenantNotFoundException;
+        $exception = new TenantNotFoundException();
 
         $this->assertEquals(
             TenantError::NOT_FOUND->value,

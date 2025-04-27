@@ -2,7 +2,6 @@
 
 namespace Modules\Tenant\Traits;
 
-use Illuminate\Database\Eloquent\Model;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Services\TenantFindService;
@@ -17,11 +16,6 @@ trait GetsTenant
      */
     protected function getTenant(): Tenant
     {
-        // In console environment, try to get tenant from the model if available
-        if (app()->runningInConsole() && $this instanceof Model && isset($this->tenant_id)) {
-            return $this->getTenantFindService()->findById($this->tenant_id);
-        }
-
         // Otherwise use the tenant context
         return app(TenantContext::class)->get();
     }
@@ -44,8 +38,6 @@ trait GetsTenant
 
     /**
      * Get the TenantFindService instance
-     *
-     * @return TenantFindService
      */
     protected function getTenantFindService(): TenantFindService
     {

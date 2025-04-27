@@ -26,6 +26,8 @@ use Modules\Tenant\ValueObjects\TenantConfig;
  * @property Tenant|null $parent
  *
  * @method static TenantFactory factory(...$parameters)
+ * @method static Tenant find(int $id)
+ * @method static \Illuminate\Database\Eloquent\Builder<Tenant> select(string $column)
  */
 class Tenant extends Model
 {

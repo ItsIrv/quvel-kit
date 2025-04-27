@@ -11,7 +11,8 @@ class OAuthCallbackResult
         private readonly User $user,
         private readonly OAuthStatusEnum $status,
         private readonly ?string $signedNonce = null
-    ) {}
+    ) {
+    }
 
     public function getUser(): User
     {

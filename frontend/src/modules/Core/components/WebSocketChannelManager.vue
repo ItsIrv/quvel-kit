@@ -148,7 +148,7 @@ export default defineComponent({
             });
 
             // Scroll to bottom of message log
-            nextTick(() => {
+            void nextTick(() => {
               if (messageLogRef.value) {
                 messageLogRef.value.setScrollPosition('vertical', 999999);
               }
@@ -258,7 +258,7 @@ export default defineComponent({
     // Format message data for display
     const formatMessageData = (data: unknown) => {
       try {
-        return typeof data === 'object' ? JSON.stringify(data, null, 2) : String(data);
+        return JSON.stringify(data, null, 2);
       } catch {
         return String(data);
       }

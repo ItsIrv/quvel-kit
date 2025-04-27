@@ -99,7 +99,7 @@ export const useNotificationStore = defineStore<
     },
 
     /**
-     * Mark all notifications as read locally.
+     * Mark all notifications as read.
      */
     async markAllAsRead() {
       await this.$container.api.post('/notifications/mark-all-read');

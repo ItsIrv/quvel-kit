@@ -90,13 +90,12 @@ class TenantSeeder extends Seeder
     {
         return Tenant::updateOrCreate(
             ['name' => $name],
-
-            [
+            Tenant::factory()->make([
                 'domain' => $domain,
                 'public_id' => Str::ulid()->toString(),
                 'config' => $config,
                 'parent_id' => $parent?->id,
-            ],
+            ])->toArray(),
         );
     }
 
@@ -109,13 +108,13 @@ class TenantSeeder extends Seeder
     {
         User::updateOrCreate(
             ['email' => 'lan@quvel.app'],
-            [
+            User::factory()->make([
                 'name' => 'LAN Tenant User',
                 'tenant_id' => $tenant->id,
                 'password' => Hash::make(config('quvel.default_password')),
                 'email_verified_at' => now(),
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed='.random_int(1, 100),
-            ],
+            ])->toArray(),
         );
     }
 }

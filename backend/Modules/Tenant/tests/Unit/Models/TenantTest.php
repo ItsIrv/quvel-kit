@@ -21,7 +21,7 @@ class TenantTest extends TestCase
      */
     public function test_has_fillable_properties(): void
     {
-        $tenant = new Tenant;
+        $tenant = new Tenant();
 
         $this->assertEquals(
             ['name', 'domain', 'parent_id', 'config'],
@@ -47,7 +47,7 @@ class TenantTest extends TestCase
      */
     public function test_parent_relationship(): void
     {
-        $tenant = new Tenant;
+        $tenant = new Tenant();
 
         $this->assertInstanceOf(BelongsTo::class, $tenant->parent());
     }
@@ -57,7 +57,7 @@ class TenantTest extends TestCase
      */
     public function test_children_relationship(): void
     {
-        $tenant = new Tenant;
+        $tenant = new Tenant();
 
         $this->assertInstanceOf(HasMany::class, $tenant->children());
     }

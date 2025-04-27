@@ -26,7 +26,7 @@ class CallbackRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($validData, (new CallbackRequest)->rules());
+        $validator = Validator::make($validData, (new CallbackRequest())->rules());
 
         // Assert
         $this->assertFalse($validator->fails());
@@ -43,7 +43,7 @@ class CallbackRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new CallbackRequest)->rules());
+        $validator = Validator::make($invalidData, (new CallbackRequest())->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -61,7 +61,7 @@ class CallbackRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new CallbackRequest)->rules());
+        $validator = Validator::make($invalidData, (new CallbackRequest())->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -80,7 +80,7 @@ class CallbackRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new CallbackRequest)->rules());
+        $validator = Validator::make($invalidData, (new CallbackRequest())->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -99,7 +99,7 @@ class CallbackRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new CallbackRequest)->rules());
+        $validator = Validator::make($invalidData, (new CallbackRequest())->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -119,8 +119,7 @@ class CallbackRequestTest extends TestCase
         ]);
 
         // Create a class that simulates the route resolver
-        $routeResolver = new class
-        {
+        $routeResolver = new class () {
             /**
              * Simulates retrieving a route parameter.
              */

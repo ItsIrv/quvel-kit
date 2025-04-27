@@ -18,7 +18,8 @@ class TenantResolverService
     public function __construct(
         private readonly TenantFindService $tenantFindService,
         private readonly TenantSessionService $tenantSessionService,
-    ) {}
+    ) {
+    }
 
     /**
      * Resolve the tenant by checking the session first, then the database.
@@ -41,7 +42,7 @@ class TenantResolverService
         if (! $tenant) {
             Log::info("Tenant not found for domain: $domain");
 
-            throw new TenantNotFoundException;
+            throw new TenantNotFoundException();
         }
 
         $this->tenantSessionService->setTenant($tenant);

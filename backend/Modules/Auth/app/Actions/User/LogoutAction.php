@@ -18,7 +18,8 @@ class LogoutAction
     public function __construct(
         private readonly UserAuthenticationService $userAuthenticationService,
         private readonly ResponseFactory $responseFactory,
-    ) {}
+    ) {
+    }
 
     /**
      * Logout the current user.

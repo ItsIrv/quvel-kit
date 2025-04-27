@@ -37,6 +37,6 @@ class ProviderRule implements ValidationRule
      */
     public static function RULES(): array
     {
-        return [new self];
+        return [new self()];
     }
 }

@@ -19,7 +19,7 @@ class TenantFindServiceTest extends TestCase
     #[Before]
     public function setUpTest(): void
     {
-        $this->service = new TenantFindService;
+        $this->service = new TenantFindService();
     }
 
     /**

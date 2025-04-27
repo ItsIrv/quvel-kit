@@ -60,10 +60,10 @@ class TenantServiceProvider extends ModuleServiceProvider
         $this->app->rebinding('request', function (Application $app): void {
             try {
                 $tenantContext = $app->make(TenantContext::class);
-                $tenant        = $tenantContext->get();
-                $tenantConfig  = $tenant->getEffectiveConfig();
+                $tenant = $tenantContext->get();
+                $tenantConfig = $tenant->getEffectiveConfig();
 
-                if (!$tenantConfig) {
+                if (! $tenantConfig) {
                     throw new RuntimeException('Tenant config not found');
                 }
 
@@ -103,11 +103,11 @@ class TenantServiceProvider extends ModuleServiceProvider
                         array_shift($parts);
                     }
 
-                    $sessionDomain = '.' . implode('.', $parts);
+                    $sessionDomain = '.'.implode('.', $parts);
                     $appConfig->set('session.domain', $sessionDomain);
                 }
             } catch (Exception $e) {
-                Log::critical('Tenant Config Could Not Be Applied: ' . $e->getMessage());
+                Log::critical('Tenant Config Could Not Be Applied: '.$e->getMessage());
             }
         });
     }

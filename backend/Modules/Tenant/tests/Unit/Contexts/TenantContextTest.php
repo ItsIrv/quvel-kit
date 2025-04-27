@@ -21,7 +21,7 @@ class TenantContextTest extends TestCase
     public function test_set_and_get_tenant(): void
     {
         $tenant = Tenant::factory()->make();
-        $context = new TenantContext;
+        $context = new TenantContext();
 
         $context->set($tenant);
 
@@ -35,7 +35,7 @@ class TenantContextTest extends TestCase
     {
         $this->expectException(TenantNotFoundException::class);
 
-        $context = new TenantContext;
+        $context = new TenantContext();
         $context->get();
     }
 
@@ -53,7 +53,7 @@ class TenantContextTest extends TestCase
             ),
         ]);
 
-        $context = new TenantContext;
+        $context = new TenantContext();
         $context->set($tenant);
 
         $this->assertInstanceOf(TenantConfig::class, $context->getConfig());
@@ -74,7 +74,7 @@ class TenantContextTest extends TestCase
             ),
         ]);
 
-        $context = new TenantContext;
+        $context = new TenantContext();
         $context->set($tenant);
 
         $this->assertEquals(
@@ -102,7 +102,7 @@ class TenantContextTest extends TestCase
             ),
         ]);
 
-        $context = new TenantContext;
+        $context = new TenantContext();
         $context->set($tenant);
 
         $this->assertEquals(

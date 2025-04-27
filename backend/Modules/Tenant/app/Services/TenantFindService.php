@@ -36,9 +36,6 @@ class TenantFindService
 
     /**
      * Find tenant by ID
-     *
-     * @param int $tenantId
-     * @return Tenant|null
      */
     public function findById(int $tenantId): ?Tenant
     {
@@ -47,9 +44,6 @@ class TenantFindService
 
     /**
      * Get tenant public ID from tenant ID
-     *
-     * @param int $tenantId
-     * @return string|null
      */
     public function getTenantPublicIdFromId(int $tenantId): ?string
     {

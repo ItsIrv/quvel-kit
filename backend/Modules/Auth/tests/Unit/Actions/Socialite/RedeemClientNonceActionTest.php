@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Tests\Unit\Actions\Socialite;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -51,12 +52,7 @@ class RedeemClientNonceActionTest extends TestCase
     {
         // Arrange
         $signedNonce = 'signed-nonce-123';
-        $userId = 1;
-        $userArray = ['id' => $userId, 'name' => 'Test User'];
-
-        // We'll simulate a real Eloquent model or something convertible to array
-        $mockUser = Mockery::mock(User::class);
-        $mockUser->shouldReceive('jsonSerialize')->andReturn($userArray);
+        $user = User::find(1);
 
         // The request
         $request = Mockery::mock(RedeemNonceRequest::class);
@@ -67,10 +63,10 @@ class RedeemClientNonceActionTest extends TestCase
             ->shouldReceive('redeemClientNonce')
             ->once()
             ->with($signedNonce)
-            ->andReturn($mockUser);
+            ->andReturn($user);
 
         $expectedResponseData = [
-            'user' => $mockUser,
+            'user' => new UserResource($user),
             'message' => OAuthStatusEnum::CLIENT_TOKEN_GRANTED->getTranslatedMessage(),
         ];
         $expectedJsonResponse = new JsonResponse($expectedResponseData);

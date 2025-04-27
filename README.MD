@@ -68,14 +68,15 @@ Refer to the [Frontend Usage Guide](docs/frontend/frontend-usage.md) and [Backen
 
 ### **Short-Term Goals**
 
-- Complete OAuth & RBAC integration
-- Expand testing coverage
-- Improve module-based backend architecture
+- Finish Auth Flows. Password Reset remaining.
+- Complete Socialite (DONE) & RBAC integration
+- Expand testing coverage (Backend coverage ~85%, missing coverage = modules in development. FE coverage ~1% from base examples, not a priority)
+- Improve module-based backend and frontend architecture (DONE)
 
 ### **Long-Term Goals**
 
 - Add token-based authentication
-- Extend WebSockets for real-time features
+- Extend Laravel Echo for real-time features (DONE)
 - Push & background Notifications.
 - Offline mode.
 

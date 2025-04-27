@@ -25,7 +25,7 @@ class QuvelWelcomeTest extends TestCase
     #[Before]
     public function setupTest(): void
     {
-        $this->action = new QuvelWelcome;
+        $this->action = new QuvelWelcome();
         $this->frontendService = Mockery::mock(FrontendService::class);
     }
 

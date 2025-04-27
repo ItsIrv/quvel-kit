@@ -22,7 +22,7 @@ class RedeemNonceRequestTest extends TestCase
         $validData = ['nonce' => str_repeat('a', 85)];
 
         // Act
-        $validator = Validator::make($validData, (new RedeemNonceRequest)->rules());
+        $validator = Validator::make($validData, (new RedeemNonceRequest())->rules());
 
         // Assert
         $this->assertFalse($validator->fails());
@@ -37,7 +37,7 @@ class RedeemNonceRequestTest extends TestCase
         $invalidData = [];
 
         // Act
-        $validator = Validator::make($invalidData, (new RedeemNonceRequest)->rules());
+        $validator = Validator::make($invalidData, (new RedeemNonceRequest())->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -53,7 +53,7 @@ class RedeemNonceRequestTest extends TestCase
         $invalidData = ['nonce' => ''];
 
         // Act
-        $validator = Validator::make($invalidData, (new RedeemNonceRequest)->rules());
+        $validator = Validator::make($invalidData, (new RedeemNonceRequest())->rules());
 
         // Assert
         $this->assertTrue($validator->fails());

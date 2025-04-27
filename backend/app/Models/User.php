@@ -12,6 +12,8 @@ use Modules\Tenant\Traits\TenantScopedModel;
 
 /**
  * @property int $id
+ * @property int $tenant_id
+ * @property string $public_id
  * @property string $name
  * @property string $email
  * @property string $email_verified_at
@@ -24,7 +26,7 @@ use Modules\Tenant\Traits\TenantScopedModel;
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<UserFactory> */
+    /** @use HasFactory<\Modules\Tenant\Database\Factories\TenantFactory> */
     use HasFactory;
 
     use Notifiable;
@@ -36,6 +38,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var list<string>
      */
     protected $fillable = [
+        'public_id',
         'name',
         'email',
         'password',

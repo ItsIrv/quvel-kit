@@ -15,7 +15,8 @@ class OAuthLoginResult implements ShouldBroadcast
     public function __construct(
         public readonly string $signedNonce,
         private readonly OAuthCallbackResult $result
-    ) {}
+    ) {
+    }
 
     /**
      * @return Channel[]

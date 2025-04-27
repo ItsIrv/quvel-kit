@@ -25,7 +25,7 @@ class LoginRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($validData, (new LoginRequest)->rules());
+        $validator = Validator::make($validData, (new LoginRequest())->rules());
 
         // Assert
         $this->assertFalse($validator->fails());
@@ -42,7 +42,7 @@ class LoginRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new LoginRequest)->rules());
+        $validator = Validator::make($invalidData, (new LoginRequest())->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -60,7 +60,7 @@ class LoginRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new LoginRequest)->rules());
+        $validator = Validator::make($invalidData, (new LoginRequest())->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -79,7 +79,7 @@ class LoginRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new LoginRequest)->rules());
+        $validator = Validator::make($invalidData, (new LoginRequest())->rules());
 
         // Assert
         $this->assertTrue($validator->fails());
@@ -98,7 +98,7 @@ class LoginRequestTest extends TestCase
         ];
 
         // Act
-        $validator = Validator::make($invalidData, (new LoginRequest)->rules());
+        $validator = Validator::make($invalidData, (new LoginRequest())->rules());
 
         // Assert
         $this->assertTrue($validator->fails());

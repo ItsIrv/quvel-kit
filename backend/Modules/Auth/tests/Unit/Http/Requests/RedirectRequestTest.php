@@ -21,7 +21,7 @@ class RedirectRequestTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->request = new RedirectRequest;
+        $this->request = new RedirectRequest();
     }
 
     /**
@@ -100,8 +100,7 @@ class RedirectRequestTest extends TestCase
         ]);
 
         // Create a class that simulates the route resolver
-        $routeResolver = new class
-        {
+        $routeResolver = new class () {
             /**
              * Simulates retrieving a route parameter.
              */

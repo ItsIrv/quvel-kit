@@ -22,7 +22,7 @@ class UserFindServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->userFindService = new UserFindService;
+        $this->userFindService = new UserFindService();
         $this->user = User::factory()->create([
             'name' => 'John Doe',
             'email' => 'johndoe@example.com',

@@ -25,7 +25,7 @@ class TenantDumpTest extends TestCase
         $tenantContext->method('get')
             ->willReturn($this->tenant);
 
-        $action = new TenantDump;
+        $action = new TenantDump();
 
         $result = $action->__invoke($tenantContext);
 

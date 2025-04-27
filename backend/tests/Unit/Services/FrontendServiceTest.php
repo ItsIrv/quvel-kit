@@ -119,7 +119,7 @@ class FrontendServiceTest extends TestCase
             config: $config,
             redirector: $this->mockRedirector,
             request: $mockRequest,
-            responseFactory: $this->mockResponseFactory
+            responseFactory: $this->mockResponseFactory,
         );
 
         $this->mockRedirector
@@ -154,7 +154,7 @@ class FrontendServiceTest extends TestCase
             config: $config,
             redirector: $this->mockRedirector,
             request: $mockRequest,
-            responseFactory: $this->mockResponseFactory
+            responseFactory: $this->mockResponseFactory,
         );
 
         $this->mockResponseFactory
@@ -184,5 +184,13 @@ class FrontendServiceTest extends TestCase
         $url = $this->frontendService->getPageUrl($path, $params);
 
         $this->assertEquals($expectedUrl, $url);
+    }
+
+    public function test_set_is_capacitor(): void
+    {
+        $this->frontendService->setIsCapacitor(true);
+        $reflectionValue = (new \ReflectionObject($this->frontendService))->getProperty('isCapacitor');
+        $reflectionValue->setAccessible(true);
+        $this->assertTrue($reflectionValue->getValue($this->frontendService));
     }
 }

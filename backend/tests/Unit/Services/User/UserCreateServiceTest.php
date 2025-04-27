@@ -4,6 +4,7 @@ namespace Tests\Unit\Services\User;
 
 use App\Services\User\UserCreateService;
 use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -27,7 +28,7 @@ class UserCreateServiceTest extends TestCase
     public function setupTest(): void
     {
         $this->hasherMock = $this->createMock(Hasher::class);
-        $this->userCreateService = new UserCreateService;
+        $this->userCreateService = new UserCreateService();
     }
 
     /**
@@ -39,6 +40,7 @@ class UserCreateServiceTest extends TestCase
         $email = $this->faker->email;
 
         $userData = [
+            'public_id' => Str::ulid(),
             'name' => $name,
             'email' => $email,
             'password' => 'password123',
@@ -60,7 +62,7 @@ class UserCreateServiceTest extends TestCase
 
         // Assert it exists in the database
         $this->assertDatabaseHas('users', [
-            'id' => $user->id,
+            'public_id' => $user->public_id,
             'name' => $name,
             'email' => $email,
         ]);

@@ -22,7 +22,7 @@ class RegisterRequestTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->request = new RegisterRequest;
+        $this->request = new RegisterRequest();
     }
 
     /**

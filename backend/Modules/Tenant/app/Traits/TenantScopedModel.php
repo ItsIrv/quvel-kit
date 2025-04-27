@@ -20,11 +20,12 @@ trait TenantScopedModel
      */
     protected static function bootTenantScopedModel(): void
     {
+        // Apply tenant scope globally
         static::addGlobalScope(new TenantScope());
 
         static::creating(
             /** @phpstan-ignore-next-line */
-            static fn (Model $model): mixed => $model->tenant_id ??= $model->getTenant()->id
+            static fn (Model $model): mixed => $model->tenant_id ??= $model->getTenant()->id,
         );
     }
 
@@ -79,25 +80,24 @@ trait TenantScopedModel
      */
     private function guardWithTenantId(): void
     {
-        $tenantId = $this->getTenantId();
+        $tenantId        = $this->getTenantId();
+        $currentTenantId = $this->getAttribute('tenant_id');
 
-        if (isset($this->tenant_id) && $this->tenant_id !== $tenantId) {
+        if ($currentTenantId !== null && (int) $currentTenantId !== (int) $tenantId) {
             throw new TenantMismatchException();
         } else {
-            $this->tenant_id = $tenantId;
+            $this->setAttribute('tenant_id', $tenantId);
         }
     }
 
     /**
      * Get the channels the model should broadcast notifications on.
      * Includes tenant public_id and model public_id for better security and multi-tenancy support.
-     *
-     * @return string
      */
     public function receivesBroadcastNotificationsOn(): string
     {
         $modelClass     = class_basename($this);
-        $tenantPublicId = $this->tenant?->public_id ?? $this->getTenantPublicId();
+        $tenantPublicId = $this->tenant->public_id ?? $this->getTenantPublicId();
         $modelPublicId  = $this->public_id ?? $this->getKey();
 
         return "tenant.{$tenantPublicId}.{$modelClass}.{$modelPublicId}";

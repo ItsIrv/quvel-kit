@@ -18,7 +18,8 @@ class TenantMiddleware
     public function __construct(
         private readonly TenantResolverService $tenantResolver,
         private readonly TenantContext $tenantContext,
-    ) {}
+    ) {
+    }
 
     /**
      * Handle an incoming request.

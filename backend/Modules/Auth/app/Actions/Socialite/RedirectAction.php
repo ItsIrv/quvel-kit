@@ -16,7 +16,8 @@ class RedirectAction
 {
     public function __construct(
         private readonly OAuthCoordinator $authCoordinator,
-    ) {}
+    ) {
+    }
 
     /**
      * Handle OAuth provider redirect.

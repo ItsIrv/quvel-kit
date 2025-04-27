@@ -78,8 +78,7 @@ class TenantServiceProviderTest extends TestCase
         $bootMiddlewareCalled = false;
 
         // Extend the real provider and override `bootMiddleware`
-        $provider = new class($this->app) extends TenantServiceProvider
-        {
+        $provider = new class ($this->app) extends TenantServiceProvider {
             public bool $bootMiddlewareCalled = false;
 
             public function bootMiddleware(): void

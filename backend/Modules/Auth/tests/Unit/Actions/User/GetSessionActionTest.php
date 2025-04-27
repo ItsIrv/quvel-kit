@@ -21,7 +21,7 @@ class GetSessionActionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->action = new GetSessionAction;
+        $this->action = new GetSessionAction();
     }
 
     /**

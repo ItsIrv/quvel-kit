@@ -3,6 +3,7 @@
 namespace Tests\Unit\Models;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -17,7 +18,7 @@ class UserTest extends TestCase
      */
     public function test_user_model_instantiation(): void
     {
-        $user = new User;
+        $user = new User();
         $this->assertInstanceOf(
             User::class,
             $user,
@@ -29,8 +30,9 @@ class UserTest extends TestCase
      */
     public function test_fillable_attributes(): void
     {
-        $user = new User;
+        $user = new User();
         $expected = [
+            'public_id',
             'name',
             'email',
             'password',
@@ -49,7 +51,7 @@ class UserTest extends TestCase
      */
     public function test_hidden_attributes(): void
     {
-        $user = new User;
+        $user = new User();
         $expected = [
             'password',
             'remember_token',
@@ -66,7 +68,7 @@ class UserTest extends TestCase
      */
     public function test_casts(): void
     {
-        $user = new User;
+        $user = new User();
         $expected = [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
@@ -92,5 +94,10 @@ class UserTest extends TestCase
             'id' => $user->id,
             'email' => $user->email,
         ]);
+    }
+
+    public function test_tenant(): void
+    {
+        $this->assertInstanceOf(BelongsTo::class, (new User())->tenant());
     }
 }

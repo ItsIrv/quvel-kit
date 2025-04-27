@@ -21,7 +21,8 @@ class NonceSessionService
     public function __construct(
         private readonly Session $session,
         private readonly ConfigRepository $config,
-    ) {}
+    ) {
+    }
 
     /**
      * Store a nonce in the session with a timestamp.

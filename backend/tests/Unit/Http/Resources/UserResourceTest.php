@@ -33,7 +33,7 @@ class UserResourceTest extends TestCase
         ], true);
 
         $resource = new UserResource($user);
-        $result = $resource->toArray(new Request);
+        $result = $resource->toArray(new Request());
 
         $this->assertEquals([
             'id' => 0,

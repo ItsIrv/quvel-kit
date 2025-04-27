@@ -69,6 +69,7 @@ The following groups are available:
 - services
 - frontend
 - tenant-module
+- auth-module
 
 The following test suites are available:
 
@@ -101,7 +102,7 @@ vendor/bin/phpstan analyse --configuration phpstan.neon
 **PHP-CS-Fixer (Code Style)**  
 
 ```sh
-vendor/bin/pint --test 
+/vendor/bin/pint --preset psr12
 ```
 
 ---

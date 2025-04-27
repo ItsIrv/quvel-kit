@@ -26,7 +26,7 @@ class TenantScopeTest extends TestCase
 
         $mockModel = $this->createMock(Model::class);
 
-        $scope = new TenantScope;
+        $scope = new TenantScope();
         $scope->apply($mockBuilder, $mockModel);
     }
 }
