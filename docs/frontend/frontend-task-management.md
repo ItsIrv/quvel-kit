@@ -202,10 +202,10 @@ When designing your application, it's generally better to encapsulate tasks with
 
 ## Source Files
 
-- [TaskService.ts](/Users/irv/Workspace/pdxapps.com/repos/quvel-kit/frontend/src/modules/Core/services/TaskService.ts) - Task service implementation
-- [task.types.ts](/Users/irv/Workspace/pdxapps.com/repos/quvel-kit/frontend/src/modules/Core/types/task.types.ts) - Type definitions
-- [errorUtil.ts](/Users/irv/Workspace/pdxapps.com/repos/quvel-kit/frontend/src/modules/Core/utils/errorUtil.ts) - Error handling utilities
-- [laravel.types.ts](/Users/irv/Workspace/pdxapps.com/repos/quvel-kit/frontend/src/modules/Core/types/laravel.types.ts) - Laravel response types
+- [TaskService.ts](../../frontend/src/modules/Core/services/TaskService.ts) - Task service implementation
+- [task.types.ts](../../frontend/src/modules/Core/types/task.types.ts) - Type definitions
+- [errorUtil.ts](../../frontend/src/modules/Core/utils/errorUtil.ts) - Error handling utilities
+- [laravel.types.ts](../../frontend/src/modules/Core/types/laravel.types.ts) - Laravel response types
 
 ---
 

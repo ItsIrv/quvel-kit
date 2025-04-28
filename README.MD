@@ -1,85 +1,89 @@
 # QuVel Kit
 
-## Introduction
+## Overview
 
-**QuVel Kit** is a **Quasar + Laravel Starter Kit** designed for building modern hybrid applications with **SSR, SPA fallback, mobile, and desktop builds**. It provides a modular, scalable foundation for full-stack development, offering robust authentication, state management, and dependency injection via a **Service Container**.
+**QuVel Kit** is a production-ready **Laravel 12 + Vue 3 + Quasar 3** boilerplate designed for building enterprise applications. It features SSR with SPA fallback, mobile/desktop builds, and a modular architecture with TypeScript throughout.
 
-## Features
+## Technology Stack
 
-### **Core Features**
+### Backend
 
-- **Quasar + Laravel full-stack integration**
-- **Hybrid SSR + SPA setup** with seamless switching
-- **Capacitor support** for `iOS` & `Android` builds
-- **Electron** desktop build support
-- **Traefik-based Docker environments** for `production` and `development`
-- **Fully modular Laravel backend using `nWidart/laravel-modules`**
-- **Service Container for managing frontend dependency injection**
-- **Authentication system** with OAuth (`Google`, `Apple`)
-- **RBAC (Role-Based Access Control) with multi-tenancy support**
-- **Comprehensive testing suite** with `Vitest` (frontend) & `PHPUnit` (backend)
-- **Automated test coverage reports**
-- **Detailed documentation** with `.md` files and **DocBlocks**
+- **Laravel 12** - Latest version with modular architecture
+- **PHP 8.3+** - Modern PHP features
+- **Laravel Modules** - Modular backend architecture
+- **Laravel Sanctum** - Authentication system
+- **Laravel Socialite** - OAuth integration
+- **Multi-tenancy** - Built-in tenant isolation
 
-### **Authentication & User Management**
+### Frontend
 
-- **Login Methods**:
-  - Email/Username + Password
-  - OAuth Providers (`Google`, `Apple`)
-- **OAuth Flow** with deep link support for **mobile compatibility**
-- **Session-based authentication** (tokens coming soon)
-- **Multi-tenancy support using a `tenant_id` system**
-- **Role-Based Access Control (RBAC) from the start**
-- **Account Management**:
-  - Sign-up & Login (Email/Username or OAuth)
-  - Password reset & Email verification
-  - Profile updates (name, password, avatar)
+- **Vue 3** - Component-based UI framework
+- **TypeScript** - Type-safe development
+- **Quasar 3** - UI framework with SSR capabilities
+- **Pinia** - State management
+- **Tailwind CSS** - Utility-first styling
+- **Zod** - Schema validation
+- **Laravel Echo & Pusher** - Real-time communication
 
-### **Frontend Service Container**
+### DevOps
 
-- **API Service** (`container.api`) – Manages Axios HTTP requests with session authentication
-- **Task Service** (`container.task`) – Encapsulates async operations with built-in loading, error handling, and success notifications
-- **Validation Service** (`container.validation`) – Zod-based validation with support for Vue components and translations
-- **i18n Service** (`container.i18n`) – Fully localized interface with SSR-safe translations
-- **Dynamic Service Loading** – Register and retrieve custom services at runtime
+- **Docker** - Containerized development and deployment
+- **Traefik** - Request routing and SSL termination
+- **GitHub Actions** - CI/CD integration
+- **Vitest & PHPUnit** - Comprehensive testing
 
-### **Backend Architecture**
+## Key Features
 
-- **Multi-tenancy with a single database**
-- **Modular architecture using `nWidart/laravel-modules`**
-- **RBAC built-in with roles and permissions**
-- **Session-based authentication with Sanctum**
-- **Socialite-based OAuth login system with secure nonce validation**
-- **Middleware for enforcing tenant-based access**
+### Architecture
+
+- **Service Container** - Dependency injection for frontend services
+- **SSR with SPA Fallback** - Optimal performance and SEO
+- **Multi-platform** - Web, mobile (iOS/Android), and desktop (Electron)
+- **RBAC** - Role-based access control
+- **Configuration Visibility System** - Tiered config security (PRIVATE, PROTECTED, PUBLIC)
+
+### Developer Experience
+
+- **Hot Module Replacement** - Fast development workflow
+- **TypeScript Throughout** - Full type safety
+- **Comprehensive Documentation** - Detailed guides and API references
+- **Pre-built Components** - Form fields, validation, authentication flows
 
 ## Documentation
 
-For a full guide on **project setup, commands, and troubleshooting**, check the [Documentation](docs/README.md).
+For detailed documentation, see the following resources:
 
-## Setup & Installation
+- [Getting Started](docs/getting-started.md) - Installation and setup
+- [Frontend Documentation](docs/frontend/README.md) - Vue, Quasar, and TypeScript
+- [Backend Documentation](docs/backend-usage.md) - Laravel and API
 
-Refer to the [Getting Started Guide](docs/getting-started.md) for detailed instructions on installation and setup.
+## Quick Start
 
-## Development & Debugging
+```bash
+# Clone the repository
+git clone https://github.com/your-username/quvel-kit.git
+cd quvel-kit
 
-Refer to the [Frontend Usage Guide](docs/frontend/frontend-usage.md) and [Backend Usage Guide](docs/backend-usage.md) for development workflows.
+# Start the development environment
+docker-compose up -d
 
-## Roadmap
+# Install dependencies
+docker-compose exec app composer install
+docker-compose exec frontend npm install
 
-### **Short-Term Goals**
+# Run migrations and seed the database
+docker-compose exec app php artisan migrate --seed
 
-- Finish Auth Flows. Password Reset remaining.
-- Complete Socialite implementation (DONE) & RBAC integration
-- Expand testing coverage (Backend coverage ~85%, missing coverage = modules in development. FE coverage ~1% from base examples, not a priority)
-- Improve module-based backend and frontend architecture (DONE)
+# Start the frontend development server
+docker-compose exec frontend npm run dev
+```
 
-### **Long-Term Goals**
+Visit <http://localhost:8080> to see your application running.
 
-- Add token-based authentication
-- Extend Laravel Echo for real-time features (DONE)
-- Push & background Notifications.
-- Offline mode.
+## License
+
+QuVel Kit is open-source software licensed under the MIT license.
 
 ---
 
-QuVel Kit provides a **fully modular** foundation for Laravel & Quasar applications, ensuring best practices, multi-tenancy support, and an **enterprise-ready stack** from day one.
+Built by [Irving Gomez](https://irv.codes).

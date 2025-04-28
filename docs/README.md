@@ -2,27 +2,25 @@
 
 ## Overview
 
-Welcome to the **QuVel Kit** documentation. This guide provides comprehensive information on setting up, using, and troubleshooting QuVel Kit for backend and frontend development.
+This documentation provides a comprehensive guide to QuVel Kit, a Laravel 12 + Vue 3 + Quasar 3 boilerplate designed for building enterprise applications with TypeScript, Tailwind CSS, and Pinia. Here you'll find detailed information on setup, architecture, and development workflows.
 
-## Available Documentation
+## Documentation Structure
 
-### **Getting Started**
+### Getting Started
 
-- **[Installation & Setup](./getting-started.md)** – Step-by-step installation and initial configuration.
+- **[Installation & Setup](./getting-started.md)** – Complete setup instructions for development and production
+- **[Folder Structure](./folder-structure.md)** – Project organization and architecture overview
+- **[Traefik Configuration](./traefik-structure.md)** – Network routing and SSL configuration
+- **[Utility Scripts](./scripts.md)** – Automation scripts for common development tasks
 
-### **Project Structure**
+### Backend Development
 
-- **[Folder Structure](./folder-structure.md)** – Overview of the project’s file organization and conventions.
-- **[Traefik Structure](./traefik-structure.md)** – Details on how Traefik routes requests.
+- **[Backend Usage](./backend-usage.md)** – Laravel API development, authentication, and database
 
-### **Backend Development**
+### Frontend Development
 
-- **[Backend Usage](./backend-usage.md)** – Covers Laravel API integration, authentication, database migrations, and related services.
+- **[Frontend Docs](./frontend/README.md)** – Vue, Quasar, and TypeScript development
 
-### **Frontend Development**
+### Testing & Debugging
 
-- **[Frontend Docs](./frontend/README.md)** – Go to the frontend docs for more information.
-
-### **Testing & Debugging**
-
-- **[Troubleshooting](./troubleshooting.md)** – Common issues, debugging tips, and solutions.
+- **[Troubleshooting](./troubleshooting.md)** – Common issues, debugging tips, and solutions

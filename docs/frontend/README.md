@@ -2,75 +2,101 @@
 
 ## Overview
 
-The **frontend architecture** of QuVel Kit is built with **Vue 3**, **TypeScript**, and **Quasar 3** in SSR mode, providing a robust foundation for scalable web and mobile applications. This documentation covers the modular architecture and key services that power the frontend ecosystem.
+The QuVel Kit frontend is built with Vue 3, TypeScript, and Quasar 3 in SSR mode, providing an enterprise-ready foundation for web applications. This documentation covers the architecture, services, and development patterns used throughout the frontend codebase.
 
 ## Technology Stack
 
-- **Vue 3**: Component-based UI framework
-- **TypeScript**: Static typing for enhanced code quality
-- **Quasar 3**: UI framework with SSR capabilities
-- **Pinia**: State management solution
-- **Tailwind CSS**: Utility-first CSS framework
-- **Axios**: HTTP client for API requests
-- **Zod**: Schema validation library
-- **Laravel Echo & Pusher**: Real-time WebSocket communication
+| Technology | Purpose | Version |
+|------------|---------|--------|
+| Vue 3 | UI Framework | 3.x |
+| TypeScript | Type Safety | 5.x |
+| Quasar 3 | UI Components & SSR | 3.x |
+| Pinia | State Management | 2.x |
+| Tailwind CSS | Utility Styling | 3.x |
+| Zod | Schema Validation | 3.x |
+| Axios | HTTP Client | 1.x |
+| Laravel Echo | WebSockets | 1.x |
 
-## Documentation Structure
+## Architecture
 
-### 1. **Getting Started**
+The frontend follows a modular architecture with a service-oriented approach:
 
-- **[Environment Setup & Usage](./frontend-usage.md)** - Development environment, commands, and deployment
-  - Docker environment configuration
-  - Running in SSR & SPA modes
-  - Local development setup
-  - Testing and debugging
-  - Building for production
+```text
+frontend/
+├── src/
+│   ├── modules/         # Feature modules
+│   │   ├── Core/        # Core functionality
+│   │   ├── Auth/        # Authentication
+│   │   ├── User/        # User management
+│   │   └── ...          # Other feature modules
+│   ├── boot/            # Quasar boot files
+│   ├── i18n/            # Translations
+│   └── composables/     # Shared Vue composables
+└── src-ssr/            # Server-side rendering code
+```
 
-### 2. **Core Architecture**
+## Documentation
 
-- **[Service Container](./frontend-service-container.md)** - Dependency injection and service management
-  - Core services architecture
-  - Service registration and boot lifecycle
-  - Dynamic service registration
-  - SSR compatibility
+### Core Services
 
-- **[Task Management](./frontend-task-management.md)** - Asynchronous operation orchestration
-  - Task lifecycle and states
-  - Error handling and recovery
-  - Loading state management
+- **[Service Container](./frontend-service-container.md)** - Dependency injection system
+- **[Configuration Service](./frontend-config-service.md)** - Application settings with tiered visibility
+- **[Task Management](./frontend-task-management.md)** - Async operation orchestration
 
-### 3. **State & Data Management**
+### State Management
 
-- **[State & Data Management](./frontend-state-management.md)** - Pinia store implementation
-  - Type-safe store creation
-  - Service container integration
-  - WebSocket integration
-  - Pagination helpers
-
+- **[State Management](./frontend-state-management.md)** - Pinia store patterns
 - **[Pagination](./frontend-pagination.md)** - Data pagination strategies
-  - Length-aware, simple, and cursor-based pagination
-  - Pinia store integration
 
-### 4. **UI & Interaction**
+### UI & Interaction
 
-- **[Validation](./frontend-validation.md)** - Form and data validation
-  - Schema-based validation with Zod
-  - Integration with Quasar forms
-  - Common validators and custom schemas
-
-- **[Translations](./frontend-translations.md)** - Internationalization
-  - Vue I18n integration
-  - Locale management and persistence
-  - Translation organization and best practices
-
-### 5. **Real-Time Features**
-
+- **[Validation](./frontend-validation.md)** - Form and data validation with Zod
+- **[Translations](./frontend-translations.md)** - Internationalization with Vue I18n
 - **[WebSockets](./frontend-websockets.md)** - Real-time communication
-  - Channel types and subscription patterns
-  - Event handling
-  - Presence and private channels
-  - Integration with Pinia stores
+
+### Development
+
+- **[Environment Setup & Usage](./frontend-usage.md)** - Development workflow
+
+## Key Concepts
+
+### Service Container
+
+The service container is the central piece of the frontend architecture. It provides access to core services:
+
+```ts
+import { useContainer } from 'src/modules/Core/composables/useContainer';
+
+// In Vue components
+const { api, task, validation, i18n, ws, config } = useContainer();
+
+// In Pinia stores (automatically injected)
+actions: {
+  async fetchData() {
+    return await this.$container.api.get('/endpoint');
+  }
+}
+```
+
+### Task Service
+
+The task service handles async operations with built-in loading states and error handling:
+
+```ts
+const loginTask = container.task.newTask({
+  task: async () => await container.api.post('/auth/login', credentials),
+  showNotification: {
+    success: () => 'Login successful',
+    error: () => 'Login failed'
+  }
+});
+
+// Run the task
+await loginTask.run();
+```
 
 ## Need Help?
 
-For troubleshooting, check **[Troubleshooting Guide](../troubleshooting.md)** or open an issue in the project repository.
+For troubleshooting, check the [Troubleshooting Guide](../troubleshooting.md) or open an issue in the project repository.
+
+[← Back to Main Documentation](../README.md)

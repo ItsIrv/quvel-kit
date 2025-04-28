@@ -346,11 +346,11 @@ export const changePasswordSchema = () =>
 
 ## Source Files
 
-- **[ValidationService.ts](../frontend/src/modules/Core/services/ValidationService.ts)** – Core validation service
-- **[BaseField.vue](../frontend/src/modules/Core/components/Form/BaseField.vue)** – Base field component
-- **[EmailField.vue](../frontend/src/modules/Auth/components/Form/EmailField.vue)** – Email field component
-- **[commonValidators.ts](../frontend/src/modules/Core/utils/validators/commonValidators.ts)** – Common validation schemas
-- **[authValidators.ts](../frontend/src/modules/Core/utils/validators/authValidators.ts)** – Auth form validators
+- **[ValidationService.ts](../../frontend/src/modules/Core/services/ValidationService.ts)** – Core validation service
+- **[BaseField.vue](../../frontend/src/modules/Core/components/Form/BaseField.vue)** – Base field component
+- **[EmailField.vue](../../frontend/src/modules/Auth/components/Form/EmailField.vue)** – Email field component
+- **[commonValidators.ts](../../frontend/src/modules/Core/utils/validators/commonValidators.ts)** – Common validation schemas
+- **[authValidators.ts](../../frontend/src/modules/Core/utils/validators/authValidators.ts)** – Auth form validators
 
 ---
 

@@ -251,9 +251,9 @@ export default {
 
 ## Source Files
 
-- **[I18nService.ts](../frontend/src/modules/Core/services/I18nService.ts)** – Core i18n service
-- **[i18nUtil.ts](../frontend/src/modules/Core/utils/i18nUtil.ts)** – Utility functions for i18n
-- **[i18n/index.ts](../frontend/src/i18n/index.ts)** – Main translations index
+- **[I18nService.ts](../../frontend/src/modules/Core/services/I18nService.ts)** – Core i18n service
+- **[i18nUtil.ts](../../frontend/src/modules/Core/utils/i18nUtil.ts)** – Utility functions for i18n
+- **[i18n/index.ts](../../frontend/src/i18n/index.ts)** – Main translations index
 
 ---
 

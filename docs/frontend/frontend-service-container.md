@@ -23,7 +23,7 @@ The service container provides these core services:
 | `validation` | Schema-based validation using Zod | [Validation](./frontend-validation.md) |
 | `task`      | Async operation orchestration | [Task Management](./frontend-task-management.md) |
 | `ws`        | Real-time communication with Laravel Echo | [WebSockets](./frontend-websockets.md) |
-| `config`    | Environment variables and settings | - |
+| `config`    | Configuration with tiered visibility system | [Configuration Service](./frontend-config-service.md) |
 
 ## Using the Service Container
 
@@ -116,9 +116,9 @@ notification?.send("Operation completed");
 
 ## Source Files
 
-- [ServiceContainer.ts](/Users/irv/Workspace/pdxapps.com/repos/quvel-kit/frontend/src/modules/Core/services/ServiceContainer.ts) - Main container implementation
-- [container.ts](/Users/irv/Workspace/pdxapps.com/repos/quvel-kit/frontend/src/boot/container.ts) - Quasar boot file for container initialization
-- [serviceContainer.ts](/Users/irv/Workspace/pdxapps.com/repos/quvel-kit/frontend/src/modules/Core/stores/plugins/serviceContainer.ts) - Pinia plugin for store integration
+- [ServiceContainer.ts](../../frontend/src/modules/Core/services/ServiceContainer.ts) - Main container implementation
+- [container.ts](../../frontend/src/boot/container.ts) - Quasar boot file for container initialization
+- [serviceContainer.ts](../../frontend/src/modules/Core/stores/plugins/serviceContainer.ts) - Pinia plugin for store integration
 
 ---
 

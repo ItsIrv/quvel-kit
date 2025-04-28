@@ -356,9 +356,9 @@ function handlePaginationResponse(response) {
 
 ## Source Files
 
-- **[Pagination.ts](../frontend/src/modules/Core/helpers/Pagination.ts)** – Core pagination implementation
-- **[catalogStore.ts](../frontend/src/modules/Catalog/stores/catalogStore.ts)** – Example store implementation
-- **[CatalogSection.vue](../frontend/src/modules/Catalog/components/CatalogSection.vue)** – Example component usage
+- **[Pagination.ts](../../frontend/src/modules/Core/helpers/Pagination.ts)** – Core pagination implementation
+- **[catalogStore.ts](../../frontend/src/modules/Catalog/stores/catalogStore.ts)** – Example store implementation
+- **[CatalogSection.vue](../../frontend/src/modules/Catalog/components/CatalogSection.vue)** – Example component usage
 
 ---
 

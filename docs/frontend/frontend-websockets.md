@@ -321,10 +321,10 @@ async loginWithOAuth(provider: string, stateless: boolean) {
 
 ## Source Files
 
-- **[WebSocketService.ts](../frontend/src/modules/Core/services/WebSocketService.ts)** – Core WebSocket service
-- **[useWebSockets.ts](../frontend/src/modules/Core/composables/useWebSockets.ts)** – WebSocket composable
-- **[websocket.types.ts](../frontend/src/modules/Core/types/websocket.types.ts)** – TypeScript types for WebSockets
-- **[WebSocketChannelManager.vue](../frontend/src/modules/Core/components/WebSocketChannelManager.vue)** – WebSocket inspector component
+- **[WebSocketService.ts](../../frontend/src/modules/Core/services/WebSocketService.ts)** – Core WebSocket service
+- **[useWebSockets.ts](../../frontend/src/modules/Core/composables/useWebSockets.ts)** – WebSocket composable
+- **[websocket.types.ts](../../frontend/src/modules/Core/types/websocket.types.ts)** – TypeScript types for WebSockets
+- **[WebSocketChannelManager.vue](../../frontend/src/modules/Core/components/WebSocketChannelManager.vue)** – WebSocket inspector component
 
 ---
 

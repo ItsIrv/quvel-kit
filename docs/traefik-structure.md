@@ -1,102 +1,70 @@
-# Traefik Setup for Reverse Proxy & SSL
+# Traefik Configuration
 
 ## Overview
 
-QuVel Kit uses **Traefik** as a **reverse proxy** to handle **SSL termination** and **subdomain routing** for both the frontend (Quasar SSR) and backend (Laravel API). This setup ensures that:
+QuVel Kit uses Traefik as a reverse proxy to handle SSL termination and subdomain routing. This configuration provides:
 
-- All services run over **HTTPS** (even internally).
-- WebSockets function correctly.
-- Local development mimics a **real-world production environment**.
+- HTTPS for all services
+- WebSockets support
+- Production-like local development environment
 
----
+## Architecture
 
-## How Traefik Works in QuVel Kit
-
-Traefik runs as a **Docker service**, acting as a **gateway** between the host machine and application services. It dynamically routes **requests** based on container labels and predefined **rules**.
-
-### Key Features in This Setup
-
-- **Automatic SSL Certificates** – Uses **mkcert** for local trusted certificates.
-- **Subdomain-Based Routing** – Routes requests to `https://quvel.127.0.0.1.nip.io`.
-- **WebSockets Support** – Ensures Quasar’s SSR and Vite dev server work over secure WebSockets.
-- **Dynamic Configuration** – Uses `traefik.yml` and dynamic `.yaml` files for services.
+Traefik operates as a Docker service that routes requests between the host and application containers based on labels and rules.
 
 ---
 
-## Traefik Configuration Structure
+## Configuration Components
 
-### 1. Main Configuration (`traefik.yml`)
+### Main Configuration
 
-- Defines **entry points** (`http`, `https`).
-- Enables the **Traefik dashboard**.
-- Configures the **certificate resolver** for HTTPS.
+- Entry points for HTTP and HTTPS
+- Dashboard configuration
+- Certificate resolver settings
 
-### 2. Dynamic Configuration (`dynamic/*.yaml`)
+### Dynamic Configuration
 
-- Stores service-specific routing rules for:
-  - **Frontend (Quasar SSR)**
-  - **Backend (Laravel API)**
-  - **Certificate settings**
-- Each service has its own `.yaml` file.
+- Service-specific routing rules
+- Certificate settings
+- Frontend and backend routing
 
-### 3. Docker Labels
+### Docker Labels
 
-- Each container (backend, frontend) is assigned **labels** in `docker-compose.yml`.
-- These labels tell **Traefik** where to route requests.
+- Container-specific routing instructions
+- Service discovery mechanism
 
 ---
 
-## Setting Up Traefik
+## Setup Process
 
-### 1. Ensure mkcert is Installed
+### SSL Certificate Setup
 
-Before running the project, **mkcert** should be installed for generating SSL certificates.
+1. Install and configure mkcert:
 
 ```bash
 mkcert -install
 ```
 
-This ensures that **local SSL certificates** are trusted.
+2. Verify SSL certificates in `docker/certs/`:
+   - `selfsigned.crt`
+   - `selfsigned.key`
+   - `certificates.yaml`
 
----
-
-### 2. Verify SSL Certificate Files
-
-The **Traefik service** expects SSL certificates in:
-
-```bash
-docker/certs/
-```
-
-Ensure the following files exist:
-
-- `selfsigned.crt`
-- `selfsigned.key`
-- `certificates.yaml` (defines certificate mappings)
-
-If missing, regenerate them:
+If certificates are missing, run:
 
 ```bash
 ./scripts/setup.sh
 ```
 
----
+### Routing System
 
-### 3. Understanding the Routing System
+QuVel Kit uses `.nip.io` subdomains for local development:
 
-Each service in QuVel Kit is mapped via **subdomains**, using **`.nip.io`** for local resolution.
-
-| Service   | Local URL |
-|-----------|--------------------------------|
-| **Frontend**  | `https://quvel.127.0.0.1.nip.io` |
-| **API (Laravel)** | `https://api.quvel.127.0.0.1.nip.io` |
-| **Traefik Dashboard** | `http://localhost:8080` |
-
-**How It Works:**
-
-- Requests to `quvel.127.0.0.1.nip.io` go to the **Quasar frontend**.
-- Requests to `api.quvel.127.0.0.1.nip.io` go to the **Laravel API**.
-- The **Traefik Dashboard** runs separately on port `8080`.
+| Service | URL |
+|---------|-----|
+| Frontend | `https://quvel.127.0.0.1.nip.io` |
+| API | `https://api.quvel.127.0.0.1.nip.io` |
+| Traefik Dashboard | `http://localhost:8080` |
 
 ---
 
@@ -142,29 +110,57 @@ http://localhost:8080
 
 ## Why HTTPS Internally?
 
-Normally, Quasar’s dev server (`Vite`) runs over HTTP. However, **WebSockets** (HMR, Live Reload, etc.) require HTTPS in some cases, especially in a **proxy setup**.
+QuVel Kit uses HTTPS for all services, even in development, for several key reasons:
 
-To fix this, we:
+### WebSockets and SSR
 
-- Serve **Quasar SSR over HTTPS** internally.
-- Ensure all communication (frontend/backend) remains encrypted.
+- Quasar's dev server (Vite) requires HTTPS for WebSockets in proxy setups
+- Hot Module Replacement (HMR) works reliably over secure connections
 
-This guarantees:
+### Mobile and Desktop Compatibility
 
-- WebSockets work correctly
-- Secure connections even in development
-- Better alignment with production environments
+- Capacitor (mobile) and Electron (desktop) builds require HTTPS connections
+- Prevents cross-origin issues when building for multiple platforms
 
----
+### Development Benefits
 
-## Recap & Next Steps
+- Secure connections mirror production environments
+- Consistent behavior across all deployment targets
 
-- Traefik handles **subdomain routing, SSL, and reverse proxying**.
-- Services are accessed via `*.127.0.0.1.nip.io` domains.
-- WebSockets work because **everything is HTTPS**.
-- The setup closely **mirrors production environments**.
+## Deployment Configuration Options
 
-Next, check out:
+Traefik's dynamic configuration supports multiple deployment scenarios through the server URL configuration:
 
-- **[Frontend Usage](./frontend/frontend-usage.md)** – Learn how the frontend interacts with Traefik.
-- **[Backend Usage](./backend-usage.md)** – Understand how Laravel is exposed via Traefik.
+```yaml
+services:
+  web:
+    loadBalancer:
+      servers:
+        # - url: 'https://127.0.0.1.nip.io:3000'        # Option 1: Docker network routing
+        - url: 'https://host.docker.internal:3000'    # Option 2: Local machine hosting
+        # - url: 'https://quvel-frontend:9000'         # Option 3: Docker container routing
+      serversTransport: 'insecureTransport'           # Supports self-signed certificates
+```
+
+### Configuration Options
+
+1. **Docker Network Routing**: All services run in Docker containers
+   - Highest isolation and consistency
+   - Higher resource usage
+
+2. **Local Machine Hosting**: Traefik in Docker, services on host
+   - Reduced resource usage
+   - Faster development cycles
+   - Ideal for daily development
+
+3. **Docker Container Routing**: Only Traefik uses Docker networking
+   - Host backend and frontend on your local machine
+   - Minimal Docker footprint
+   - Useful for specific services
+
+### Lightweight Development Setup
+
+For minimal resource usage, you can:
+
+- Install Traefik directly on your host machine (via Homebrew) and not use Docker at all
+- Configure paths to match your local environment instead of Docker mounts

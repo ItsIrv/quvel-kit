@@ -1,170 +1,213 @@
-# Backend Usage
+# Backend Development Guide
 
-## Accessing the Laravel Backend
+## Architecture Overview
 
-The backend of QuVel Kit is powered by **Laravel** and runs inside a Docker container. Below are the steps to interact with the backend for development, migrations, and debugging.
+QuVel Kit's backend is built with Laravel 12 and follows a modular architecture pattern. The backend provides a robust API for the frontend and supports multi-tenancy out of the box.
 
----
+| Component | Technology | Version |
+|-----------|------------|--------|
+| Framework | Laravel | 12.x |
+| PHP | PHP | 8.3+ |
+| Database | MySQL | 8.0+ |
+| Cache | Redis | 6.0+ |
+| Queue | Redis | 6.0+ |
+| Authentication | Laravel Sanctum | Latest |
+| API Documentation | OpenAPI/Swagger | Latest |
 
-## Laravel Service Overview
+## Development Environment
 
-- The backend runs inside a **Docker container**.
-- It uses **PHP 8+**, **MySQL**, and **Redis**.
-- The service starts using:
+### Accessing the Backend Container
 
-  ```bash
-  php artisan serve --host=0.0.0.0 --port=8000
-  ```
-
-- It is exposed on <https://api.quvel.127.0.0.1.nip.io>
-- Telescope: <https://api.quvel.127.0.0.1.nip.io/telescope>
-
----
-
-## Running Commands on Local
-
-Make sure to install packages locally if you want to run commands locally. You can run commands on your local machine, so long they do not need to connect to the docker network.
-This means most analysis and test commands work on your local machine.
+The backend runs in a Docker container. To access it:
 
 ```bash
+# Open a shell in the Laravel container
+docker exec -it quvel-app sh
+```
+
+### Local Development Setup
+
+For commands that don't require Docker network access (static analysis, code formatting):
+
+```bash
+# Install dependencies locally
+cd backend
 composer install --dev
 ```
 
-## Connecting To Docker
+## Core Development Tasks
 
-### Open a Terminal in the Laravel Container
-
-To run artisan commands inside the backend container:
+### Database Operations
 
 ```bash
-docker exec -it quvel-app sh 
+# Run migrations
+php artisan migrate
+
+# Seed the database
+php artisan db:seed
+
+# Reset and re-run all migrations
+php artisan migrate:fresh --seed
+
+# Create a new migration
+php artisan make:migration create_your_table_name
 ```
 
-Once inside, you can run commands as you normally would.
-
-## Testing
-
-### Tinker
+### Model & Resource Generation
 
 ```bash
-php artisan tinker
+# Create a model with migration, factory, and resource controller
+php artisan make:model YourModel -mfr
+
+# Create an API resource
+php artisan make:resource YourModelResource
 ```
 
-### Run Tests
+### Module Development
+
+QuVel Kit uses Laravel Modules for modular architecture:
 
 ```bash
-php artisan test # Run tests normally
-php artisan test -p # Run test in parallel
-php artisan test --group=tenant-module # Run tests in groups
-php artisan test --testsuite=Modules # Run Test Suite
+# List all modules
+php artisan module:list
+
+# Create a new module
+php artisan module:make YourModuleName
+
+# Enable a module
+php artisan module:enable YourModuleName
 ```
 
-The following groups are available:
+## Testing & Quality Assurance
 
-- security
-- providers
-- actions
-- models
-- transformers
-- services
-- frontend
-- tenant-module
-- auth-module
-
-The following test suites are available:
-
-- Unit
-- Feature
-- Modules
-
----
-
-### Access Coverage Reports
-
-You can access the coverage reports at <https://coverage-api.quvel.127.0.0.1.nip.io>.
-
-### Refresh Coverage Report
+### Running Tests
 
 ```bash
+# Run all tests
+php artisan test
+
+# Run tests in parallel
+php artisan test -p
+
+# Run specific test groups
+php artisan test --group=tenant-module
+
+# Run specific test suites
+php artisan test --testsuite=Modules
+```
+
+### Available Test Groups
+
+- `security` - Security-related tests
+- `providers` - Service provider tests
+- `actions` - Action class tests
+- `models` - Model tests
+- `transformers` - Data transformer tests
+- `services` - Service class tests
+- `frontend` - Frontend integration tests
+- `tenant-module` - Multi-tenancy tests
+- `auth-module` - Authentication tests
+
+### Test Suites
+
+- `Unit` - Unit tests
+- `Feature` - Feature tests
+- `Modules` - Module-specific tests
+
+### Code Coverage
+
+```bash
+# Generate HTML coverage report
 php artisan test -p --coverage-html=storage/debug/coverage
 ```
 
----
+Access coverage reports at: <https://coverage-api.quvel.127.0.0.1.nip.io>
 
-## Static Analysis
+### Code Quality Tools
 
-**PHPStan (Static Analysis)**  
-
-```sh
+```bash
+# Run static analysis
 vendor/bin/phpstan analyse --configuration phpstan.neon
+
+# Run code style fixer
+vendor/bin/pint --preset psr12
 ```
 
-**PHP-CS-Fixer (Code Style)**  
+## Debugging & Troubleshooting
 
-```sh
-/vendor/bin/pint --preset psr12
-```
+### Laravel Telescope
 
----
+Access Laravel Telescope at: <https://api.quvel.127.0.0.1.nip.io/telescope>
 
-## Running Migrations & Database Commands
+Telescope provides insights into:
+
+- Requests & responses
+- Database queries
+- Cache operations
+- Queue jobs
+- Scheduled tasks
+- Log entries
+
+### Interactive Shell
 
 ```bash
-php artisan migrate
-php artisan db:seed
+# Start Tinker (Laravel's REPL)
+php artisan tinker
 ```
 
-Exit the container with:
+### Viewing Logs
 
 ```bash
-exit
+# View Laravel logs
+docker logs -f quvel-app
+
+# Tail Laravel log file
+php artisan tail:log
 ```
 
----
+### Common Issues
 
-## Resetting the Database
+#### Storage Link Issues
 
-If you need to reset the database, run:
-
-```bash
-./scripts/reset.sh
-```
-
-This will stop all containers, remove volumes, and restart everything fresh.
-
----
-
-## Storage & Linking
-
-If you encounter issues with file uploads or missing storage links, run:
+If file uploads aren't working:
 
 ```bash
+# Create the symbolic link for storage
 php artisan storage:link
 ```
 
----
-
-## Debugging Backend Issues
-
-### View Backend Logs
+#### Service Restart
 
 ```bash
-docker logs -f quvel-app
-```
-
-### Restart Laravel Service
-
-```bash
+# Restart the Laravel service
 docker restart quvel-app
 ```
 
----
+## Asset Compilation
 
-## Vite Assets
-
-Laravel assets can currently be updated by running the quvel-asset-builder container.
-An automated way will be cooked up in the future.
+For Laravel Vite assets:
 
 ```bash
+# Build assets using the asset builder container
 docker-compose -f docker/docker-compose.yml run --rm asset-builder
 ```
+
+## Multi-Tenancy
+
+QuVel Kit supports multi-tenancy out of the box. Each tenant has:
+
+- Isolated database schema
+- Custom domain routing
+- Separate configuration
+
+```bash
+# Create a new tenant
+php artisan tenant:create
+
+# List all tenants
+php artisan tenant:list
+```
+
+---
+
+[← Back to Docs](./README.md)
