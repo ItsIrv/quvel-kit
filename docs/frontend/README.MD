@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **enterprise frontend architecture** of QuVel Kit is built with **Vue 3**, **TypeScript**, and **Quasar 3** in SSR mode, providing a robust foundation for scalable web and mobile applications. This documentation covers the modular architecture and key services that power the frontend ecosystem.
+The **frontend architecture** of QuVel Kit is built with **Vue 3**, **TypeScript**, and **Quasar 3** in SSR mode, providing a robust foundation for scalable web and mobile applications. This documentation covers the modular architecture and key services that power the frontend ecosystem.
 
 ## Technology Stack
 

@@ -202,4 +202,4 @@ For more details on WebSockets, see the [WebSockets documentation](./frontend-we
 
 ---
 
-[← Back to Frontend Docs](./README.MD)
+[← Back to Frontend Docs](./README.md)

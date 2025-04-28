@@ -354,4 +354,4 @@ export const changePasswordSchema = () =>
 
 ---
 
-[← Back to Frontend Docs](./README.MD)
+[← Back to Frontend Docs](./README.md)

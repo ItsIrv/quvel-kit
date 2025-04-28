@@ -140,4 +140,4 @@ yarn build:ssr  # Builds the Quasar SSR version
 
 ---
 
-[← Back to Frontend Docs](./README.MD)
+[← Back to Frontend Docs](./README.md)

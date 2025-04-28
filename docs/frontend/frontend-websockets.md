@@ -328,4 +328,4 @@ async loginWithOAuth(provider: string, stateless: boolean) {
 
 ---
 
-[← Back to Frontend Docs](./README.MD)
+[← Back to Frontend Docs](./README.md)
