@@ -29,7 +29,7 @@ const inputValue = computed({
 /**
  * Services
  */
-const container = useContainer();
+const { task, i18n } = useContainer();
 const sessionStore = useSessionStore();
 
 /**
@@ -37,9 +37,9 @@ const sessionStore = useSessionStore();
  *
  * Handles user logout and updates session state.
  */
-const logoutTask = container.task.newTask({
+const logoutTask = task.newTask({
   showNotification: {
-    success: () => container.i18n.t('auth.status.success.loggedOut'),
+    success: () => i18n.t('auth.status.success.loggedOut'),
   },
   task: async () => {
     await sessionStore.logout();
@@ -49,14 +49,19 @@ const logoutTask = container.task.newTask({
 </script>
 
 <template>
-  <q-drawer v-model="inputValue" class="MainGradient" side="left" overlay behavior="mobile">
+  <q-drawer
+    v-model="inputValue"
+    class="MainGradient"
+    side="left"
+    overlay
+    behavior="mobile"
+  >
     <div class="p-6 flex flex-col gap-6">
       <!-- User Info -->
       <div class="flex items-center gap-4">
         <img
-          :src="
-            sessionStore.user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=44'
-          "
+          :src="sessionStore.user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=44'
+            "
           alt="User Avatar"
           class="w-12 h-12 rounded-full border border-stone-400 dark:border-gray-600 shadow-sm"
         />
@@ -75,24 +80,43 @@ const logoutTask = container.task.newTask({
       <q-separator spaced />
 
       <!-- Navigation Links -->
-      <q-list bordered class="rounded-lg">
-        <q-item clickable v-ripple @click="emits('update:modelValue', false)">
+      <q-list
+        bordered
+        class="rounded-lg"
+      >
+        <q-item
+          clickable
+          v-ripple
+          @click="emits('update:modelValue', false)"
+        >
           <q-item-section avatar>
             <q-icon name="eva-person-outline" />
           </q-item-section>
           <q-item-section>Profile</q-item-section>
         </q-item>
 
-        <q-item clickable v-ripple @click="emits('update:modelValue', false)">
+        <q-item
+          clickable
+          v-ripple
+          @click="emits('update:modelValue', false)"
+        >
           <q-item-section avatar>
             <q-icon name="eva-settings-outline" />
           </q-item-section>
           <q-item-section>Settings</q-item-section>
         </q-item>
 
-        <q-item clickable v-ripple :disable="logoutTask.isActive.value" @click="logoutTask.run()">
+        <q-item
+          clickable
+          v-ripple
+          :disable="logoutTask.isActive.value"
+          @click="logoutTask.run()"
+        >
           <q-item-section avatar>
-            <q-icon name="eva-log-out-outline" color="negative" />
+            <q-icon
+              name="eva-log-out-outline"
+              color="negative"
+            />
           </q-item-section>
           <q-item-section class="text-negative">Logout</q-item-section>
         </q-item>

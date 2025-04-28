@@ -14,13 +14,12 @@
 import { computed } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 
-const container = useContainer();
-const i18n = container.i18n;
+const { i18n } = useContainer();
 
 const localeRef = computed({
   get: () => i18n.instance.global.locale.value,
   set: (locale) => {
-    container.i18n.changeLocale(locale);
+    i18n.changeLocale(locale);
   },
 });
 

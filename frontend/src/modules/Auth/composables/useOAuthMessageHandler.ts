@@ -13,7 +13,7 @@ import { useContainer } from 'src/modules/Core/composables/useContainer';
 export function useOAuthMessageHandler(): void {
   const route = useRoute();
   const router = useRouter();
-  const $container = useContainer();
+  const { i18n } = useContainer();
 
   onMounted(() => {
     const { message, ...query } = route.query;
@@ -22,11 +22,11 @@ export function useOAuthMessageHandler(): void {
       try {
         const decodedMessage = normalizeOAuthStatus(decodeURIComponent(message) as OAuthStatusEnum);
 
-        if (!$container.i18n.te(decodedMessage)) {
+        if (!i18n.te(decodedMessage)) {
           return;
         }
 
-        showNotification(mapStatusToType(decodedMessage), $container.i18n.t(decodedMessage), {
+        showNotification(mapStatusToType(decodedMessage), i18n.t(decodedMessage), {
           timeout: 8000,
         });
 

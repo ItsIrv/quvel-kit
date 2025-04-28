@@ -70,7 +70,7 @@ class UserAuthenticationService
             }
 
             // Login successful
-            return [$user, OAuthStatusEnum::LOGIN_OK];
+            return [$user, OAuthStatusEnum::LOGIN_SUCCESS];
         }
 
         // If no user exists, create a new one

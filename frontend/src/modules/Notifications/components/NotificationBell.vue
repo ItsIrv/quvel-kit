@@ -3,10 +3,10 @@ import { ref, computed, watch } from 'vue';
 import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 
-const container = useContainer();
+const { task } = useContainer();
 const notificationStore = useNotificationStore();
 
-const markAsReadTask = container.task.newTask({
+const markAsReadTask = task.newTask({
   task: async () => {
     await notificationStore.markAllAsRead();
   },

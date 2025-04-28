@@ -40,10 +40,10 @@ class AuthCoordinatorTest extends TestCase
     {
         parent::setUp();
 
-        $this->socialiteService = Mockery::mock(SocialiteService::class);
-        $this->serverTokenService = Mockery::mock(ServerTokenService::class);
-        $this->clientNonceService = Mockery::mock(ClientNonceService::class);
-        $this->nonceSessionService = Mockery::mock(NonceSessionService::class);
+        $this->socialiteService          = Mockery::mock(SocialiteService::class);
+        $this->serverTokenService        = Mockery::mock(ServerTokenService::class);
+        $this->clientNonceService        = Mockery::mock(ClientNonceService::class);
+        $this->nonceSessionService       = Mockery::mock(NonceSessionService::class);
         $this->userAuthenticationService = Mockery::mock(UserAuthenticationService::class);
 
         $this->authCoordinator = new OAuthCoordinator(
@@ -88,8 +88,8 @@ class AuthCoordinatorTest extends TestCase
     public function test_build_redirect_response_without_nonce(): void
     {
         // Arrange
-        $provider = 'google';
-        $requestNonce = null; // no nonce passed
+        $provider         = 'google';
+        $requestNonce     = null; // no nonce passed
         $expectedRedirect = new RedirectResponse('https://example.com/redirect');
 
         // No calls to clientNonceService or serverTokenService, because $requestNonce is empty
@@ -114,10 +114,10 @@ class AuthCoordinatorTest extends TestCase
     public function test_build_redirect_response_with_nonce(): void
     {
         // Arrange
-        $provider = 'google';
-        $requestNonce = 'nonce-123';
+        $provider       = 'google';
+        $requestNonce   = 'nonce-123';
         $validatedNonce = 'nonce-123'; // the raw nonce from cache
-        $serverToken = 'server-token-xyz';
+        $serverToken    = 'server-token-xyz';
 
         $expectedRedirect = new RedirectResponse('https://example.com/oauth?state=token');
 
@@ -154,13 +154,13 @@ class AuthCoordinatorTest extends TestCase
     public function test_authenticate_callback_stateless_login_ok(): void
     {
         // Arrange
-        $provider = 'google';
-        $signedToken = 'signed-token-123';
-        $clientNonce = 'nonce-456'; // non-null => stateless
+        $provider     = 'google';
+        $signedToken  = 'signed-token-123';
+        $clientNonce  = 'nonce-456'; // non-null => stateless
         $providerUser = Mockery::mock(\Laravel\Socialite\Contracts\User::class);
 
-        $user = User::first();
-        $status = OAuthStatusEnum::LOGIN_OK;
+        $user   = User::first();
+        $status = OAuthStatusEnum::LOGIN_SUCCESS;
 
         $this->serverTokenService->shouldReceive('getClientNonce')
             ->once()
@@ -178,7 +178,7 @@ class AuthCoordinatorTest extends TestCase
             ->with($provider, $providerUser)
             ->andReturn([$user, $status]);
 
-        // Because status = LOGIN_OK and flow is stateless
+        // Because status = LOGIN_SUCCESS and flow is stateless
         // => completeStatelessLogin
         // => serverTokenService->forget($signedToken)
         // => clientNonceService->assignUserToNonce($clientNonce, $user->id)
@@ -212,13 +212,13 @@ class AuthCoordinatorTest extends TestCase
     public function test_authenticate_callback_stateful_login_ok(): void
     {
         // Arrange
-        $provider = 'google';
-        $signedToken = 'signed-token-123';
-        $clientNonce = null; // => stateful
+        $provider     = 'google';
+        $signedToken  = 'signed-token-123';
+        $clientNonce  = null; // => stateful
         $providerUser = Mockery::mock(\Laravel\Socialite\Contracts\User::class);
 
-        $user = User::first();
-        $status = OAuthStatusEnum::LOGIN_OK;
+        $user   = User::first();
+        $status = OAuthStatusEnum::LOGIN_SUCCESS;
 
         $this->serverTokenService->shouldReceive('getClientNonce')
             ->once()
@@ -236,7 +236,7 @@ class AuthCoordinatorTest extends TestCase
             ->with($provider, $providerUser)
             ->andReturn([$user, $status]);
 
-        // Because status=LOGIN_OK and flow is stateful => completeSessionLogin => userAuth->logInWithId
+        // Because status=LOGIN_SUCCESS and flow is stateful => completeSessionLogin => userAuth->logInWithId
         $this->userAuthenticationService->shouldReceive('logInWithId')
             ->once()
             ->with($user->id);
@@ -258,12 +258,12 @@ class AuthCoordinatorTest extends TestCase
     public function test_authenticate_callback_login_not_ok(): void
     {
         // Arrange
-        $provider = 'google';
-        $signedToken = 'signed-token-123';
-        $clientNonce = 'nonce-456'; // stateless or not doesn't matter if login fails
+        $provider     = 'google';
+        $signedToken  = 'signed-token-123';
+        $clientNonce  = 'nonce-456'; // stateless or not doesn't matter if login fails
         $providerUser = Mockery::mock(\Laravel\Socialite\Contracts\User::class);
 
-        $user = User::first();
+        $user   = User::first();
         $status = OAuthStatusEnum::EMAIL_NOT_VERIFIED;  // e.g., a failure
 
         $this->serverTokenService->shouldReceive('getClientNonce')
@@ -304,9 +304,9 @@ class AuthCoordinatorTest extends TestCase
     {
         // Arrange
         $requestNonce = 'signed-nonce-789';
-        $rawNonce = 'nonce-789';
-        $user = User::first();
-        $userId = $user->id;
+        $rawNonce     = 'nonce-789';
+        $user         = User::first();
+        $userId       = $user->id;
 
         $this->clientNonceService->shouldReceive('getNonce')
             ->once()
@@ -341,7 +341,7 @@ class AuthCoordinatorTest extends TestCase
     {
         // Arrange
         $requestNonce = 'signed-nonce-789';
-        $rawNonce = 'nonce-789';
+        $rawNonce     = 'nonce-789';
 
         $this->clientNonceService->shouldReceive('getNonce')
             ->once()
@@ -371,7 +371,7 @@ class AuthCoordinatorTest extends TestCase
     {
         // Arrange
         $requestNonce = 'signed-nonce-789';
-        $rawNonce = 'nonce-789';
+        $rawNonce     = 'nonce-789';
 
         $this->clientNonceService->shouldReceive('getNonce')
             ->once()

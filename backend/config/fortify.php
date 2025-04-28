@@ -147,19 +147,19 @@ return [
         Features::registration(),
 
         // Enable password reset functionality
-        // Features::resetPasswords(),
+        Features::resetPasswords(),
 
-        // Email verification is handled by Auth module
-        // Features::emailVerification(),
+        // Enable email verification
+        Features::emailVerification(),
 
         // Enable profile management features
-        // Features::updateProfileInformation(),
-        // Features::updatePasswords(),
-        // Features::twoFactorAuthentication([
-        //     'confirm'         => true,
-        //     'confirmPassword' => true,
-        //     // 'window' => 0,
-        // ]),
+        Features::updateProfileInformation(),
+        Features::updatePasswords(),
+        Features::twoFactorAuthentication([
+            'confirm'         => true,
+            'confirmPassword' => true,
+            // 'window' => 0,
+        ]),
     ],
 
 ];

@@ -46,7 +46,7 @@ class OAuthCoordinator
     public function buildRedirectResponse(string $provider, ?string $requestNonce): RedirectResponse
     {
         $serverToken = '';
-        if (! empty($requestNonce)) {
+        if (!empty($requestNonce)) {
             $clientNonce = $this->clientNonceService->getNonce(
                 $requestNonce,
                 ClientNonceService::TOKEN_CREATED,
@@ -68,8 +68,8 @@ class OAuthCoordinator
      */
     public function authenticateCallback(string $provider, string $signedToken): OAuthCallbackResult
     {
-        $clientNonce = $this->serverTokenService->getClientNonce($signedToken);
-        $stateless = $clientNonce !== null;
+        $clientNonce  = $this->serverTokenService->getClientNonce($signedToken);
+        $stateless    = $clientNonce !== null;
         $providerUser = $this->socialiteService->getProviderUser(
             $provider,
             $stateless,
@@ -80,7 +80,7 @@ class OAuthCoordinator
             $providerUser,
         );
 
-        if ($status === OAuthStatusEnum::LOGIN_OK) {
+        if ($status === OAuthStatusEnum::LOGIN_SUCCESS) {
             $stateless
                 ? $this->completeStatelessLogin($signedToken, $clientNonce, $user->id)
                 : $this->completeSessionLogin($user->id);
@@ -101,17 +101,17 @@ class OAuthCoordinator
      */
     public function redeemClientNonce(string $requestNonce): User
     {
-        $nonce = $this->clientNonceService->getNonce($requestNonce);
+        $nonce  = $this->clientNonceService->getNonce($requestNonce);
         $userId = $this->clientNonceService->getUserIdFromNonce($nonce);
         $this->clientNonceService->forget($nonce);
 
-        if (! $userId) {
+        if (!$userId) {
             throw new OAuthException(OAuthStatusEnum::INTERNAL_ERROR);
         }
 
         $user = $this->userAuthenticationService->logInWithId($userId);
 
-        if (! $user instanceof User) {
+        if (!$user instanceof User) {
             throw new OAuthException(OAuthStatusEnum::INTERNAL_ERROR);
         }
 

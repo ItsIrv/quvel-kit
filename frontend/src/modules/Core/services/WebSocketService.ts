@@ -38,8 +38,8 @@ export class WebSocketService implements BootableService {
     return this.#echo;
   }
 
-  public register(container: ServiceContainer): void {
-    this.api = container.api;
+  public register({ api }: ServiceContainer): void {
+    this.api = api;
   }
 
   public boot(): void {}

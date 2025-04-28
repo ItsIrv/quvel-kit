@@ -1,4 +1,4 @@
-# Frontend Usage
+# Environment Setup & Usage
 
 ## Overview
 
@@ -6,22 +6,22 @@ QuVel Kit's frontend is built with **Quasar SSR**, offering a robust environment
 
 ---
 
-## Running Quasar Commands
+## Quick Start
 
-To interact with the Quasar container, open a terminal and execute:
+To get started with the frontend:
 
 ```bash
 docker exec -it quvel-frontend sh
 ```
 
-Inside the container, you can use the Quasar CLI:
+Inside the container, you can run:
 
 ```bash
-yarn build:ssr  # Build the production frontend
-exit            # Exit the container
+yarn dev        # Start development mode
+yarn build:ssr  # Build for production
+quasar          # Access Quasar CLI
+exit            # Exit container
 ```
-
----
 
 ### Running Quasar on Local Machine
 
@@ -31,10 +31,10 @@ To start using the frontend, on your local machine, simply execute commands as n
 I have set up some shortcuts for you.
 
 ```bash
-LOCAL=1 yarn dev-local        # SPA Mode
-LOCAL=1 yarn dev-local:ssr    # SSR Mode
-        yarn dev:ios # Always runs in local
-        yarn dev:electron # Always runs in local
+yarn dev-local        # SPA Mode
+yarn dev-local:ssr    # SSR Mode
+yarn dev:ios # Always runs in local
+yarn dev:electron # Always runs in local
 ```
 
 - By default, running locally starts at **`second-tenant`**.  
@@ -137,3 +137,7 @@ To build the frontend for production:
 ```bash
 yarn build:ssr  # Builds the Quasar SSR version
 ```
+
+---
+
+[← Back to Frontend Docs](./README.MD)

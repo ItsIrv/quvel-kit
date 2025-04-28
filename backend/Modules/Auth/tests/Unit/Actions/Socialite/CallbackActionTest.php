@@ -60,7 +60,7 @@ class CallbackActionTest extends TestCase
     public function test_stateless_flow_success(): void
     {
         // Arrange
-        $provider = 'google';
+        $provider    = 'google';
         $signedState = 'signed-state-123';
 
         $mockRequest = Mockery::mock(CallbackRequest::class);
@@ -73,7 +73,7 @@ class CallbackActionTest extends TestCase
         $mockResult = Mockery::mock(OAuthCallbackResult::class);
         $mockResult->shouldReceive('isStateless')->once()->andReturn(true);
         $mockResult->shouldReceive('getSignedNonce')->once()->andReturn('signed-nonce-value');
-        $mockResult->shouldReceive('getStatus')->once()->andReturn(OAuthStatusEnum::LOGIN_OK);
+        $mockResult->shouldReceive('getStatus')->once()->andReturn(OAuthStatusEnum::LOGIN_SUCCESS);
 
         $this->authCoordinator
             ->shouldReceive('authenticateCallback')
@@ -93,7 +93,7 @@ class CallbackActionTest extends TestCase
 
         $this->frontendService
             ->shouldReceive('redirect')
-            ->with('', ['message' => OAuthStatusEnum::LOGIN_OK->value])
+            ->with('', ['message' => OAuthStatusEnum::LOGIN_SUCCESS->value])
             ->once()
             ->andReturn(new RedirectResponse('mock-callback-view', 302));
 
@@ -113,9 +113,9 @@ class CallbackActionTest extends TestCase
     public function test_stateful_flow_redirects_with_status_message(): void
     {
         // Arrange
-        $provider = 'google';
-        $signedState = 'some-state'; // or empty
-        $expectedStatus = OAuthStatusEnum::LOGIN_OK;
+        $provider       = 'google';
+        $signedState    = 'some-state'; // or empty
+        $expectedStatus = OAuthStatusEnum::LOGIN_SUCCESS;
 
         $mockRequest = Mockery::mock(CallbackRequest::class);
         $mockRequest->shouldReceive('validated')
@@ -155,7 +155,7 @@ class CallbackActionTest extends TestCase
     public function test_oauth_exception_is_propagated(): void
     {
         // Arrange
-        $provider = 'google';
+        $provider    = 'google';
         $mockRequest = Mockery::mock(CallbackRequest::class);
         $mockRequest->shouldReceive('validated')->with('state', '')->andReturn('');
 
@@ -180,7 +180,7 @@ class CallbackActionTest extends TestCase
     public function test_general_exception_is_wrapped_as_oauth_exception(): void
     {
         // Arrange
-        $provider = 'google';
+        $provider    = 'google';
         $mockRequest = Mockery::mock(CallbackRequest::class);
         $mockRequest->shouldReceive('validated')
             ->with('state')

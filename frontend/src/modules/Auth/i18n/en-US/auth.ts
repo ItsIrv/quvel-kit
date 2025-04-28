@@ -53,7 +53,6 @@ export default {
       clientTokenGranted: 'Authentication successful, exchange nonce for session',
       loggedIn: 'You have been logged in.',
       loggedOut: 'You have been logged out.',
-      loginOk: 'Login successful.',
       signedUp: 'You have been signed up.',
       userCreated: 'User created successfully.',
       checkYourEmail: 'Check your email for a verification link.',

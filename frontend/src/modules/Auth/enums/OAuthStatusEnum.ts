@@ -7,7 +7,7 @@ const OAuthStatusEnum = {
   INVALID_CONFIG: 'auth.status.errors.invalidConfig',
   INTERNAL_ERROR: 'auth.status.errors.internalError',
   EMAIL_NOT_VERIFIED: 'auth.status.warnings.emailNotVerified',
-  LOGIN_OK: 'auth.status.success.loginOk',
+  LOGIN_SUCCESS: 'auth.status.success.loginOk',
   USER_CREATED: 'auth.status.success.userCreated',
   CLIENT_TOKEN_GRANTED: 'auth.status.success.clientTokenGranted',
 } as const;

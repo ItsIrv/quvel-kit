@@ -34,7 +34,7 @@ const $emit = defineEmits(['update:modelValue']);
 /**
  * Services
  */
-const container = useContainer();
+const { task, i18n } = useContainer();
 const sessionStore = useSessionStore();
 const quasar = useQuasar();
 
@@ -55,12 +55,12 @@ const authForm = ref<HTMLFormElement>();
  *
  * Handles user login and updates session state.
  */
-const loginTask = container.task.newTask({
+const loginTask = task.newTask({
   showNotification: {
-    success: () => container.i18n.t('auth.status.success.loggedIn'),
+    success: () => i18n.t('auth.status.success.loggedIn'),
   },
   task: async () => await sessionStore.login(email.value, password.value),
-  errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
+  errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
   successHandlers: () => {
     $emit('update:modelValue', false);
     resetForms();
@@ -72,14 +72,12 @@ const loginTask = container.task.newTask({
  *
  * Handles user signup.
  */
-const signupTask = container.task.newTask({
-  showNotification: {
-    success: () => container.i18n.t('auth.status.success.signedUp'),
-  },
+const signupTask = task.newTask({
   task: async () => await sessionStore.signUp(email.value, password.value, name.value),
-  errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
+  errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
   successHandlers: () => {
     successStep.value = 'signup';
+    dialogType.value = 'login';
     resetForms();
   },
 });
@@ -213,7 +211,7 @@ watch(
       >
         <EmailField
           v-model="email"
-          :error-message="loginTask.errors.value.get('email') ?? ''"
+          :error-message="loginTask.errors.value.get('email')"
           :error="loginTask.errors.value.has('email')"
         />
 
@@ -221,14 +219,14 @@ watch(
           <NameField
             v-if="isSignup"
             v-model="name"
-            :error-message="loginTask.errors.value.get('name') ?? ''"
+            :error-message="loginTask.errors.value.get('name')"
             :error="loginTask.errors.value.has('name')"
           />
         </BackInOutUp>
 
         <PasswordField
           v-model="password"
-          :error-message="loginTask.errors.value.get('password') ?? ''"
+          :error-message="loginTask.errors.value.get('password')"
           :error="loginTask.errors.value.has('password')"
         />
 

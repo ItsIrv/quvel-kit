@@ -13,8 +13,8 @@ export class ValidationService extends Service implements BootableService {
   /**
    * Injects the container dependencies.
    */
-  register(container: ServiceContainer): void {
-    this.i18n = container.i18n;
+  register({ i18n }: ServiceContainer): void {
+    this.i18n = i18n;
   }
 
   /**

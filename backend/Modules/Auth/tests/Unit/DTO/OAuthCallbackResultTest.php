@@ -23,24 +23,24 @@ class OAuthCallbackResultTest extends TestCase
     public static function statusProvider(): array
     {
         return [
-            'login_ok_stateless' => [
-                'status' => OAuthStatusEnum::LOGIN_OK,
-                'signedNonce' => 'abc123',
+            'login_ok_stateless'           => [
+                'status'              => OAuthStatusEnum::LOGIN_SUCCESS,
+                'signedNonce'         => 'abc123',
                 'expectedIsStateless' => true,
             ],
-            'user_created_stateful' => [
-                'status' => OAuthStatusEnum::USER_CREATED,
-                'signedNonce' => null,
+            'user_created_stateful'        => [
+                'status'              => OAuthStatusEnum::USER_CREATED,
+                'signedNonce'         => null,
                 'expectedIsStateless' => false,
             ],
             'email_not_verified_stateless' => [
-                'status' => OAuthStatusEnum::EMAIL_NOT_VERIFIED,
-                'signedNonce' => 'nonce-xyz',
+                'status'              => OAuthStatusEnum::EMAIL_NOT_VERIFIED,
+                'signedNonce'         => 'nonce-xyz',
                 'expectedIsStateless' => true,
             ],
-            'email_taken_stateful' => [
-                'status' => OAuthStatusEnum::EMAIL_TAKEN,
-                'signedNonce' => null,
+            'email_taken_stateful'         => [
+                'status'              => OAuthStatusEnum::EMAIL_TAKEN,
+                'signedNonce'         => null,
                 'expectedIsStateless' => false,
             ],
         ];
@@ -50,7 +50,7 @@ class OAuthCallbackResultTest extends TestCase
     public function test_oauth_authentication_result(
         OAuthStatusEnum $status,
         ?string $signedNonce,
-        bool $expectedIsStateless
+        bool $expectedIsStateless,
     ): void {
         // Arrange
         $user = new User(['id' => 99]);

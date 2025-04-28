@@ -6,8 +6,7 @@ import { useContainer } from './useContainer';
  * Composable for WebSocket operations
  */
 export function useWebSockets() {
-  const container = useContainer();
-  const wsService = container.ws;
+  const { ws } = useContainer();
 
   /**
    * Subscribe to a WebSocket channel
@@ -19,17 +18,17 @@ export function useWebSockets() {
     let channel: AnyChannel;
 
     if (options.type === 'public' || options.type === 'publicNotification') {
-      channel = await wsService.subscribe(
+      channel = await ws.subscribe(
         options as SubscribeOptions<T> & { type: 'public' | 'publicNotification' },
       );
     } else if (options.type === 'private' || options.type === 'privateNotification') {
-      channel = await wsService.subscribe(
+      channel = await ws.subscribe(
         options as SubscribeOptions<T> & { type: 'private' | 'privateNotification' },
       );
     } else if (options.type === 'presence') {
-      channel = await wsService.subscribe(options as SubscribeOptions<T> & { type: 'presence' });
+      channel = await ws.subscribe(options as SubscribeOptions<T> & { type: 'presence' });
     } else if (options.type === 'encrypted') {
-      channel = await wsService.subscribe(options as SubscribeOptions<T> & { type: 'encrypted' });
+      channel = await ws.subscribe(options as SubscribeOptions<T> & { type: 'encrypted' });
     } else {
       console.log(options.type);
       throw new Error(`Unsupported channel type: ${String(options.type)}`);

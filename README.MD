@@ -69,7 +69,7 @@ Refer to the [Frontend Usage Guide](docs/frontend/frontend-usage.md) and [Backen
 ### **Short-Term Goals**
 
 - Finish Auth Flows. Password Reset remaining.
-- Complete Socialite (DONE) & RBAC integration
+- Complete Socialite implementation (DONE) & RBAC integration
 - Expand testing coverage (Backend coverage ~85%, missing coverage = modules in development. FE coverage ~1% from base examples, not a priority)
 - Improve module-based backend and frontend architecture (DONE)
 

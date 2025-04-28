@@ -53,9 +53,9 @@ export default {
       clientTokenGranted: 'Autenticación exitosa, intercambia el nonce por sesión',
       loggedIn: 'Sesión iniciada correctamente.',
       loggedOut: 'Sesión cerrada correctamente.',
-      loginOk: 'Inicio de sesión exitoso.',
       signedUp: 'Registro completado.',
       userCreated: 'Usuario creado exitosamente.',
+      checkYourEmail: 'Revisa tu correo electrónico para verificar tu cuenta.',
     },
   },
 };

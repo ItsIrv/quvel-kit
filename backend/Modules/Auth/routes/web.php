@@ -22,8 +22,6 @@ use Modules\Auth\Actions\User\RegisterAction;
 Route::group([
     'prefix' => 'auth',
 ], static function (): void {
-    // Register
-    Route::post('/register', RegisterAction::class)->name('auth.register');
     // Socialite
     Route::group([
         'prefix' => 'provider/{provider}',

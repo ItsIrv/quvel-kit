@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 import type { ZodSchema } from 'zod';
+import type { PropType } from 'vue';
 
 /**
  * Props
@@ -40,12 +41,14 @@ const props = defineProps({
     default: () => [],
   },
   errorMessage: {
-    type: String,
-    default: '',
+    type: String as PropType<string | undefined>,
+    default: undefined,
+    required: false,
   },
   error: {
-    type: Boolean,
-    default: false,
+    type: Boolean as PropType<boolean | undefined>,
+    default: undefined,
+    required: false,
   },
 });
 
@@ -57,7 +60,7 @@ const emits = defineEmits(['update:modelValue']);
 /**
  * Services
  */
-const container = useContainer();
+const { validation } = useContainer();
 
 /**
  * Computed Property for Model Binding
@@ -69,12 +72,12 @@ const inputValue = computed({
 
 /**
  * Computed Property for Validation Rules
- * - If `schema` is provided, use `container.validation.createInputRule(schema, label)`.
+ * - If `schema` is provided, use `validation.createInputRule(schema, label)`.
  * - Otherwise, use the provided `rules` array.
  */
 const computedRules = computed(() => {
   return props.schema
-    ? [container.validation.createInputRule(props.schema, props.label)]
+    ? [validation.createInputRule(props.schema, props.label)]
     : props.rules;
 });
 </script>

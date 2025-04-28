@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, PropType } from 'vue';
 import { passwordSchema } from 'src/modules/Core/utils/validators/commonValidators';
 import BaseField from '../../../Core/components/Form/BaseField.vue';
 
@@ -12,12 +12,14 @@ const props = defineProps({
     required: true,
   },
   errorMessage: {
-    type: String,
-    default: '',
+    type: String as PropType<string | undefined>,
+    default: undefined,
+    required: false,
   },
   error: {
-    type: Boolean,
-    default: false,
+    type: Boolean as PropType<boolean | undefined>,
+    default: undefined,
+    required: false,
   },
 });
 

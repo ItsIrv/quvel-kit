@@ -1,13 +1,13 @@
-# Pagination Strategies
+# Pagination
 
 ## Overview
 
-QuVel Kit provides a comprehensive **pagination system** that supports multiple pagination strategies including **length-aware**, **simple**, and **cursor-based** pagination. This system integrates seamlessly with Laravel's pagination responses and Pinia stores.
+QuVel Kit provides a flexible **pagination system** that supports multiple pagination strategies including **length-aware**, **simple**, and **cursor-based** pagination. This system integrates seamlessly with Laravel's pagination responses and Pinia stores.
 
 ## Features
 
 - **Multiple Pagination Types** – Support for length-aware, simple, and cursor-based pagination
-- **Pinia Store Integration** – Factory functions for creating pagination state and actions
+- **Pinia Store Integration** – Factory functions for creating pagination state, getters, and actions
 - **Type Safety** – Fully typed interfaces for all pagination components
 - **Laravel Compatibility** – Designed to work with Laravel's pagination responses
 - **Automatic State Management** – Handles loading states, page tracking, and data merging
@@ -24,74 +24,196 @@ QuVel Kit supports three pagination strategies:
 | **Simple** | Only tracks current page and next/previous | For large datasets where counting total records is expensive |
 | **Cursor** | Uses cursor tokens instead of page numbers | For infinite scrolling and real-time data feeds |
 
+Each pagination type has its own set of helper functions for creating state, actions, and getters in your Pinia stores.
+
 ---
 
-## Setting Up Pagination in a Pinia Store
+## Implementation in Pinia Stores
 
-### **1. Create Pagination State**
+The pagination system is designed to work seamlessly with Pinia stores. Here's how to implement it:
 
-First, define your pagination state in a Pinia store:
+### 1. Define Your State
 
 ```ts
 import { defineStore } from 'pinia';
 import { createLengthAwareState } from 'src/modules/Core/helpers/Pagination';
-import type { User } from 'src/modules/User/models/User';
+import type { Product } from 'src/modules/Catalog/models/Product';
 
-export const useUserStore = defineStore('user', {
-  state: () => ({
-    // Create a length-aware paginated state for users
-    users: createLengthAwareState<User>(),
-    
-    // Other state properties...
+interface ProductState {
+  // Create a state for paginated products
+  products: LengthAwareState<Product>;
+}
+
+export const useProductStore = defineStore('product', {
+  state: (): ProductState => ({
+    // Initialize pagination state
+    products: createLengthAwareState<Product>()
   }),
   
-  // Actions and getters will be added next
+  // Getters and actions will be added next
 });
 ```
 
-### **2. Create Pagination Actions**
-
-Add pagination actions to your store:
+### 2. Add Getters
 
 ```ts
 import { defineStore } from 'pinia';
-import { 
-  createLengthAwareState, 
-  createLengthAwareActions 
+import {
+  createLengthAwareState,
+  createLengthAwareGetters
 } from 'src/modules/Core/helpers/Pagination';
-import type { User } from 'src/modules/User/models/User';
-import type { LengthAwarePaginatorResponse } from 'src/modules/Core/types/laravel.types';
 
-export const useUserStore = defineStore('user', {
-  state: () => ({
-    users: createLengthAwareState<User>(),
+export const useProductStore = defineStore('product', {
+  state: (): ProductState => ({
+    products: createLengthAwareState<Product>()
   }),
   
-  actions: {
-    // Spread the generated pagination actions into your store
-    ...createLengthAwareActions<'users', User>({
-      stateKey: 'users',
-      fetcher: async function(options = {}) {
-        // Use the container to make API requests
-        return await this.$container.api.get<LengthAwarePaginatorResponse<User>>(
-          '/api/users',
-          { params: options }
-        );
-      }
-    }),
-    
-    // You can add additional custom actions
-    async searchUsers(query: string) {
-      // This will use the generated usersFetch action
-      await this.usersFetch({ search: query });
-    }
+  getters: {
+    // Add pagination getters
+    ...createLengthAwareGetters<'products', Product>('products')
+    // This creates getters like: getProducts, hasProducts
   }
 });
 ```
 
-### **3. Create Pagination Getters**
+### 3. Add Actions
 
-Add getters to easily access your paginated data:
+```ts
+import { defineStore } from 'pinia';
+import {
+  createLengthAwareState,
+  createLengthAwareGetters,
+  createLengthAwareActions,
+  PaginationRequest
+} from 'src/modules/Core/helpers/Pagination';
+
+export const useProductStore = defineStore('product', {
+  state: (): ProductState => ({
+    products: createLengthAwareState<Product>()
+  }),
+  
+  getters: {
+    ...createLengthAwareGetters<'products', Product>('products')
+  },
+  
+  actions: {
+    // Add pagination actions
+    ...createLengthAwareActions<'products', Product>({
+      stateKey: 'products',
+      async fetcher(options: PaginationRequest) {
+        // This function will be called when pagination actions are triggered
+        return await this.$container.api.get('/products', { params: options });
+      }
+    })
+    // This creates actions like: productsFetch, productsNext, productsPrevious, productsReload
+  }
+});
+```
+
+---
+
+## Using Pagination in Components
+
+Once you've set up pagination in your store, you can use it in your components. Here are common patterns:
+
+### Infinite Scrolling
+
+```vue
+<script setup lang="ts">
+import { useProductStore } from 'src/modules/Catalog/stores/productStore';
+import { onMounted } from 'vue';
+
+const productStore = useProductStore();
+
+// Load initial data
+onMounted(async () => {
+  await productStore.productsFetch();
+});
+
+// Load more items
+const loadMore = () => {
+  productStore.productsNext();
+};
+</script>
+
+<template>
+  <div>
+    <div class="product-grid">
+      <product-card 
+        v-for="product in productStore.getProducts" 
+        :key="product.id" 
+        :product="product" 
+      />
+    </div>
+    
+    <q-btn 
+      v-if="productStore.products.hasMore" 
+      @click="loadMore" 
+      :loading="productStore.products.isLoadingMore"
+      class="mt-4"
+    >
+      Load More
+    </q-btn>
+    
+    <div v-if="productStore.products.isLoadingMore && !productStore.hasProducts" class="loading-indicator">
+      Loading...
+    </div>
+  </div>
+</template>
+```
+
+### Paginated Navigation
+
+```vue
+<script setup lang="ts">
+import { useProductStore } from 'src/modules/Catalog/stores/productStore';
+import { onMounted } from 'vue';
+
+const productStore = useProductStore();
+
+onMounted(async () => {
+  await productStore.productsFetch();
+});
+
+async function onPageChange(page: number) {
+  await productStore.productsFetch({ page });
+}
+</script>
+
+<template>
+  <div>
+    <q-inner-loading :showing="!productStore.hasProducts" />
+    
+    <div class="product-grid">
+      <product-card 
+        v-for="product in productStore.getProducts" 
+        :key="product.id" 
+        :product="product" 
+      />
+    </div>
+    
+    <!-- Pagination Controls -->
+    <div class="flex justify-center mt-6">
+      <q-pagination
+        v-if="productStore.hasProducts"
+        :model-value="productStore.products.meta?.current_page ?? 0"
+        :max="productStore.products.meta?.last_page ?? 0"
+        :max-pages="5"
+        direction-links
+        @update:model-value="onPageChange"
+      />
+    </div>
+  </div>
+</template>
+```
+
+---
+
+## Pagination Types in Detail
+
+### Length-Aware Pagination
+
+Length-aware pagination includes total count and last page information, making it ideal for traditional pagination with page numbers.
 
 ```ts
 import { defineStore } from 'pinia';
@@ -100,98 +222,28 @@ import {
   createLengthAwareActions,
   createLengthAwareGetters
 } from 'src/modules/Core/helpers/Pagination';
-import type { User } from 'src/modules/User/models/User';
 
-export const useUserStore = defineStore('user', {
+export const useProductStore = defineStore('product', {
   state: () => ({
-    users: createLengthAwareState<User>(),
+    products: createLengthAwareState<Product>(),
   }),
-  
-  actions: {
-    // Pagination actions...
-  },
-  
   getters: {
-    // Spread the generated pagination getters
-    ...createLengthAwareGetters<'users', User>('users'),
-    
-    // Add custom getters if needed
-    activeUsers() {
-      return this.getUsers.filter(user => user.isActive);
-    }
+    ...createLengthAwareGetters<'products', Product>('products'),
+  },
+  actions: {
+    ...createLengthAwareActions<'products', Product>({
+      stateKey: 'products',
+      fetcher: async function(options) {
+        return await this.$container.api.get('/products', { params: options });
+      }
+    }),
   }
 });
 ```
 
----
+### Cursor-Based Pagination
 
-## Using Pagination in Vue Components
-
-### **Example: User List with Pagination**
-
-```vue
-<script setup lang="ts">
-import { useUserStore } from 'src/modules/User/stores/userStore';
-import { onMounted } from 'vue';
-
-const userStore = useUserStore();
-
-// Load initial data
-onMounted(async () => {
-  await userStore.usersFetch();
-});
-
-// Load next page
-const loadMore = () => {
-  userStore.usersNext();
-};
-
-// Reload data
-const refresh = () => {
-  userStore.usersReload();
-};
-</script>
-
-<template>
-  <div>
-    <h1>Users</h1>
-    
-    <q-btn @click="refresh">Refresh</q-btn>
-    
-    <div v-if="userStore.users.isLoadingMore" class="loading">
-      Loading...
-    </div>
-    
-    <ul v-if="userStore.hasUsers">
-      <li v-for="user in userStore.getUsers" :key="user.id">
-        {{ user.name }}
-      </li>
-    </ul>
-    
-    <div v-else-if="!userStore.users.isLoadingMore">
-      No users found.
-    </div>
-    
-    <q-btn 
-      v-if="userStore.users.hasMore" 
-      @click="loadMore" 
-      :loading="userStore.users.isLoadingMore"
-    >
-      Load More
-    </q-btn>
-    
-    <div v-if="userStore.users.meta.total">
-      Showing {{ userStore.users.data.length }} of {{ userStore.users.meta.total }} users
-    </div>
-  </div>
-</template>
-```
-
----
-
-## Cursor-Based Pagination
-
-For infinite scrolling or real-time feeds, cursor-based pagination is often more efficient:
+Cursor-based pagination is ideal for infinite scrolling and real-time feeds:
 
 ```ts
 import { defineStore } from 'pinia';
@@ -200,38 +252,65 @@ import {
   createCursorActions,
   createCursorGetters
 } from 'src/modules/Core/helpers/Pagination';
-import type { Post } from 'src/modules/Post/models/Post';
 
-export const usePostStore = defineStore('post', {
+export const useFeedStore = defineStore('feed', {
   state: () => ({
     posts: createCursorState<Post>(),
   }),
-  
+  getters: {
+    ...createCursorGetters<'posts', Post>('posts'),
+  },
   actions: {
     ...createCursorActions<'posts', Post>({
       stateKey: 'posts',
-      fetcher: async function(options = {}) {
-        // If we have a next cursor, include it in the request
+      fetcher: async function(options) {
+        // Include cursor in request if available
         const params = this.posts.meta.next_cursor 
           ? { ...options, cursor: this.posts.meta.next_cursor }
           : options;
           
-        return await this.$container.api.get('/api/posts', { params });
+        return await this.$container.api.get('/feed', { params });
       }
     }),
-  },
-  
+  }
+});
+```
+
+### Simple Pagination
+
+Simple pagination is useful for large datasets where counting total records is expensive:
+
+```ts
+import { defineStore } from 'pinia';
+import { 
+  createSimpleState, 
+  createSimpleActions,
+  createSimpleGetters
+} from 'src/modules/Core/helpers/Pagination';
+
+export const useLogStore = defineStore('logs', {
+  state: () => ({
+    logs: createSimpleState<LogEntry>(),
+  }),
   getters: {
-    ...createCursorGetters<'posts', Post>('posts'),
+    ...createSimpleGetters<'logs', LogEntry>('logs'),
+  },
+  actions: {
+    ...createSimpleActions<'logs', LogEntry>({
+      stateKey: 'logs',
+      fetcher: async function(options) {
+        return await this.$container.api.get('/logs', { params: options });
+      }
+    }),
   }
 });
 ```
 
 ---
 
-## Utility Functions
+## Helper Functions
 
-QuVel Kit provides utility functions to detect pagination types:
+The pagination system includes utility functions to detect pagination types:
 
 ```ts
 import { 
@@ -243,10 +322,13 @@ import {
 // Determine pagination type from API response
 function handlePaginationResponse(response) {
   if (isLengthAwarePagination(response.meta)) {
+    // Handle length-aware pagination
     console.log(`Total records: ${response.meta.total}`);
   } else if (isCursorPagination(response.meta)) {
+    // Handle cursor pagination
     console.log(`Next cursor: ${response.meta.next_cursor}`);
   } else if (isSimplePagination(response.meta)) {
+    // Handle simple pagination
     console.log(`Current page: ${response.meta.current_page}`);
   }
 }
@@ -254,18 +336,30 @@ function handlePaginationResponse(response) {
 
 ---
 
-## Best Practices
+## Rules and Gotchas
 
-- **Choose the Right Pagination Type** – Use length-aware for smaller datasets, cursor-based for infinite scrolling
+### Best Practices
+
+- **Choose the Right Type** – Use length-aware for UI with page numbers, cursor-based for infinite scrolling
 - **Handle Loading States** – Always show loading indicators during pagination operations
-- **Implement Error Handling** – Add error handling for failed pagination requests
 - **Clear Data When Needed** – Use the `clearPrevious` parameter to reset data when changing filters
 - **Optimize API Requests** – Only request the data you need from the backend
-- **Type Safety** – Define proper interfaces for your paginated models
+
+### Common Pitfalls
+
+- **Missing Error Handling** – Always handle API errors in your fetcher function
+- **Forgetting to Clean Up** – Reset pagination state when component is unmounted if needed
+- **Not Handling Empty States** – Always provide feedback when no data is available
+- **Overusing Pagination** – For small datasets, consider loading all data at once
 
 ---
 
-## Related Documentation
+## Source Files
 
-- **[Service Container](./frontend-service-container.md)** – Learn about the service container architecture
-- **[Component Usage](./frontend-component-usage.md)** – General component usage guidelines
+- **[Pagination.ts](../frontend/src/modules/Core/helpers/Pagination.ts)** – Core pagination implementation
+- **[catalogStore.ts](../frontend/src/modules/Catalog/stores/catalogStore.ts)** – Example store implementation
+- **[CatalogSection.vue](../frontend/src/modules/Catalog/components/CatalogSection.vue)** – Example component usage
+
+---
+
+[← Back to Frontend Docs](./README.MD)

@@ -15,100 +15,61 @@ The **enterprise frontend architecture** of QuVel Kit is built with **Vue 3**, *
 - **Zod**: Schema validation library
 - **Laravel Echo & Pusher**: Real-time WebSocket communication
 
-## Quick Start
+## Documentation Structure
 
-To get started with the frontend:
+### 1. **Getting Started**
 
-```bash
-docker exec -it quvel-frontend sh
-```
+- **[Environment Setup & Usage](./frontend-usage.md)** - Development environment, commands, and deployment
+  - Docker environment configuration
+  - Running in SSR & SPA modes
+  - Local development setup
+  - Testing and debugging
+  - Building for production
 
-Inside the container, you can run:
+### 2. **Core Architecture**
 
-```bash
-yarn dev # Start development mode
-yarn build:ssr # Build for production
-quasar # Access Quasar CLI
-exit # Exit container
-```
+- **[Service Container](./frontend-service-container.md)** - Dependency injection and service management
+  - Core services architecture
+  - Service registration and boot lifecycle
+  - Dynamic service registration
+  - SSR compatibility
 
-For more details, see **[Frontend Usage](./frontend-usage.md)**.
+- **[Task Management](./frontend-task-management.md)** - Asynchronous operation orchestration
+  - Task lifecycle and states
+  - Error handling and recovery
+  - Loading state management
 
----
+### 3. **State & Data Management**
 
-## **Frontend Documentation Sections**
+- **[State & Data Management](./frontend-state-management.md)** - Pinia store implementation
+  - Type-safe store creation
+  - Service container integration
+  - WebSocket integration
+  - Pagination helpers
 
-### **Frontend Usage**  
+- **[Pagination](./frontend-pagination.md)** - Data pagination strategies
+  - Length-aware, simple, and cursor-based pagination
+  - Pinia store integration
 
-**[Read More →](./frontend-usage.md)**
+### 4. **UI & Interaction**
 
-- Running Quasar SSR & SPA modes
-- Development environment configuration
-- Testing and debugging strategies
+- **[Validation](./frontend-validation.md)** - Form and data validation
+  - Schema-based validation with Zod
+  - Integration with Quasar forms
+  - Common validators and custom schemas
 
-### **Service Container**  
+- **[Translations](./frontend-translations.md)** - Internationalization
+  - Vue I18n integration
+  - Locale management and persistence
+  - Translation organization and best practices
 
-**[Read More →](./frontend-service-container.md)**
+### 5. **Real-Time Features**
 
-- Core services architecture (`api`, `i18n`, `validation`, `task`, `ws`)
-- Dependency injection patterns
-- SSR-compatible service design
-
-### **Task Management**  
-
-**[Read More →](./frontend-task-management.md)**
-
-- Asynchronous operation orchestration
-- Error handling and recovery strategies
-- Loading state management
-
-### **Session Management**  
-
-**[Read More →](./frontend-session.md)**
-
-- Pinia-based authentication flow
-- SSR state hydration techniques
-- Service integration within stores
-
-### **Validation**  
-
-**[Read More →](./frontend-validation.md)**
-
-- Schema-based validation with Zod
-- Form validation patterns
-- Error message localization
-
-### **Translations**  
-
-**[Read More →](./frontend-translations.md)**
-
-- Internationalization architecture
-- Dynamic locale management
-- Translation organization strategies
-
-### **Component Usage**  
-
-**[Read More →](./frontend-component-usage.md)**
-
-- Service integration in components
-- Form handling best practices
-- Reusable component patterns
-
-### **WebSockets**  
-
-**[Read More →](./frontend-websockets.md)**
-
-- Real-time communication architecture
-- Channel subscription patterns
-- Presence and private channels
-
-### **Pagination**  
-
-**[Read More →](./frontend-pagination.md)**
-
-- Data pagination strategies
-- Cursor and offset pagination
-- Pinia store integration
+- **[WebSockets](./frontend-websockets.md)** - Real-time communication
+  - Channel types and subscription patterns
+  - Event handling
+  - Presence and private channels
+  - Integration with Pinia stores
 
 ## Need Help?
 

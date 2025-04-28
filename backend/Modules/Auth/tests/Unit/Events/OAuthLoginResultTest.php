@@ -27,9 +27,9 @@ class OAuthLoginResultTest extends TestCase
         parent::setUp();
 
         // Mocking a valid long nonce
-        $this->nonce = 'nonce'.bin2hex(random_bytes(32));
+        $this->nonce  = 'nonce' . bin2hex(random_bytes(32));
         $this->result = \Mockery::mock(OAuthCallbackResult::class);
-        $this->event = new OAuthLoginResult($this->nonce, $this->result);
+        $this->event  = new OAuthLoginResult($this->nonce, $this->result);
     }
 
     /**
@@ -58,10 +58,10 @@ class OAuthLoginResultTest extends TestCase
      */
     public function test_event_broadcasts_correct_payload(): void
     {
-        $this->result->shouldReceive('getStatus')->andReturn(OAuthStatusEnum::LOGIN_OK);
+        $this->result->shouldReceive('getStatus')->andReturn(OAuthStatusEnum::LOGIN_SUCCESS);
 
         // Assert
-        $this->assertEquals(['status' => OAuthStatusEnum::LOGIN_OK->value], $this->event->broadcastWith());
+        $this->assertEquals(['status' => OAuthStatusEnum::LOGIN_SUCCESS->value], $this->event->broadcastWith());
     }
 
     /**

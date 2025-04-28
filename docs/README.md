@@ -21,22 +21,8 @@ Welcome to the **QuVel Kit** documentation. This guide provides comprehensive in
 
 ### **Frontend Development**
 
-- **[Frontend Usage](./frontend/frontend-usage.md)** – Guides on using Quasar SSR, SPA, and mobile builds.
-- **[Service Container](./frontend/frontend-service-container.md)** – Details on dependency injection, API calls, validation, and tasks.
-- **[Component Usage](./frontend/frontend-component-usage.md)** – Best practices for structuring Vue components.
-- **[Validation](./frontend/frontend-validation.md)** – Using Zod for schema validation.
-- **[State Management](./frontend/frontend-session.md)** – Working with Pinia and global application state.
-- **[Internationalization](./frontend/frontend-translations.md)** – Managing translations and locales.
-- **[Task Management](./frontend/frontend-task-management.md)** – Handling async operations efficiently.
+- **[Frontend Docs](./frontend/README.md)** – Go to the frontend docs for more information.
 
 ### **Testing & Debugging**
 
 - **[Troubleshooting](./troubleshooting.md)** – Common issues, debugging tips, and solutions.
-
-## Contributing
-
-If you encounter issues or have suggestions, feel free to contribute by submitting a pull request or opening an issue.
-
----
-
-For further details, explore the specific documentation pages linked above.

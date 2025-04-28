@@ -15,8 +15,8 @@ import {
 export class CatalogService implements BootableService {
   private api: ApiService = {} as ApiService;
 
-  register(container: ServiceContainer) {
-    this.api = container.api;
+  register({ api }: ServiceContainer) {
+    this.api = api;
   }
 
   /**

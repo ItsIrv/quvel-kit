@@ -34,8 +34,8 @@ class UserAuthenticationServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->auth = Mockery::mock(AuthFactory::class);
-        $this->userFindService = Mockery::mock(UserFindService::class);
+        $this->auth              = Mockery::mock(AuthFactory::class);
+        $this->userFindService   = Mockery::mock(UserFindService::class);
         $this->userCreateService = Mockery::mock(UserCreateService::class);
 
         $this->service = new UserAuthenticationService(
@@ -47,8 +47,8 @@ class UserAuthenticationServiceTest extends TestCase
 
     public function test_attempt_successful(): void
     {
-        $guard = Mockery::mock(Guard::class);
-        $email = 'test@example.com';
+        $guard    = Mockery::mock(Guard::class);
+        $email    = 'test@example.com';
         $password = 'password';
 
         $this->auth->shouldReceive('guard')
@@ -66,8 +66,8 @@ class UserAuthenticationServiceTest extends TestCase
 
     public function test_attempt_failure(): void
     {
-        $guard = Mockery::mock(Guard::class);
-        $email = 'test@example.com';
+        $guard    = Mockery::mock(Guard::class);
+        $email    = 'test@example.com';
         $password = 'password';
 
         $this->auth->shouldReceive('guard')
@@ -100,9 +100,9 @@ class UserAuthenticationServiceTest extends TestCase
 
     public function test_log_in_with_id(): void
     {
-        $guard = Mockery::mock(Guard::class);
+        $guard  = Mockery::mock(Guard::class);
         $userId = 1;
-        $user = Mockery::mock(User::class);
+        $user   = Mockery::mock(User::class);
 
         $this->auth->shouldReceive('guard')
             ->andReturn($guard);
@@ -122,11 +122,11 @@ class UserAuthenticationServiceTest extends TestCase
      */
     public function test_handle_o_auth_login_existing_user(): void
     {
-        $provider = 'google';
+        $provider     = 'google';
         $providerUser = Mockery::mock(SocialiteUser::class);
-        $user = Mockery::mock(User::class);
-        $email = 'test@example.com';
-        $providerId = 'google_123456';
+        $user         = Mockery::mock(User::class);
+        $email        = 'test@example.com';
+        $providerId   = 'google_123456';
 
         $providerUser->shouldReceive('getId')
             ->andReturn('123456');
@@ -151,7 +151,7 @@ class UserAuthenticationServiceTest extends TestCase
         [$resultUser, $status] = $this->service->handleOAuthLogin($provider, $providerUser);
 
         $this->assertSame($user, $resultUser);
-        $this->assertEquals(OAuthStatusEnum::LOGIN_OK, $status);
+        $this->assertEquals(OAuthStatusEnum::LOGIN_SUCCESS, $status);
     }
 
     /**
@@ -159,13 +159,13 @@ class UserAuthenticationServiceTest extends TestCase
      */
     public function test_handle_o_auth_login_new_user(): void
     {
-        $provider = 'google';
+        $provider     = 'google';
         $providerUser = Mockery::mock(SocialiteUser::class);
-        $user = Mockery::mock(User::class);
-        $email = 'test@example.com';
-        $providerId = 'google_123456';
-        $name = 'Test User';
-        $avatar = 'https://example.com/avatar.jpg';
+        $user         = Mockery::mock(User::class);
+        $email        = 'test@example.com';
+        $providerId   = 'google_123456';
+        $name         = 'Test User';
+        $avatar       = 'https://example.com/avatar.jpg';
 
         $providerUser->shouldReceive('getId')
             ->andReturn('123456');
@@ -182,11 +182,11 @@ class UserAuthenticationServiceTest extends TestCase
 
         $this->userCreateService->shouldReceive('create')
             ->with([
-                'email' => $email,
+                'email'       => $email,
                 'provider_id' => $providerId,
-                'name' => $name,
-                'avatar' => $avatar,
-                'password' => null,
+                'name'        => $name,
+                'avatar'      => $avatar,
+                'password'    => null,
             ])
             ->andReturn($user);
 
@@ -198,11 +198,11 @@ class UserAuthenticationServiceTest extends TestCase
 
     public function test_handle_o_auth_login_email_not_verified(): void
     {
-        $provider = 'google';
+        $provider     = 'google';
         $providerUser = Mockery::mock(SocialiteUser::class);
-        $user = Mockery::mock(User::class);
-        $email = 'test@example.com';
-        $providerId = 'google_123456';
+        $user         = Mockery::mock(User::class);
+        $email        = 'test@example.com';
+        $providerId   = 'google_123456';
 
         $providerUser->shouldReceive('getId')
             ->andReturn('123456');
@@ -232,10 +232,10 @@ class UserAuthenticationServiceTest extends TestCase
 
     public function test_handle_o_auth_login_throws_email_taken_exception(): void
     {
-        $provider = 'google';
-        $providerUser = Mockery::mock(SocialiteUser::class);
-        $user = Mockery::mock(User::class);
-        $email = 'test@example.com';
+        $provider            = 'google';
+        $providerUser        = Mockery::mock(SocialiteUser::class);
+        $user                = Mockery::mock(User::class);
+        $email               = 'test@example.com';
         $differentProviderId = 'facebook_654321';
 
         $providerUser->shouldReceive('getId')

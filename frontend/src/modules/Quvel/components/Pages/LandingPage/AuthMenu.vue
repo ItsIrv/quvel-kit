@@ -14,7 +14,7 @@ const emits = defineEmits(['login-click', 'open-left-drawer']);
 /**
  * Services
  */
-const container = useContainer();
+const { task, i18n } = useContainer();
 const sessionStore = useSessionStore();
 const $q = useQuasar();
 
@@ -28,9 +28,9 @@ const isDropdownOpen = ref(false);
  *
  * Handles user logout and updates session state.
  */
-const logoutTask = container.task.newTask({
+const logoutTask = task.newTask({
   showNotification: {
-    success: () => container.i18n.t('auth.status.success.loggedOut'),
+    success: () => i18n.t('auth.status.success.loggedOut'),
   },
   task: async () => {
     await sessionStore.logout();

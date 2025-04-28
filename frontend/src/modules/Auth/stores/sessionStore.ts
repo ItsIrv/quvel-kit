@@ -106,7 +106,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
         );
 
         if (two_factor === false) {
-          void this.fetchSession();
+          await this.fetchSession();
         }
       },
 
@@ -157,7 +157,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
               status = normalizeOAuthStatus(status);
 
-              if (status !== OAuthStatusEnum.LOGIN_OK) {
+              if (status !== OAuthStatusEnum.LOGIN_SUCCESS) {
                 showNotification(mapStatusToType(status), this.$container.i18n.t(status), {
                   timeout: 8000,
                   closeBtn: true,

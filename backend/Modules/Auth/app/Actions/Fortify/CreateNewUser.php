@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Services\User\UserCreateService;
 use App\Services\User\UserFindService;
 use Illuminate\Contracts\Hashing\Hasher;
-use Illuminate\Validation\Validator;
+use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Modules\Auth\Enums\AuthStatusEnum;
 use Modules\Auth\Exceptions\RegisterActionException;
@@ -29,7 +29,6 @@ class CreateNewUser implements CreatesNewUsers
     public function __construct(
         private readonly UserFindService $userFindService,
         private readonly UserCreateService $userCreateService,
-        private readonly Validator $validator,
         private readonly Hasher $hasher,
     ) {
     }
@@ -43,7 +42,7 @@ class CreateNewUser implements CreatesNewUsers
     public function create(array $input): User
     {
         // Validate input data
-        $this->validator->make($input, [
+        Validator::make($input, [
             'name'     => ['required', 'string', ...NameRule::RULES],
             'email'    => [
                 'required',
