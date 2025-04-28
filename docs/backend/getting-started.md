@@ -1,24 +1,23 @@
-# Backend Development Guide
+# Getting Started with Laravel Backend
 
-## Architecture Overview
+## Overview
 
-QuVel Kit's backend is built with Laravel 12 and follows a modular architecture pattern. The backend provides a robust API for the frontend and supports multi-tenancy out of the box.
+QuVel Kit's backend is built with Laravel 11, using a modular architecture pattern for maintainable and scalable applications. This guide covers the basics of working with the Laravel backend, including setup, development workflow, and key concepts.
 
-| Component | Technology | Version |
-|-----------|------------|--------|
-| Framework | Laravel | 12.x |
-| PHP | PHP | 8.3+ |
-| Database | MySQL | 8.0+ |
-| Cache | Redis | 6.0+ |
-| Queue | Redis | 6.0+ |
-| Authentication | Laravel Sanctum | Latest |
-| API Documentation | OpenAPI/Swagger | Latest |
+## Backend Architecture
+
+The backend follows a modular approach using Laravel Modules, which provides several benefits:
+
+- **Separation of Concerns** - Each module encapsulates specific functionality
+- **Maintainability** - Easier to maintain and update individual modules
+- **Reusability** - Modules can be reused across different projects
+- **Scalability** - New features can be added as separate modules
 
 ## Development Environment
 
 ### Accessing the Backend Container
 
-The backend runs in a Docker container. To access it:
+Once you've set up QuVel Kit following the main [Getting Started](../getting-started.md) guide, you can access the Laravel backend container:
 
 ```bash
 # Open a shell in the Laravel container
@@ -63,7 +62,28 @@ php artisan make:model YourModel -mfr
 php artisan make:resource YourModelResource
 ```
 
-### Module Development
+## Project Structure
+
+The Laravel backend follows a modular structure with the following key directories:
+
+```text
+backend/
+├── app/              # Core application code
+│   ├── Actions/      # Business logic actions
+│   ├── Http/         # Controllers, middleware, requests
+│   ├── Models/       # Eloquent models
+│   └── Services/     # Service classes
+├── config/           # Configuration files
+├── database/         # Migrations, factories, seeders
+├── Modules/          # Laravel Modules
+│   ├── Auth/         # Authentication module
+│   ├── Tenant/       # Multi-tenancy module
+│   └── User/         # User management module
+├── routes/           # API and web routes
+└── tests/            # Test suites
+```
+
+## Module Development
 
 QuVel Kit uses Laravel Modules for modular architecture:
 
@@ -108,12 +128,6 @@ php artisan test --testsuite=Modules
 - `tenant-module` - Multi-tenancy tests
 - `auth-module` - Authentication tests
 
-### Test Suites
-
-- `Unit` - Unit tests
-- `Feature` - Feature tests
-- `Modules` - Module-specific tests
-
 ### Code Coverage
 
 ```bash
@@ -122,16 +136,6 @@ php artisan test -p --coverage-html=storage/debug/coverage
 ```
 
 Access coverage reports at: <https://coverage-api.quvel.127.0.0.1.nip.io>
-
-### Code Quality Tools
-
-```bash
-# Run static analysis
-vendor/bin/phpstan analyse --configuration phpstan.neon
-
-# Run code style fixer
-vendor/bin/pint --preset psr12
-```
 
 ## Debugging & Troubleshooting
 
@@ -165,33 +169,6 @@ docker logs -f quvel-app
 php artisan tail:log
 ```
 
-### Common Issues
-
-#### Storage Link Issues
-
-If file uploads aren't working:
-
-```bash
-# Create the symbolic link for storage
-php artisan storage:link
-```
-
-#### Service Restart
-
-```bash
-# Restart the Laravel service
-docker restart quvel-app
-```
-
-## Asset Compilation
-
-For Laravel Vite assets:
-
-```bash
-# Build assets using the asset builder container
-docker-compose -f docker/docker-compose.yml run --rm asset-builder
-```
-
 ## Multi-Tenancy
 
 QuVel Kit supports multi-tenancy out of the box. Each tenant has:
@@ -208,6 +185,14 @@ php artisan tenant:create
 php artisan tenant:list
 ```
 
+## Next Steps
+
+Now that you're familiar with the basics of the Laravel backend, you can explore more advanced topics:
+
+- [Module Development](./module-development.md) - Working with Laravel Modules
+- [API Development](./api-development.md) - Building RESTful APIs
+- [Authentication](./authentication.md) - User authentication and authorization
+
 ---
 
-[← Back to Docs](./README.md)
+[← Back to Backend Documentation](./README.md)

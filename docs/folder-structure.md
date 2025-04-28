@@ -29,7 +29,7 @@ QuVel Kit uses a structured layout for clarity and maintainability. This documen
 
 ### Frontend (`frontend/`)
 
-- Quasar 3 SSR application with Vue 3
+- Quasar 2 SSR application with Vue 3
 - TypeScript components and pages
 - Pinia state management
 - Service-based architecture

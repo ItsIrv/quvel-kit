@@ -3,5 +3,6 @@
     "Tenant": true,
     "Migration": true,
     "Catalog": true,
-    "Notifications": true
+    "Notifications": true,
+    "Blog": true
 }
