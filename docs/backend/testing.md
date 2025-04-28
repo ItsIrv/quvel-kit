@@ -2,26 +2,42 @@
 
 ## Overview
 
-QuVel Kit implements a comprehensive testing strategy for the Laravel backend using PHPUnit. This guide covers the testing architecture, test types, and best practices for maintaining a robust test suite.
+QuVel Kit includes a testing infrastructure built on PHPUnit 10+ with tenant-aware capabilities. The testing architecture provides a foundation that you can extend and customize for your specific project needs.
 
-## Testing Architecture
+## Test Configuration
 
-The testing architecture is organized into several test suites:
+The default testing configuration in `phpunit.xml` includes:
 
-- **Unit Tests**: Test individual components in isolation
-- **Feature Tests**: Test complete features and API endpoints
-- **Module Tests**: Test module-specific functionality
-- **Integration Tests**: Test interactions between components
+```xml
+<testsuites>
+    <testsuite name="Unit">
+        <directory>tests/Unit</directory>
+    </testsuite>
+    <testsuite name="Feature">
+        <directory>tests/Feature</directory>
+    </testsuite>
+    <testsuite name="Modules">
+        <directory suffix="Test.php">./Modules/*/Tests/Feature</directory>
+        <directory suffix="Test.php">./Modules/*/Tests/Unit</directory>
+    </testsuite>
+</testsuites>
+```
 
 ## Test Directory Structure
 
 ```text
 backend/
-├── tests/                  # Core application tests
+├── tests/
 │   ├── Feature/            # Feature tests
 │   ├── Unit/               # Unit tests
+│   │   ├── Actions/        # Action tests
+│   │   ├── Http/           # HTTP component tests
+│   │   ├── Models/         # Model tests
+│   │   ├── Providers/      # Service provider tests
+│   │   ├── Services/       # Service tests
+│   │   └── Traits/         # Trait tests
 │   └── TestCase.php        # Base test case
-└── Modules/                # Module tests
+└── Modules/                # Module-specific code
     └── YourModule/
         └── tests/
             ├── Feature/    # Module feature tests
@@ -30,95 +46,72 @@ backend/
 
 ## Running Tests
 
-### Running All Tests
+Laravel's standard testing commands are available:
 
 ```bash
+# Run all tests
 php artisan test
-```
 
-### Running Tests in Parallel
-
-```bash
-php artisan test -p
-```
-
-### Running Specific Test Suites
-
-```bash
+# Run specific test suites
 php artisan test --testsuite=Unit
 php artisan test --testsuite=Feature
 php artisan test --testsuite=Modules
-```
 
-### Running Tests with Specific Groups
-
-```bash
-php artisan test --group=auth-module
+# Run tests with specific groups
 php artisan test --group=tenant-module
+php artisan test --group=auth-module
 ```
 
-### Available Test Groups
+## Base Test Case
 
-- `security` - Security-related tests
-- `providers` - Service provider tests
-- `actions` - Action class tests
-- `models` - Model tests
-- `transformers` - Data transformer tests
-- `services` - Service class tests
-- `frontend` - Frontend integration tests
-- `tenant-module` - Multi-tenancy tests
-- `auth-module` - Authentication tests
+QuVel Kit provides a base `TestCase` class with tenant-aware capabilities. This class handles tenant seeding and context setup for your tests. You can extend this functionality as needed for your specific testing requirements.
 
-## Writing Tests
+## Test Database
 
-### Base Test Case
+By default, tests use an in-memory SQLite database for speed. This configuration can be modified in `phpunit.xml` according to your project needs:
 
-All tests extend the base `TestCase` class:
+```xml
+<php>
+    <env name="DB_CONNECTION" value="sqlite"/>
+    <env name="DB_DATABASE" value=":memory:"/>
+</php>
+```
+
+## Code Coverage
+
+Code coverage reports are generated during test runs and can be accessed at:
+
+```
+https://coverage-api.quvel.127.0.0.1.nip.io
+```
+
+## Example Tests
+
+QuVel Kit includes example tests that demonstrate how to test various components:
+
+### Unit Test Example
 
 ```php
 <?php
 
-namespace Tests;
+namespace Tests\Unit\Models;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-
-abstract class TestCase extends BaseTestCase
-{
-    use CreatesApplication, RefreshDatabase;
-    
-    // Common setup and helper methods
-}
-```
-
-### Unit Tests
-
-Unit tests focus on testing individual components in isolation:
-
-```php
-<?php
-
-namespace Tests\Unit;
-
-use App\Services\CalculationService;
+use App\Models\User;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
-class CalculationServiceTest extends TestCase
+#[Group('user-module')]
+class UserTest extends TestCase
 {
-    public function test_can_calculate_total()
+    public function test_user_model_instantiation(): void
     {
-        $service = new CalculationService();
-        
-        $result = $service->calculateTotal([10, 20, 30]);
-        
-        $this->assertEquals(60, $result);
+        $user = new User();
+        $this->assertInstanceOf(User::class, $user);
     }
 }
 ```
 
-### Feature Tests
-
-Feature tests focus on testing complete features and API endpoints:
+### Feature Test Example
 
 ```php
 <?php
@@ -126,47 +119,11 @@ Feature tests focus on testing complete features and API endpoints:
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-
-class UserApiTest extends TestCase
-{
-    use RefreshDatabase;
-    
-    public function test_can_get_user_profile()
-    {
-        $user = User::factory()->create();
-        
-        $response = $this->actingAs($user)
-            ->getJson('/api/profile');
-        
-        $response->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                ],
-            ]);
-    }
-}
-```
-
-### Module Tests
-
-Module tests focus on testing module-specific functionality:
-
-```php
-<?php
-
-namespace Modules\Auth\Tests\Feature;
-
-use Modules\Auth\Models\User;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
 {
-    public function test_user_can_login()
+    public function test_users_can_authenticate(): void
     {
         $user = User::factory()->create([
             'email' => 'test@example.com',
@@ -178,168 +135,14 @@ class AuthenticationTest extends TestCase
             'password' => 'password',
         ]);
         
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'token',
-                'user' => [
-                    'id',
-                    'name',
-                    'email',
-                ],
-            ]);
+        $response->assertStatus(200);
     }
 }
 ```
 
-## Test Factories
+## Multi-Tenancy Testing
 
-Use factories to create test data:
-
-```php
-<?php
-
-namespace Database\Factories;
-
-use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
-
-class UserFactory extends Factory
-{
-    protected $model = User::class;
-    
-    public function definition()
-    {
-        return [
-            'name' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => bcrypt('password'),
-            'remember_token' => Str::random(10),
-        ];
-    }
-    
-    public function admin()
-    {
-        return $this->state(function (array $attributes) {
-            return [
-                'role' => 'admin',
-            ];
-        });
-    }
-}
-```
-
-## Test Database
-
-Tests use an in-memory SQLite database by default. Configure the test database in `phpunit.xml`:
-
-```xml
-<php>
-    <env name="APP_ENV" value="testing"/>
-    <env name="DB_CONNECTION" value="sqlite"/>
-    <env name="DB_DATABASE" value=":memory:"/>
-</php>
-```
-
-## Code Coverage
-
-Generate code coverage reports:
-
-```bash
-php artisan test -p --coverage-html=storage/debug/coverage
-```
-
-Access coverage reports at:
-
-```
-https://coverage-api.quvel.127.0.0.1.nip.io
-```
-
-## Mocking
-
-Use mocks to isolate components during testing:
-
-```php
-public function test_service_calls_repository()
-{
-    $repositoryMock = $this->mock(UserRepository::class);
-    $repositoryMock->shouldReceive('findById')
-        ->once()
-        ->with(1)
-        ->andReturn(new User(['id' => 1, 'name' => 'Test User']));
-    
-    $service = app(UserService::class);
-    $user = $service->getUserById(1);
-    
-    $this->assertEquals('Test User', $user->name);
-}
-```
-
-## Testing Multi-Tenancy
-
-Test tenant-specific functionality:
-
-```php
-public function test_tenant_specific_feature()
-{
-    $tenant = Tenant::factory()->create();
-    
-    $this->actingAs($user)
-        ->withTenant($tenant)
-        ->getJson('/api/tenant/resources')
-        ->assertStatus(200);
-}
-```
-
-## Best Practices
-
-1. **Test Coverage**: Aim for high test coverage, especially for critical components
-2. **Isolated Tests**: Keep tests isolated and avoid dependencies between tests
-3. **Fast Tests**: Optimize tests for speed to maintain a quick feedback loop
-4. **Readable Tests**: Write clear, readable tests with descriptive names
-5. **Test Data**: Use factories to create test data
-6. **Assertions**: Use specific assertions rather than generic ones
-7. **Clean Up**: Clean up after tests to avoid affecting other tests
-
-## Continuous Integration
-
-QuVel Kit integrates with GitHub Actions for continuous integration:
-
-```yaml
-name: Tests
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  tests:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v2
-    
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.3'
-        extensions: mbstring, dom, fileinfo, mysql
-        coverage: xdebug
-    
-    - name: Install Composer dependencies
-      run: composer install --prefer-dist --no-progress
-    
-    - name: Run tests
-      run: php artisan test -p --coverage-clover=coverage.xml
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
-      with:
-        file: ./coverage.xml
-```
+The base `TestCase` includes tenant context setup, making it easier to test tenant-scoped functionality. This infrastructure is available for you to use and extend as needed.
 
 ---
 

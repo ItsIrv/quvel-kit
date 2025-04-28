@@ -78,23 +78,6 @@ actions: {
 }
 ```
 
-### Task Service
-
-The task service handles async operations with built-in loading states and error handling:
-
-```ts
-const loginTask = container.task.newTask({
-  task: async () => await container.api.post('/auth/login', credentials),
-  showNotification: {
-    success: () => 'Login successful',
-    error: () => 'Login failed'
-  }
-});
-
-// Run the task
-await loginTask.run();
-```
-
 ## Need Help?
 
 For troubleshooting, check the [Troubleshooting Guide](../troubleshooting.md) or open an issue in the project repository.

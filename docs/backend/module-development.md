@@ -2,7 +2,7 @@
 
 ## Overview
 
-QuVel Kit uses Laravel Modules to organize the backend codebase into modular, reusable components. This approach enhances maintainability, promotes code reuse, and enables a more structured development workflow.
+QuVel Kit includes Laravel Modules integration for organizing the backend codebase. This documentation covers how to work with the modular structure.
 
 ## Creating a New Module
 
@@ -178,15 +178,15 @@ class YourController
 }
 ```
 
-## Testing Modules
+## Module Testing
 
-Create tests for your module in the `tests` directory:
+Laravel Modules provides commands for creating module-specific tests:
 
 ```bash
 php artisan module:make-test YourTest YourModule
 ```
 
-Run module-specific tests:
+You can run tests for specific modules using PHPUnit filters:
 
 ```bash
 php artisan test --filter=YourModuleTest

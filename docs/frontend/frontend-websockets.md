@@ -300,25 +300,6 @@ async loginWithOAuth(provider: string, stateless: boolean) {
 }
 ```
 
-### Best Practices
-
-#### Do's
-
-- **Component Lifecycle** – Always unsubscribe from channels in `onBeforeUnmount`
-- **Store Integration** – Use Pinia stores for application-wide WebSocket state
-- **Type Safety** – Use TypeScript interfaces for event data
-- **Error Handling** – Handle connection failures gracefully
-- **Channel Naming** – Follow Laravel Echo channel naming conventions
-
-#### Don'ts
-
-- **Missing Unsubscribe** – Never forget to unsubscribe to prevent memory leaks
-- **SSR Conflicts** – Don't try to use WebSockets during SSR, the WebSocketService ignores SSR requests
-- **Excessive Subscriptions** – Avoid subscribing to the same channel multiple times
-- **Premature Authentication** – Don't subscribe to private channels before authentication
-
----
-
 ## Source Files
 
 - **[WebSocketService.ts](../../frontend/src/modules/Core/services/WebSocketService.ts)** – Core WebSocket service

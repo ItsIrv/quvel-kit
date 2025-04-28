@@ -233,14 +233,6 @@ export default {
 
 ## Rules and Gotchas
 
-### Best Practices
-
-- **Use Hierarchical Keys** – Organize translations by feature and purpose
-- **Provide Default Translations** – Always include fallback translations for all keys
-- **Use Parameters** – Use placeholders like `{name}` for dynamic content
-- **Consistent Naming** – Follow a consistent naming convention for translation keys
-- **Modular Organization** – Keep module-specific translations within their modules
-
 ### Common Pitfalls
 
 - **Missing Translations** – Ensure all keys exist in all language files

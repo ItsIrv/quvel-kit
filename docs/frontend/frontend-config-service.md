@@ -171,28 +171,6 @@ export type TenantConfigVisibility = 'public' | 'protected';
 
 ---
 
-## Best Practices
-
-### Security Considerations
-
-- **API Keys** – Never set API keys as `PUBLIC`, use `PROTECTED` for SSR or `PRIVATE` for backend only
-- **Internal URLs** – Use `PROTECTED` for internal API URLs that should only be used in SSR context
-- **Public Data** – Only mark non-sensitive information as `PUBLIC`
-
-### Configuration Management
-
-- **Default Values** – Always provide default values for configuration properties
-- **Type Safety** – Use TypeScript interfaces to ensure type safety
-- **Visibility Audit** – Regularly review visibility settings to prevent accidental exposure
-
-### Common Patterns
-
-- **API Configuration** – Store API-related configuration with appropriate visibility levels
-- **Feature Flags** – Use configuration for feature flags with `PUBLIC` visibility
-- **Environment-Specific Settings** – Handle environment-specific settings with visibility controls
-
----
-
 ## Source Files
 
 - **[ConfigService.ts](../../frontend/src/modules/Core/services/ConfigService.ts)** – Core configuration service

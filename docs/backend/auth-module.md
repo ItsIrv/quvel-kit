@@ -106,15 +106,6 @@ The Auth module is configured through the `config/auth.php` file:
 ],
 ```
 
-## Security Considerations
-
-The Auth module implements several security measures:
-
-1. **Token-Based Authentication**: Uses Laravel Sanctum for secure token management
-2. **HMAC Signatures**: Prevents request tampering and replay attacks
-3. **Rate Limiting**: Prevents brute force attacks
-4. **Secure Defaults**: Follows security best practices by default
-
 ## Testing
 
 The Auth module includes comprehensive tests:
@@ -123,23 +114,6 @@ The Auth module includes comprehensive tests:
 # Run Auth module tests
 php artisan test --group=auth-module
 ```
-
-## Extending the Auth Module
-
-The Auth module can be extended to support additional authentication methods:
-
-1. Create a new service in the Auth module
-2. Register the service in AuthServiceProvider
-3. Create necessary controllers and routes
-4. Update tests to cover new functionality
-
-## Best Practices
-
-1. **Always Use HTTPS**: Ensure all authentication endpoints use HTTPS
-2. **Token Management**: Implement proper token expiration and refresh mechanisms
-3. **Validation**: Validate all authentication inputs
-4. **Error Handling**: Provide clear error messages for authentication failures
-5. **Audit Logging**: Log authentication events for security monitoring
 
 ---
 

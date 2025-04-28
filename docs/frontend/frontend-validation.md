@@ -328,13 +328,6 @@ export const changePasswordSchema = () =>
 
 ## Rules and Gotchas
 
-### Best Practices
-
-- **Use Field Components** – Leverage the pre-built field components for consistent validation
-- **Form-Level Validation** – Use form-level schemas for cross-field validation
-- **Lazy Translation Loading** – Pass i18n as a callback to task notifications for lazy loading
-- **Error Handling** – Use the `errorHandlers.Laravel` for API validation errors
-
 ### Common Pitfalls
 
 - **Missing Schema Parameters** – Remember to call schema functions with parentheses: `emailSchema()`

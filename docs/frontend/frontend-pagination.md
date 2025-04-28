@@ -338,13 +338,6 @@ function handlePaginationResponse(response) {
 
 ## Rules and Gotchas
 
-### Best Practices
-
-- **Choose the Right Type** – Use length-aware for UI with page numbers, cursor-based for infinite scrolling
-- **Handle Loading States** – Always show loading indicators during pagination operations
-- **Clear Data When Needed** – Use the `clearPrevious` parameter to reset data when changing filters
-- **Optimize API Requests** – Only request the data you need from the backend
-
 ### Common Pitfalls
 
 - **Missing Error Handling** – Always handle API errors in your fetcher function

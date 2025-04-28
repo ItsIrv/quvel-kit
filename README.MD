@@ -64,21 +64,21 @@ For detailed documentation, see the following resources:
 git clone https://github.com/your-username/quvel-kit.git
 cd quvel-kit
 
-# Start the development environment
-docker-compose up -d
+# Get your local IP address (needed for multi-tenant setup)
+ifconfig | grep "inet " | grep -v 127.0.0.1
 
-# Install dependencies
-docker-compose exec app composer install
-docker-compose exec frontend npm install
-
-# Run migrations and seed the database
-docker-compose exec app php artisan migrate --seed
-
-# Start the frontend development server
-docker-compose exec frontend npm run dev
+# Run the setup script (will prompt for your local IP)
+./scripts/setup.sh
 ```
 
-Visit <http://localhost:8080> to see your application running.
+Once setup completes, access the application at these URLs:
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| Frontend | [https://quvel.127.0.0.1.nip.io](https://quvel.127.0.0.1.nip.io) | Quasar SSR application |
+| API | [https://api.quvel.127.0.0.1.nip.io](https://api.quvel.127.0.0.1.nip.io) | Laravel API |
+| API Telescope | [https://api.quvel.127.0.0.1.nip.io/telescope](https://api.quvel.127.0.0.1.nip.io/telescope) | Laravel debugging |
+| Second Tenant | [https://second-tenant.quvel.127.0.0.1.nip.io](https://second-tenant.quvel.127.0.0.1.nip.io) | Multi-tenant testing |
 
 ## License
 
