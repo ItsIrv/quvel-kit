@@ -24,7 +24,6 @@ class AuthServiceProvider extends ModuleServiceProvider
      */
     public function register(): void
     {
-        $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
 
         $this->app->singleton(HmacService::class);

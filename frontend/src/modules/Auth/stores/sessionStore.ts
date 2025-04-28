@@ -100,14 +100,12 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Logs in the user and sets the session.
        */
       async login(email: string, password: string): Promise<void> {
-        const { two_factor } = await this.$container.api.post<{ two_factor: boolean }>(
+        const { user } = await this.$container.api.post<{ message: string; user: IUser }>(
           '/auth/login',
           { email, password },
         );
 
-        if (two_factor === false) {
-          await this.fetchSession();
-        }
+        this.setSession(user);
       },
 
       /**

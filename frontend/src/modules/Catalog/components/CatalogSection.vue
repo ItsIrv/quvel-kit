@@ -7,16 +7,38 @@ const catalogStore = useCatalogStore();
 async function onPageChange(page: number) {
   await catalogStore.catalogItemsFetch({ page });
 }
+
+async function reloadCatalog() {
+  await catalogStore.catalogItemsFetch();
+}
 </script>
 
 <template>
   <section class="CatalogSection max-w-6xl mx-auto px-4 mt-[100px]">
-    <q-inner-loading :showing="!catalogStore.hasCatalogItems" />
+    <q-inner-loading :showing="catalogStore.catalogItems.isLoadingMore" />
 
-    <div class="py-8">
+    <div
+      v-if="!catalogStore.hasCatalogItems && !catalogStore.catalogItems.isLoadingMore"
+      class="py-8 text-center"
+    >
+      <p class="text-lg text-gray-600">Unable to load catalog items. Please try again later.</p>
+      <q-btn
+        color="primary"
+        class="mt-4"
+        @click="reloadCatalog"
+      >Retry</q-btn>
+    </div>
+
+    <div
+      v-else
+      class="py-8"
+    >
       <!-- Grid of Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <template v-for="item in catalogStore.getCatalogItems" :key="item.id">
+        <template
+          v-for="item in catalogStore.getCatalogItems"
+          :key="item.id"
+        >
           <CatalogItem :item="item" />
         </template>
       </div>

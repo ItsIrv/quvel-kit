@@ -94,9 +94,27 @@ export function createPaginationActions<
       try {
         const response = await fetcher.call(this, options);
 
+        if (!response) {
+          throw new Error('Failed to fetch data');
+        }
+
         transform(state, response);
-      } catch (e) {
-        console.error(`[Pagination] ${stateKey}Fetch failed`, e);
+      } catch {
+        if (clearPrevious) {
+          state.data = [];
+          if (state.meta) {
+            state.meta = {
+              current_page: 1,
+              from: null,
+              last_page: 1,
+              links: [],
+              path: '',
+              per_page: 10,
+              to: null,
+              total: 0,
+            };
+          }
+        }
       } finally {
         state.isLoadingMore = false;
       }

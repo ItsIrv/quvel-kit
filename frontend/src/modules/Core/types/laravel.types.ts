@@ -149,7 +149,7 @@ export type Fetcher<Prefix extends string, Response, State> = (
   this: StoreContext<Prefix, State>,
   options: PaginationRequest,
   clearPrevious?: boolean,
-) => Promise<Response>;
+) => Promise<Response | false>;
 
 /**
  * Options for generating scoped pagination actions and getters

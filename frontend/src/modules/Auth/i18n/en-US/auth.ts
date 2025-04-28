@@ -29,6 +29,24 @@ export default {
       link: 'Need an account?',
       title: 'Sign Up',
     },
+    password: {
+      title: 'Reset Password',
+      resetButton: 'Send Reset Link',
+      resetDescription:
+        'Enter your email address and we will send you a link to reset your password.',
+      forgot: 'Forgot password?',
+      newPassword: 'New Password',
+      confirmNewPassword: 'Confirm New Password',
+      changeButton: 'Change Password',
+    },
+    mfa: {
+      title: 'Two-Factor Authentication',
+      code: 'Authentication Code',
+      verifyButton: 'Verify',
+      description: 'Enter the verification code from your authenticator app.',
+      backupCode: 'Use Backup Code',
+      backupCodeDescription: 'Enter one of your backup codes.',
+    },
   },
   status: {
     errors: {
@@ -56,6 +74,8 @@ export default {
       signedUp: 'You have been signed up.',
       userCreated: 'User created successfully.',
       checkYourEmail: 'Check your email for a verification link.',
+      passwordResetSent: 'Password reset link sent.',
+      passwordReset: 'Your password has been reset successfully.',
     },
   },
 };

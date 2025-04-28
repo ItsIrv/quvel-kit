@@ -69,7 +69,11 @@ export const useCatalogStore = defineStore<'catalog', CatalogState, CatalogGette
         async fetcher(options: PaginationRequest) {
           const service = this.$container.getService<CatalogService>('catalog') as CatalogService;
 
-          return await service.fetchCatalogs(options);
+          try {
+            return await service.fetchCatalogs(options);
+          } catch {
+            return false;
+          }
         },
       }),
       // ...createSimpleActions<'catalogSimple', CatalogItem>({

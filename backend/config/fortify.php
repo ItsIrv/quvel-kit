@@ -130,7 +130,7 @@ return [
     |
     */
 
-    'views'               => true,
+    'views'               => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -144,7 +144,8 @@ return [
     */
 
     'features'            => [
-        Features::registration(),
+        // Enable registration functionality
+        // Features::registration(),
 
         // Enable password reset functionality
         Features::resetPasswords(),
@@ -155,11 +156,13 @@ return [
         // Enable profile management features
         Features::updateProfileInformation(),
         Features::updatePasswords(),
-        Features::twoFactorAuthentication([
-            'confirm'         => true,
-            'confirmPassword' => true,
-            // 'window' => 0,
-        ]),
+
+        // Enable two-factor authentication
+        // Features::twoFactorAuthentication([
+        //     'confirm'         => true,
+        //     'confirmPassword' => true,
+        //     // 'window' => 0,
+        // ]),
     ],
 
 ];

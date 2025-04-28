@@ -7,9 +7,7 @@ use Exception;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
 use Modules\Tenant\Contexts\TenantContext;
-use Modules\Tenant\Http\Middleware\TenantMiddleware;
 use Modules\Tenant\Services\TenantFindService;
 use Modules\Tenant\Services\TenantResolverService;
 use Modules\Tenant\Services\TenantSessionService;
@@ -29,7 +27,6 @@ class TenantServiceProvider extends ModuleServiceProvider
      */
     public function register(): void
     {
-        $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
 
         $this->app->singleton(TenantSessionService::class);
@@ -47,8 +44,6 @@ class TenantServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
-
-        $this->bootMiddleware();
     }
 
     /**
@@ -110,15 +105,6 @@ class TenantServiceProvider extends ModuleServiceProvider
                 Log::critical('Tenant Config Could Not Be Applied: ' . $e->getMessage());
             }
         });
-    }
-
-    /**
-     * Register the middleware.
-     */
-    public function bootMiddleware(): void
-    {
-        $this->app['router']->pushMiddlewareToGroup('web', TenantMiddleware::class);
-        $this->app['router']->pushMiddlewareToGroup('api', TenantMiddleware::class);
     }
 }
 require module_path('Tenant', 'app/helpers.php');

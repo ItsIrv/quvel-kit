@@ -22,6 +22,9 @@ use Modules\Auth\Actions\User\RegisterAction;
 Route::group([
     'prefix' => 'auth',
 ], static function (): void {
+    Route::post('/login', LoginAction::class)->name('login.store');
+    Route::post('/register', RegisterAction::class)->name('register.store');
+
     // Socialite
     Route::group([
         'prefix' => 'provider/{provider}',
@@ -34,7 +37,7 @@ Route::group([
     });
 
     // Authenticated
-    Route::middleware(['auth'])->group(function (): void {
+    Route::middleware(['auth'])->group(static function (): void {
         // Session Status Check
         Route::get('/session', GetSessionAction::class)->name('auth.session');
         // Logout

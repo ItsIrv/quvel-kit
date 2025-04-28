@@ -4,6 +4,7 @@ namespace Modules\Auth\Actions\User;
 
 use App\Services\User\UserCreateService;
 use App\Services\User\UserFindService;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\Http\Requests\RegisterRequest;
@@ -41,7 +42,9 @@ class RegisterAction
             );
         }
 
-        $this->userCreateService->create($loginData);
+        $user = $this->userCreateService->create($loginData);
+
+        event(new Registered($user));
 
         return $this->responseFactory->json(
             ['message' => AuthStatusEnum::REGISTER_SUCCESS->value],

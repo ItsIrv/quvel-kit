@@ -2,162 +2,122 @@
 /**
  * AuthDialog.vue
  *
- * A dialog for logging in and signing up.
+ * Modular authentication dialog supporting login, signup, password reset, and MFA.
  */
-import { ref, computed } from 'vue';
-import { useContainer } from 'src/modules/Core/composables/useContainer';
+import { computed, ref, watch, type Component } from 'vue';
+import { QForm } from 'quasar';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
-import type { ErrorHandler } from 'src/modules/Core/types/task.types';
 import QuvelKit from 'src/modules/Quvel/components/Common/QuvelKit.vue';
-import EmailField from 'src/modules/Auth/components/Form/EmailField.vue';
-import PasswordField from 'src/modules/Auth/components/Form/PasswordField.vue';
-import TaskErrors from 'src/modules/Core/components/Common/TaskErrors.vue';
-import PasswordConfirmField from 'src/modules/Auth/components/Form/PasswordConfirmField.vue';
-import NameField from 'src/modules/Auth/components/Form/NameField.vue';
-import SlowExpand from 'src/modules/Core/components/Transitions/SlowExpand.vue';
-import BackInOutUp from 'src/modules/Core/components/Transitions/BackInOutUp.vue';
-import { useQuasar } from 'quasar';
-import { watch } from 'vue';
 
-type AuthDialogType = 'login' | 'signup';
+import LoginForm from 'src/modules/Auth/components/Forms/LoginForm.vue';
+import SignupForm from 'src/modules/Auth/components/Forms/SignupForm.vue';
+import PasswordResetForm from 'src/modules/Auth/components/Forms/PasswordResetForm.vue';
+
+import RegistrationSuccessCard from 'src/modules/Auth/components/Cards/RegistrationSuccessCard.vue';
+import PasswordResetSuccessCard from 'src/modules/Auth/components/Cards/PasswordResetSuccessCard.vue';
+
+type AuthFormStep = 'login' | 'signup' | 'password-reset' | 'mfa';
+type SuccessCardStep = 'registration' | 'password-reset' | false;
 
 /**
- * Props
+ * Props & Emits
  */
 defineProps<{ modelValue: boolean }>();
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void;
+}>();
 
 /**
- * Emits
+ * Stores
  */
-const $emit = defineEmits(['update:modelValue']);
-
-/**
- * Services
- */
-const { task, i18n } = useContainer();
 const sessionStore = useSessionStore();
-const quasar = useQuasar();
 
 /**
- * Refs
+ * State
  */
-const email = ref('');
-const name = ref('');
-const password = ref('');
-const passwordConfirm = ref('');
-const successStep = ref<false | AuthDialogType>(false);
-const isOAuthRedirecting = ref(false);
-const dialogType = ref<AuthDialogType>('login');
-const authForm = ref<HTMLFormElement>();
+const activeStep = ref<AuthFormStep>('login');
+const successStep = ref<SuccessCardStep>(false);
 
 /**
- * Login Task
- *
- * Handles user login and updates session state.
+ * Refs (current form ref)
  */
-const loginTask = task.newTask({
-  showNotification: {
-    success: () => i18n.t('auth.status.success.loggedIn'),
-  },
-  task: async () => await sessionStore.login(email.value, password.value),
-  errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
-  successHandlers: () => {
-    $emit('update:modelValue', false);
-    resetForms();
-  },
-});
+const currentFormRef = ref<InstanceType<typeof QForm> | null>(null);
 
 /**
- * Signup Task
- *
- * Handles user signup.
+ * Computed
  */
-const signupTask = task.newTask({
-  task: async () => await sessionStore.signUp(email.value, password.value, name.value),
-  errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
-  successHandlers: () => {
-    successStep.value = 'signup';
-    dialogType.value = 'login';
-    resetForms();
-  },
-});
-
-/**
- * Indicates whether the login or signup task is currently active.
- */
-const isBusy = computed(
-  () => loginTask.isActive.value || signupTask.isActive.value || isOAuthRedirecting.value,
-);
-
-/**
- * Indicates whether the current dialog is the login dialog.
- */
-const isLogin = computed(() => dialogType.value === 'login');
-
-/**
- * Indicates whether the current dialog is the signup dialog.
- */
-const isSignup = computed(() => dialogType.value === 'signup');
-
-/**
- * Resets all form fields to their initial values.
- */
-function resetForms() {
-  email.value = '';
-  password.value = '';
-  passwordConfirm.value = '';
-  name.value = '';
-
-  authForm.value?.reset();
-  loginTask.reset();
-  signupTask.reset();
-}
-
-/**
- * Sets the dialog type.
- *
- * Resets all form fields to their initial values.
- */
-function setDialogType(type: AuthDialogType) {
-  dialogType.value = type;
-  resetForms();
-}
-
-/**
- * Handles form submission based on the dialog type.
- */
-function onAuthFormSubmit() {
-  if (isLogin.value) {
-    void loginTask.run();
-  } else {
-    void signupTask.run();
+const stepTitle = computed(() => {
+  switch (activeStep.value) {
+    case 'login':
+      return 'auth.forms.login.title';
+    case 'signup':
+      return 'auth.forms.signup.title';
+    case 'password-reset':
+      return 'auth.forms.password.title';
+    case 'mfa':
+      return 'auth.forms.mfa.title';
+    default:
+      return '';
   }
+});
+
+/**
+ * Computed - current form component
+ */
+const currentFormComponent = computed<Component | null>(() => {
+  switch (activeStep.value) {
+    case 'login':
+      return LoginForm;
+    case 'signup':
+      return SignupForm;
+    case 'password-reset':
+      return PasswordResetForm;
+    default:
+      return null;
+  }
+});
+
+/**
+ * Methods
+ */
+function resetCurrentForm() {
+  currentFormRef.value?.reset?.();
+}
+
+function switchStep(step: AuthFormStep) {
+  activeStep.value = step;
+  resetCurrentForm();
+}
+
+function handleBeforeShow() {
+  successStep.value = false;
+  switchStep('login');
+}
+
+function handleAuthSuccess() {
+  emit('update:modelValue', false);
+}
+
+function handleRegistrationSuccess() {
+  successStep.value = 'registration';
+}
+
+function handlePasswordResetSuccess() {
+  successStep.value = 'password-reset';
+}
+
+function handleCloseSuccessCard() {
+  successStep.value = false;
+  switchStep('login');
 }
 
 /**
- * Handles the before-show event of the dialog.
+ * Effects
  */
-function onBeforeShow() {
-  resetForms();
-  setDialogType('login');
-}
-
-function loginWithOAuth(provider: string) {
-  void sessionStore.loginWithOAuth(provider, quasar.platform.is.capacitor);
-
-  isOAuthRedirecting.value = true;
-
-  setTimeout(() => {
-    isOAuthRedirecting.value = false;
-  }, 5000);
-}
-
 watch(
   () => sessionStore.user,
-  () => {
-    if (sessionStore.user) {
-      $emit('update:modelValue', false);
-    }
+  (user) => {
+    if (user) emit('update:modelValue', false);
   },
 );
 </script>
@@ -165,165 +125,40 @@ watch(
 <template>
   <q-dialog
     :model-value="modelValue"
-    @update:model-value="$emit('update:modelValue', $event)"
-    @before-show="onBeforeShow"
+    @update:model-value="emit('update:modelValue', $event)"
+    @before-show="handleBeforeShow"
   >
-    <q-card
-      v-if="!successStep"
-      class="AuthDialog duration-1000 relative overflow-hidden"
-    >
-      <!-- Title -->
+    <!-- Form or Success Card -->
+    <q-card class="AuthDialog duration-1000 relative overflow-hidden">
       <h3 class="text-h4 font-semibold text-gray-900 dark:text-white">
-        <QuvelKit>
-          {{ $t(isLogin ? 'auth.forms.login.title' : 'auth.forms.signup.title') }}
-        </QuvelKit>
+        <QuvelKit>{{ $t(stepTitle) }}</QuvelKit>
       </h3>
 
-      <BackInOutUp>
-        <!-- Oauth providers -->
-        <div
-          v-if="isLogin"
-          class="grid grid-cols-2 gap-2 mt-4 mb-2"
-        >
-          <q-btn
-            class="GenericBorder AccentGradient Button"
-            :label="$t('auth.forms.oauth.logInWith', { provider: $t('auth.forms.oauth.google') })"
-            unelevated
-            :disable="isBusy"
-            :loading="isOAuthRedirecting"
-            @click="loginWithOAuth('google')"
-          />
-
-          <q-btn
-            class="GenericBorder Button"
-            :label="$t('common.placeholder')"
-            unelevated
-            :disable="true"
-          />
-        </div>
-      </BackInOutUp>
-
-      <!-- Form -->
-      <q-form
-        class="my-4"
-        ref="authForm"
-        @submit.prevent="onAuthFormSubmit"
-      >
-        <EmailField
-          v-model="email"
-          :error-message="loginTask.errors.value.get('email')"
-          :error="loginTask.errors.value.has('email')"
+      <!-- Forms -->
+      <transition mode="out-in">
+        <component
+          v-if="!successStep && currentFormComponent"
+          :is="currentFormComponent"
+          ref="currentFormRef"
+          :key="activeStep"
+          @success="handleAuthSuccess"
+          @switch-form="switchStep"
+          @registration-success="handleRegistrationSuccess"
+          @reset-success="handlePasswordResetSuccess"
         />
+      </transition>
 
-        <BackInOutUp>
-          <NameField
-            v-if="isSignup"
-            v-model="name"
-            :error-message="loginTask.errors.value.get('name')"
-            :error="loginTask.errors.value.has('name')"
-          />
-        </BackInOutUp>
-
-        <PasswordField
-          v-model="password"
-          :error-message="loginTask.errors.value.get('password')"
-          :error="loginTask.errors.value.has('password')"
+      <!-- Success Cards -->
+      <transition mode="out-in">
+        <RegistrationSuccessCard
+          v-if="successStep === 'registration'"
+          @close="handleCloseSuccessCard"
         />
-
-        <SlowExpand>
-          <div
-            v-if="isSignup"
-            class="overflow-hidden"
-          >
-            <PasswordConfirmField
-              v-model="passwordConfirm"
-              :password-value="password"
-            />
-          </div>
-        </SlowExpand>
-
-        <!-- Errors -->
-        <TaskErrors
-          class="mt-2"
-          :task-errors="isLogin ? loginTask.errors.value : signupTask.errors.value"
+        <PasswordResetSuccessCard
+          v-else-if="successStep === 'password-reset'"
+          @close="handleCloseSuccessCard"
         />
-
-        <!-- Links -->
-        <div class="pt-4 text-base">
-          <span v-if="isLogin">
-            {{ $t('auth.forms.signup.link') }}
-
-            <a
-              class="underline cursor-pointer"
-              @click="setDialogType('signup')"
-            >
-              {{ $t('auth.forms.signup.button') }}
-            </a>
-          </span>
-
-          <span v-if="isSignup">
-            {{ $t('auth.forms.signup.link') }}
-
-            <a
-              class="underline cursor-pointer"
-              @click="setDialogType('login')"
-            >
-              {{ $t('auth.forms.login.button') }}
-            </a>
-          </span>
-        </div>
-
-        <!-- Buttons -->
-        <div class="mt-6 flex justify-end gap-4">
-          <q-btn
-            flat
-            class="Button"
-            @click="$emit('update:modelValue', false)"
-          >
-            {{ $t('common.buttons.cancel') }}
-          </q-btn>
-
-          <q-btn
-            unelevated
-            class="PrimaryButton hover:bg-primary-600"
-            type="submit"
-            :loading="loginTask.isActive.value || signupTask.isActive.value"
-            :disabled="isBusy"
-          >
-            {{ $t(`auth.forms.${dialogType}.button`) }}
-          </q-btn>
-        </div>
-      </q-form>
-    </q-card>
-
-    <q-card
-      class="AuthDialog duration-1000 relative overflow-hidden"
-      v-if="successStep === 'signup'"
-    >
-      <q-card-section class="flex flex-col items-center">
-        <q-icon
-          name="eva-email-outline"
-          color="green"
-          size="6em"
-          class="mb-4"
-        />
-
-        <div class="text-h6">
-          {{ $t('auth.status.success.signedUp') }}
-        </div>
-
-        <div class="text-base mb-4">
-          {{ $t('auth.status.success.checkYourEmail') }}
-        </div>
-
-        <q-btn
-          unelevated
-          class="PrimaryButton hover:bg-primary-600"
-          @click="successStep = false"
-        >
-          {{ $t('common.buttons.close') }}
-        </q-btn>
-      </q-card-section>
+      </transition>
     </q-card>
   </q-dialog>
 </template>
