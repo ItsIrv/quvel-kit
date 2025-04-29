@@ -5,8 +5,6 @@ namespace Modules\Tenant\database\seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\database\factories\TenantConfigFactory;
 use Modules\Tenant\Models\Tenant;
 use Random\RandomException;
@@ -30,6 +28,7 @@ class TenantSeeder extends Seeder
             TenantConfigFactory::create(
                 $apiDomain,
                 'quvel-app',
+                appName: 'QuVel Local',
             ),
         );
 
@@ -91,6 +90,7 @@ class TenantSeeder extends Seeder
         return Tenant::updateOrCreate(
             ['domain' => $domain],
             Tenant::factory()->make([
+                'name'      => $name,
                 'domain'    => $domain,
                 'config'    => $config,
                 'parent_id' => $parent?->id,

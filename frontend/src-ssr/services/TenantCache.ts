@@ -30,7 +30,7 @@ export class TenantCacheService {
   private async loadTenants(): Promise<void> {
     try {
       const response = await createAxios().get<{
-        data: (Tenant & { config: TenantConfigProtected })[];
+        data: Tenant[];
       }>(
         // 'http://quvel-app:8000/tenant/cache'
         'https://api.quvel.127.0.0.1.nip.io/tenant/cache',
@@ -42,15 +42,7 @@ export class TenantCacheService {
 
       response.data.data.forEach((tenant) => {
         // Ensure config is properly formatted
-        const formattedConfig: TenantConfigProtected = {
-          api_url: tenant.config.api_url ?? '',
-          app_url: tenant.config.app_url ?? '',
-          app_name: tenant.config.app_name ?? '',
-          internal_api_url: tenant.config.internal_api_url ?? '',
-          __visibility: tenant.config.__visibility ?? {},
-          tenant_id: tenant.id ?? '',
-          tenant_name: tenant.name ?? '',
-        };
+        const formattedConfig: TenantConfigProtected = Object.assign({}, tenant.config);
 
         // Store tenant with formatted config
         this.tenants.set(tenant.domain, {

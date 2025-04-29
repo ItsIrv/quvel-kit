@@ -31,38 +31,31 @@ class TenantDumpResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->public_id,
-            'name' => $this->name,
-            'domain' => $this->domain,
-            'parent_id' => $this->parent->public_id ?? null,
-            'config' => $this->getFilteredConfig(),
+            'id'         => $this->public_id,
+            'name'       => $this->name,
+            'domain'     => $this->domain,
+            'parent_id'  => $this->parent->public_id ?? null,
+            'config'     => $this->getFilteredConfig(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
     }
-
-    /**
-     * Get filtered tenant config based on visibility rules.
-     *
-     * @return array<string, mixed>
-     */
     private function getFilteredConfig(): array
     {
-        if (! $this->config instanceof TenantConfig) {
+        if (!$this->config instanceof TenantConfig) {
             return [];
         }
 
-        $configArray = $this->config->toArray();
-        $visibility = $configArray['__visibility'] ?? [];
+        $visibility = $this->config->visibility;
 
         // Filter config based on visibility rules
-        $filteredConfig = array_filter(
-            $configArray,
-            static function ($key) use ($visibility): bool {
-                return isset($visibility[$key]) && $visibility[$key] !== TenantConfigVisibility::PRIVATE->value;
-            },
-            ARRAY_FILTER_USE_KEY,
-        );
+        $filteredConfig = [];
+
+        foreach ($visibility as $key => $value) {
+            if ($value === TenantConfigVisibility::PUBLIC || $value === TenantConfigVisibility::PROTECTED) {
+                $filteredConfig[$key] = $this->config->{$key};
+            }
+        }
 
         // Manually include __visibility
         $filteredConfig['__visibility'] = $visibility;

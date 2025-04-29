@@ -28,8 +28,8 @@ export function createApi(
   const baseURL =
     ssrContext !== null
       ? // ? (configOverrides?.internal_api_url ?? '')
-        (configOverrides?.api_url ?? '') // When hosting SSR on local machine don't use docker url
-      : (configOverrides?.api_url ?? process.env.VITE_API_URL ?? '');
+        (configOverrides?.apiUrl ?? '') // When hosting SSR on local machine don't use docker url
+      : (configOverrides?.apiUrl ?? process.env.VITE_API_URL ?? ''); // App url refers to the laravel app
 
   const axiosConfig: AxiosRequestConfig = {
     baseURL,

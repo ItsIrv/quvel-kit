@@ -14,15 +14,14 @@ class CatalogItemController
      */
     public function index(IndexRequest $request, IndexAction $action): AnonymousResourceCollection
     {
-        $validated = $request->validated();
-
+        $validated       = $request->validated();
         $filters         = $validated['filter'] ?? [];
         $sort            = $validated['sort'] ?? null;
         $perPage         = $validated['per_page'] ?? 15;
         $isAuthenticated = $request->user() !== null;
 
-        $items = $action($filters, $sort, $perPage, $isAuthenticated);
-
-        return CatalogItemResource::collection($items);
+        return CatalogItemResource::collection(
+            $action($filters, $sort, $perPage, $isAuthenticated),
+        );
     }
 }

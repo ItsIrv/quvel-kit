@@ -1,7 +1,7 @@
 // Extend the Express Request object
 declare module 'express' {
   interface Request {
-    tenantConfig?: TenantConfigProtected;
+    tenantConfig: TenantConfigProtected;
   }
 }
 
@@ -22,13 +22,16 @@ export interface Tenant {
  * The tenant configuration (processed config used in app).
  */
 export interface TenantConfigProtected {
-  api_url: string;
-  app_url: string;
-  app_name: string;
-  internal_api_url?: string;
+  frontendUrl: string;
+  apiUrl: string;
+  appUrl: string;
+  appName: string;
+  internalApiUrl?: string;
+  tenantId: string;
+  tenantName: string;
+  pusherAppKey: string;
+  pusherAppCluster: string;
   __visibility?: Partial<Record<keyof TenantConfigProtected, TenantConfigVisibility>>;
-  tenant_id: string;
-  tenant_name: string;
 }
 
 /**

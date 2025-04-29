@@ -7,6 +7,7 @@ use Modules\Tenant\Models\Tenant;
 
 /**
  * Service to manage the tenant session.
+ * TODO: Change to Repository
  */
 class TenantSessionService
 {
@@ -63,5 +64,10 @@ class TenantSessionService
                 'updated_at',
             ]),
         );
+    }
+
+    public function forget(): void
+    {
+        $this->store->forget(self::TENANT_KEY);
     }
 }

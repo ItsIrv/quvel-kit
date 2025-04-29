@@ -85,7 +85,7 @@ export const useAppStore = defineStore('app', {
   actions: {
     initialize() {
       // Access config through the container
-      this.appName = this.$container.config.get('app_name');
+      this.appName = this.$container.config.get('appName');
     }
   }
 });

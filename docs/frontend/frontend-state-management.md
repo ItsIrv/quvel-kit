@@ -175,7 +175,7 @@ export const useNotificationStore = defineStore('notifications', {
 
       // Create a new subscription
       this.notificationChannel = await this.$container.ws.subscribe({
-        channelName: `tenant.${this.$container.config.get('tenant_id')}.User.${userId}`,
+        channelName: `tenant.${this.$container.config.get('tenantId')}.User.${userId}`,
         type: 'privateNotification',
         callback: (data: INotification) => {
           // Handle incoming notification

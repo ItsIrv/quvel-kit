@@ -17,12 +17,17 @@ export class ConfigService {
     // Prefer SSR config > Client Hydrated Config > Environment Variables
     this.config = ssrConfig ??
       clientConfig ?? {
-        api_url: import.meta.env.VITE_API_URL ?? '',
-        app_url: import.meta.env.VITE_APP_URL ?? '',
-        app_name: import.meta.env.VITE_APP_NAME ?? 'QuVel',
-        tenant_id: import.meta.env.VITE_TENANT_ID ?? '',
-        tenant_name: import.meta.env.VITE_TENANT_NAME ?? '',
+        apiUrl: import.meta.env.VITE_API_URL ?? '',
+        appUrl: import.meta.env.VITE_APP_URL ?? '',
+        appName: import.meta.env.VITE_APP_NAME ?? 'QuVel',
+        tenantId: import.meta.env.VITE_TENANT_ID ?? '',
+        tenantName: import.meta.env.VITE_TENANT_NAME ?? '',
+        pusherAppKey: import.meta.env.VITE_PUSHER_APP_KEY ?? '',
+        pusherAppCluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? '',
+        socialiteProviders: import.meta.env.VITE_SOCIALITE_PROVIDERS?.split(',') ?? [],
       };
+
+    console.log(clientConfig);
   }
 
   /**

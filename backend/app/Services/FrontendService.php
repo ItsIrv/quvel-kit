@@ -4,27 +4,76 @@ namespace App\Services;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
-use Modules\Tenant\ValueObjects\TenantConfig;
 
 class FrontendService
 {
+    private string $url;
+    private ?string $capacitorScheme;
     private bool $isCapacitor;
 
     public function __construct(
-        private readonly TenantConfig $config,
         private readonly Redirector $redirector,
-        Request $request,
         private readonly ResponseFactory $responseFactory,
     ) {
-        $this->isCapacitor = $request->hasHeader('X-Capacitor');
+        $this->url             = '';
+        $this->capacitorScheme = null;
+        $this->isCapacitor     = false;
     }
 
-    public function setIsCapacitor(bool $isCapacitor): void
+    /**
+     * Set the URL.
+     */
+    public function setUrl(string $url): static
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * Get the URL.
+     */
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    /**
+     * Set the capacitor scheme.
+     */
+    public function setCapacitorScheme(?string $capacitorScheme): static
+    {
+        $this->capacitorScheme = $capacitorScheme;
+
+        return $this;
+    }
+
+    /**
+     * Get the capacitor scheme.
+     */
+    public function getCapacitorScheme(): ?string
+    {
+        return $this->capacitorScheme;
+    }
+
+    /**
+     * Set the capacitor flag.
+     */
+    public function setIsCapacitor(bool $isCapacitor): static
     {
         $this->isCapacitor = $isCapacitor;
+
+        return $this;
+    }
+
+    /**
+     * Get the capacitor flag.
+     */
+    public function getIsCapacitor(): bool
+    {
+        return $this->isCapacitor;
     }
 
     /**
@@ -36,12 +85,12 @@ class FrontendService
     {
         $finalUrl = $this->buildUrl($path, $query);
 
-        if (! $this->isCapacitor || $this->config->capacitorScheme === '_deep') {
+        if (!$this->isCapacitor || $this->capacitorScheme === '_deep') {
             return $this->redirector->away($finalUrl);
         }
 
         return $this->responseFactory->view('redirect', [
-            'message' => null,
+            'message'   => null,
             'schemeUrl' => $finalUrl,
         ]);
     }
@@ -63,15 +112,15 @@ class FrontendService
      */
     private function buildUrl(string $path, array $query = []): string
     {
-        $url = rtrim($this->config->appUrl, '/').'/'.ltrim($path, '/');
+        $url = rtrim($this->url, '/') . '/' . ltrim($path, '/') . '/';
 
-        if (! empty($query)) {
-            $url .= '?'.http_build_query($query);
+        if (!empty($query)) {
+            $url .= '?' . http_build_query($query);
         }
 
         // If it's a capacitor request and a custom scheme is defined
-        if ($this->isCapacitor && $this->config->capacitorScheme && $this->config->capacitorScheme !== '_deep') {
-            $url = preg_replace('/^https?/', $this->config->capacitorScheme, $url) ?? $url;
+        if ($this->isCapacitor && $this->capacitorScheme && $this->capacitorScheme !== '_deep') {
+            $url = preg_replace('/^https?/', $this->capacitorScheme, $url) ?? $url;
         }
 
         return $url;

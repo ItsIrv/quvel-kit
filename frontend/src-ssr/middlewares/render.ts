@@ -49,8 +49,8 @@ export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
       const publicTenantConfig = filterTenantConfig(tenantConfig);
 
       // Add tenant_id and tenant_name
-      publicTenantConfig.tenant_id = tenantConfig.tenant_id;
-      publicTenantConfig.tenant_name = tenantConfig.tenant_name;
+      publicTenantConfig.tenantId = tenantConfig.tenantId;
+      publicTenantConfig.tenantName = tenantConfig.tenantName;
 
       // Render the page using Vue SSR
       const html = await render({ req, res });

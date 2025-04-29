@@ -124,7 +124,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        */
 
       async loginWithOAuth(provider: string, stateless: boolean) {
-        const redirectBase = `${this.$container.config.get('api_url')}/auth/provider/${provider}/redirect`;
+        const redirectBase = `${this.$container.config.get('apiUrl')}/auth/provider/${provider}/redirect`;
 
         if (!stateless) {
           window.location.href = redirectBase;

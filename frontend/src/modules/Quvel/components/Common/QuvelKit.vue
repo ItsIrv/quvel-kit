@@ -15,12 +15,12 @@ defineProps({
 <template>
   <a
     v-if="link"
-    :href="config.get('app_url')"
+    :href="config.get('appUrl')"
   >
     <span class="QuvelKit text-2xl font-bold text-gray-900 dark:text-white">
       <!-- Tight spacing on purpose; prevents space in text.-->
       <span class="text-blue-500">
-        {{ config.get('app_name') }}
+        {{ config.get('appName') }}
       </span>
 
       Kit
@@ -33,7 +33,7 @@ defineProps({
   >
     <!-- Tight spacing on purpose; prevents space in text.-->
     <span class="text-blue-500">
-      {{ config.get('app_name') }}
+      {{ config.get('appName') }}
     </span>
 
     Kit

@@ -29,17 +29,23 @@ class TenantResolverService
      */
     public function resolveTenant(Request $request): Tenant
     {
+        $domain = $request->getHost();
         $tenant = $this->tenantSessionService->getTenant();
 
         if ($tenant) {
+            if ($tenant->domain !== $domain) {
+                Log::info("Tenant domain mismatch: {$tenant->domain} != {$domain}");
+
+                throw new TenantNotFoundException();
+            }
+
             return $tenant;
         }
 
         // TODO: Add a check for Cache.
-        $domain = $request->getHost();
         $tenant = $this->tenantFindService->findTenantByDomain($domain);
 
-        if (! $tenant) {
+        if (!$tenant) {
             Log::info("Tenant not found for domain: $domain");
 
             throw new TenantNotFoundException();
