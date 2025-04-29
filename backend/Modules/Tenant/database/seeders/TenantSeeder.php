@@ -18,10 +18,10 @@ class TenantSeeder extends Seeder
      */
     public function run(): void
     {
-        $apiDomain = config('quvel.default_api_domain');
+        $apiDomain      = config('quvel.default_api_domain');
         $frontendDomain = str_replace('api.', '', $apiDomain);
-        $lanApiDomain = config('quvel.default_lan_domain');
-        $lanFrontend = str_replace('api.', '', $lanApiDomain);
+        $lanApiDomain   = config('quvel.default_lan_domain');
+        $lanFrontend    = str_replace('api.', '', $lanApiDomain);
 
         // Create API tenants
         $mainTenant = $this->createTenant(
@@ -74,13 +74,13 @@ class TenantSeeder extends Seeder
         );
 
         // Set tenant context
-        app(TenantContext::class)->set($secondTenant);
+        setTenant($secondTenant->id);
 
         // Create a test user for LAN Tenant
         $this->createTenantUser($secondTenant);
 
         // Set tenant context back to main for the rest of the seeders
-        app(TenantContext::class)->set($mainTenant);
+        setTenant($mainTenant->id);
     }
 
     /**
@@ -89,11 +89,10 @@ class TenantSeeder extends Seeder
     private function createTenant(string $domain, string $name, ?array $config = null, ?Tenant $parent = null): Tenant
     {
         return Tenant::updateOrCreate(
-            ['name' => $name],
+            ['domain' => $domain],
             Tenant::factory()->make([
-                'domain' => $domain,
-                'public_id' => Str::ulid()->toString(),
-                'config' => $config,
+                'domain'    => $domain,
+                'config'    => $config,
                 'parent_id' => $parent?->id,
             ])->toArray(),
         );
@@ -109,11 +108,11 @@ class TenantSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'lan@quvel.app'],
             User::factory()->make([
-                'name' => 'LAN Tenant User',
-                'tenant_id' => $tenant->id,
-                'password' => Hash::make(config('quvel.default_password')),
+                'name'              => 'LAN Tenant User',
+                'tenant_id'         => $tenant->id,
+                'password'          => Hash::make(config('quvel.default_password')),
                 'email_verified_at' => now(),
-                'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed='.random_int(1, 100),
+                'avatar'            => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . random_int(1, 100),
             ])->toArray(),
         );
     }

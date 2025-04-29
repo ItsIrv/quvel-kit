@@ -51,6 +51,10 @@ class TenantConfig implements Arrayable
      */
     public readonly array $visibility;
 
+    public readonly array $oauthProviders;
+
+    public readonly bool $verifyEmailBeforeLogin;
+
     /**
      * @param  array<string, TenantConfigVisibility>  $visibility
      */
@@ -64,18 +68,22 @@ class TenantConfig implements Arrayable
         string $mailFromName = '',
         string $mailFromAddress = '',
         array $visibility = [],
+        array $oauthProviders = [],
+        bool $verifyEmailBeforeLogin = true,
         ?string $capacitorScheme = null,
     ) {
-        $this->apiUrl = $apiUrl;
-        $this->appUrl = $appUrl;
-        $this->appName = $appName;
-        $this->appEnv = $appEnv;
-        $this->internalApiUrl = $internalApiUrl;
-        $this->debug = $debug;
-        $this->mailFromName = $mailFromName;
-        $this->mailFromAddress = $mailFromAddress;
-        $this->visibility = $visibility;
-        $this->capacitorScheme = $capacitorScheme;
+        $this->apiUrl                 = $apiUrl;
+        $this->appUrl                 = $appUrl;
+        $this->appName                = $appName;
+        $this->appEnv                 = $appEnv;
+        $this->internalApiUrl         = $internalApiUrl;
+        $this->debug                  = $debug;
+        $this->mailFromName           = $mailFromName;
+        $this->mailFromAddress        = $mailFromAddress;
+        $this->visibility             = $visibility;
+        $this->oauthProviders         = $oauthProviders;
+        $this->verifyEmailBeforeLogin = $verifyEmailBeforeLogin;
+        $this->capacitorScheme        = $capacitorScheme;
     }
 
     /**
@@ -95,9 +103,11 @@ class TenantConfig implements Arrayable
             mailFromName: $data['mail_from_name'] ?? '',
             mailFromAddress: $data['mail_from_address'] ?? '',
             visibility: array_map(
-                static fn ($value) => TenantConfigVisibility::tryFrom($value) ?? TenantConfigVisibility::PRIVATE,
+                static fn ($value) => TenantConfigVisibility::tryFrom($value) ?? TenantConfigVisibility::PRIVATE ,
                 $data['__visibility'] ?? []
             ),
+            oauthProviders: $data['oauth']['providers'] ?? [],
+            verifyEmailBeforeLogin: $data['oauth']['verify_email_before_login'] ?? true,
             capacitorScheme: $data['capacitor_scheme'] ?? null,
         );
     }
@@ -108,19 +118,23 @@ class TenantConfig implements Arrayable
     public function toArray(): array
     {
         return [
-            'api_url' => $this->apiUrl,
-            'app_url' => $this->appUrl,
-            'app_name' => $this->appName,
-            'internal_api_url' => $this->internalApiUrl,
-            'app_env' => $this->appEnv,
-            'debug' => $this->debug,
-            'mail_from_name' => $this->mailFromName,
+            'api_url'           => $this->apiUrl,
+            'app_url'           => $this->appUrl,
+            'app_name'          => $this->appName,
+            'internal_api_url'  => $this->internalApiUrl,
+            'app_env'           => $this->appEnv,
+            'debug'             => $this->debug,
+            'mail_from_name'    => $this->mailFromName,
             'mail_from_address' => $this->mailFromAddress,
-            '__visibility' => array_map(
+            '__visibility'      => array_map(
                 static fn (TenantConfigVisibility $v): string => $v->value,
                 $this->visibility,
             ),
-            'capacitor_scheme' => $this->capacitorScheme,
+            'oauth'             => [
+                'providers'                 => $this->oauthProviders,
+                'verify_email_before_login' => $this->verifyEmailBeforeLogin,
+            ],
+            'capacitor_scheme'  => $this->capacitorScheme,
         ];
     }
 }

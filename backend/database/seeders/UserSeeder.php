@@ -18,17 +18,15 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $tenant = Tenant::first();
-        app(TenantContext::class)->set($tenant);
-
         // Main user
         $quvelUserData = User::factory()->make([
-            'name' => 'Quvel User',
+            'name'  => 'Quvel User',
             'email' => 'quvel@quvel.app',
-            'tenant_id' => $tenant->id,
         ])->toArray();
 
-        $quvelUserData['password'] = Hash::make(config('quvel.default_password'));
+        $quvelUserData['password'] = Hash::make(
+            config('quvel.default_password'),
+        );
 
         User::updateOrCreate(
             ['email' => 'quvel@quvel.app'],

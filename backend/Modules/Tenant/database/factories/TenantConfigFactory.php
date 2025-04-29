@@ -22,7 +22,7 @@ class TenantConfigFactory
     ): array|TenantConfig {
         $config = new TenantConfig(
             apiUrl: "https://$apiDomain",
-            appUrl: 'https://'.str_replace('api.', '', $apiDomain),
+            appUrl: 'https://' . str_replace('api.', '', $apiDomain),
             appName: $appName,
             appEnv: $appEnv,
             internalApiUrl: $internalApiDomain ? "http://$internalApiDomain:8000" : null,
@@ -30,11 +30,15 @@ class TenantConfigFactory
             mailFromName: $mailFromName,
             mailFromAddress: $mailFromAddress,
             visibility: [
-                'internal_api_url' => TenantConfigVisibility::PROTECTED,
-                'api_url' => TenantConfigVisibility::PUBLIC,
-                'app_url' => TenantConfigVisibility::PUBLIC,
-                'app_name' => TenantConfigVisibility::PUBLIC,
+                'internal_api_url' => TenantConfigVisibility::PROTECTED ,
+                'api_url'          => TenantConfigVisibility::PUBLIC ,
+                'app_url'          => TenantConfigVisibility::PUBLIC ,
+                'app_name'         => TenantConfigVisibility::PUBLIC ,
             ],
+            oauthProviders: [
+                'google',
+            ],
+            verifyEmailBeforeLogin: true,
             capacitorScheme: $capacitorScheme,
         );
 

@@ -22,8 +22,22 @@ use Modules\Auth\Actions\User\RegisterAction;
 Route::group([
     'prefix' => 'auth',
 ], static function (): void {
+    /**
+     * Fortify Overwrites
+     */
     Route::post('/login', LoginAction::class)->name('login.store');
     Route::post('/register', RegisterAction::class)->name('register.store');
+    // Route::prefix('/email/verify')->group(function (): void {
+    //     // Display the email verification notice.
+    //     Route::get('/', [EmailController::class, 'verificationNotice'])
+    //         ->middleware('auth')
+    //         ->name('verification.notice');
+
+    //     // Verify an email address.
+    //     Route::get('/{id}/{hash}', [EmailController::class, 'verificationVerify'])
+    //         ->middleware(['signed'])
+    //         ->name('verification.verify');
+    // });
 
     // Socialite
     Route::group([
