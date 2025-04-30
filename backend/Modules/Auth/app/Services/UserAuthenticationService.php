@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Services\User\UserCreateService;
 use App\Services\User\UserFindService;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -76,6 +77,7 @@ class UserAuthenticationService
         // If no user exists, create a new one
         $user = $this->userCreateService->create(
             [
+                'public_id'   => Str::ulid(),
                 'email'       => $providerUser->getEmail(),
                 'provider_id' => $providerIdentifier,
                 'name'        => $providerUser->getName(),

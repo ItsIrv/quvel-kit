@@ -2,7 +2,7 @@ import { type RenderError } from '#q-app';
 import { defineSsrMiddleware } from '#q-app/wrappers';
 import type { Request, Response } from 'express';
 import { TenantCacheService } from '../services/TenantCache';
-import { TenantConfigProtected } from '../types/tenant.types';
+import { TenantConfigProtected, TenantConfigVisibilityRecord } from '../types/tenant.types';
 
 const tenantService = TenantCacheService.getInstance();
 
@@ -12,19 +12,17 @@ const tenantService = TenantCacheService.getInstance();
 function filterTenantConfig(config: TenantConfigProtected): Partial<TenantConfigProtected> {
   const publicConfig: Partial<TenantConfigProtected> = {};
 
-  if (config.__visibility) {
-    Object.keys(config.__visibility).forEach((key) => {
-      const typedKey = key as keyof TenantConfigProtected;
+  Object.keys(config.__visibility).forEach((key) => {
+    const typedKey = key as keyof TenantConfigVisibilityRecord;
 
-      if (config.__visibility![typedKey] === 'public') {
-        const value = config[typedKey];
+    if (config.__visibility?.[typedKey] === 'public') {
+      const value = config[typedKey];
 
-        if (typeof value === 'string') {
-          publicConfig[typedKey] = value;
-        }
+      if (typeof value === 'string' || Array.isArray(value)) {
+        publicConfig[typedKey] = value as string & string[];
       }
-    });
-  }
+    }
+  });
 
   return publicConfig;
 }
@@ -34,11 +32,12 @@ export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
     res.header('Content-Type', 'text/html');
 
     try {
-      const host = req.hostname;
+      const host = String(req.hostname).match(/[^:]{0,50}/)?.[0] ?? '';
       const tenantConfig = (await tenantService).getTenantConfigByDomain(host);
 
       if (!tenantConfig) {
         res.status(404).send('Tenant Not Found');
+
         return;
       }
 
@@ -47,10 +46,6 @@ export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
 
       // Filter non-public fields before injecting into window
       const publicTenantConfig = filterTenantConfig(tenantConfig);
-
-      // Add tenant_id and tenant_name
-      publicTenantConfig.tenantId = tenantConfig.tenantId;
-      publicTenantConfig.tenantName = tenantConfig.tenantName;
 
       // Render the page using Vue SSR
       const html = await render({ req, res });

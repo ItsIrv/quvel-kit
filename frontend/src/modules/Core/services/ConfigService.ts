@@ -26,8 +26,6 @@ export class ConfigService {
         pusherAppCluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? '',
         socialiteProviders: import.meta.env.VITE_SOCIALITE_PROVIDERS?.split(',') ?? [],
       };
-
-    console.log(clientConfig);
   }
 
   /**
@@ -35,7 +33,7 @@ export class ConfigService {
    * @param key - The config key.
    * @returns The config value.
    */
-  public get<T = string>(key: keyof typeof this.config): T {
+  public get<T>(key: keyof typeof this.config): T {
     return this.config[key] as T;
   }
 

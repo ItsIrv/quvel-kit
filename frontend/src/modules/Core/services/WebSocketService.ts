@@ -19,14 +19,14 @@ declare global {
 
 export class WebSocketService implements BootableService {
   #echo: Echo<'pusher'> | null = null;
-  private api: ApiService | null = null;
+  private api!: ApiService;
   private connectionPromise: Promise<void> | null = null;
   private isConnected = false;
   private readonly apiKey: string;
   private readonly cluster: string;
   private readonly isSsr: boolean = typeof window === 'undefined';
 
-  constructor({ apiKey, cluster }: { apiKey: string; cluster: string; apiUrl: string }) {
+  constructor({ apiKey, cluster }: { apiKey: string; cluster: string }) {
     this.apiKey = apiKey;
     this.cluster = cluster;
     if (!this.isSsr && !window.Pusher) {
@@ -54,7 +54,7 @@ export class WebSocketService implements BootableService {
         key: this.apiKey,
         cluster: this.cluster,
         authorizer: (channel: Channel) => {
-          const apiService = this.api as ApiService;
+          const apiService = this.api;
           return {
             authorize: async (socketId: string, callback: (b: boolean, d: unknown) => void) => {
               try {

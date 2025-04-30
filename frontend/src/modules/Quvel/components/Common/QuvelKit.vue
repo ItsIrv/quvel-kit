@@ -23,7 +23,6 @@ defineProps({
         {{ config.get('appName') }}
       </span>
 
-      Kit
       <slot></slot>
     </span>
   </a>
@@ -32,11 +31,10 @@ defineProps({
     class="QuvelKit text-2xl font-bold text-gray-900 dark:text-white"
   >
     <!-- Tight spacing on purpose; prevents space in text.-->
-    <span class="text-blue-500">
+    <span class="text-blue-500 mr-2">
       {{ config.get('appName') }}
     </span>
 
-    Kit
     <slot></slot>
   </span>
 </template>

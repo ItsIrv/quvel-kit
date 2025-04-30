@@ -118,12 +118,11 @@ defineExpose({
     <!-- Links -->
     <div class="pt-4 text-base">
       <span>
-        {{ $t('auth.forms.login.link') }}
         <a
           class="underline cursor-pointer"
           @click="switchToLogin"
         >
-          {{ $t('auth.forms.login.button') }}
+          {{ $t('auth.forms.login.link') }}
         </a>
       </span>
     </div>

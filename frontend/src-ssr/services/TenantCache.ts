@@ -29,8 +29,10 @@ export class TenantCacheService {
    */
   private async loadTenants(): Promise<void> {
     try {
+      // TODO: Remove tenant cache (dumps) endpoint.
+      // Fetch tenants from API and cache as they are requested by hostname
       const response = await createAxios().get<{
-        data: Tenant[];
+        data: (Tenant & { config: TenantConfigProtected & { frontendUrl: string } })[];
       }>(
         // 'http://quvel-app:8000/tenant/cache'
         'https://api.quvel.127.0.0.1.nip.io/tenant/cache',
@@ -41,21 +43,29 @@ export class TenantCacheService {
       }
 
       response.data.data.forEach((tenant) => {
-        // Ensure config is properly formatted
-        const formattedConfig: TenantConfigProtected = Object.assign({}, tenant.config);
+        if (tenant.config) {
+          const tenantConfig = tenant.config;
+          // appUrl should refer to the frontend url in frontend context
+          // in backend context appUrl refers to the backend url
+          tenantConfig.apiUrl = tenant.config.appUrl;
+          tenantConfig.appUrl = tenant.config.frontendUrl;
+          tenantConfig.tenantId = tenant.id;
+          tenantConfig.tenantName = tenant.name;
 
-        // Store tenant with formatted config
-        this.tenants.set(tenant.domain, {
-          ...tenant,
-          config: formattedConfig,
-        });
+          if (!tenantConfig.__visibility) {
+            tenantConfig.__visibility = {};
+          }
 
-        // Store parent tenant mapping
+          // the backend doesnt keep track of these overwrites
+          tenantConfig.__visibility.apiUrl = 'public';
+          tenantConfig.__visibility.tenantId = 'public';
+          tenantConfig.__visibility.tenantName = 'public';
+        }
+
+        this.tenants.set(tenant.domain, tenant);
+
         if (!tenant.parent_id) {
-          this.parents.set(tenant.id.toString(), {
-            ...tenant,
-            config: formattedConfig,
-          });
+          this.parents.set(tenant.id, tenant);
         }
       });
     } catch (error) {
@@ -74,10 +84,15 @@ export class TenantCacheService {
     }
 
     if (tenant.parent_id) {
-      const parentTenant = this.parents.get(tenant.parent_id.toString());
-      return parentTenant?.config ?? tenant.config ?? null;
+      const parentTenant = this.parents.get(tenant.parent_id);
+
+      if (!parentTenant) {
+        return null;
+      }
+
+      return parentTenant.config;
     }
 
-    return tenant.config ?? null;
+    return tenant.config;
   }
 }

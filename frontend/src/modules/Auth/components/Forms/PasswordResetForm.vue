@@ -6,7 +6,7 @@
  */
 import { ref } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
-import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
+// import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import type { ErrorHandler } from 'src/modules/Core/types/task.types';
 import EmailField from 'src/modules/Auth/components/Form/EmailField.vue';
 import TaskErrors from 'src/modules/Core/components/Common/TaskErrors.vue';
@@ -20,7 +20,7 @@ const emit = defineEmits(['success', 'switch-form', 'reset-success']);
  * Services
  */
 const { task, i18n } = useContainer();
-const sessionStore = useSessionStore();
+// const sessionStore = useSessionStore();
 
 /**
  * Refs
@@ -37,7 +37,8 @@ const resetTask = task.newTask({
   showNotification: {
     success: () => i18n.t('auth.status.success.passwordResetSent'),
   },
-  task: async () => await sessionStore.forgotPassword(email.value),
+  // task: async () => await sessionStore.forgotPassword(email.value),
+  task: () => { },
   errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
   successHandlers: () => {
     emit('reset-success');
@@ -81,7 +82,7 @@ defineExpose({
     <p class="text-base mb-4">
       {{ $t('auth.forms.password.resetDescription') }}
     </p>
-    
+
     <EmailField
       v-model="email"
       :error-message="resetTask.errors.value.get('email')"
@@ -97,12 +98,11 @@ defineExpose({
     <!-- Links -->
     <div class="pt-4 text-base">
       <span>
-        {{ $t('auth.forms.login.link') }}
         <a
           class="underline cursor-pointer"
           @click="switchToLogin"
         >
-          {{ $t('auth.forms.login.button') }}
+          {{ $t('auth.forms.login.link') }}
         </a>
       </span>
     </div>

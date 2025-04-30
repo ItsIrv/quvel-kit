@@ -53,7 +53,7 @@ class TenantDumpResource extends JsonResource
 
         foreach ($visibility as $key => $value) {
             if ($value === TenantConfigVisibility::PUBLIC || $value === TenantConfigVisibility::PROTECTED) {
-                $filteredConfig[$key] = $this->config->{$key};
+                $filteredConfig[$key] = $this->config->{$key} ?? null;
             }
         }
 

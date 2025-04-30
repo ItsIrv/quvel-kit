@@ -21,7 +21,7 @@ const emit = defineEmits(['success', 'switch-form']);
 /**
  * Services
  */
-const { task, i18n } = useContainer();
+const { task, i18n, config } = useContainer();
 const sessionStore = useSessionStore();
 const quasar = useQuasar();
 
@@ -30,8 +30,10 @@ const quasar = useQuasar();
  */
 const email = ref('');
 const password = ref('');
+const selectedProvider = ref<string | null>(null);
 const authForm = ref<HTMLFormElement>();
 const isOAuthRedirecting = ref(false);
+const socialiteProviders = config.get<string[]>('socialiteProviders');
 
 /**
  * Login Task
@@ -103,21 +105,14 @@ defineExpose({
     @submit.prevent="onSubmit"
   >
     <!-- Oauth providers -->
-    <div class="grid grid-cols-2 gap-2 mt-4 mb-2">
-      <q-btn
-        class="GenericBorder AccentGradient Button"
-        :label="$t('auth.forms.oauth.logInWith', { provider: $t('auth.forms.oauth.google') })"
-        unelevated
+    <div class="mt-4 my-8 w-full">
+      <q-select
+        v-model="selectedProvider"
+        :options="socialiteProviders.map(p => ({ label: $t(`auth.forms.oauth.${p}`), value: p }))"
+        :label="$t('auth.forms.oauth.title')"
         :disable="loginTask.isActive.value"
         :loading="isOAuthRedirecting"
-        @click="loginWithOAuth('google')"
-      />
-
-      <q-btn
-        class="GenericBorder Button"
-        :label="$t('common.placeholder')"
-        unelevated
-        :disable="true"
+        @update:model-value="({ value }) => loginWithOAuth(value)"
       />
     </div>
 
@@ -140,23 +135,24 @@ defineExpose({
     />
 
     <!-- Links -->
-    <div class="pt-4 text-base flex justify-between">
+    <div class="pt-4 text-base flex gap-2 justify-between">
       <span>
-        {{ $t('auth.forms.signup.link') }}
         <a
           class="underline cursor-pointer"
           @click="switchToSignup"
         >
-          {{ $t('auth.forms.signup.button') }}
+          {{ $t('auth.forms.signup.link') }}
         </a>
       </span>
 
-      <a
-        class="underline cursor-pointer text-sm"
-        @click="switchToPasswordReset"
-      >
-        {{ $t('auth.forms.password.forgot') }}
-      </a>
+      <span>
+        <a
+          class="underline cursor-pointer"
+          @click="switchToPasswordReset"
+        >
+          {{ $t('auth.forms.password.forgot') }}
+        </a>
+      </span>
     </div>
 
     <!-- Buttons -->

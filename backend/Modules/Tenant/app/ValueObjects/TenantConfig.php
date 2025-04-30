@@ -99,7 +99,7 @@ class TenantConfig implements Arrayable
     public readonly ?string $hmacSecretKey;
 
     // Frontend visibility control
-    public readonly ?array $visibility;
+    public readonly array $visibility;
 
     /**
      * Constructor

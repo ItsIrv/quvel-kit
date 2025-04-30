@@ -41,8 +41,8 @@ class TenantConfigApplier
 
         // Logging
         $appConfig->set('logging.default', $config->logChannel);
-        $appConfig->set('logging.channels.stack.driver', $config->logStack);
-        $appConfig->set('logging.channels.stack.deprecations', $config->logDeprecationsChannel);
+        // $appConfig->set('logging.channels.stack.driver', $config->logStack);
+        // $appConfig->set('logging.channels.stack.deprecations', $config->logDeprecationsChannel);
         $appConfig->set('logging.level', $config->logLevel);
 
         // Database
@@ -58,7 +58,18 @@ class TenantConfigApplier
         $appConfig->set('session.lifetime', $config->sessionLifetime);
         $appConfig->set('session.encrypt', $config->sessionEncrypt);
         $appConfig->set('session.path', $config->sessionPath);
-        $appConfig->set('session.domain', $config->sessionDomain);
+        $appHost = parse_url($config->appUrl, PHP_URL_HOST);
+
+        if ($appHost) {
+            $parts = explode('.', $appHost);
+
+            if (count($parts) > 2) {
+                array_shift($parts);
+            }
+
+            $sessionDomain = '.' . implode('.', $parts);
+            $appConfig->set('session.domain', $sessionDomain);
+        }
 
         // Cache
         $appConfig->set('cache.default', $config->cacheStore);
@@ -94,7 +105,10 @@ class TenantConfigApplier
         foreach (($config->oauthCredentials ?? []) as $provider => $credentials) {
             $appConfig->set("services.$provider.client_id", $credentials['client_id'] ?? '');
             $appConfig->set("services.$provider.client_secret", $credentials['client_secret'] ?? '');
-            $appConfig->set("services.$provider.redirect", $credentials['redirect_uri'] ?? '');
+            $appConfig->set(
+                "services.$provider.redirect",
+                "{$config->appUrl}/auth/provider/{$provider}/callback",
+            );
         }
 
         // Pusher
@@ -110,8 +124,5 @@ class TenantConfigApplier
         $appConfig->set('quvel.api_domain', $config->quvelApiDomain);
         $appConfig->set('quvel.lan_domain', $config->quvelLanDomain);
         $appConfig->set('hmac_secret_key', $config->hmacSecretKey);
-
-        // Other
-        $appConfig->set('capacitor.scheme', $config->capacitorScheme);
     }
 }

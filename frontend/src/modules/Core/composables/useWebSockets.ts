@@ -30,7 +30,6 @@ export function useWebSockets() {
     } else if (options.type === 'encrypted') {
       channel = await ws.subscribe(options as SubscribeOptions<T> & { type: 'encrypted' });
     } else {
-      console.log(options.type);
       throw new Error(`Unsupported channel type: ${String(options.type)}`);
     }
 

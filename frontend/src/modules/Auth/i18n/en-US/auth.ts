@@ -22,7 +22,7 @@ export default {
       google: 'Google',
       link: 'Use Email/Password instead?',
       logInWith: '{provider} Login',
-      title: 'Login with Provider',
+      title: 'Login with a Provider',
     },
     signup: {
       button: 'Sign Up',

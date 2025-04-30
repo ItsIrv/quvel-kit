@@ -22,7 +22,6 @@ export interface Tenant {
  * The tenant configuration (processed config used in app).
  */
 export interface TenantConfigProtected {
-  frontendUrl: string;
   apiUrl: string;
   appUrl: string;
   appName: string;
@@ -31,10 +30,15 @@ export interface TenantConfigProtected {
   tenantName: string;
   pusherAppKey: string;
   pusherAppCluster: string;
-  __visibility?: Partial<Record<keyof TenantConfigProtected, TenantConfigVisibility>>;
+  socialiteProviders: string[];
+  __visibility: TenantConfigVisibilityRecord;
 }
 
 /**
  * The visibility of a tenant configuration field.
  */
 export type TenantConfigVisibility = 'public' | 'protected';
+
+export type TenantConfigVisibilityRecord = Partial<
+  Record<Exclude<keyof TenantConfigProtected, '__visibility'>, TenantConfigVisibility>
+>;

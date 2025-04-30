@@ -83,7 +83,12 @@ class TenantConfigFactory
             'socialiteProviders'      => ['google'],
             'socialiteNonceTtl'       => 60,
             'socialiteTokenTtl'       => 60,
-            'oauthCredentials'        => [],
+            'oauthCredentials'        => [
+                'google' => [
+                    'client_id'     => env('GOOGLE_CLIENT_ID', null),
+                    'client_secret' => env('GOOGLE_CLIENT_SECRET', null),
+                ],
+            ],
             // Pusher
             'pusherAppId'             => env('PUSHER_APP_ID', null),
             'pusherAppKey'            => env('PUSHER_APP_KEY', null),
@@ -101,7 +106,7 @@ class TenantConfigFactory
             // Visibility
             'visibility'              => [
                 'internalApiUrl'     => TenantConfigVisibility::PROTECTED ,
-                'frontendUrl'        => TenantConfigVisibility::PUBLIC ,
+                'frontendUrl'        => TenantConfigVisibility::PROTECTED ,
                 'appUrl'             => TenantConfigVisibility::PUBLIC ,
                 'appName'            => TenantConfigVisibility::PUBLIC ,
                 'pusherAppKey'       => TenantConfigVisibility::PUBLIC ,

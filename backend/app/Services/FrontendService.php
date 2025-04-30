@@ -112,7 +112,7 @@ class FrontendService
      */
     private function buildUrl(string $path, array $query = []): string
     {
-        $url = rtrim($this->url, '/') . '/' . ltrim($path, '/') . '/';
+        $url = rtrim($this->url, '/') . ltrim($path, '/') . '/';
 
         if (!empty($query)) {
             $url .= '?' . http_build_query($query);

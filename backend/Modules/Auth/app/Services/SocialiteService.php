@@ -64,7 +64,7 @@ class SocialiteService
      */
     private function getRedirectUri(string $provider): string
     {
-        return "{$this->tenantContext->getConfig()?->apiUrl}/auth/provider/$provider/callback";
+        return "{$this->tenantContext->getConfig()?->appUrl}/auth/provider/$provider/callback";
     }
 
     /**

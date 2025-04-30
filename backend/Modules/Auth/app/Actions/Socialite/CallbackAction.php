@@ -56,7 +56,7 @@ class CallbackAction
                 ],
             );
         } catch (Throwable $e) {
-            if (! $e instanceof OAuthException) {
+            if (!$e instanceof OAuthException) {
                 $e = new OAuthException(OAuthStatusEnum::INTERNAL_ERROR, $e);
             }
 
