@@ -28,12 +28,6 @@ const password = computed({
   get: () => props.modelValue,
   set: (value) => emits('update:modelValue', value),
 });
-
-const errorMessage = computed(() => {
-  return props.modelValue && props.modelValue !== props.passwordValue
-    ? 'auth.status.errors.mismatch'
-    : '';
-});
 </script>
 
 <template>
@@ -42,8 +36,9 @@ const errorMessage = computed(() => {
     :label="$t('auth.forms.common.passwordConfirm')"
     name="password"
     type="password"
+    :rules="[
+      (value: string) => value === props.passwordValue || $t('auth.status.errors.mismatch'),
+    ]"
     autocomplete="current-password"
-    :error-message="errorMessage ? $t(errorMessage) : ''"
-    :error="!!errorMessage"
   />
 </template>

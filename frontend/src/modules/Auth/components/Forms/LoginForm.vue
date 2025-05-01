@@ -33,7 +33,7 @@ const password = ref('');
 const selectedProvider = ref<string | null>(null);
 const authForm = ref<HTMLFormElement>();
 const isOAuthRedirecting = ref(false);
-const socialiteProviders = config.get<string[]>('socialiteProviders');
+const socialiteProviders = config.get('socialiteProviders');
 
 /**
  * Login Task
@@ -74,10 +74,7 @@ function onSubmit() {
  */
 function loginWithOAuth(provider: string) {
   void sessionStore.loginWithOAuth(provider, quasar.platform.is.capacitor);
-  isOAuthRedirecting.value = true;
-  setTimeout(() => {
-    isOAuthRedirecting.value = false;
-  }, 5000);
+  selectedProvider.value = null;
 }
 
 /**
@@ -107,8 +104,13 @@ defineExpose({
     <!-- Oauth providers -->
     <div class="mt-4 my-8 w-full">
       <q-select
-        v-model="selectedProvider"
-        :options="socialiteProviders.map(p => ({ label: $t(`auth.forms.oauth.${p}`), value: p }))"
+        :model-value="null"
+        :options="socialiteProviders.map(p => ({
+          label: $t('auth.forms.oauth.logInWith', {
+            provider: $t(`auth.forms.oauth.providers.${p}`)
+          }),
+          value: p
+        }))"
         :label="$t('auth.forms.oauth.title')"
         :disable="loginTask.isActive.value"
         :loading="isOAuthRedirecting"

@@ -145,7 +145,7 @@ return [
 
     'features'            => [
         // Enable registration functionality
-        Features::registration(),
+        // Features::registration(),
 
         // Enable password reset functionality
         Features::resetPasswords(),

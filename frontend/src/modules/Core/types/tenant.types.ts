@@ -1,4 +1,4 @@
-/** Config type for SSR and SPA */
+/** Config type for SPA */
 export interface TenantConfig {
   apiUrl: string;
   appUrl: string;

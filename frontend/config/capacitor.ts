@@ -9,6 +9,7 @@ export default defineConfig(() => {
       port: 3002,
       host: 'quvel.127.0.0.1.nip.io',
       https: getCerts(),
+      open: false,
     },
     capacitor: {
       hideSplashscreen: true,

@@ -16,11 +16,11 @@
   font-size: 14px;
 }
 
-.q-menu {
-  @extend .MainTransition;
-  @apply p-2 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 bg-white dark:bg-gray-900;
-  box-shadow: none;
-}
+// .q-menu {
+//   @extend .MainTransition;
+//   @apply p-2 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 bg-white dark:bg-gray-900;
+//   box-shadow: none;
+// }
 
 .q-item--active {
   @apply text-orange-600;

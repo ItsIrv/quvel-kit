@@ -4,7 +4,6 @@ namespace Modules\Auth\Actions\User;
 
 use App\Services\User\UserCreateService;
 use App\Services\User\UserFindService;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\Http\Requests\RegisterRequest;
@@ -33,18 +32,16 @@ class RegisterAction
      */
     public function __invoke(RegisterRequest $request): JsonResponse
     {
-        $loginData = $request->validated();
+        $registerData = $request->validated();
 
         // Check if user already exists
-        if ($this->userFindService->findByEmail($loginData['email'])) {
+        if ($this->userFindService->findByEmail($registerData['email'])) {
             throw new RegisterActionException(
                 AuthStatusEnum::EMAIL_ALREADY_IN_USE,
             );
         }
 
-        $user = $this->userCreateService->create($loginData);
-
-        event(new Registered($user));
+        $this->userCreateService->create($registerData);
 
         return $this->responseFactory->json(
             ['message' => AuthStatusEnum::REGISTER_SUCCESS->value],

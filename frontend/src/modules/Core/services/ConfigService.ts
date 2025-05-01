@@ -33,8 +33,8 @@ export class ConfigService {
    * @param key - The config key.
    * @returns The config value.
    */
-  public get<T>(key: keyof typeof this.config): T {
-    return this.config[key] as T;
+  public get<K extends keyof TenantConfig>(key: K): TenantConfig[K] {
+    return this.config[key];
   }
 
   /**

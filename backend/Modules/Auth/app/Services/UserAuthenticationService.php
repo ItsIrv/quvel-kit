@@ -77,7 +77,6 @@ class UserAuthenticationService
         // If no user exists, create a new one
         $user = $this->userCreateService->create(
             [
-                'public_id'   => Str::ulid(),
                 'email'       => $providerUser->getEmail(),
                 'provider_id' => $providerIdentifier,
                 'name'        => $providerUser->getName(),

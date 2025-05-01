@@ -18,10 +18,12 @@ export default {
       button: 'Logout',
     },
     oauth: {
-      apple: 'Apple',
-      google: 'Google',
+      providers: {
+        apple: 'Apple',
+        google: 'Google',
+      },
       link: 'Use Email/Password instead?',
-      logInWith: '{provider} Login',
+      logInWith: '@:auth.forms.oauth.{provider} Login',
       title: 'Login with a Provider',
     },
     signup: {
