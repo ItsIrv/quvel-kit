@@ -49,18 +49,6 @@ class TenantServiceProvider extends ModuleServiceProvider
     }
 
     /**
-     * Public static method to apply tenant config.
-     */
-    public static function applyTenantConfig(Tenant $tenant): void
-    {
-        try {
-            TenantConfigApplier::apply($tenant);
-        } catch (Exception $e) {
-            Log::critical('Failed to apply tenant config: ' . $e->getMessage());
-        }
-    }
-
-    /**
      * Bind config changes when request is rebound.
      */
     private function bindTenantConfigs(): void
@@ -70,7 +58,7 @@ class TenantServiceProvider extends ModuleServiceProvider
                 $tenantContext = $app->make(TenantContext::class);
                 $tenant        = $tenantContext->get();
 
-                self::applyTenantConfig($tenant);
+                TenantConfigApplier::apply($tenant);
             } catch (Exception $e) {
                 Log::critical('Tenant Config Could Not Be Applied: ' . $e->getMessage());
             }

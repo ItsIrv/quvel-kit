@@ -88,7 +88,6 @@ class FrontendService
         if (!$this->isCapacitor || $this->capacitorScheme === '_deep') {
             return $this->redirector->away($finalUrl);
         }
-
         return $this->responseFactory->view('redirect', [
             'message'   => null,
             'schemeUrl' => $finalUrl,
@@ -112,7 +111,7 @@ class FrontendService
      */
     private function buildUrl(string $path, array $query = []): string
     {
-        $url = rtrim($this->url, '/') . ltrim($path, '/') . '/';
+        $url = $this->url . '/' . $path;
 
         if (!empty($query)) {
             $url .= '?' . http_build_query($query);

@@ -3,7 +3,7 @@
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Exceptions\TenantNotFoundException;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\Providers\TenantServiceProvider;
+use Modules\Tenant\Services\TenantConfigApplier;
 use Modules\Tenant\Services\TenantFindService;
 
 if (!function_exists('setTenant')) {
@@ -14,7 +14,7 @@ if (!function_exists('setTenant')) {
 
         app(TenantContext::class)->set($tenant);
 
-        TenantServiceProvider::applyTenantConfig($tenant);
+        TenantConfigApplier::apply($tenant);
     }
 }
 

@@ -57,7 +57,7 @@ class ModuleServiceProvider extends ServiceProvider
     public function registerConfig(): void
     {
         $relativeConfigPath = config('modules.paths.generator.config.path');
-        $configPath = module_path($this->name, $relativeConfigPath);
+        $configPath         = module_path($this->name, $relativeConfigPath);
 
         if ($this->isDir($configPath)) {
             $iterator = new RecursiveIteratorIterator(
@@ -67,13 +67,13 @@ class ModuleServiceProvider extends ServiceProvider
             foreach ($iterator as $file) {
                 if ($file->isFile() && $file->getExtension() === 'php') {
                     $relativePath = str_replace(
-                        $configPath.DIRECTORY_SEPARATOR,
+                        $configPath . DIRECTORY_SEPARATOR,
                         '',
                         $file->getPathname(),
                     );
 
                     assert(is_string($relativePath));
-                    $configKey = $this->nameLower.'.'.str_replace(
+                    $configKey = $this->nameLower . '.' . str_replace(
                         [DIRECTORY_SEPARATOR, '.php'],
                         ['.', ''],
                         $relativePath,
@@ -97,7 +97,7 @@ class ModuleServiceProvider extends ServiceProvider
      */
     public function registerViews(): void
     {
-        $viewPath = resource_path('views/modules/'.$this->nameLower);
+        $viewPath   = resource_path('views/modules/' . $this->nameLower);
         $sourcePath = module_path($this->name, 'resources/views');
 
         $this->publishes(
@@ -130,7 +130,7 @@ class ModuleServiceProvider extends ServiceProvider
      */
     public function getPublishableViewPaths(): array
     {
-        $paths = [];
+        $paths     = [];
         $viewPaths = config('view.paths');
         $viewPaths = is_array($viewPaths) ? $viewPaths : [];
 

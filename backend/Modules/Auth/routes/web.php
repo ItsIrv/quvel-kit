@@ -9,6 +9,7 @@ use Modules\Auth\Actions\User\GetSessionAction;
 use Modules\Auth\Actions\User\LoginAction;
 use Modules\Auth\Actions\User\LogoutAction;
 use Modules\Auth\Actions\User\RegisterAction;
+use Modules\Auth\Http\Controllers\EmailController;
 
 /*
  *--------------------------------------------------------------------------
@@ -27,17 +28,11 @@ Route::group([
      */
     Route::post('/login', LoginAction::class)->name('login.store');
     Route::post('/register', RegisterAction::class)->name('register.store');
-    // Route::prefix('/email/verify')->group(function (): void {
-    //     // Display the email verification notice.
-    //     Route::get('/', [EmailController::class, 'verificationNotice'])
-    //         ->middleware('auth')
-    //         ->name('verification.notice');
-
-    //     // Verify an email address.
-    //     Route::get('/{id}/{hash}', [EmailController::class, 'verificationVerify'])
-    //         ->middleware(['signed'])
-    //         ->name('verification.verify');
-    // });
+    Route::post('/email/verification-notification', [EmailController::class, 'verificationNotice'])
+        ->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [EmailController::class, 'verificationVerify'])
+        ->middleware('signed')
+        ->name('verification.verify');
 
     // Socialite
     Route::group([

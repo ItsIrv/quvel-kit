@@ -3,6 +3,7 @@
 namespace Modules\Tenant\Services;
 
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Routing\UrlGenerator;
 use Modules\Tenant\Models\Tenant;
 use RuntimeException;
 
@@ -19,8 +20,9 @@ class TenantConfigApplier
             throw new RuntimeException('Tenant config is missing.');
         }
 
+        $app = app();
         /** @var Repository $appConfig */
-        $appConfig = app(Repository::class);
+        $appConfig = $app->make(Repository::class);
 
         // Backend - Core App
         $appConfig->set('app.name', $config->appName);
@@ -124,5 +126,10 @@ class TenantConfigApplier
         $appConfig->set('quvel.api_domain', $config->quvelApiDomain);
         $appConfig->set('quvel.lan_domain', $config->quvelLanDomain);
         $appConfig->set('hmac_secret_key', $config->hmacSecretKey);
+
+        if (app()->runningInConsole()) {
+            app('url')->forceRootUrl(config('app.url'));
+            app('url')->forceScheme('https');
+        }
     }
 }

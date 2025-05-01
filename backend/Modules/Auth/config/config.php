@@ -1,9 +1,8 @@
 <?php
 
 return [
-    'name'        => 'Auth',
-    'use_fortify' => false,
-    'oauth'       => [
+    'name'  => 'Auth',
+    'oauth' => [
         'providers'   => explode(
             ',',
             env('SOCIALITE_PROVIDERS', 'google'),
