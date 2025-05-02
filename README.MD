@@ -1,5 +1,13 @@
 # QuVel Kit
 
+![Backend CI](https://github.com/ItsIrv/quvel-kit/actions/workflows/backend-ci.yml/badge.svg)
+[![codecov](https://codecov.io/gh/ItsIrv/quvel-kit/branch/main/graph/badge.svg)](https://codecov.io/gh/ItsIrv/quvel-kit)
+![License](https://img.shields.io/github/license/ItsIrv/quvel-kit)
+![PHP](https://img.shields.io/badge/PHP-8.3-blue)
+![Laravel](https://img.shields.io/badge/Laravel-12-red)
+![Vue](https://img.shields.io/badge/Vue-3.x-42b883)
+![Quasar](https://img.shields.io/badge/Quasar-2.x-purple)
+
 ## Overview
 
 **QuVel Kit** is a production-ready **Laravel 12 + Vue 3 + Quasar 2** boilerplate designed for building enterprise applications. It features SSR with SPA fallback, mobile/desktop builds, and a modular architecture with TypeScript throughout.
