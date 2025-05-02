@@ -15,6 +15,13 @@ export default {
     success: 'Action was successful!',
     error: 'Action failed. Please try again.',
   },
+  feature: {
+    status: {
+      error: {
+        notAvailable: 'This feature is not available.',
+      },
+    },
+  },
   language: 'Language',
   placeholder: 'Placeholder',
 };

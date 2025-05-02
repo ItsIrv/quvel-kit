@@ -101,7 +101,8 @@ class TenantConfigFactory
             'quvelApiDomain'          => $apiDomain,
             'quvelLanDomain'          => $internalApiDomain,
             'hmacSecretKey'           => env('HMAC_SECRET_KEY', 'hmac_secret_key_here'),
-            // Other
+            'disableSocialite'        => env('DISABLE_SOCIALITE', false),
+            'verifyEmailBeforeLogin'  => env('VERIFY_EMAIL_BEFORE_LOGIN', true),
             'capacitorScheme'         => $capacitorScheme,
             // Visibility
             'visibility'              => [

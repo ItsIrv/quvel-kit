@@ -3,7 +3,7 @@
 namespace Tests\Unit\Services\User;
 
 use App\Models\User;
-use App\Services\User\UserFindService;
+use Modules\Core\Services\User\UserFindService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -23,9 +23,9 @@ class UserFindServiceTest extends TestCase
         parent::setUp();
 
         $this->userFindService = new UserFindService();
-        $this->user = User::factory()->create([
-            'name' => 'John Doe',
-            'email' => 'johndoe@example.com',
+        $this->user            = User::factory()->create([
+            'name'      => 'John Doe',
+            'email'     => 'johndoe@example.com',
             'tenant_id' => $this->tenant->id,
         ]);
     }

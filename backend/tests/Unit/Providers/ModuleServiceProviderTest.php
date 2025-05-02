@@ -2,7 +2,8 @@
 
 namespace Tests\Unit\Providers;
 
-use App\Providers\ModuleServiceProvider;
+use Modules\Core\Providers\ModuleServiceProvider;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Mockery;
@@ -71,7 +72,7 @@ class ModuleServiceProviderTest extends TestCase
     public static function translationDirectoryProvider(): array
     {
         return [
-            'Directory exists' => [true],
+            'Directory exists'         => [true],
             'Directory does not exist' => [false],
         ];
     }

@@ -2,7 +2,7 @@
 
 namespace Modules\Notifications\Providers;
 
-use App\Providers\ModuleServiceProvider;
+use Modules\Core\Providers\ModuleServiceProvider;
 
 class NotificationsServiceProvider extends ModuleServiceProvider
 {

@@ -2,12 +2,14 @@
 
 namespace Modules\Auth\Actions\User;
 
-use App\Services\User\UserCreateService;
-use App\Services\User\UserFindService;
+use App\Http\Resources\UserResource;
+use Modules\Core\Services\User\UserCreateService;
+use Modules\Core\Services\User\UserFindService;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\Http\Requests\RegisterRequest;
 use Modules\Auth\Enums\AuthStatusEnum;
+use Modules\Auth\Services\UserAuthenticationService;
 use Modules\Auth\Exceptions\RegisterActionException;
 
 /**
@@ -22,6 +24,7 @@ class RegisterAction
         private readonly UserFindService $userFindService,
         private readonly UserCreateService $userCreateService,
         private readonly ResponseFactory $responseFactory,
+        private readonly UserAuthenticationService $userAuthenticationService,
     ) {
     }
 
@@ -41,10 +44,25 @@ class RegisterAction
             );
         }
 
-        $this->userCreateService->create($registerData);
+        $user = $this->userCreateService->create($registerData);
+
+        // Log the user in after sign up like fortify does if verify_email_before_login is false
+        if (config('auth.verify_email_before_login') === false) {
+            $this->userAuthenticationService->logInWithId($user->id);
+
+            return $this->responseFactory->json(
+                [
+                    'status' => AuthStatusEnum::LOGIN_SUCCESS->value,
+                    'user'   => new UserResource($user),
+                ],
+                200,
+            );
+        }
 
         return $this->responseFactory->json(
-            ['message' => AuthStatusEnum::REGISTER_SUCCESS->value],
+            [
+                'status' => AuthStatusEnum::REGISTER_SUCCESS->value,
+            ],
             201,
         );
     }

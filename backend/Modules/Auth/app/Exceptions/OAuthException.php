@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Exceptions;
 
-use App\Services\FrontendService;
+use Modules\Core\Services\FrontendService;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -16,7 +16,7 @@ class OAuthException extends Exception
 {
     public function __construct(
         OAuthStatusEnum $status,
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
     ) {
         parent::__construct($status->value, 0, $previous);
     }
@@ -27,7 +27,7 @@ class OAuthException extends Exception
             '',
             [
                 'message' => $this->getMessage(),
-            ]
+            ],
         );
     }
 }

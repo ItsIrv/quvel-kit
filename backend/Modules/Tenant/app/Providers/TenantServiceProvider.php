@@ -2,18 +2,16 @@
 
 namespace Modules\Tenant\Providers;
 
-use App\Providers\ModuleServiceProvider;
+use Modules\Core\Providers\ModuleServiceProvider;
+
 use Exception;
-use Illuminate\Contracts\Config\Repository;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Log;
 use Modules\Tenant\Contexts\TenantContext;
-use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Services\TenantConfigApplier;
 use Modules\Tenant\Services\TenantFindService;
 use Modules\Tenant\Services\TenantResolverService;
 use Modules\Tenant\Services\TenantSessionService;
-use RuntimeException;
 
 /**
  * Provider for the Tenant module.

@@ -4,13 +4,12 @@ import { useXsrf } from 'src/modules/Core/composables/useXsrf';
 import { useMetaConfig } from 'src/modules/Core/composables/useMetaConfig';
 import { onMounted, watch } from 'vue';
 import { loadTheme } from 'src/modules/Core/utils/themeUtil';
-import { useOAuthMessageHandler } from 'src/modules/Auth/composables/useOAuthMessageHandler';
+import { mapStatusToType, normalizeKey, useQueryMessageHandler } from 'src/modules/Core/composables/useQueryMessageHandler';
 import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
 
 defineOptions({
   /**
    * Pre-fetch the user on page load.
-   * TODO: We want to avoid fetching the user on every page load in production.
    */
   async preFetch({ store, ssrContext }) {
     try {
@@ -27,7 +26,7 @@ defineOptions({
         void useNotificationStore(store).fetchNotifications();
       }
     } catch {
-      // TODO: Handle flow on unauthorized.
+      //
     }
   },
 });
@@ -37,7 +36,11 @@ defineOptions({
  */
 useXsrf();
 useMetaConfig();
-useOAuthMessageHandler();
+useQueryMessageHandler({
+  key: 'message',
+  normalize: (val) => normalizeKey(val),
+  type: (val) => mapStatusToType(val),
+});
 
 /**
  * Services

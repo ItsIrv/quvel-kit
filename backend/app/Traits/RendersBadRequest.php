@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-use App\Contracts\TranslatableEntity;
+use Modules\Core\Contracts\TranslatableEntity;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 

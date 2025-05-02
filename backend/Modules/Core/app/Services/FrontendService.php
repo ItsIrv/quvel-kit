@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Modules\Core\Services;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\RedirectResponse;
@@ -81,7 +81,7 @@ class FrontendService
      *
      * @param  array<string, string>  $query
      */
-    public function redirect(string $path, array $query = []): RedirectResponse|Response
+    public function redirect(string $path = '', array $query = []): RedirectResponse|Response
     {
         $finalUrl = $this->buildUrl($path, $query);
 

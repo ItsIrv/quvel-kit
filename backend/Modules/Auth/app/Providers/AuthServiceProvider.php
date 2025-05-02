@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Providers;
 
-use App\Providers\ModuleServiceProvider;
+use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\HmacService;
 use Modules\Auth\Services\NonceSessionService;

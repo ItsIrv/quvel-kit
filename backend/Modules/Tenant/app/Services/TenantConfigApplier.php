@@ -127,9 +127,12 @@ class TenantConfigApplier
         $appConfig->set('quvel.lan_domain', $config->quvelLanDomain);
         $appConfig->set('hmac_secret_key', $config->hmacSecretKey);
 
-        if (app()->runningInConsole()) {
-            app('url')->forceRootUrl(config('app.url'));
-            app('url')->forceScheme('https');
-        }
+        $urlGenerator = app(UrlGenerator::class);
+        $urlGenerator->forceRootUrl(config('app.url'));
+
+        // TODO: Need a way for modules to register their own dynamic configs
+        // all the way down to the seeder level
+        $appConfig->set('auth.disable_socialite', $config->disableSocialite);
+        $appConfig->set('auth.verify_email_before_login', $config->verifyEmailBeforeLogin);
     }
 }

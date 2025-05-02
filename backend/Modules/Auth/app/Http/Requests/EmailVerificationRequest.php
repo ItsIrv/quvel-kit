@@ -2,30 +2,29 @@
 
 namespace Modules\Auth\Http\Requests;
 
-use App\Models\User;
+use Modules\Core\Services\FrontendService;
 use Illuminate\Foundation\Auth\EmailVerificationRequest as BaseEmailVerificationRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class EmailVerificationRequest extends BaseEmailVerificationRequest
 {
     public function authorize(): bool
     {
-        $user = User::findOrFail($this->route('id'));
-
-        if (
-            !hash_equals(
-                (string) $this->route('hash'),
-                sha1((string) $user->getEmailForVerification()),
-            ) ||
-            !hash_equals(
-                (string) $this->route('id'),
-                (string) $user->getKey()
-            )
-        ) {
-            return false;
+        // If verify_email_before_login is true, allow all requests since the user is not logged in
+        if (config('auth.verify_email_before_login')) {
+            // TODO: Custom validation logic
+            return true;
         }
 
-        $this->userResolver = fn () => $user;
+        // Otherwise make sure the user is logged in and the signature is valid
+        $user = $this->user();
 
-        return true;
+        if (!$user) {
+            throw new HttpResponseException(
+                app(FrontendService::class)->redirect(),
+            );
+        }
+
+        return parent::authorize();
     }
 }

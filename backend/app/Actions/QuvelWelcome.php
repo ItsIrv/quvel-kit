@@ -2,7 +2,7 @@
 
 namespace App\Actions;
 
-use App\Services\FrontendService;
+use Modules\Core\Services\FrontendService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;

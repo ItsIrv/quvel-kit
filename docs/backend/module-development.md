@@ -62,7 +62,8 @@ Replace the default service provider with one that extends `App\Providers\Module
 
 namespace Modules\YourModule\Providers;
 
-use App\Providers\ModuleServiceProvider;
+use Modules\Core\Providers\ModuleServiceProvider;
+
 
 class YourModuleServiceProvider extends ModuleServiceProvider
 {
@@ -92,7 +93,7 @@ Create a route service provider that extends `App\Providers\ModuleRouteServicePr
 
 namespace Modules\YourModule\Providers;
 
-use App\Providers\ModuleRouteServiceProvider;
+use Modules\Core\Providers\ModuleRouteServiceProvider;
 
 class RouteServiceProvider extends ModuleRouteServiceProvider
 {

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Services;
 
-use App\Services\FrontendService;
+use Modules\Core\Services\FrontendService;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,17 +33,17 @@ class FrontendServiceTest extends TestCase
         parent::setUp();
 
         $this->mockConfig = TenantConfig::fromArray([
-            'app_url' => $this->baseUrl,
-            'capacitor_scheme' => null,
-            'api_url' => 'https://api.local',
-            'app_name' => 'Test App',
-            'app_env' => 'local',
-            'debug' => false,
-            'mail_from_name' => 'Quvel',
+            'app_url'           => $this->baseUrl,
+            'capacitor_scheme'  => null,
+            'api_url'           => 'https://api.local',
+            'app_name'          => 'Test App',
+            'app_env'           => 'local',
+            'debug'             => false,
+            'mail_from_name'    => 'Quvel',
             'mail_from_address' => 'test@quvel.app',
         ]);
 
-        $this->mockRedirector = Mockery::mock(Redirector::class);
+        $this->mockRedirector      = Mockery::mock(Redirector::class);
         $this->mockResponseFactory = Mockery::mock(ResponseFactory::class);
 
         $mockRequest = Mockery::mock(Request::class);
@@ -62,7 +62,7 @@ class FrontendServiceTest extends TestCase
      */
     public function test_redirect(): void
     {
-        $path = '/dashboard';
+        $path        = '/dashboard';
         $expectedUrl = "$this->baseUrl$path";
 
         $this->mockRedirector
@@ -82,9 +82,9 @@ class FrontendServiceTest extends TestCase
      */
     public function test_redirect_with_query_parameters(): void
     {
-        $path = '/profile';
-        $params = ['id' => 42, 'mode' => 'edit'];
-        $expectedUrl = "$this->baseUrl$path?".http_build_query($params);
+        $path        = '/profile';
+        $params      = ['id' => 42, 'mode' => 'edit'];
+        $expectedUrl = "$this->baseUrl$path?" . http_build_query($params);
 
         $this->mockRedirector
             ->shouldReceive('away')
@@ -103,9 +103,9 @@ class FrontendServiceTest extends TestCase
      */
     public function test_redirect_with_capacitor_deep_scheme(): void
     {
-        $path = '/settings';
-        $params = ['setting' => 'dark'];
-        $expectedUrl = "$this->baseUrl$path?".http_build_query($params);
+        $path        = '/settings';
+        $params      = ['setting' => 'dark'];
+        $expectedUrl = "$this->baseUrl$path?" . http_build_query($params);
 
         $mockRequest = Mockery::mock(Request::class);
         $mockRequest->shouldReceive('hasHeader')->with('X-Capacitor')->andReturn(true);
@@ -136,11 +136,11 @@ class FrontendServiceTest extends TestCase
 
     public function test_redirect_with_custom_capacitor_scheme(): void
     {
-        $path = '/dashboard';
-        $params = ['user' => '123'];
+        $path         = '/dashboard';
+        $params       = ['user' => '123'];
         $customScheme = 'mycapacitor';
-        $customUrl = "$this->baseUrl$path?".http_build_query($params);
-        $expectedUrl = preg_replace('/^https?/', $customScheme, $customUrl);
+        $customUrl    = "$this->baseUrl$path?" . http_build_query($params);
+        $expectedUrl  = preg_replace('/^https?/', $customScheme, $customUrl);
 
         $mockRequest = Mockery::mock(Request::class);
         $mockRequest->shouldReceive('hasHeader')->with('X-Capacitor')->andReturn(true);
@@ -161,7 +161,7 @@ class FrontendServiceTest extends TestCase
             ->shouldReceive('view')
             ->once()
             ->with('redirect', [
-                'message' => null,
+                'message'   => null,
                 'schemeUrl' => $expectedUrl,
             ])
             ->andReturn(new RedirectResponse($expectedUrl));
@@ -177,9 +177,9 @@ class FrontendServiceTest extends TestCase
      */
     public function test_get_page_url(): void
     {
-        $path = '/settings';
-        $params = ['theme' => 'dark'];
-        $expectedUrl = "$this->baseUrl$path?".http_build_query($params);
+        $path        = '/settings';
+        $params      = ['theme' => 'dark'];
+        $expectedUrl = "$this->baseUrl$path?" . http_build_query($params);
 
         $url = $this->frontendService->getPageUrl($path, $params);
 

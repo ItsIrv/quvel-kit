@@ -3,7 +3,7 @@
 namespace Tests\Unit\Providers;
 
 use App\Providers\AppServiceProvider;
-use App\Services\FrontendService;
+use Modules\Core\Services\FrontendService;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\URL;
 use Modules\Tenant\Contexts\TenantContext;

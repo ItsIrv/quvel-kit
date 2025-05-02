@@ -3,7 +3,7 @@
 namespace Modules\Auth\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Services\FrontendService;
+use Modules\Core\Services\FrontendService;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Modules\Auth\Http\Requests\EmailVerificationRequest;
@@ -25,7 +25,7 @@ class EmailController extends Controller
      */
     public function verificationNotice(): RedirectResponse
     {
-        return $this->frontendService->redirect('login');
+        return $this->frontendService->redirect('home');
     }
 
     /**
@@ -42,14 +42,14 @@ class EmailController extends Controller
             return $this->frontendService->redirect(
                 '',
                 [
-                    'message' => 'verify_ok',
+                    'verify' => 'verify_ok',
                 ],
             );
         } catch (Exception $e) {
             return $this->frontendService->redirect(
                 '',
                 [
-                    'message' => 'verify_fail',
+                    'verify' => 'verify_fail',
                 ],
             );
         }

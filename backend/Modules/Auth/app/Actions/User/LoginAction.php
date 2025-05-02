@@ -3,7 +3,7 @@
 namespace Modules\Auth\Actions\User;
 
 use App\Http\Resources\UserResource;
-use App\Services\User\UserFindService;
+use Modules\Core\Services\User\UserFindService;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Modules\Auth\Http\Requests\LoginRequest;

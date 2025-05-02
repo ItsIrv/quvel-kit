@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Providers;
 
-use App\Providers\ModuleRouteServiceProvider;
+use Modules\Core\Providers\ModuleRouteServiceProvider;
 
 class RouteServiceProvider extends ModuleRouteServiceProvider
 {

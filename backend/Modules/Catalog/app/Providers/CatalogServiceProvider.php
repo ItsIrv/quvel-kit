@@ -2,7 +2,7 @@
 
 namespace Modules\Catalog\Providers;
 
-use App\Providers\ModuleServiceProvider;
+use Modules\Core\Providers\ModuleServiceProvider;
 
 class CatalogServiceProvider extends ModuleServiceProvider
 {

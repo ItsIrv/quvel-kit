@@ -3,8 +3,8 @@
 namespace Modules\Auth\Tests\Unit\Services;
 
 use App\Models\User;
-use App\Services\User\UserCreateService;
-use App\Services\User\UserFindService;
+use Modules\Core\Services\User\UserCreateService;
+use Modules\Core\Services\User\UserFindService;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Contracts\Auth\Guard;
 use Laravel\Socialite\Contracts\User as SocialiteUser;

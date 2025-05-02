@@ -97,6 +97,8 @@ class TenantConfig implements Arrayable
     public readonly ?string $quvelApiDomain;
     public readonly ?string $quvelLanDomain;
     public readonly ?string $hmacSecretKey;
+    public readonly ?bool $disableSocialite;
+    public readonly ?bool $verifyEmailBeforeLogin;
 
     // Frontend visibility control
     public readonly array $visibility;
@@ -177,6 +179,8 @@ class TenantConfig implements Arrayable
         ?string $quvelApiDomain,
         ?string $quvelLanDomain,
         ?string $hmacSecretKey,
+        ?bool $disableSocialite,
+        ?bool $verifyEmailBeforeLogin,
         // Visibility
         ?array $visibility = [],
     ) {
@@ -247,10 +251,12 @@ class TenantConfig implements Arrayable
         $this->pusherPort       = $pusherPort;
         $this->pusherScheme     = $pusherScheme;
 
-        $this->quvelDefaultPassword = $quvelDefaultPassword;
-        $this->quvelApiDomain       = $quvelApiDomain;
-        $this->quvelLanDomain       = $quvelLanDomain;
-        $this->hmacSecretKey        = $hmacSecretKey;
+        $this->quvelDefaultPassword   = $quvelDefaultPassword;
+        $this->quvelApiDomain         = $quvelApiDomain;
+        $this->quvelLanDomain         = $quvelLanDomain;
+        $this->hmacSecretKey          = $hmacSecretKey;
+        $this->disableSocialite       = $disableSocialite;
+        $this->verifyEmailBeforeLogin = $verifyEmailBeforeLogin;
 
         $this->visibility = $visibility;
     }
@@ -341,6 +347,8 @@ class TenantConfig implements Arrayable
             'quvelApiDomain'          => $data['quvel_api_domain'] ?? null,
             'quvelLanDomain'          => $data['quvel_lan_domain'] ?? null,
             'hmacSecretKey'           => $data['hmac_secret_key'] ?? null,
+            'disableSocialite'        => $data['disable_socialite'] ?? null,
+            'verifyEmailBeforeLogin'  => $data['verify_email_before_login'] ?? null,
 
             // Visibility
             'visibility'              => array_map(
@@ -439,7 +447,8 @@ class TenantConfig implements Arrayable
             'quvel_api_domain'            => $this->quvelApiDomain,
             'quvel_lan_domain'            => $this->quvelLanDomain,
             'hmac_secret_key'             => $this->hmacSecretKey,
-
+            'disable_socialite'           => $this->disableSocialite,
+            'verify_email_before_login'   => $this->verifyEmailBeforeLogin,
             // Visibility
             '__visibility'                => array_map(
                 static fn (TenantConfigVisibility $v) => $v->value,

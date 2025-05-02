@@ -4,7 +4,7 @@ namespace Modules\Auth\Tests\Unit\Actions\User;
 
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use App\Services\User\UserFindService;
+use Modules\Core\Services\User\UserFindService;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Mockery;

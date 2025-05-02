@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Traits;
 
-use App\Contracts\TranslatableEntity;
+use Modules\Core\Contracts\TranslatableEntity;
 use App\Traits\RendersBadRequest;
 use Exception;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -20,7 +20,8 @@ class RendersBadRequestTest extends TestCase
      */
     public function test_render_returns_translated_message_when_exception_is_translatable(): void
     {
-        $exception = new class () extends Exception implements TranslatableEntity {
+        $exception = new class () extends Exception implements TranslatableEntity
+        {
             use RendersBadRequest;
 
             public function getTranslatedMessage(): string
@@ -41,7 +42,8 @@ class RendersBadRequestTest extends TestCase
      */
     public function test_render_returns_default_message_when_exception_is_not_translatable(): void
     {
-        $exception = new class ('Default error message') extends Exception {
+        $exception = new class ('Default error message') extends Exception
+        {
             use RendersBadRequest;
         };
 

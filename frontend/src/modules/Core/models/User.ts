@@ -26,9 +26,19 @@ export class User implements IUser {
     this.updatedAt = data.updatedAt ?? '';
   }
 
-  // TODO: Race condition regarding the hydration of the store into the user
-  // before the component calls it.
   get avatarUrl(): string {
-    return this.avatar ?? 'https://api.dicebear.com/7.x/avataaars/svg?seed=7';
+    return this.avatar ?? '';
+  }
+
+  static fromApi(data: IUser): User {
+    return new User({
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      avatar: data.avatar,
+      emailVerifiedAt: data.emailVerifiedAt,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+    });
   }
 }

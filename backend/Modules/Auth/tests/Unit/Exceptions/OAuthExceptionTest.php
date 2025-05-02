@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Tests\Unit\Exceptions;
 
-use App\Services\FrontendService;
+use Modules\Core\Services\FrontendService;
 use Illuminate\Http\RedirectResponse;
 use Mockery;
 use Modules\Auth\Enums\OAuthStatusEnum;
@@ -19,7 +19,7 @@ class OAuthExceptionTest extends TestCase
     public function test_exception_message_and_render(): void
     {
         // Arrange
-        $status = OAuthStatusEnum::INVALID_NONCE;
+        $status    = OAuthStatusEnum::INVALID_NONCE;
         $exception = new OAuthException($status);
 
         // We mock FrontendService and bind it to the container, so that "app(FrontendService::class)"
@@ -27,7 +27,7 @@ class OAuthExceptionTest extends TestCase
         $mockFrontendService = Mockery::mock(FrontendService::class);
 
         // Suppose redirectPage returns a RedirectResponse
-        $redirectResponse = new RedirectResponse('/redirect?message='.$status->value);
+        $redirectResponse = new RedirectResponse('/redirect?message=' . $status->value);
 
         // Expect the call "redirect('', ['message' => 'auth::status.errors.invalidNonce'])"
         $mockFrontendService
@@ -52,7 +52,7 @@ class OAuthExceptionTest extends TestCase
     {
         // If you want to test the 'previous' logic
         $previous = new \Exception('Some underlying error');
-        $status = OAuthStatusEnum::INVALID_PROVIDER;
+        $status   = OAuthStatusEnum::INVALID_PROVIDER;
 
         $exception = new OAuthException($status, $previous);
 

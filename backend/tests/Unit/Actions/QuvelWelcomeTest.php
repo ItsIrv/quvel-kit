@@ -3,7 +3,7 @@
 namespace Tests\Unit\Actions;
 
 use App\Actions\QuvelWelcome;
-use App\Services\FrontendService;
+use Modules\Core\Services\FrontendService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Mockery;
@@ -25,7 +25,7 @@ class QuvelWelcomeTest extends TestCase
     #[Before]
     public function setupTest(): void
     {
-        $this->action = new QuvelWelcome();
+        $this->action          = new QuvelWelcome();
         $this->frontendService = Mockery::mock(FrontendService::class);
     }
 

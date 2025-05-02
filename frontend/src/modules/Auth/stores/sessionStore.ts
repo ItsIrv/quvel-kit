@@ -1,12 +1,10 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import type { User } from 'src/modules/User/models/User';
+import { User } from 'src/modules/Core/models/User';
 import type { IUser } from 'src/modules/Core/types/user.types';
-import { createUserFromApi } from 'src/modules/User/factories/userFactory';
 import { showNotification } from 'src/modules/Core/utils/notifyUtil';
-import OAuthStatusEnum, {
-  mapStatusToType,
-  normalizeOAuthStatus,
-} from 'src/modules/Auth/enums/OAuthStatusEnum';
+import { OAuthStatusEnum } from '../enums/OAuthStatusEnum';
+import { mapStatusToType, normalizeKey } from '../../Core/composables/useQueryMessageHandler';
+import { AuthStatusEnum } from '../enums/AuthStatusEnum';
 
 /**
  * Type for the authenticated user.
@@ -39,7 +37,7 @@ interface SessionActions {
   fetchSession(): Promise<void>;
   logout(): Promise<void>;
   login(email: string, password: string): Promise<void>;
-  signUp(email: string, password: string, name: string): Promise<void>;
+  signUp(email: string, password: string, name: string): Promise<AuthStatusEnum>;
   loginWithOAuth(provider: string, stateless: boolean): Promise<void>;
 }
 
@@ -71,7 +69,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Sets the user session.
        */
       setSession(data: IUser) {
-        this.user = createUserFromApi(data);
+        this.user = User.fromApi(data);
       },
 
       /**
@@ -111,19 +109,28 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
       /**
        * Signs up a new user and sets the session.
        */
-      async signUp(email: string, password: string, name: string): Promise<void> {
-        await this.$container.api.post<{ message: string; user: IUser }>('/auth/register', {
+      async signUp(email: string, password: string, name: string): Promise<AuthStatusEnum> {
+        const { status, user } = await this.$container.api.post<{
+          status: AuthStatusEnum;
+          user: IUser;
+        }>('/auth/register', {
           email,
           password,
           name,
         });
+
+        if (status === AuthStatusEnum.LOGIN_SUCCESS) {
+          this.setSession(user);
+        }
+
+        return status;
       },
 
       /**
        * OAuth Flow: Request nonce, store it, and redirect.
        */
-
       async loginWithOAuth(provider: string, stateless: boolean) {
+        stateless = true;
         const redirectBase = `${this.$container.config.get('apiUrl')}/auth/provider/${provider}/redirect`;
 
         if (!stateless) {
@@ -153,7 +160,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
             callback: ({ status }: { status: OAuthStatusEnum }) => {
               this.resultChannel!.unsubscribe();
 
-              status = normalizeOAuthStatus(status);
+              status = normalizeKey(status, 'auth') as OAuthStatusEnum;
 
               if (status !== OAuthStatusEnum.LOGIN_SUCCESS) {
                 showNotification(mapStatusToType(status), this.$container.i18n.t(status), {
@@ -189,7 +196,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
           void handleOAuthFlow(nonce);
 
-          window.location.href = `${redirectBase}?nonce=${encodeURIComponent(nonce)}`;
+          window.open(`${redirectBase}?nonce=${encodeURIComponent(nonce)}`);
         } catch {
           showNotification('negative', this.$container.i18n.t('common.task.error'));
         }

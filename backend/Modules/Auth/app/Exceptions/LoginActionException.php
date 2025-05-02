@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Exceptions;
 
-use App\Contracts\TranslatableEntity;
+use Modules\Core\Contracts\TranslatableEntity;
 use App\Traits\RendersBadRequest;
 use App\Traits\TranslatableException;
 use Exception;

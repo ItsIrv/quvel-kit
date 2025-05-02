@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Notifications;
 
-use App\Services\FrontendService;
+use Modules\Core\Services\FrontendService;
 use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordBase;
 use Illuminate\Notifications\Messages\MailMessage;
 

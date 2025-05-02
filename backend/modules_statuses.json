@@ -4,5 +4,6 @@
     "Migration": true,
     "Catalog": true,
     "Notifications": true,
-    "Blog": true
+    "Blog": true,
+    "Core": true
 }

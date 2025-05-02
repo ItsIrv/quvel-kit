@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Tests\Unit\Actions\Socialite;
 
-use App\Services\FrontendService;
+use Modules\Core\Services\FrontendService;
 use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Events\Dispatcher as EventDispatcher;

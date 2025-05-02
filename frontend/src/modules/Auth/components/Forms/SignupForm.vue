@@ -13,6 +13,7 @@ import PasswordField from 'src/modules/Auth/components/Form/PasswordField.vue';
 import PasswordConfirmField from 'src/modules/Auth/components/Form/PasswordConfirmField.vue';
 import NameField from 'src/modules/Auth/components/Form/NameField.vue';
 import TaskErrors from 'src/modules/Core/components/Common/TaskErrors.vue';
+import { AuthStatusEnum } from 'src/modules/Auth/enums/AuthStatusEnum';
 
 /**
  * Emits
@@ -39,11 +40,14 @@ const authForm = ref<HTMLFormElement>();
  *
  * Handles user signup.
  */
-const signupTask = task.newTask({
+const signupTask = task.newTask<AuthStatusEnum>({
   task: async () => await sessionStore.signUp(email.value, password.value, name.value),
   errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
-  successHandlers: () => {
-    emit('registration-success');
+  successHandlers: (status) => {
+    if (status === AuthStatusEnum.LOGIN_SUCCESS) {
+      emit('registration-success');
+    }
+
     resetForm();
   },
 });

@@ -1,8 +1,10 @@
 <?php
 
 return [
-    'name'  => 'Auth',
-    'oauth' => [
+    'name'                      => 'Auth',
+    'disable_socialite'         => env('AUTH_DISABLE_SOCIALITE', false),
+    'verify_email_before_login' => env('AUTH_VERIFY_EMAIL_BEFORE_LOGIN', true),
+    'oauth'                     => [
         'providers'   => explode(
             ',',
             env('SOCIALITE_PROVIDERS', 'google'),

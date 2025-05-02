@@ -10,6 +10,7 @@ use Modules\Auth\Actions\User\LoginAction;
 use Modules\Auth\Actions\User\LogoutAction;
 use Modules\Auth\Actions\User\RegisterAction;
 use Modules\Auth\Http\Controllers\EmailController;
+use Modules\Core\Http\Middleware\ConfigGate;
 
 /*
  *--------------------------------------------------------------------------
@@ -36,7 +37,8 @@ Route::group([
 
     // Socialite
     Route::group([
-        'prefix' => 'provider/{provider}',
+        'prefix'     => 'provider/{provider}',
+        'middleware' => ConfigGate::class . ':auth.disable_socialite,false',
     ], static function (): void {
         Route::get('/redirect', RedirectAction::class)->name('auth.provider.redirect');
         Route::get('/callback', CallbackAction::class)->name('auth.provider.callback');
