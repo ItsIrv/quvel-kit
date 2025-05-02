@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Tests\Unit\Actions\Socialite;
 
-use App\Http\Resources\UserResource;
+use Modules\Core\Http\Resources\UserResource;
 use App\Models\User;
 use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;

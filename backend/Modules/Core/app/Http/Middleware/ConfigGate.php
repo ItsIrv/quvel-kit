@@ -3,6 +3,7 @@
 namespace Modules\Core\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,12 +29,16 @@ class ConfigGate
         return $next($request);
     }
 
-    protected function denyResponse(Request $request, string $key): RedirectResponse
+    protected function denyResponse(Request $request, string $key): JsonResponse|RedirectResponse
     {
-        $message = __('This feature is not available.');
+        $message = __('common::feature.status.info.notAvailable');
 
-        return app(FrontendService::class)->redirect('', [
-            'message' => $message,
-        ]);
+        return $request->wantsJson()
+            ? new JsonResponse([
+                'message' => $message,
+            ], 403)
+            : app(FrontendService::class)->redirect('', [
+                'message' => $message,
+            ]);
     }
 }

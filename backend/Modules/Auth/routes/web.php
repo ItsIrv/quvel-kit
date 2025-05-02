@@ -47,6 +47,12 @@ Route::group([
         Route::post('/redeem-nonce', RedeemClientNonceAction::class)->name('auth.provider.redeem-nonce');
     });
 
+    Route::get('/test', function () {
+        return 'test';
+    })
+        ->name('auth.test')
+        ->middleware(ConfigGate::class . ':auth.disable_socialite,false');
+
     // Authenticated
     Route::middleware(['auth'])->group(static function (): void {
         // Session Status Check

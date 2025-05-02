@@ -3,8 +3,8 @@
 namespace Modules\Auth\Exceptions;
 
 use Modules\Core\Contracts\TranslatableEntity;
-use App\Traits\RendersBadRequest;
-use App\Traits\TranslatableException;
+use Modules\Core\Traits\RendersBadRequest;
+use Modules\Core\Traits\TranslatableException;
 use Exception;
 use Modules\Auth\Enums\AuthStatusEnum;
 

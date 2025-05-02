@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Actions\User;
 
-use App\Http\Resources\UserResource;
+use Modules\Core\Http\Resources\UserResource;
 use Modules\Core\Services\User\UserFindService;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;

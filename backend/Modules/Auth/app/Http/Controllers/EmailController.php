@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Modules\Core\Http\Controllers\Controller;
 use Modules\Core\Services\FrontendService;
 use Exception;
 use Illuminate\Http\RedirectResponse;

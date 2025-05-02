@@ -2,7 +2,7 @@
 
 namespace Modules\Notifications\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Modules\Core\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -16,7 +16,7 @@ class NotificationsController extends Controller
     public function listNotifications(Request $request): AnonymousResourceCollection
     {
         /** @var User $user */
-        $user = $request->user();
+        $user          = $request->user();
         $notifications = $user->notifications()
             ->limit(15)
             ->orderBy('read_at', 'desc')

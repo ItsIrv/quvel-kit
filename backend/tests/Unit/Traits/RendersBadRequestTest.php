@@ -3,7 +3,7 @@
 namespace Tests\Unit\Traits;
 
 use Modules\Core\Contracts\TranslatableEntity;
-use App\Traits\RendersBadRequest;
+use Modules\Core\Traits\RendersBadRequest;
 use Exception;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;

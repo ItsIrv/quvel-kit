@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits;
+namespace Modules\Core\Traits;
 
 use Modules\Core\Contracts\TranslatableEntity;
 use Illuminate\Http\JsonResponse;

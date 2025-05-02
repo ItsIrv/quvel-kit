@@ -3,7 +3,7 @@
 namespace Tests\Unit\Traits;
 
 use Modules\Core\Contracts\TranslatableEntity;
-use App\Traits\TranslatableException;
+use Modules\Core\Traits\TranslatableException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;

@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Tests\Unit\Actions\User;
 
-use App\Http\Resources\UserResource;
+use Modules\Core\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Mockery;
@@ -30,7 +30,7 @@ class GetSessionActionTest extends TestCase
     public function test_get_session_returns_user_resource(): void
     {
         // Arrange
-        $user = User::factory()->make();
+        $user    = User::factory()->make();
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('user')->once()->andReturn($user);
 

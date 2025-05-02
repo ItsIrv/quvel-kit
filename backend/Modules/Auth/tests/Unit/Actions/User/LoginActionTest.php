@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Tests\Unit\Actions\User;
 
-use App\Http\Resources\UserResource;
+use Modules\Core\Http\Resources\UserResource;
 use App\Models\User;
 use Modules\Core\Services\User\UserFindService;
 use Illuminate\Contracts\Routing\ResponseFactory;

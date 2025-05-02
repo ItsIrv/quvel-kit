@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Enums;
 
-use App\Traits\TranslatableEnum;
+use Modules\Core\Traits\TranslatableEnum;
 
 enum OAuthStatusEnum: string
 {

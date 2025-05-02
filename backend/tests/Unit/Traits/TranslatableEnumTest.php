@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Traits;
 
-use App\Traits\TranslatableEnum;
+use Modules\Core\Traits\TranslatableEnum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Lang;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -22,7 +22,8 @@ class TranslatableEnumTest extends TestCase
      */
     public function test_get_translated_message(): void
     {
-        $enumInstance = new class () {
+        $enumInstance = new class ()
+        {
             use TranslatableEnum;
 
             public $value = 'example_message';
