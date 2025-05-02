@@ -8,10 +8,13 @@ use Modules\Core\Services\User\UserFindService;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
-use Illuminate\Support\ServiceProvider;
 
-class CoreServiceProvider extends ServiceProvider
+class CoreServiceProvider extends ModuleServiceProvider
 {
+    protected string $name = 'Core';
+
+    protected string $nameLower = 'core';
+
     /**
      * Register any application services.
      */
@@ -28,13 +31,5 @@ class CoreServiceProvider extends ServiceProvider
                 ->setCapacitorScheme(config('frontend.capacitor_scheme'))
                 ->setIsCapacitor($app->make(Request::class)->hasHeader('X-Capacitor'));
         });
-    }
-
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        $this->app['request']->server->set('HTTPS', 'on');
     }
 }

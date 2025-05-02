@@ -8,7 +8,6 @@ export function showNotification(
   message: string,
   options: QNotifyCreateOptions = {},
 ): void {
-  console.log('showNotification', type, message, options);
   if (typeof window === 'undefined') {
     return;
   }

@@ -3,10 +3,10 @@ name: Backend CI
 on:
   push:
     branches: [main, develop]
-    paths: ['backend/**', '.github/**']
+    paths: ['backend/**']
   pull_request:
     branches: [main, develop]
-    paths: ['backend/**', '.github/**']
+    paths: ['backend/**']
 
 jobs:
   backend-tests:
@@ -60,7 +60,7 @@ jobs:
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
-        continue-on-error: true
+          continue-on-error: true
         run: php artisan test --coverage-clover=coverage.xml --testdox
 
       - name: Upload Coverage to Codecov

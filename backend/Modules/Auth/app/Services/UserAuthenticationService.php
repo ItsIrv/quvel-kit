@@ -66,7 +66,7 @@ class UserAuthenticationService
             }
 
             // Ensure email is verified
-            if (!$user->hasVerifiedEmail()) {
+            if (!$user->hasVerifiedEmail() && config('auth.verify_email_before_login')) {
                 return [$user, OAuthStatusEnum::EMAIL_NOT_VERIFIED];
             }
 

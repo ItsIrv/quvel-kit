@@ -22,6 +22,11 @@ export default {
       },
     },
   },
+  status: {
+    errors: {
+      internalError: 'Internal error.',
+    },
+  },
   language: 'Language',
   placeholder: 'Placeholder',
 };

@@ -88,6 +88,7 @@ class FrontendService
         if (!$this->isCapacitor || $this->capacitorScheme === '_deep') {
             return $this->redirector->away($finalUrl);
         }
+
         return $this->responseFactory->view('redirect', [
             'message'   => null,
             'schemeUrl' => $finalUrl,

@@ -130,7 +130,6 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * OAuth Flow: Request nonce, store it, and redirect.
        */
       async loginWithOAuth(provider: string, stateless: boolean) {
-        stateless = true;
         const redirectBase = `${this.$container.config.get('apiUrl')}/auth/provider/${provider}/redirect`;
 
         if (!stateless) {
@@ -196,7 +195,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
           void handleOAuthFlow(nonce);
 
-          window.open(`${redirectBase}?nonce=${encodeURIComponent(nonce)}`);
+          window.location.href = `${redirectBase}?nonce=${encodeURIComponent(nonce)}`;
         } catch {
           showNotification('negative', this.$container.i18n.t('common.task.error'));
         }

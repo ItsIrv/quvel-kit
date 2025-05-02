@@ -14,7 +14,7 @@ enum OAuthStatusEnum: string
     case INVALID_USER         = 'auth::status.errors.invalidUser';
     case EMAIL_TAKEN          = 'auth::status.errors.emailTaken';
     case INVALID_CONFIG       = 'auth::status.errors.invalidConfig';
-    case INTERNAL_ERROR       = 'auth::status.errors.internalError';
+    case INTERNAL_ERROR       = 'common::status.errors.internalError';
     case EMAIL_NOT_VERIFIED   = 'auth::status.warnings.emailNotVerified';
     case LOGIN_SUCCESS        = 'auth::status.success.loggedIn';
     case USER_CREATED         = 'auth::status.success.userCreated';

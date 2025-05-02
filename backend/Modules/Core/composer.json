@@ -10,9 +10,6 @@
     "require": {},
     "extra": {
         "laravel": {
-            "providers": [
-                "Modules\\Core\\Providers\\CoreServiceProvider"
-            ],
             "aliases": {}
         }
     },
