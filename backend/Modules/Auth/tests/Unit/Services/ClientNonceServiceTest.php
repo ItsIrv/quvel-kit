@@ -47,7 +47,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws OAuthException|InvalidArgumentException|RandomException
      */
-    public function test_create_nonce_successfully(): void
+    public function testCreateNonceSuccessfully(): void
     {
         $nonce = 'fixed_nonce_value';
         $signedNonce = 'signed_nonce';
@@ -89,7 +89,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws OAuthException|InvalidArgumentException|RandomException
      */
-    public function test_create_nonce_throws_exception_after_max_retries(): void
+    public function testCreateNonceThrowsExceptionAfterMaxRetries(): void
     {
         $this->cache->shouldReceive('has')
             ->times(1)
@@ -104,7 +104,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * Test retrieving a signed nonce.
      */
-    public function test_get_signed_nonce(): void
+    public function testGetSignedNonce(): void
     {
         $nonce = 'test_nonce';
         $signedNonce = 'signed_nonce';
@@ -122,7 +122,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws OAuthException|InvalidArgumentException
      */
-    public function test_get_nonce_successfully(): void
+    public function testGetNonceSuccessfully(): void
     {
         $signedNonce = 'signed_nonce';
         $nonce = 'test_nonce';
@@ -146,7 +146,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws InvalidArgumentException
      */
-    public function test_get_nonce_throws_exception(): void
+    public function testGetNonceThrowsException(): void
     {
         $this->expectException(OAuthException::class);
         $this->expectExceptionMessage(OAuthStatusEnum::INVALID_NONCE->value);
@@ -162,7 +162,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws InvalidArgumentException
      */
-    public function test_get_nonce_throws_exception_on_invalid_state(): void
+    public function testGetNonceThrowsExceptionOnInvalidState(): void
     {
         $this->expectException(OAuthException::class);
         $this->expectExceptionMessage(OAuthStatusEnum::INVALID_NONCE->value);
@@ -180,7 +180,7 @@ class ClientNonceServiceTest extends TestCase
         $this->service->getNonce('invalid_nonce', -999);
     }
 
-    public function test_assign_user_to_nonce(): void
+    public function testAssignUserToNonce(): void
     {
         $nonce = 'test_nonce';
         $userId = 123;
@@ -196,7 +196,7 @@ class ClientNonceServiceTest extends TestCase
         $this->service->assignUserToNonce($nonce, $userId);
     }
 
-    public function test_forget_nonce(): void
+    public function testForgetNonce(): void
     {
         $nonce = 'test_nonce';
 
@@ -210,7 +210,7 @@ class ClientNonceServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function test_assign_redirected_to_nonce(): void
+    public function testAssignRedirectedToNonce(): void
     {
         $nonce = 'test_nonce';
 
@@ -228,7 +228,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws OAuthException|InvalidArgumentException
      */
-    public function test_get_user_id_from_nonce_successfully(): void
+    public function testGetUserIdFromNonceSuccessfully(): void
     {
         $nonce = 'test_nonce';
         $userId = 123;
@@ -246,7 +246,7 @@ class ClientNonceServiceTest extends TestCase
     /**
      * @throws InvalidArgumentException
      */
-    public function test_get_user_id_from_nonce_throws_exception_on_invalid_user_id(): void
+    public function testGetUserIdFromNonceThrowsExceptionOnInvalidUserId(): void
     {
         $nonce = 'test_nonce';
 

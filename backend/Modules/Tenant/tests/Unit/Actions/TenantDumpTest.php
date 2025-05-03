@@ -16,7 +16,7 @@ class TenantDumpTest extends TestCase
     /**
      * Test that `TenantDump` correctly returns a `TenantDumpTransformer` with the current tenant.
      */
-    public function test_tenant_dump_returns_transformer_with_tenant(): void
+    public function testTenantDumpReturnsTransformerWithTenant(): void
     {
         $tenantContext = $this->createMock(
             TenantContext::class,

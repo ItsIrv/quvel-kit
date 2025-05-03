@@ -24,7 +24,7 @@ class AuthServiceProviderTest extends TestCase
     /**
      * Test that the service provider registers services correctly.
      */
-    public function test_registers_services(): void
+    public function testRegistersServices(): void
     {
         $app = $this->createMock(Application::class);
 

@@ -3,7 +3,6 @@
 namespace Tests\Unit\Providers;
 
 use Modules\Core\Providers\ModuleServiceProvider;
-
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Mockery;
@@ -15,7 +14,8 @@ use ReflectionException;
 use Tests\TestCase;
 
 #[CoversClass(ModuleServiceProvider::class)]
-#[Group('app-providers')]
+#[Group('core-module')]
+#[Group('core-providers')]
 class ModuleServiceProviderTest extends TestCase
 {
     /**
@@ -55,7 +55,7 @@ class ModuleServiceProviderTest extends TestCase
      * @throws ReflectionException
      */
     #[DataProvider('translationDirectoryProvider')]
-    public function test_register_translations(bool $dirExists): void
+    public function testRegisterTranslations(bool $dirExists): void
     {
         $provider = $this->createMockedProvider();
         $langPath = resource_path('lang/modules/tenant');
@@ -82,7 +82,7 @@ class ModuleServiceProviderTest extends TestCase
      *
      * @throws ReflectionException
      */
-    public function test_register_config(): void
+    public function testRegisterConfig(): void
     {
         $provider = $this->createMockedProvider();
 
@@ -97,7 +97,7 @@ class ModuleServiceProviderTest extends TestCase
      *
      * @throws ReflectionException
      */
-    public function test_register_views(): void
+    public function testRegisterViews(): void
     {
         Blade::shouldReceive('componentNamespace')->once()->with(
             Mockery::type('string'),
@@ -117,7 +117,7 @@ class ModuleServiceProviderTest extends TestCase
      *
      * @throws ReflectionException
      */
-    public function test_get_publishable_view_paths(): void
+    public function testGetPublishableViewPaths(): void
     {
         config(['view.paths' => ['/path/to/valid', '/path/to/invalid']]);
 

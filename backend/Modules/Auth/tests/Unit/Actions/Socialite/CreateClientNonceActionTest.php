@@ -45,7 +45,7 @@ class CreateClientNonceActionTest extends TestCase
      * @throws Throwable
      * @throws OAuthException
      */
-    public function test_creates_client_nonce(): void
+    public function testCreatesClientNonce(): void
     {
         // Arrange
         $expectedNonce = 'test-nonce-123';
@@ -79,7 +79,7 @@ class CreateClientNonceActionTest extends TestCase
     /**
      * @throws Throwable
      */
-    public function test_converts_throwable_to_oauth_exception(): void
+    public function testConvertsThrowableToOauthException(): void
     {
         // Arrange
         $generalException = new Exception('General error');

@@ -14,8 +14,9 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\Exception;
 use Tests\TestCase;
 
-#[CoversClass(AppServiceProvider::class)]
-#[Group('app-providers')]
+#[CoversClass(className: AppServiceProvider::class)]
+#[Group('core-module')]
+#[Group('core-providers')]
 class AppServiceProviderTest extends TestCase
 {
     /**
@@ -30,7 +31,7 @@ class AppServiceProviderTest extends TestCase
     /**
      * Ensures the register method binds correct services.
      */
-    public function test_register_method_runs(): void
+    public function testRegisterMethodRuns(): void
     {
         $this->assertTrue(
             $this->app->bound(
@@ -44,7 +45,7 @@ class AppServiceProviderTest extends TestCase
      *
      * @throws BindingResolutionException|Exception
      */
-    public function test_frontend_service_gets_correct_app_url(): void
+    public function testFrontendServiceGetsCorrectAppUrl(): void
     {
         // Mock the TenantContext class
         $mockTenantContext = $this->createMock(TenantContext::class);
@@ -73,7 +74,7 @@ class AppServiceProviderTest extends TestCase
     /**
      * Test that FrontendService resolves as a scoped service, not a singleton.
      */
-    public function test_frontend_service_is_scoped(): void
+    public function testFrontendServiceIsScoped(): void
     {
         // Create two request contexts with different tenant configs
         $firstMockContext = $this->createMock(TenantContext::class);
@@ -110,7 +111,7 @@ class AppServiceProviderTest extends TestCase
     /**
      * Ensures boot forces HTTPS.
      */
-    public function test_boot_forces_https(): void
+    public function testBootForcesHttps(): void
     {
         URL::shouldReceive('forceScheme')
             ->once()

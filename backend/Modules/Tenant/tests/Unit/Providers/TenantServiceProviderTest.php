@@ -29,7 +29,7 @@ class TenantServiceProviderTest extends TestCase
     /**
      * Test that the service provider registers services correctly.
      */
-    public function test_registers_services(): void
+    public function testRegistersServices(): void
     {
         $app = $this->createMock(
             Application::class,
@@ -72,7 +72,7 @@ class TenantServiceProviderTest extends TestCase
     /**
      * Test booting the service provider.
      */
-    public function test_boot(): void
+    public function testBoot(): void
     {
         // Use an assertion flag
         $bootMiddlewareCalled = false;
@@ -97,7 +97,7 @@ class TenantServiceProviderTest extends TestCase
     /**
      * Test registering middleware.
      */
-    public function test_boot_middleware(): void
+    public function testBootMiddleware(): void
     {
         // Mock the Route facade properly
         Route::shouldReceive('aliasMiddleware')
@@ -116,7 +116,7 @@ class TenantServiceProviderTest extends TestCase
      *
      * @throws \ReflectionException
      */
-    public function test_bind_tenant_configs(): void
+    public function testBindTenantConfigs(): void
     {
         // Mock TenantConfig
         $tenantConfig = new TenantConfig(
@@ -176,7 +176,7 @@ class TenantServiceProviderTest extends TestCase
     /**
      * @throws \ReflectionException
      */
-    public function test_bind_tenant_configs_logs_critical_error_when_config_not_found(): void
+    public function testBindTenantConfigsLogsCriticalErrorWhenConfigNotFound(): void
     {
         // Mock Tenant returning null for effective config
         $mockTenant = Mockery::mock(Tenant::class);

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Actions;
 
-use App\Actions\QuvelWelcome;
+use Modules\Core\Actions\QuvelWelcome;
 use Modules\Core\Services\FrontendService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -32,7 +32,7 @@ class QuvelWelcomeTest extends TestCase
     /**
      * Test that the welcome view is returned in the local environment.
      */
-    public function test_returns_welcome_view_in_local_environment(): void
+    public function testReturnsWelcomeViewInLocalEnvironment(): void
     {
         $this->app->detectEnvironment(fn () => 'local');
 
@@ -52,7 +52,7 @@ class QuvelWelcomeTest extends TestCase
     /**
      * Test that the action redirects to the frontend URL in production.
      */
-    public function test_redirects_to_frontend_url_in_production(): void
+    public function testRedirectsToFrontendUrlInProduction(): void
     {
         $url = 'https://quvel.app';
 

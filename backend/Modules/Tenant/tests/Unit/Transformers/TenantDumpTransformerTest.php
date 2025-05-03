@@ -18,7 +18,7 @@ class TenantDumpTransformerTest extends TestCase
     /**
      * Test that the transformer converts a tenant model to an array correctly with no parent or config.
      */
-    public function test_to_array_transforms_tenant_without_parent_or_config(): void
+    public function testToArrayTransformsTenantWithoutParentOrConfig(): void
     {
         $tenant = Tenant::factory()->make();
         $tenant->setRawAttributes([
@@ -47,7 +47,7 @@ class TenantDumpTransformerTest extends TestCase
     /**
      * Test that the transformer includes the parent_id when the tenant has a parent.
      */
-    public function test_to_array_includes_parent_id_when_tenant_has_parent(): void
+    public function testToArrayIncludesParentIdWhenTenantHasParent(): void
     {
         $transformer = new TenantDumpResource($this->tenant->children()->first());
         $result = $transformer->toArray(new Request());
@@ -58,7 +58,7 @@ class TenantDumpTransformerTest extends TestCase
     /**
      * Test that the transformer filters config correctly using the correct factory.
      */
-    public function test_to_array_filters_tenant_config_correctly(): void
+    public function testToArrayFiltersTenantConfigCorrectly(): void
     {
         $tenantConfigArray = TenantConfigFactory::create(
             apiDomain: 'api.example.com',
@@ -89,7 +89,7 @@ class TenantDumpTransformerTest extends TestCase
     /**
      * Test that the transformer handles missing config properly.
      */
-    public function test_to_array_handles_missing_config_gracefully(): void
+    public function testToArrayHandlesMissingConfigGracefully(): void
     {
         $tenant = Tenant::factory()->make(['config' => null]);
 

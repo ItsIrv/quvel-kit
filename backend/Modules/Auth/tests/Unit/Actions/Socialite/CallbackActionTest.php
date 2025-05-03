@@ -57,7 +57,7 @@ class CallbackActionTest extends TestCase
      * @throws Throwable
      * @throws OAuthException
      */
-    public function test_stateless_flow_success(): void
+    public function testStatelessFlowSuccess(): void
     {
         // Arrange
         $provider    = 'google';
@@ -110,7 +110,7 @@ class CallbackActionTest extends TestCase
      * @throws Throwable
      * @throws OAuthException
      */
-    public function test_stateful_flow_redirects_with_status_message(): void
+    public function testStatefulFlowRedirectsWithStatusMessage(): void
     {
         // Arrange
         $provider       = 'google';
@@ -152,7 +152,7 @@ class CallbackActionTest extends TestCase
     /**
      * @throws Throwable
      */
-    public function test_oauth_exception_is_propagated(): void
+    public function testOauthExceptionIsPropagated(): void
     {
         // Arrange
         $provider    = 'google';
@@ -177,7 +177,7 @@ class CallbackActionTest extends TestCase
     /**
      * @throws Throwable
      */
-    public function test_general_exception_is_wrapped_as_oauth_exception(): void
+    public function testGeneralExceptionIsWrappedAsOauthException(): void
     {
         // Arrange
         $provider    = 'google';

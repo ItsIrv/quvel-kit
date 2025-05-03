@@ -6,7 +6,6 @@ use App\Models\User;
 use Modules\Core\Services\User\UserCreateService;
 use Modules\Core\Services\User\UserFindService;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
-use Illuminate\Support\Str;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Modules\Auth\Enums\OAuthStatusEnum;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;

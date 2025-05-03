@@ -21,7 +21,7 @@ class TenantConfigCastTest extends TestCase
      *
      * @throws JsonException
      */
-    public function test_get_returns_null_when_value_is_empty(): void
+    public function testGetReturnsNullWhenValueIsEmpty(): void
     {
         $cast = new TenantConfigCast();
         $model = new Tenant();
@@ -38,7 +38,7 @@ class TenantConfigCastTest extends TestCase
      *
      * @throws JsonException
      */
-    public function test_get_casts_json_to_tenant_config(): void
+    public function testGetCastsJsonToTenantConfig(): void
     {
         $cast = new TenantConfigCast();
         $model = new Tenant();
@@ -87,7 +87,7 @@ class TenantConfigCastTest extends TestCase
      *
      * @throws JsonException
      */
-    public function test_set_returns_null_when_value_is_null(): void
+    public function testSetReturnsNullWhenValueIsNull(): void
     {
         $cast = new TenantConfigCast();
         $model = new Tenant();
@@ -101,7 +101,7 @@ class TenantConfigCastTest extends TestCase
      *
      * @throws JsonException
      */
-    public function test_set_casts_tenant_config_to_json(): void
+    public function testSetCastsTenantConfigToJson(): void
     {
         $cast = new TenantConfigCast();
         $model = new Tenant();
@@ -144,7 +144,7 @@ class TenantConfigCastTest extends TestCase
      *
      * @throws JsonException
      */
-    public function test_set_casts_array_to_json(): void
+    public function testSetCastsArrayToJson(): void
     {
         $cast = new TenantConfigCast();
         $model = new Tenant();

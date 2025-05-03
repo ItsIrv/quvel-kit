@@ -16,7 +16,7 @@ use Tests\TestCase;
 #[Group('auth-exceptions')]
 class OAuthExceptionTest extends TestCase
 {
-    public function test_exception_message_and_render(): void
+    public function testExceptionMessageAndRender(): void
     {
         // Arrange
         $status    = OAuthStatusEnum::INVALID_NONCE;
@@ -48,7 +48,7 @@ class OAuthExceptionTest extends TestCase
         $this->assertStringContainsString($status->value, $response->getTargetUrl());
     }
 
-    public function test_exception_with_previous(): void
+    public function testExceptionWithPrevious(): void
     {
         // If you want to test the 'previous' logic
         $previous = new \Exception('Some underlying error');

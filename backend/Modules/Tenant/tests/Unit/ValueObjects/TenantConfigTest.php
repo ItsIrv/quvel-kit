@@ -16,7 +16,7 @@ class TenantConfigTest extends TestCase
     /**
      * Test creating a `TenantConfig` from an array.
      */
-    public function test_from_array_creates_instance_correctly(): void
+    public function testFromArrayCreatesInstanceCorrectly(): void
     {
         $data = [
             'api_url' => 'https://api.example.com',
@@ -56,7 +56,7 @@ class TenantConfigTest extends TestCase
     /**
      * Test `fromArray` handles missing values and uses defaults.
      */
-    public function test_from_array_handles_missing_values(): void
+    public function testFromArrayHandlesMissingValues(): void
     {
         $config = TenantConfig::fromArray([]);
 
@@ -74,7 +74,7 @@ class TenantConfigTest extends TestCase
     /**
      * Test `toArray` correctly converts object back to array.
      */
-    public function test_to_array_returns_correct_format(): void
+    public function testToArrayReturnsCorrectFormat(): void
     {
         $config = new TenantConfig(
             apiUrl: 'https://api.example.com',
@@ -117,7 +117,7 @@ class TenantConfigTest extends TestCase
     /**
      * Test `fromArray` properly handles invalid visibility values.
      */
-    public function test_from_array_handles_invalid_visibility_values(): void
+    public function testFromArrayHandlesInvalidVisibilityValues(): void
     {
         $data = [
             '__visibility' => [

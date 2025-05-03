@@ -47,7 +47,7 @@ class LoginAction
             throw new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);
         }
 
-        // Check if the user has verified their email
+        // Check if the user has verified their email if verify_email_before_login is true
         if (!$user->hasVerifiedEmail() && config('auth.verify_email_before_login')) {
             throw new LoginActionException(AuthStatusEnum::EMAIL_NOT_VERIFIED);
         }

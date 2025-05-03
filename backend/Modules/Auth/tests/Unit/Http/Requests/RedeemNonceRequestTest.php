@@ -16,7 +16,7 @@ class RedeemNonceRequestTest extends TestCase
     /**
      * Test that the request passes validation with a valid nonce.
      */
-    public function test_request_passes_validation_with_valid_nonce(): void
+    public function testRequestPassesValidationWithValidNonce(): void
     {
         // Arrange
         $validData = ['nonce' => str_repeat('a', 85)];
@@ -31,7 +31,7 @@ class RedeemNonceRequestTest extends TestCase
     /**
      * Test that the request fails validation when 'nonce' is missing.
      */
-    public function test_request_fails_validation_when_nonce_is_missing(): void
+    public function testRequestFailsValidationWhenNonceIsMissing(): void
     {
         // Arrange
         $invalidData = [];
@@ -47,7 +47,7 @@ class RedeemNonceRequestTest extends TestCase
     /**
      * Test that the request fails validation when 'nonce' is invalid.
      */
-    public function test_request_fails_validation_with_invalid_nonce(): void
+    public function testRequestFailsValidationWithInvalidNonce(): void
     {
         // Arrange
         $invalidData = ['nonce' => ''];

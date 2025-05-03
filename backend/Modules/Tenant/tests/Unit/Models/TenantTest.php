@@ -19,7 +19,7 @@ class TenantTest extends TestCase
     /**
      * Test that the Tenant model has the expected fillable properties.
      */
-    public function test_has_fillable_properties(): void
+    public function testHasFillableProperties(): void
     {
         $tenant = new Tenant();
 
@@ -32,7 +32,7 @@ class TenantTest extends TestCase
     /**
      * Test that the Tenant model can create a new factory instance.
      */
-    public function test_can_create_new_factory_instance(): void
+    public function testCanCreateNewFactoryInstance(): void
     {
         $factory = Tenant::newFactory();
 
@@ -45,7 +45,7 @@ class TenantTest extends TestCase
     /**
      * Test that the parent relationship returns a BelongsTo instance.
      */
-    public function test_parent_relationship(): void
+    public function testParentRelationship(): void
     {
         $tenant = new Tenant();
 
@@ -55,7 +55,7 @@ class TenantTest extends TestCase
     /**
      * Test that the children relationship returns a HasMany instance.
      */
-    public function test_children_relationship(): void
+    public function testChildrenRelationship(): void
     {
         $tenant = new Tenant();
 
@@ -65,7 +65,7 @@ class TenantTest extends TestCase
     /**
      * Test that a tenant can be created.
      */
-    public function test_creating_tenant(): void
+    public function testCreatingTenant(): void
     {
         $tenant = Tenant::factory()->create([
             'name' => 'Example Tenant',
@@ -84,7 +84,7 @@ class TenantTest extends TestCase
     /**
      * Test that `getEffectiveConfig()` correctly falls back to the parent's config.
      */
-    public function test_get_effective_config_inherits_parent_config(): void
+    public function testGetEffectiveConfigInheritsParentConfig(): void
     {
         // Create a parent tenant with a config
         $parentTenant = Tenant::factory()->create([
@@ -122,7 +122,7 @@ class TenantTest extends TestCase
     /**
      * Test that `getEffectiveConfig()` returns its own config when no parent exists.
      */
-    public function test_get_effective_config_returns_own_config(): void
+    public function testGetEffectiveConfigReturnsOwnConfig(): void
     {
         $tenant = Tenant::factory()->create([
             'config' => new TenantConfig(
@@ -147,7 +147,7 @@ class TenantTest extends TestCase
     /**
      * Test that `getEffectiveConfig()` returns `null` if no parent or self-config exists.
      */
-    public function test_get_effective_config_returns_null(): void
+    public function testGetEffectiveConfigReturnsNull(): void
     {
         $tenant = Tenant::factory()->create([
             'config' => null,
@@ -160,7 +160,7 @@ class TenantTest extends TestCase
     /**
      * Test that the `config` attribute is properly cast to `TenantConfig`.
      */
-    public function test_config_casts_to_tenant_config(): void
+    public function testConfigCastsToTenantConfig(): void
     {
         $tenant = Tenant::factory()->create([
             'config' => new TenantConfig(

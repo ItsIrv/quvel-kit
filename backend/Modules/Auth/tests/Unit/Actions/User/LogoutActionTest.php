@@ -39,7 +39,7 @@ class LogoutActionTest extends TestCase
     /**
      * Test that the logout action correctly logs out the user.
      */
-    public function test_logout_action_logs_out_user(): void
+    public function testLogoutActionLogsOutUser(): void
     {
         // Arrange
         $this->userAuthenticationService->shouldReceive('logout')

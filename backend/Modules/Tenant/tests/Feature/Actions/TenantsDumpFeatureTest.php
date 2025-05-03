@@ -20,7 +20,7 @@ class TenantsDumpFeatureTest extends TestCase
     /**
      * Test that `TenantsDump` correctly returns cached tenants.
      */
-    public function test_tenants_dump_returns_cached_tenants(): void
+    public function testTenantsDumpReturnsCachedTenants(): void
     {
         // Use $this->createMock() for TenantFindService since it's a normal class
         $tenantFindServiceMock = $this->createMock(TenantFindService::class);
@@ -46,7 +46,7 @@ class TenantsDumpFeatureTest extends TestCase
     /**
      * Test that `TenantsDump` fetches and caches tenants when cache is empty.
      */
-    public function test_tenants_dump_fetches_when_cache_empty(): void
+    public function testTenantsDumpFetchesWhenCacheEmpty(): void
     {
         // Use $this->createMock() for TenantFindService
         $tenantFindServiceMock = $this->createMock(TenantFindService::class);

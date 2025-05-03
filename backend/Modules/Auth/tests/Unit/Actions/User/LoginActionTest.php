@@ -49,7 +49,7 @@ class LoginActionTest extends TestCase
     /**
      * Test successful login.
      */
-    public function test_successful_login(): void
+    public function testSuccessfulLogin(): void
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'password'];
@@ -105,7 +105,7 @@ class LoginActionTest extends TestCase
     /**
      * Test login fails when the user is not found.
      */
-    public function test_login_fails_when_user_not_found(): void
+    public function testLoginFailsWhenUserNotFound(): void
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'password'];
@@ -128,7 +128,7 @@ class LoginActionTest extends TestCase
     /**
      * Test login fails when user registered via social login.
      */
-    public function test_login_fails_when_user_has_no_password(): void
+    public function testLoginFailsWhenUserHasNoPassword(): void
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'password'];
@@ -155,7 +155,7 @@ class LoginActionTest extends TestCase
     /**
      * Test login fails when incorrect password is provided.
      */
-    public function test_login_fails_when_password_is_incorrect(): void
+    public function testLoginFailsWhenPasswordIsIncorrect(): void
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'wrong-password'];
@@ -192,7 +192,7 @@ class LoginActionTest extends TestCase
     /**
      * Test login fails when user email is not verified.
      */
-    public function test_login_fails_when_email_not_verified(): void
+    public function testLoginFailsWhenEmailNotVerified(): void
     {
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'password'];

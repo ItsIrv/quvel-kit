@@ -17,7 +17,7 @@ class TenantNotFoundExceptionTest extends TestCase
     /**
      * Test that the default exception message is set correctly.
      */
-    public function test_exception_message(): void
+    public function testExceptionMessage(): void
     {
         $exception = new TenantNotFoundException();
 
@@ -30,7 +30,7 @@ class TenantNotFoundExceptionTest extends TestCase
     /**
      * Test that the exception message can be set with a custom message.
      */
-    public function test_exception_with_custom_message(): void
+    public function testExceptionWithCustomMessage(): void
     {
         $customMessage = 'Custom tenant not found message';
         $exception = new TenantNotFoundException($customMessage);
@@ -41,7 +41,7 @@ class TenantNotFoundExceptionTest extends TestCase
     /**
      * Test that the exception allows a custom error code.
      */
-    public function test_exception_with_code(): void
+    public function testExceptionWithCode(): void
     {
         $exception = new TenantNotFoundException('Error', 404);
 
@@ -51,7 +51,7 @@ class TenantNotFoundExceptionTest extends TestCase
     /**
      * Test that the exception allows a previous exception.
      */
-    public function test_exception_with_previous(): void
+    public function testExceptionWithPrevious(): void
     {
         $previous = new Exception('Previous exception');
         $exception = new TenantNotFoundException('Error', 0, $previous);

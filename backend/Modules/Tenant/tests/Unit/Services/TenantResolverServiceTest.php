@@ -55,7 +55,7 @@ class TenantResolverServiceTest extends TestCase
      *
      * @throws TenantNotFoundException
      */
-    public function test_resolve_tenant_returns_tenant_from_session_if_available(): void
+    public function testResolveTenantReturnsTenantFromSessionIfAvailable(): void
     {
         $this->tenantSessionService->expects(
             $this->once(),
@@ -74,7 +74,7 @@ class TenantResolverServiceTest extends TestCase
      *
      * @throws TenantNotFoundException
      */
-    public function test_resolve_tenant_returns_tenant_from_find_service_if_available(): void
+    public function testResolveTenantReturnsTenantFromFindServiceIfAvailable(): void
     {
         $this->tenantSessionService->expects(
             $this->once(),
@@ -101,7 +101,7 @@ class TenantResolverServiceTest extends TestCase
     /**
      * Test that resolveTenant throws TenantNotFoundException when tenant is not found by domain.
      */
-    public function test_resolve_tenant_throws_exception_when_tenant_not_found(): void
+    public function testResolveTenantThrowsExceptionWhenTenantNotFound(): void
     {
         $this->tenantSessionService->expects($this->once())
             ->method('getTenant')

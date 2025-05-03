@@ -35,7 +35,7 @@ class OAuthLoginResultTest extends TestCase
     /**
      * Test that OAuthLoginResult event implements ShouldBroadcast.
      */
-    public function test_event_implements_should_broadcast(): void
+    public function testEventImplementsShouldBroadcast(): void
     {
         // Assert
         $this->assertInstanceOf(ShouldBroadcast::class, $this->event);
@@ -44,7 +44,7 @@ class OAuthLoginResultTest extends TestCase
     /**
      * Test that OAuthLoginResult event broadcasts to the correct channel.
      */
-    public function test_event_broadcasts_to_correct_channel(): void
+    public function testEventBroadcastsToCorrectChannel(): void
     {
         // Arrange
         $expectedChannel = new Channel("auth.nonce.$this->nonce");
@@ -56,7 +56,7 @@ class OAuthLoginResultTest extends TestCase
     /**
      * Test that OAuthLoginResult event broadcasts the correct payload.
      */
-    public function test_event_broadcasts_correct_payload(): void
+    public function testEventBroadcastsCorrectPayload(): void
     {
         $this->result->shouldReceive('getStatus')->andReturn(OAuthStatusEnum::LOGIN_SUCCESS);
 
@@ -67,7 +67,7 @@ class OAuthLoginResultTest extends TestCase
     /**
      * Test that OAuthLoginResult event has the correct broadcast name.
      */
-    public function test_event_has_correct_name(): void
+    public function testEventHasCorrectName(): void
     {
         // Assert
         $this->assertEquals('oauth.result', $this->event->broadcastAs());

@@ -3,7 +3,6 @@
 namespace Modules\Tenant\Providers;
 
 use Modules\Core\Providers\ModuleServiceProvider;
-
 use Exception;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Log;

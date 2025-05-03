@@ -20,7 +20,7 @@ class TenantsDumpTest extends TestCase
     /**
      * Test that `TenantsDump` correctly returns cached tenants when available.
      */
-    public function test_tenants_dump_returns_cached_tenants(): void
+    public function testTenantsDumpReturnsCachedTenants(): void
     {
         // Mock dependencies
         $cache = $this->createMock(CacheRepository::class);
@@ -54,7 +54,7 @@ class TenantsDumpTest extends TestCase
     /**
      * Test that `TenantsDump` fetches tenants when cache is empty.
      */
-    public function test_tenants_dump_fetches_when_cache_empty(): void
+    public function testTenantsDumpFetchesWhenCacheEmpty(): void
     {
         // Mock dependencies
         $cache = $this->createMock(CacheRepository::class);

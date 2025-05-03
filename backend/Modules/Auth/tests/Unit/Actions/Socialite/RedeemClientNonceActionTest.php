@@ -48,7 +48,7 @@ class RedeemClientNonceActionTest extends TestCase
      * @throws Throwable
      * @throws OAuthException
      */
-    public function test_redeem_client_nonce_successfully(): void
+    public function testRedeemClientNonceSuccessfully(): void
     {
         // Arrange
         $signedNonce = 'signed-nonce-123';
@@ -88,7 +88,7 @@ class RedeemClientNonceActionTest extends TestCase
     /**
      * @throws Throwable
      */
-    public function test_redeem_client_nonce_oauth_exception_propagates(): void
+    public function testRedeemClientNonceOauthExceptionPropagates(): void
     {
         // Arrange
         $signedNonce    = 'signed-nonce-123';
@@ -113,7 +113,7 @@ class RedeemClientNonceActionTest extends TestCase
     /**
      * @throws Throwable
      */
-    public function test_redeem_client_nonce_general_exception_is_wrapped(): void
+    public function testRedeemClientNonceGeneralExceptionIsWrapped(): void
     {
         // Arrange
         $signedNonce      = 'signed-nonce-123';

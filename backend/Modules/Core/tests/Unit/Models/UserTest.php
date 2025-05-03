@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Models;
+namespace Modules\Core\Tests\Unit\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,14 +9,14 @@ use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(User::class)]
-#[Group('user-module')]
-#[Group('user-models')]
+#[Group('core-module')]
+#[Group('core-models')]
 class UserTest extends TestCase
 {
     /**
      * Test if a User model can be instantiated.
      */
-    public function test_user_model_instantiation(): void
+    public function testUserModelInstantiation(): void
     {
         $user = new User();
         $this->assertInstanceOf(
@@ -28,9 +28,9 @@ class UserTest extends TestCase
     /**
      * Test if the fillable attributes are set correctly.
      */
-    public function test_fillable_attributes(): void
+    public function testFillableAttributes(): void
     {
-        $user = new User();
+        $user     = new User();
         $expected = [
             'public_id',
             'name',
@@ -49,9 +49,9 @@ class UserTest extends TestCase
     /**
      * Test if the hidden attributes are set correctly.
      */
-    public function test_hidden_attributes(): void
+    public function testHiddenAttributes(): void
     {
-        $user = new User();
+        $user     = new User();
         $expected = [
             'password',
             'remember_token',
@@ -66,13 +66,13 @@ class UserTest extends TestCase
     /**
      * Test if the casts are set correctly.
      */
-    public function test_casts(): void
+    public function testCasts(): void
     {
-        $user = new User();
+        $user     = new User();
         $expected = [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'id' => 'int',
+            'password'          => 'hashed',
+            'id'                => 'int',
         ];
 
         $this->assertEquals(
@@ -84,19 +84,19 @@ class UserTest extends TestCase
     /**
      * Test factory usage to generate a user.
      */
-    public function test_user_factory_creates_a_user(): void
+    public function testUserFactoryCreatesAUser(): void
     {
         // TODO: Create trait for mocking TenantContext.
         $user = User::factory()->create();
 
         $this->assertInstanceOf(User::class, $user);
         $this->assertDatabaseHas('users', [
-            'id' => $user->id,
+            'id'    => $user->id,
             'email' => $user->email,
         ]);
     }
 
-    public function test_tenant(): void
+    public function testTenant(): void
     {
         $this->assertInstanceOf(BelongsTo::class, (new User())->tenant());
     }

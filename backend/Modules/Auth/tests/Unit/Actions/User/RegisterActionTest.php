@@ -48,7 +48,7 @@ class RegisterActionTest extends TestCase
     /**
      * Test successful user registration.
      */
-    public function test_register_action_successfully_creates_user(): void
+    public function testRegisterActionSuccessfullyCreatesUser(): void
     {
         // Arrange
         $registerData = ['email' => 'test@example.com', 'password' => 'password'];
@@ -84,7 +84,7 @@ class RegisterActionTest extends TestCase
     /**
      * Test registration failure when email is already in use.
      */
-    public function test_register_action_fails_when_email_already_exists(): void
+    public function testRegisterActionFailsWhenEmailAlreadyExists(): void
     {
         // Arrange
         $registerData = ['email' => 'test@example.com', 'password' => 'password'];

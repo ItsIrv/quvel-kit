@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Http\Resources;
+namespace Modules\Core\Tests\Unit\Http\Resources;
 
 use Modules\Core\Http\Resources\UserResource;
 use App\Models\User;
@@ -10,14 +10,14 @@ use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(UserResource::class)]
-#[Group('user-module')]
-#[Group('user-resources')]
+#[Group('core-module')]
+#[Group('core-resources')]
 class UserResourceTest extends TestCase
 {
     /**
      * Test that the resource transforms a user model correctly.
      */
-    public function test_to_array_transforms_user_correctly(): void
+    public function testToArrayTransformsUserCorrectly(): void
     {
         $name  = $this->faker->name;
         $email = $this->faker->email;

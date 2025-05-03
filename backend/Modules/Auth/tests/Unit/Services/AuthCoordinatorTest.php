@@ -60,7 +60,7 @@ class AuthCoordinatorTest extends TestCase
      * @throws RandomException
      * @throws OAuthException
      */
-    public function test_create_client_nonce(): void
+    public function testCreateClientNonce(): void
     {
         // Arrange
         $nonce = 'generated-nonce';
@@ -85,7 +85,7 @@ class AuthCoordinatorTest extends TestCase
      * @throws InvalidArgumentException
      * @throws OAuthException
      */
-    public function test_build_redirect_response_without_nonce(): void
+    public function testBuildRedirectResponseWithoutNonce(): void
     {
         // Arrange
         $provider         = 'google';
@@ -111,7 +111,7 @@ class AuthCoordinatorTest extends TestCase
      * @throws RandomException
      * @throws OAuthException
      */
-    public function test_build_redirect_response_with_nonce(): void
+    public function testBuildRedirectResponseWithNonce(): void
     {
         // Arrange
         $provider       = 'google';
@@ -151,7 +151,7 @@ class AuthCoordinatorTest extends TestCase
      * @throws InvalidArgumentException
      * @throws OAuthException
      */
-    public function test_authenticate_callback_stateless_login_ok(): void
+    public function testAuthenticateCallbackStatelessLoginOk(): void
     {
         // Arrange
         $provider     = 'google';
@@ -209,7 +209,7 @@ class AuthCoordinatorTest extends TestCase
      * @throws InvalidArgumentException
      * @throws OAuthException
      */
-    public function test_authenticate_callback_stateful_login_ok(): void
+    public function testAuthenticateCallbackStatefulLoginOk(): void
     {
         // Arrange
         $provider     = 'google';
@@ -255,7 +255,7 @@ class AuthCoordinatorTest extends TestCase
      * @throws InvalidArgumentException
      * @throws OAuthException
      */
-    public function test_authenticate_callback_login_not_ok(): void
+    public function testAuthenticateCallbackLoginNotOk(): void
     {
         // Arrange
         $provider     = 'google';
@@ -300,7 +300,7 @@ class AuthCoordinatorTest extends TestCase
      * @throws InvalidArgumentException
      * @throws OAuthException
      */
-    public function test_redeem_client_nonce(): void
+    public function testRedeemClientNonce(): void
     {
         // Arrange
         $requestNonce = 'signed-nonce-789';
@@ -337,7 +337,7 @@ class AuthCoordinatorTest extends TestCase
     /**
      * @throws InvalidArgumentException
      */
-    public function test_redeem_client_nonce_no_user(): void
+    public function testRedeemClientNonceNoUser(): void
     {
         // Arrange
         $requestNonce = 'signed-nonce-789';
@@ -367,7 +367,7 @@ class AuthCoordinatorTest extends TestCase
     /**
      * @throws InvalidArgumentException
      */
-    public function test_redeem_client_nonce_user_not_user(): void
+    public function testRedeemClientNonceUserNotUser(): void
     {
         // Arrange
         $requestNonce = 'signed-nonce-789';

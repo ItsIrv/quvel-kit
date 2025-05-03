@@ -30,7 +30,7 @@ class RedirectActionTest extends TestCase
         $this->action = new RedirectAction($this->authCoordinator);
     }
 
-    public function test_redirect_action_with_nonce(): void
+    public function testRedirectActionWithNonce(): void
     {
         // Arrange
         $provider = 'google';
@@ -58,7 +58,7 @@ class RedirectActionTest extends TestCase
         $this->assertSame($expectedRedirect, $response);
     }
 
-    public function test_redirect_action_without_nonce(): void
+    public function testRedirectActionWithoutNonce(): void
     {
         // Arrange
         $provider = 'google';
@@ -85,7 +85,7 @@ class RedirectActionTest extends TestCase
         $this->assertSame($expectedRedirect, $response);
     }
 
-    public function test_oauth_exception_is_thrown_as_is(): void
+    public function testOauthExceptionIsThrownAsIs(): void
     {
         // Arrange
         $provider = 'google';
@@ -108,7 +108,7 @@ class RedirectActionTest extends TestCase
         $this->action->__invoke($mockReq, $provider);
     }
 
-    public function test_general_exception_is_wrapped_in_oauth_exception(): void
+    public function testGeneralExceptionIsWrappedInOauthException(): void
     {
         // Arrange
         $provider = 'google';

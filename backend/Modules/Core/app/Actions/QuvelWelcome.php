@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions;
+namespace Modules\Core\Actions;
 
 use Modules\Core\Services\FrontendService;
 use Illuminate\Contracts\View\View;

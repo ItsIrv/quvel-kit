@@ -18,7 +18,7 @@ class TenantContextTest extends TestCase
     /**
      * Test setting and getting the tenant.
      */
-    public function test_set_and_get_tenant(): void
+    public function testSetAndGetTenant(): void
     {
         $tenant = Tenant::factory()->make();
         $context = new TenantContext();
@@ -31,7 +31,7 @@ class TenantContextTest extends TestCase
     /**
      * Test getting tenant when none is set throws exception.
      */
-    public function test_get_tenant_throws_exception_when_not_set(): void
+    public function testGetTenantThrowsExceptionWhenNotSet(): void
     {
         $this->expectException(TenantNotFoundException::class);
 
@@ -42,7 +42,7 @@ class TenantContextTest extends TestCase
     /**
      * Test retrieving tenant config.
      */
-    public function test_get_config(): void
+    public function testGetConfig(): void
     {
         $tenant = Tenant::factory()->make([
             'config' => new TenantConfig(
@@ -63,7 +63,7 @@ class TenantContextTest extends TestCase
     /**
      * Test retrieving a specific config value.
      */
-    public function test_get_config_value(): void
+    public function testGetConfigValue(): void
     {
         $tenant = Tenant::factory()->make([
             'config' => new TenantConfig(
@@ -91,7 +91,7 @@ class TenantContextTest extends TestCase
     /**
      * Test retrieving a missing config value returns the default.
      */
-    public function test_get_config_value_returns_default_when_missing(): void
+    public function testGetConfigValueReturnsDefaultWhenMissing(): void
     {
         $tenant = Tenant::factory()->make([
             'config' => new TenantConfig(

@@ -1,6 +1,6 @@
 <?php
 
-use App\Actions\QuvelWelcome;
+use Modules\Core\Actions\QuvelWelcome;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 

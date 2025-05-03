@@ -16,7 +16,7 @@ class LoginRequestTest extends TestCase
     /**
      * Test that the request passes validation with correct data.
      */
-    public function test_request_passes_validation_with_valid_data(): void
+    public function testRequestPassesValidationWithValidData(): void
     {
         // Arrange
         $validData = [
@@ -34,7 +34,7 @@ class LoginRequestTest extends TestCase
     /**
      * Test that the request fails validation when 'email' is missing.
      */
-    public function test_request_fails_validation_when_email_is_missing(): void
+    public function testRequestFailsValidationWhenEmailIsMissing(): void
     {
         // Arrange
         $invalidData = [
@@ -52,7 +52,7 @@ class LoginRequestTest extends TestCase
     /**
      * Test that the request fails validation when 'password' is missing.
      */
-    public function test_request_fails_validation_when_password_is_missing(): void
+    public function testRequestFailsValidationWhenPasswordIsMissing(): void
     {
         // Arrange
         $invalidData = [
@@ -70,7 +70,7 @@ class LoginRequestTest extends TestCase
     /**
      * Test that 'email' follows EmailRule validation.
      */
-    public function test_request_fails_validation_with_invalid_email(): void
+    public function testRequestFailsValidationWithInvalidEmail(): void
     {
         // Arrange
         $invalidData = [
@@ -89,7 +89,7 @@ class LoginRequestTest extends TestCase
     /**
      * Test that 'password' follows PasswordRule validation.
      */
-    public function test_request_fails_validation_with_invalid_password(): void
+    public function testRequestFailsValidationWithInvalidPassword(): void
     {
         // Arrange
         $invalidData = [

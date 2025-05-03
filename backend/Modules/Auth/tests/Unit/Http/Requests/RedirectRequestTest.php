@@ -27,7 +27,7 @@ class RedirectRequestTest extends TestCase
     /**
      * Test that the request passes validation with valid data.
      */
-    public function test_redirect_request_passes_with_valid_data(): void
+    public function testRedirectRequestPassesWithValidData(): void
     {
         // Arrange
         $validData = [
@@ -46,7 +46,7 @@ class RedirectRequestTest extends TestCase
      * Test that the request fails validation with invalid data.
      */
     #[DataProvider('invalidDataProvider')]
-    public function test_redirect_request_fails_with_invalid_data(array $invalidData, array $expectedErrors): void
+    public function testRedirectRequestFailsWithInvalidData(array $invalidData, array $expectedErrors): void
     {
         // Act
         $validator = Validator::make($invalidData, $this->request->rules());
@@ -73,7 +73,7 @@ class RedirectRequestTest extends TestCase
     /**
      * Test that the request rules include the correct rule objects.
      */
-    public function test_redirect_request_uses_correct_rules(): void
+    public function testRedirectRequestUsesCorrectRules(): void
     {
         // Arrange & Act
         $rules = $this->request->rules();
@@ -92,7 +92,7 @@ class RedirectRequestTest extends TestCase
      *
      * @throws \ReflectionException
      */
-    public function test_prepare_for_validation_merges_route_parameters(): void
+    public function testPrepareForValidationMergesRouteParameters(): void
     {
         // Arrange: Create a request instance without a provider field
         $request = new RedirectRequest([], [], [], [], [], [

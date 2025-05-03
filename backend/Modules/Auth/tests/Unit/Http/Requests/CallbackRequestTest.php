@@ -17,7 +17,7 @@ class CallbackRequestTest extends TestCase
     /**
      * Test that the request passes validation with correct data.
      */
-    public function test_request_passes_validation_with_valid_data(): void
+    public function testRequestPassesValidationWithValidData(): void
     {
         // Arrange
         $validData = [
@@ -35,7 +35,7 @@ class CallbackRequestTest extends TestCase
     /**
      * Test that the request fails validation when 'state' is missing.
      */
-    public function test_request_fails_validation_when_state_is_missing(): void
+    public function testRequestFailsValidationWhenStateIsMissing(): void
     {
         // Arrange
         $invalidData = [
@@ -53,7 +53,7 @@ class CallbackRequestTest extends TestCase
     /**
      * Test that the request fails validation when 'provider' is missing.
      */
-    public function test_request_fails_validation_when_provider_is_missing(): void
+    public function testRequestFailsValidationWhenProviderIsMissing(): void
     {
         // Arrange
         $invalidData = [
@@ -71,7 +71,7 @@ class CallbackRequestTest extends TestCase
     /**
      * Test that 'provider' follows ProviderRule validation.
      */
-    public function test_request_fails_validation_with_invalid_provider(): void
+    public function testRequestFailsValidationWithInvalidProvider(): void
     {
         // Arrange
         $invalidData = [
@@ -90,7 +90,7 @@ class CallbackRequestTest extends TestCase
     /**
      * Test that 'state' follows TokenRule validation.
      */
-    public function test_request_fails_validation_with_invalid_state(): void
+    public function testRequestFailsValidationWithInvalidState(): void
     {
         // Arrange
         $invalidData = [
@@ -111,7 +111,7 @@ class CallbackRequestTest extends TestCase
      *
      * @throws \ReflectionException
      */
-    public function test_prepare_for_validation_merges_route_parameters(): void
+    public function testPrepareForValidationMergesRouteParameters(): void
     {
         // Arrange: Create a request instance without a provider field
         $request = new CallbackRequest([], [], [], [], [], [

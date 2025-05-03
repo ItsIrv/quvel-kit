@@ -47,7 +47,7 @@ class SocialiteServiceTest extends TestCase
         );
     }
 
-    public function test_get_redirect_response_returns_url_without_server_token(): void
+    public function testGetRedirectResponseReturnsUrlWithoutServerToken(): void
     {
         $redirectUrl = Mockery::mock(RedirectResponse::class);
         $driver = Mockery::mock(AbstractProvider::class);
@@ -64,7 +64,7 @@ class SocialiteServiceTest extends TestCase
         $this->assertSame($redirectUrl, $result);
     }
 
-    public function test_get_redirect_response_returns_url_with_server_token(): void
+    public function testGetRedirectResponseReturnsUrlWithServerToken(): void
     {
         $redirectUrl = Mockery::mock(RedirectResponse::class);
         $driver = Mockery::mock(AbstractProvider::class);
@@ -87,7 +87,7 @@ class SocialiteServiceTest extends TestCase
     /**
      * @throws OAuthException
      */
-    public function test_get_provider_user_returns_stateless_user(): void
+    public function testGetProviderUserReturnsStatelessUser(): void
     {
         $provider = 'google';
         $mockUser = Mockery::mock(SocialiteUser::class);
@@ -108,7 +108,7 @@ class SocialiteServiceTest extends TestCase
     /**
      * @throws OAuthException
      */
-    public function test_get_provider_user_returns_stateful_user(): void
+    public function testGetProviderUserReturnsStatefulUser(): void
     {
         $provider = 'google';
         $mockUser = Mockery::mock(SocialiteUser::class);

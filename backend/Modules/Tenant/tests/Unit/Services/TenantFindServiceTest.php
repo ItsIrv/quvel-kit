@@ -25,7 +25,7 @@ class TenantFindServiceTest extends TestCase
     /**
      * Test that the findTenantByDomain method returns the correct tenant.
      */
-    public function test_find_tenant_by_domain(): void
+    public function testFindTenantByDomain(): void
     {
         $tenant = Tenant::factory()->create([
             'domain' => 'example.com',
@@ -40,7 +40,7 @@ class TenantFindServiceTest extends TestCase
     /**
      * Test that the findTenantByDomain method returns null for a non-existent domain.
      */
-    public function test_find_tenant_by_domain_returns_null(): void
+    public function testFindTenantByDomainReturnsNull(): void
     {
         $foundTenant = $this->service->findTenantByDomain('nonexistent.com');
 
@@ -50,7 +50,7 @@ class TenantFindServiceTest extends TestCase
     /**
      * Test that the findTenantByDomain method returns the parent tenant if it exists.
      */
-    public function test_find_tenant_by_domain_returns_parent(): void
+    public function testFindTenantByDomainReturnsParent(): void
     {
         $parentTenant = Tenant::factory()->create([
             'domain' => 'parent.com',
@@ -70,7 +70,7 @@ class TenantFindServiceTest extends TestCase
     /**
      * Test that findAll method returns all tenants.
      */
-    public function test_find_all_returns_all_tenants(): void
+    public function testFindAllReturnsAllTenants(): void
     {
         Tenant::truncate();
 

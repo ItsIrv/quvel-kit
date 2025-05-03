@@ -11,7 +11,8 @@ use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(ModuleRouteServiceProvider::class)]
-#[Group('app-providers')]
+#[Group('core-module')]
+#[Group('core-providers')]
 class ModuleRouteServiceProviderTest extends TestCase
 {
     /**
@@ -19,8 +20,7 @@ class ModuleRouteServiceProviderTest extends TestCase
      */
     private function createStubProvider(string $moduleName): ModuleRouteServiceProvider
     {
-        return new class ($moduleName) extends ModuleRouteServiceProvider
-        {
+        return new class ($moduleName) extends ModuleRouteServiceProvider {
             public function __construct(protected string $name)
             {
                 parent::__construct($this->name);
@@ -48,8 +48,7 @@ class ModuleRouteServiceProviderTest extends TestCase
      */
     private function createGroupMock(string $expectedPath): Mockery\MockInterface
     {
-        $groupMock = new class ()
-        {
+        $groupMock = new class () {
             public function group(string $path): void
             {
                 // Placeholder for group method
@@ -67,7 +66,7 @@ class ModuleRouteServiceProviderTest extends TestCase
     /**
      * Tests mapping web routes.
      */
-    public function test_map_web_routes(): void
+    public function testMapWebRoutes(): void
     {
         $moduleName   = 'Tenant';
         $expectedPath = module_path($moduleName, '/routes/web.php');
@@ -86,7 +85,7 @@ class ModuleRouteServiceProviderTest extends TestCase
     /**
      * Tests mapping API routes.
      */
-    public function test_map_api_routes(): void
+    public function testMapApiRoutes(): void
     {
         $moduleName   = 'Tenant';
         $expectedPath = module_path($moduleName, '/routes/api.php');
@@ -115,7 +114,7 @@ class ModuleRouteServiceProviderTest extends TestCase
     /**
      * Tests mapping channel routes.
      */
-    public function test_map_channel_routes(): void
+    public function testMapChannelRoutes(): void
     {
         $moduleName   = 'Tenant';
         $expectedPath = module_path($moduleName, '/routes/channels.php');

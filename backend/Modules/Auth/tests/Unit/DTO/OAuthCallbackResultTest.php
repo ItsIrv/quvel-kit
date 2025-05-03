@@ -47,7 +47,7 @@ class OAuthCallbackResultTest extends TestCase
     }
 
     #[DataProvider('statusProvider')]
-    public function test_oauth_authentication_result(
+    public function testOauthAuthenticationResult(
         OAuthStatusEnum $status,
         ?string $signedNonce,
         bool $expectedIsStateless,

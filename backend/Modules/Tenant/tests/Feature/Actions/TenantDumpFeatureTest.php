@@ -18,7 +18,7 @@ class TenantDumpFeatureTest extends TestCase
     /**
      * Test retrieving the tenant successfully.
      */
-    public function test_tenant_dump_success(): void
+    public function testTenantDumpSuccess(): void
     {
         $response = $this->getJson(
             route('tenant'),
@@ -37,7 +37,7 @@ class TenantDumpFeatureTest extends TestCase
     /**
      * Test retrieving the tenant fails when tenant is incorrect or does not exist.
      */
-    public function test_tenant_dump_throws_exception_without_tenat(): void
+    public function testTenantDumpThrowsExceptionWithoutTenat(): void
     {
         // Simulate incorrect tenant by deleting all.
         DB::table('tenants')->delete();

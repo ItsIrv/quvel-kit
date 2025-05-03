@@ -35,7 +35,7 @@ class NonceSessionServiceTest extends TestCase
         $this->service = new NonceSessionService($this->session, $this->config);
     }
 
-    public function test_set_nonce_stores_nonce_and_timestamp(): void
+    public function testSetNonceStoresNonceAndTimestamp(): void
     {
         $nonce = 'test_nonce';
         $timestamp = Carbon::now();
@@ -55,7 +55,7 @@ class NonceSessionServiceTest extends TestCase
         $this->service->setNonce($nonce);
     }
 
-    public function test_get_nonce_returns_nonce_if_valid(): void
+    public function testGetNonceReturnsNonceIfValid(): void
     {
         $nonce = 'test_nonce';
 
@@ -79,7 +79,7 @@ class NonceSessionServiceTest extends TestCase
         $this->assertEquals($nonce, $result);
     }
 
-    public function test_get_nonce_returns_null_if_invalid(): void
+    public function testGetNonceReturnsNullIfInvalid(): void
     {
         // Mock `isValid` to return `false`
         $this->session->shouldReceive('get')
@@ -104,7 +104,7 @@ class NonceSessionServiceTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function test_is_valid_returns_true_if_nonce_is_within_ttl(): void
+    public function testIsValidReturnsTrueIfNonceIsWithinTtl(): void
     {
         // Mock valid nonce and timestamp
         $timestamp = Carbon::now()->subSeconds(30); // 30 seconds ago
@@ -127,7 +127,7 @@ class NonceSessionServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function test_is_valid_returns_false_if_nonce_or_timestamp_does_not_exist(): void
+    public function testIsValidReturnsFalseIfNonceOrTimestampDoesNotExist(): void
     {
         // Case 1: `nonce` or `timestamp` is missing
         $this->session->shouldReceive('get')
@@ -145,7 +145,7 @@ class NonceSessionServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function test_is_valid_returns_false_if_nonce_is_expired(): void
+    public function testIsValidReturnsFalseIfNonceIsExpired(): void
     {
         // Mock expired timestamp
         $timestamp = Carbon::now()->subSeconds(120); // 120 seconds ago
@@ -168,7 +168,7 @@ class NonceSessionServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function test_clear_removes_nonce_and_timestamp(): void
+    public function testClearRemovesNonceAndTimestamp(): void
     {
         // Mock session `forget` calls
         $this->session->shouldReceive('forget')

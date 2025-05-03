@@ -9,10 +9,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
-// ✅ Laravel TestCase, not PHPUnit's
-
 #[CoversClass(TranslatableEnum::class)]
-#[Group('app-traits')]
+#[Group('core-module')]
+#[Group('core-traits')]
 class TranslatableEnumTest extends TestCase
 {
     use RefreshDatabase;
@@ -20,10 +19,9 @@ class TranslatableEnumTest extends TestCase
     /**
      * Test that getTranslatedMessage returns the correct translation.
      */
-    public function test_get_translated_message(): void
+    public function testGetTranslatedMessage(): void
     {
-        $enumInstance = new class ()
-        {
+        $enumInstance = new class () {
             use TranslatableEnum;
 
             public $value = 'example_message';

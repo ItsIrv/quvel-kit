@@ -9,17 +9,17 @@ use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(TranslatableException::class)]
-#[Group('app-traits')]
+#[Group('core-module')]
+#[Group('core-traits')]
 class TranslatableExceptionTest extends TestCase
 {
     /**
      * Test that getTranslatedMessage() returns a valid translation string.
      */
-    public function test_get_translated_message_returns_valid_translation(): void
+    public function testGetTranslatedMessageReturnsValidTranslation(): void
     {
         // Mock an exception class that uses the trait
-        $exception = new class ('validation.required') extends \Exception
-        {
+        $exception = new class ('validation.required') extends \Exception {
             use TranslatableException;
         };
 
@@ -34,11 +34,10 @@ class TranslatableExceptionTest extends TestCase
     /**
      * Test that getTranslatedMessage() returns an empty string for missing translation.
      */
-    public function test_get_translated_message_returns_empty_string_when_translation_not_found(): void
+    public function testGetTranslatedMessageReturnsEmptyStringWhenTranslationNotFound(): void
     {
         // Mock an exception class that uses the trait
-        $exception = new class ('missing.translation.key') extends \Exception
-        {
+        $exception = new class ('missing.translation.key') extends \Exception {
             use TranslatableException;
         };
 
@@ -48,7 +47,7 @@ class TranslatableExceptionTest extends TestCase
     /**
      * Test that getTranslatedMessage() is called on message if it implements TranslatableEntity.
      */
-    public function test_get_translated_message_called_on_translatable_entity(): void
+    public function testGetTranslatedMessageCalledOnTranslatableEntity(): void
     {
         // Create a mock for TranslatableEntity
         $translatableEntityMock = $this->createMock(
@@ -61,8 +60,7 @@ class TranslatableExceptionTest extends TestCase
             ->willReturn('Translated Message');
 
         // Mock an exception class that uses the trait
-        $exception = new class ($translatableEntityMock)
-        {
+        $exception = new class ($translatableEntityMock) {
             use TranslatableException;
 
             public function __construct(protected TranslatableEntity $message)

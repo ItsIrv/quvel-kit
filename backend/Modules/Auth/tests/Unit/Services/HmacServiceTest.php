@@ -31,7 +31,7 @@ class HmacServiceTest extends TestCase
         $this->service = new HmacService($config);
     }
 
-    public function test_sign_generates_valid_hmac(): void
+    public function testSignGeneratesValidHmac(): void
     {
         $value = 'test_value';
 
@@ -45,7 +45,7 @@ class HmacServiceTest extends TestCase
         $this->assertEquals($expectedHmac, $hmac);
     }
 
-    public function test_verify_returns_true_for_valid_hmac(): void
+    public function testVerifyReturnsTrueForValidHmac(): void
     {
         $value = 'test_value';
 
@@ -59,7 +59,7 @@ class HmacServiceTest extends TestCase
         $this->assertTrue($isValid);
     }
 
-    public function test_verify_returns_false_for_invalid_hmac(): void
+    public function testVerifyReturnsFalseForInvalidHmac(): void
     {
         $value = 'test_value';
         $invalidHmac = 'invalid_hmac';
@@ -71,7 +71,7 @@ class HmacServiceTest extends TestCase
         $this->assertFalse($isValid);
     }
 
-    public function test_sign_with_hmac_returns_formatted_value(): void
+    public function testSignWithHmacReturnsFormattedValue(): void
     {
         $value = 'test_value';
 
@@ -86,7 +86,7 @@ class HmacServiceTest extends TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function test_extract_and_verify_returns_original_value_when_valid(): void
+    public function testExtractAndVerifyReturnsOriginalValueWhenValid(): void
     {
         $value = 'test_value';
 
@@ -101,7 +101,7 @@ class HmacServiceTest extends TestCase
         $this->assertEquals($value, $originalValue);
     }
 
-    public function test_extract_and_verify_returns_null_when_hmac_is_invalid(): void
+    public function testExtractAndVerifyReturnsNullWhenHmacIsInvalid(): void
     {
         $signedValue = 'test_value.invalid_hmac';
 
@@ -112,7 +112,7 @@ class HmacServiceTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function test_extract_and_verify_returns_null_for_malformed_string(): void
+    public function testExtractAndVerifyReturnsNullForMalformedString(): void
     {
         $signedValue = 'invalid_format_string';
 

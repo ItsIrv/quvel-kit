@@ -13,8 +13,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Tests\TestCase;
 
 #[CoversClass(UserCreateService::class)]
-#[Group('user-module')]
-#[Group('user-services')]
+#[Group('core-module')]
+#[Group('core-services')]
 class UserCreateServiceTest extends TestCase
 {
     private UserCreateService $userCreateService;
@@ -34,7 +34,7 @@ class UserCreateServiceTest extends TestCase
     /**
      * Test that create successfully creates a user with hashed password.
      */
-    public function test_create_user_successfully(): void
+    public function testCreateUserSuccessfully(): void
     {
         $name  = $this->faker->name;
         $email = $this->faker->email;

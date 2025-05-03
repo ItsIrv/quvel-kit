@@ -17,7 +17,7 @@ class LoginActionExceptionTest extends TestCase
     /**
      * Test that the exception message is set correctly.
      */
-    public function test_exception_message(): void
+    public function testExceptionMessage(): void
     {
         $exception = new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);
 
@@ -30,7 +30,7 @@ class LoginActionExceptionTest extends TestCase
     /**
      * Test that the exception allows a previous exception.
      */
-    public function test_exception_with_previous(): void
+    public function testExceptionWithPrevious(): void
     {
         $previous = new Exception('Previous exception');
         $exception = new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);

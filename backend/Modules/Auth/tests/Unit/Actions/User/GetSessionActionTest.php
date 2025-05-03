@@ -27,7 +27,7 @@ class GetSessionActionTest extends TestCase
     /**
      * Test that the session action returns the correct user resource.
      */
-    public function test_get_session_returns_user_resource(): void
+    public function testGetSessionReturnsUserResource(): void
     {
         // Arrange
         $user    = User::factory()->make();

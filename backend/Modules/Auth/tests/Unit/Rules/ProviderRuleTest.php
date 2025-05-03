@@ -29,7 +29,7 @@ class ProviderRuleTest extends TestCase
     }
 
     #[DataProvider('providerData')]
-    public function test_provider_rule(string $provider, bool $shouldPass): void
+    public function testProviderRule(string $provider, bool $shouldPass): void
     {
         $validator = Validator::make(
             ['provider' => $provider],
@@ -50,7 +50,7 @@ class ProviderRuleTest extends TestCase
         ];
     }
 
-    public function test_invalid_provider_fails_with_correct_message(): void
+    public function testInvalidProviderFailsWithCorrectMessage(): void
     {
         // Mock Translator
         $translatorMock = Mockery::mock(Translator::class);

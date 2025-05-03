@@ -14,8 +14,8 @@ use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(FrontendService::class)]
-#[Group('frontend')]
-#[Group('services')]
+#[Group('core-module')]
+#[Group('core-services')]
 class FrontendServiceTest extends TestCase
 {
     private FrontendService $frontendService;
@@ -60,7 +60,7 @@ class FrontendServiceTest extends TestCase
     /**
      * Test redirect to a frontend route for normal requests.
      */
-    public function test_redirect(): void
+    public function testRedirect(): void
     {
         $path        = '/dashboard';
         $expectedUrl = "$this->baseUrl$path";
@@ -80,7 +80,7 @@ class FrontendServiceTest extends TestCase
     /**
      * Test redirect to a frontend page with query parameters for normal requests.
      */
-    public function test_redirect_with_query_parameters(): void
+    public function testRedirectWithQueryParameters(): void
     {
         $path        = '/profile';
         $params      = ['id' => 42, 'mode' => 'edit'];
@@ -101,7 +101,7 @@ class FrontendServiceTest extends TestCase
     /**
      * Test redirect with capacitor scheme `_deep`.
      */
-    public function test_redirect_with_capacitor_deep_scheme(): void
+    public function testRedirectWithCapacitorDeepScheme(): void
     {
         $path        = '/settings';
         $params      = ['setting' => 'dark'];
@@ -134,7 +134,7 @@ class FrontendServiceTest extends TestCase
         $this->assertEquals($expectedUrl, $response->getTargetUrl());
     }
 
-    public function test_redirect_with_custom_capacitor_scheme(): void
+    public function testRedirectWithCustomCapacitorScheme(): void
     {
         $path         = '/dashboard';
         $params       = ['user' => '123'];
@@ -175,7 +175,7 @@ class FrontendServiceTest extends TestCase
     /**
      * Test generating a URL without redirecting.
      */
-    public function test_get_page_url(): void
+    public function testGetPageUrl(): void
     {
         $path        = '/settings';
         $params      = ['theme' => 'dark'];
@@ -186,7 +186,7 @@ class FrontendServiceTest extends TestCase
         $this->assertEquals($expectedUrl, $url);
     }
 
-    public function test_set_is_capacitor(): void
+    public function testSetIsCapacitor(): void
     {
         $this->frontendService->setIsCapacitor(true);
         $reflectionValue = (new \ReflectionObject($this->frontendService))->getProperty('isCapacitor');

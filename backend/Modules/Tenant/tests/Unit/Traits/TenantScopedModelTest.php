@@ -61,7 +61,7 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that a model with the TenantScopedModel trait automatically sets the tenant_id on creation.
      */
-    public function test_tenant_id_set_on_creation(): void
+    public function testTenantIdSetOnCreation(): void
     {
         $model = TestTenantModel::create();
 
@@ -71,7 +71,7 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that queries are properly scoped to the current tenant.
      */
-    public function test_queries_are_scoped_to_current_tenant(): void
+    public function testQueriesAreScopedToCurrentTenant(): void
     {
         // Count total records in the table (including our seeded multi-tenant records)
         $totalCount = DB::table('test_tenant_models')->count();
@@ -105,7 +105,7 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that saving a model always enforces the current tenant ID from context.
      */
-    public function test_tenant_id_enforced_on_save(): void
+    public function testTenantIdEnforcedOnSave(): void
     {
         // Create a model without explicitly setting tenant_id
         $model       = new TestTenantModel();
@@ -124,7 +124,7 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that updating a model with the correct tenant_id works.
      */
-    public function test_update_with_correct_tenant_id(): void
+    public function testUpdateWithCorrectTenantId(): void
     {
         $model        = TestTenantModel::create();
         $updateResult = $model->update(['name' => 'Updated Name']);
@@ -136,7 +136,7 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that updating a model enforces the current tenant ID from context.
      */
-    public function test_tenant_id_enforced_on_update(): void
+    public function testTenantIdEnforcedOnUpdate(): void
     {
         // Create a model
         $model      = TestTenantModel::create(['name' => 'Original Name']);
@@ -161,7 +161,7 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that deleting a model with the correct tenant_id works.
      */
-    public function test_delete_with_correct_tenant_id(): void
+    public function testDeleteWithCorrectTenantId(): void
     {
         $model        = TestTenantModel::create();
         $deleteResult = $model->delete();
@@ -173,7 +173,7 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that models can only be deleted within the current tenant scope.
      */
-    public function test_delete_respects_tenant_scope(): void
+    public function testDeleteRespectsTenantScope(): void
     {
         // Create a model
         $model   = TestTenantModel::create(['name' => 'To Be Deleted']);
@@ -197,7 +197,7 @@ class TenantScopedModelTest extends TestCase
     /**
      * Test that global delete operations are properly scoped to current tenant.
      */
-    public function test_global_delete_is_scoped(): void
+    public function testGlobalDeleteIsScoped(): void
     {
         // Create some records for the current tenant
         TestTenantModel::create(['name' => 'Current Tenant Record 1']);

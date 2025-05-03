@@ -17,7 +17,7 @@ class TenantScopeTest extends TestCase
     /**
      * Test that the scope is applied correctly.
      */
-    public function test_apply_scope(): void
+    public function testApplyScope(): void
     {
         $mockBuilder = $this->createMock(Builder::class);
         $mockBuilder->expects($this->once())

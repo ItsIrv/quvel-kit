@@ -49,7 +49,7 @@ class ServerTokenServiceTest extends TestCase
     /**
      * @throws RandomException
      */
-    public function test_create_generates_secure_token_and_stores_it_in_cache(): void
+    public function testCreateGeneratesSecureTokenAndStoresItInCache(): void
     {
         $nonce = 'test_nonce';
         $serverToken = 'secure_random_token';
@@ -98,7 +98,7 @@ class ServerTokenServiceTest extends TestCase
     /**
      * @throws RandomException
      */
-    public function test_generate_random_token_produces_secure_random_string(): void
+    public function testGenerateRandomTokenProducesSecureRandomString(): void
     {
         // Act
         $result = $this->service->generateRandomToken();
@@ -108,7 +108,7 @@ class ServerTokenServiceTest extends TestCase
         $this->assertEquals(128, strlen($result)); // 64 bytes = 128 hex characters
     }
 
-    public function test_get_signed_token_returns_signed_server_token(): void
+    public function testGetSignedTokenReturnsSignedServerToken(): void
     {
         $serverToken = 'test_server_token';
         $signedToken = 'test_signed_token';
@@ -129,7 +129,7 @@ class ServerTokenServiceTest extends TestCase
     /**
      * @throws InvalidArgumentException
      */
-    public function test_get_client_nonce_retrieves_associated_nonce(): void
+    public function testGetClientNonceRetrievesAssociatedNonce(): void
     {
         $signedServerToken = 'signed_token';
         $serverToken = 'plain_server_token';
@@ -157,7 +157,7 @@ class ServerTokenServiceTest extends TestCase
     /**
      * @throws InvalidArgumentException
      */
-    public function test_get_client_nonce_returns_null_for_invalid_token(): void
+    public function testGetClientNonceReturnsNullForInvalidToken(): void
     {
         $signedServerToken = 'invalid_signed_token';
 
@@ -177,7 +177,7 @@ class ServerTokenServiceTest extends TestCase
     /**
      * @throws OAuthException
      */
-    public function test_forget_removes_token_from_cache(): void
+    public function testForgetRemovesTokenFromCache(): void
     {
         $signedServerToken = 'signed_token';
         $serverToken = 'plain_server_token';
@@ -201,7 +201,7 @@ class ServerTokenServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function test_forget_throws_exception_for_invalid_token(): void
+    public function testForgetThrowsExceptionForInvalidToken(): void
     {
         $signedServerToken = 'invalid_signed_token';
 

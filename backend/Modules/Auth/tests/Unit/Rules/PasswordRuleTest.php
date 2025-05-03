@@ -18,7 +18,7 @@ class PasswordRuleTest extends TestCase
      * Test that the PasswordRule enforces minimum length correctly.
      */
     #[DataProvider('passwordProvider')]
-    public function test_password_rule_enforces_minimum_length(string $password, bool $shouldPass): void
+    public function testPasswordRuleEnforcesMinimumLength(string $password, bool $shouldPass): void
     {
         // Arrange
         $validator = Validator::make(

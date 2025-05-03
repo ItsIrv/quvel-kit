@@ -35,7 +35,7 @@ class TenantMiddlewareTest extends TestCase
     /**
      * Test that the middleware sets the tenant in the context and allows the request to proceed.
      */
-    public function test_handle_sets_tenant_in_context_and_proceeds(): void
+    public function testHandleSetsTenantInContextAndProceeds(): void
     {
         $request = $this->mock(Request::class);
 

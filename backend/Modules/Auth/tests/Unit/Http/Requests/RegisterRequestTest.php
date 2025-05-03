@@ -28,7 +28,7 @@ class RegisterRequestTest extends TestCase
     /**
      * Test that the request passes validation with valid data.
      */
-    public function test_register_request_passes_with_valid_data(): void
+    public function testRegisterRequestPassesWithValidData(): void
     {
         // Arrange
         $validData = [
@@ -48,7 +48,7 @@ class RegisterRequestTest extends TestCase
      * Test that the request fails validation with missing or invalid fields.
      */
     #[DataProvider('invalidDataProvider')]
-    public function test_register_request_fails_with_invalid_data(array $invalidData, array $expectedErrors): void
+    public function testRegisterRequestFailsWithInvalidData(array $invalidData, array $expectedErrors): void
     {
         // Act
         $validator = Validator::make($invalidData, $this->request->rules());
@@ -77,7 +77,7 @@ class RegisterRequestTest extends TestCase
     /**
      * Test that rules use correct rule objects.
      */
-    public function test_register_request_uses_correct_rules(): void
+    public function testRegisterRequestUsesCorrectRules(): void
     {
         // Arrange & Act
         $rules = $this->request->rules();
