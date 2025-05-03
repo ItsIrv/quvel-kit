@@ -352,13 +352,13 @@ class TenantConfig implements Arrayable
 
             // Visibility
             'visibility'              => array_map(
-                static fn ($v): TenantConfigVisibility => TenantConfigVisibility::tryFrom($v) ?? TenantConfigVisibility::PRIVATE,
+                static fn ($v): TenantConfigVisibility => TenantConfigVisibility::tryFrom($v) ?? TenantConfigVisibility::PRIVATE ,
                 $data['__visibility'] ?? [],
             ),
         ];
 
         // Create and return a new instance using the extracted parameters
-        return new self(...array_values($params));
+        return new self(...$params);
     }
 
     public function toArray(): array

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Providers;
+namespace Modules\Core\Tests\Unit\Providers;
 
 use Modules\Core\Providers\ModuleServiceProvider;
 use Illuminate\Foundation\Application;

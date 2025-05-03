@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Services\User;
+namespace Modules\Core\Tests\Unit\Services\User;
 
 use App\Models\User;
 use Modules\Core\Services\User\UserFindService;

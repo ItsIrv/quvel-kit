@@ -14,123 +14,104 @@ use Tests\TestCase;
 class TenantConfigTest extends TestCase
 {
     /**
-     * Test creating a `TenantConfig` from an array.
+     * Provides a minimal valid config array.
      */
+    private function getMinimalValidConfig(): array
+    {
+        return [
+            'app_name'          => 'TenantX',
+            'app_env'           => 'testing',
+            'app_key'           => 'base64:testkey==',
+            'app_debug'         => false,
+            'app_timezone'      => 'UTC',
+            'app_url'           => 'http://localhost',
+            'frontend_url'      => 'http://frontend.local',
+            'mail_host'         => 'smtp.mailtrap.io',
+            'mail_from_address' => 'noreply@tenantx.test',
+            'mail_from_name'    => 'TenantX Support',
+        ];
+    }
+
     public function testFromArrayCreatesInstanceCorrectly(): void
     {
-        $data = [
-            'api_url' => 'https://api.example.com',
-            'app_url' => 'https://example.com',
-            'app_name' => 'Example Tenant',
-            'app_env' => 'production',
-            'internal_api_url' => 'http://internal.example.com',
-            'debug' => true,
-            'mail_from_name' => 'Example Support',
-            'mail_from_address' => 'support@example.com',
-            '__visibility' => [
-                'app_name' => TenantConfigVisibility::PUBLIC->value,
-                'api_url' => TenantConfigVisibility::PUBLIC->value,
-                'internal_api_url' => TenantConfigVisibility::PROTECTED->value,
+        $data = array_merge($this->getMinimalValidConfig(), [
+            'internal_api_url' => 'http://internal.local',
+            'app_debug'        => true,
+            '__visibility'     => [
+                'app_name'         => TenantConfigVisibility::PUBLIC ->value,
+                'internal_api_url' => TenantConfigVisibility::PROTECTED ->value,
             ],
-        ];
+        ]);
 
         $config = TenantConfig::fromArray($data);
 
-        $this->assertEquals('https://api.example.com', $config->apiUrl);
-        $this->assertEquals('https://example.com', $config->appUrl);
-        $this->assertEquals('Example Tenant', $config->appName);
-        $this->assertEquals('production', $config->appEnv);
-        $this->assertEquals('http://internal.example.com', $config->internalApiUrl);
-        $this->assertTrue($config->debug);
-        $this->assertEquals('Example Support', $config->mailFromName);
-        $this->assertEquals('support@example.com', $config->mailFromAddress);
+        $this->assertEquals('TenantX', $config->appName);
+        $this->assertEquals('testing', $config->appEnv);
+        $this->assertEquals('http://localhost', $config->appUrl);
+        $this->assertEquals('http://frontend.local', $config->frontendUrl);
+        $this->assertEquals('http://internal.local', $config->internalApiUrl);
+        $this->assertTrue($config->appDebug);
+        $this->assertEquals('TenantX Support', $config->mailFromName);
+        $this->assertEquals('noreply@tenantx.test', $config->mailFromAddress);
 
-        // Visibility check
         $this->assertEquals([
-            'app_name' => TenantConfigVisibility::PUBLIC,
-            'api_url' => TenantConfigVisibility::PUBLIC,
-            'internal_api_url' => TenantConfigVisibility::PROTECTED,
+            'app_name'         => TenantConfigVisibility::PUBLIC ,
+            'internal_api_url' => TenantConfigVisibility::PROTECTED ,
         ], $config->visibility);
     }
 
-    /**
-     * Test `fromArray` handles missing values and uses defaults.
-     */
-    public function testFromArrayHandlesMissingValues(): void
+    public function testFromArrayHandlesMissingOptionalValues(): void
     {
-        $config = TenantConfig::fromArray([]);
+        $config = TenantConfig::fromArray($this->getMinimalValidConfig());
 
-        $this->assertEquals('', $config->apiUrl);
-        $this->assertEquals('', $config->appUrl);
-        $this->assertEquals('', $config->appName);
-        $this->assertEquals('', $config->appEnv);
+        $this->assertEquals('TenantX', $config->appName);
+        $this->assertEquals('testing', $config->appEnv);
+        $this->assertEquals('http://localhost', $config->appUrl);
+        $this->assertEquals('TenantX Support', $config->mailFromName);
+        $this->assertEquals('noreply@tenantx.test', $config->mailFromAddress);
+
         $this->assertNull($config->internalApiUrl);
-        $this->assertFalse($config->debug);
-        $this->assertEquals('', $config->mailFromName);
-        $this->assertEquals('', $config->mailFromAddress);
+        $this->assertFalse($config->appDebug);
         $this->assertEquals([], $config->visibility);
     }
 
-    /**
-     * Test `toArray` correctly converts object back to array.
-     */
-    public function testToArrayReturnsCorrectFormat(): void
+    public function testToArrayOutputsCorrectData(): void
     {
-        $config = new TenantConfig(
-            apiUrl: 'https://api.example.com',
-            appUrl: 'https://example.com',
-            appName: 'Example Tenant',
-            appEnv: 'production',
-            internalApiUrl: 'http://internal.example.com',
-            debug: true,
-            mailFromName: 'Example Support',
-            mailFromAddress: 'support@example.com',
-            visibility: [
-                'app_name' => TenantConfigVisibility::PUBLIC,
-                'api_url' => TenantConfigVisibility::PUBLIC,
-                'internal_api_url' => TenantConfigVisibility::PROTECTED,
+        $config = TenantConfig::fromArray(array_merge($this->getMinimalValidConfig(), [
+            'app_key'          => 'base64:testkey==',
+            'app_debug'        => true,
+            'internal_api_url' => 'http://internal.local',
+            'capacitor_scheme' => 'app',
+            '__visibility'     => [
+                'app_name' => TenantConfigVisibility::PUBLIC ->value,
             ],
-        );
+        ]));
 
-        $result = $config->toArray();
+        $array = $config->toArray();
 
-        $expected = [
-            'api_url' => 'https://api.example.com',
-            'app_url' => 'https://example.com',
-            'app_name' => 'Example Tenant',
-            'internal_api_url' => 'http://internal.example.com',
-            'app_env' => 'production',
-            'debug' => true,
-            'mail_from_name' => 'Example Support',
-            'mail_from_address' => 'support@example.com',
-            '__visibility' => [
-                'app_name' => TenantConfigVisibility::PUBLIC->value,
-                'api_url' => TenantConfigVisibility::PUBLIC->value,
-                'internal_api_url' => TenantConfigVisibility::PROTECTED->value,
-            ],
-            'capacitor_scheme' => null,
-        ];
-
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
-     * Test `fromArray` properly handles invalid visibility values.
-     */
-    public function testFromArrayHandlesInvalidVisibilityValues(): void
-    {
-        $data = [
-            '__visibility' => [
-                'app_name' => 'invalid_value', // Should default to PRIVATE
-                'api_url' => TenantConfigVisibility::PUBLIC->value,
-            ],
-        ];
-
-        $config = TenantConfig::fromArray($data);
+        $this->assertEquals('TenantX', $array['app_name']);
+        $this->assertEquals('base64:testkey==', $array['app_key']);
+        $this->assertEquals(true, $array['app_debug']);
+        $this->assertEquals('http://internal.local', $array['internal_api_url']);
+        $this->assertEquals('app', $array['capacitor_scheme']);
 
         $this->assertEquals([
-            'app_name' => TenantConfigVisibility::PRIVATE,
-            'api_url' => TenantConfigVisibility::PUBLIC,
+            'app_name' => TenantConfigVisibility::PUBLIC ->value,
+        ], $array['__visibility']);
+    }
+
+    public function testFromArrayHandlesInvalidVisibilityValues(): void
+    {
+        $config = TenantConfig::fromArray(array_merge($this->getMinimalValidConfig(), [
+            '__visibility' => [
+                'app_name' => 'not_a_valid_value',
+                'app_url'  => TenantConfigVisibility::PROTECTED ->value,
+            ],
+        ]));
+
+        $this->assertEquals([
+            'app_name' => TenantConfigVisibility::PRIVATE ,
+            'app_url'  => TenantConfigVisibility::PROTECTED ,
         ], $config->visibility);
     }
 }

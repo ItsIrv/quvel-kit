@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Traits;
+namespace Modules\Core\Tests\Unit\Traits;
 
 use Modules\Core\Contracts\TranslatableEntity;
 use Modules\Core\Traits\RendersBadRequest;

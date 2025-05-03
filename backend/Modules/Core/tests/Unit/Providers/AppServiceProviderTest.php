@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Providers;
+namespace Modules\Core\Tests\Unit\Providers;
 
 use App\Providers\AppServiceProvider;
 use Modules\Core\Services\FrontendService;

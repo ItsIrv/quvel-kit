@@ -60,14 +60,13 @@ jobs:
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
-          continue-on-error: true
-        run: php artisan test --coverage-clover=coverage.xml --testdox
+        run: php artisan test --coverage-clover=../coverage.xml --testdox
 
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./backend/coverage.xml
+          files: ./coverage.xml
           flags: backend
           name: backend
           fail_ci_if_error: true

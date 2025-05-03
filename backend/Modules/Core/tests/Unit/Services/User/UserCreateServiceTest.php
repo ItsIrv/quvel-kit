@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Services\User;
+namespace Modules\Core\Tests\Unit\Services\User;
 
 use Modules\Core\Services\User\UserCreateService;
 use Illuminate\Contracts\Hashing\Hasher;

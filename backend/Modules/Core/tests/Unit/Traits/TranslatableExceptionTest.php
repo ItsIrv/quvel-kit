@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Traits;
+namespace Modules\Core\Tests\Unit\Traits;
 
 use Modules\Core\Contracts\TranslatableEntity;
 use Modules\Core\Traits\TranslatableException;
@@ -19,7 +19,8 @@ class TranslatableExceptionTest extends TestCase
     public function testGetTranslatedMessageReturnsValidTranslation(): void
     {
         // Mock an exception class that uses the trait
-        $exception = new class ('validation.required') extends \Exception {
+        $exception = new class ('validation.required') extends \Exception
+        {
             use TranslatableException;
         };
 
@@ -37,7 +38,8 @@ class TranslatableExceptionTest extends TestCase
     public function testGetTranslatedMessageReturnsEmptyStringWhenTranslationNotFound(): void
     {
         // Mock an exception class that uses the trait
-        $exception = new class ('missing.translation.key') extends \Exception {
+        $exception = new class ('missing.translation.key') extends \Exception
+        {
             use TranslatableException;
         };
 
@@ -60,7 +62,8 @@ class TranslatableExceptionTest extends TestCase
             ->willReturn('Translated Message');
 
         // Mock an exception class that uses the trait
-        $exception = new class ($translatableEntityMock) {
+        $exception = new class ($translatableEntityMock)
+        {
             use TranslatableException;
 
             public function __construct(protected TranslatableEntity $message)

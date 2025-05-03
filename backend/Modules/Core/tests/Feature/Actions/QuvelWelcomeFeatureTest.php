@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Actions;
+namespace Modules\Core\Tests\Feature\Actions;
 
 use Modules\Core\Actions\QuvelWelcome;
 use PHPUnit\Framework\Attributes\CoversClass;

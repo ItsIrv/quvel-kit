@@ -159,7 +159,7 @@ class AuthCoordinatorTest extends TestCase
         $clientNonce  = 'nonce-456'; // non-null => stateless
         $providerUser = Mockery::mock(\Laravel\Socialite\Contracts\User::class);
 
-        $user   = User::first();
+        $user   = User::factory()->create();
         $status = OAuthStatusEnum::LOGIN_SUCCESS;
 
         $this->serverTokenService->shouldReceive('getClientNonce')

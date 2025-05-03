@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Actions;
+namespace Modules\Core\Tests\Unit\Actions;
 
 use Modules\Core\Actions\QuvelWelcome;
 use Modules\Core\Services\FrontendService;

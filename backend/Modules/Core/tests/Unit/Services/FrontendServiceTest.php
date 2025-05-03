@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Services;
+namespace Modules\Core\Tests\Unit\Services;
 
 use Modules\Core\Services\FrontendService;
 use Illuminate\Contracts\Routing\ResponseFactory;
