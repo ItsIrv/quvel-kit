@@ -1,98 +1,123 @@
 import { createAxios } from 'src/modules/Core/utils/axiosUtil';
 import { Tenant, TenantConfigProtected } from '../types/tenant.types';
 
+interface BackendConfig extends Omit<TenantConfigProtected, 'apiUrl'> {
+  frontendUrl: string;
+}
+
+interface CachedTenantConfig {
+  config: TenantConfigProtected;
+  expiresAt: number;
+}
+
 export class TenantCacheService {
-  private static readonly REFRESH_INTERVAL_MS = 1000 * 60;
   private static instance: TenantCacheService;
-  private readonly tenants: Map<string, Tenant> = new Map();
-  private readonly parents: Map<string, Tenant> = new Map();
+  private readonly preloadMode: boolean;
+  private readonly ttl: number;
+  private readonly refreshInterval: number;
 
-  private constructor() {}
+  private readonly domainCache = new Map<string, CachedTenantConfig>();
+  private readonly tenantMap = new Map<string, Tenant & { config: BackendConfig }>();
+  private readonly parentMap = new Map<string, Tenant & { config: BackendConfig }>();
 
-  /**
-   * Get the singleton instance.
-   */
-  public static async getInstance(): Promise<TenantCacheService> {
+  private constructor() {
+    this.preloadMode = Boolean(process.env.VITE_SSR_PRELOAD_TENANTS);
+    this.ttl = Number(process.env.VITE_SSR_TENANT_TTL) || 60 * 5;
+    this.refreshInterval = Number(process.env.VITE_SSR_TENANT_REFRESH_INTERVAL) || this.ttl;
+
+    setTimeout(
+      () => setInterval(() => void this.loadAllTenants(), this.refreshInterval * 1000),
+      this.refreshInterval * 1000,
+    );
+  }
+
+  public static getInstance(): TenantCacheService {
     if (!this.instance) {
       this.instance = new TenantCacheService();
-
-      await this.instance.loadTenants();
-
-      // Refresh cache every minute
-      setInterval(() => void this.instance.loadTenants(), this.REFRESH_INTERVAL_MS); // 1 minute
     }
     return this.instance;
   }
 
-  /**
-   * Load all tenants from API and store in memory.
-   */
-  private async loadTenants(): Promise<void> {
+  public async getTenantConfigByDomain(domain: string): Promise<TenantConfigProtected | null> {
+    if (this.preloadMode) {
+      const tenant = this.tenantMap.get(domain);
+      if (!tenant?.config) return null;
+      const parent = this.getParentTenant(tenant);
+      return this.normalizeConfig(parent);
+    }
+
+    const now = Date.now();
+    const cached = this.domainCache.get(domain);
+    if (cached && cached.expiresAt > now) {
+      return cached.config;
+    }
+
     try {
-      // TODO: Remove tenant cache (dumps) endpoint.
-      // Fetch tenants from API and cache as they are requested by hostname
       const response = await createAxios().get<{
-        data: (Tenant & { config: TenantConfigProtected & { frontendUrl: string } })[];
-      }>(
-        // 'http://quvel-app:8000/tenant/cache'
-        'https://api.quvel.127.0.0.1.nip.io/tenant/cache',
-      );
+        data: Tenant & { config: BackendConfig };
+      }>(`${process.env.VITE_SSR_API_URL}/tenant`, { params: { domain } });
 
-      if (!Array.isArray(response.data.data)) {
-        return;
-      }
+      const tenant = response.data.data;
+      if (!tenant?.config) return null;
 
-      response.data.data.forEach((tenant) => {
-        if (tenant.config) {
-          const tenantConfig = tenant.config;
-          // appUrl should refer to the frontend url in frontend context
-          // in backend context appUrl refers to the backend url
-          tenantConfig.apiUrl = tenant.config.appUrl;
-          tenantConfig.appUrl = tenant.config.frontendUrl;
-          tenantConfig.tenantId = tenant.id;
-          tenantConfig.tenantName = tenant.name;
-
-          if (!tenantConfig.__visibility) {
-            tenantConfig.__visibility = {};
-          }
-
-          // the backend doesnt keep track of these overwrites
-          tenantConfig.__visibility.apiUrl = 'public';
-          tenantConfig.__visibility.tenantId = 'public';
-          tenantConfig.__visibility.tenantName = 'public';
-        }
-
-        this.tenants.set(tenant.domain, tenant);
-
-        if (!tenant.parent_id) {
-          this.parents.set(tenant.id, tenant);
-        }
+      const config = this.normalizeConfig(tenant);
+      this.domainCache.set(domain, {
+        config,
+        expiresAt: now + this.ttl * 1000,
       });
-    } catch (error) {
-      console.error('Failed to load tenants:', error);
+
+      return config;
+    } catch {
+      console.error(`[TenantCacheService] Failed to fetch tenant [${domain}]`);
+      return null;
     }
   }
 
-  /**
-   * Find a tenant's config by domain. Always returns the parent domain config if available.
-   */
-  public getTenantConfigByDomain(domain: string): TenantConfigProtected | null {
-    const tenant = this.tenants.get(domain);
+  private normalizeConfig(tenant: Tenant & { config: BackendConfig }): TenantConfigProtected {
+    const cfg = tenant.config;
+    return {
+      ...cfg,
+      apiUrl: cfg.appUrl,
+      appUrl: cfg.frontendUrl,
+      tenantId: tenant.id,
+      tenantName: tenant.name,
+      __visibility: {
+        ...cfg.__visibility,
+        apiUrl: 'public',
+        tenantId: 'public',
+        tenantName: 'public',
+      },
+    };
+  }
 
-    if (!tenant) {
-      return null;
-    }
+  public async loadAllTenants(): Promise<void> {
+    try {
+      const response = await createAxios().get<{
+        data: (Tenant & { config: BackendConfig })[];
+      }>(`${process.env.VITE_SSR_API_URL}/tenant/cache`);
 
-    if (tenant.parent_id) {
-      const parentTenant = this.parents.get(tenant.parent_id);
+      this.tenantMap.clear();
+      this.parentMap.clear();
 
-      if (!parentTenant) {
-        return null;
+      for (const tenant of response.data.data) {
+        if (!tenant.config) continue;
+        this.tenantMap.set(tenant.domain, tenant);
+        if (!tenant.parent_id) {
+          this.parentMap.set(tenant.id, tenant);
+        }
       }
 
-      return parentTenant.config;
+      console.log(`[TenantCacheService] Preloaded ${this.tenantMap.size} tenants`);
+    } catch {
+      console.error('[TenantCacheService] Failed to preload tenants');
     }
+  }
 
-    return tenant.config;
+  private getParentTenant(tenant: Tenant): Tenant & { config: BackendConfig } {
+    if (tenant.parent_id) {
+      const parent = this.parentMap.get(tenant.parent_id);
+      if (parent) return parent;
+    }
+    return tenant as Tenant & { config: BackendConfig };
   }
 }

@@ -2,58 +2,9 @@ import { type RenderError } from '#q-app';
 import { defineSsrMiddleware } from '#q-app/wrappers';
 import type { Request, Response } from 'express';
 import { TenantCacheService } from '../services/TenantCache';
-import { TenantConfigProtected, TenantConfigVisibilityRecord } from '../types/tenant.types';
-
-const tenantService = TenantCacheService.getInstance();
-
-/**
- * Creates a tenant config object from environment variables.
- * Used in single-tenant mode when VITE_MULTI_TENANT is false.
- */
-function createTenantConfigFromEnv(): TenantConfigProtected {
-  return {
-    apiUrl: process.env.VITE_API_URL || '',
-    appUrl: process.env.VITE_APP_URL || '',
-    appName: process.env.VITE_APP_NAME || '',
-    internalApiUrl: process.env.VITE_INTERNAL_API_URL || '',
-    tenantId: process.env.VITE_TENANT_ID || '',
-    tenantName: process.env.VITE_TENANT_NAME || '',
-    pusherAppKey: process.env.VITE_PUSHER_APP_KEY || '',
-    pusherAppCluster: process.env.VITE_PUSHER_APP_CLUSTER || '',
-    socialiteProviders: (process.env.VITE_SOCIALITE_PROVIDERS || '').split(',').filter(Boolean),
-    __visibility: {
-      apiUrl: 'public',
-      appUrl: 'public',
-      appName: 'public',
-      tenantId: 'public',
-      tenantName: 'public',
-      pusherAppKey: 'public',
-      pusherAppCluster: 'public',
-      socialiteProviders: 'public',
-    },
-  };
-}
-
-/**
- * Filters out non-public fields from the tenant config.
- */
-function filterTenantConfig(config: TenantConfigProtected): Partial<TenantConfigProtected> {
-  const publicConfig: Partial<TenantConfigProtected> = {};
-
-  Object.keys(config.__visibility).forEach((key) => {
-    const typedKey = key as keyof TenantConfigVisibilityRecord;
-
-    if (config.__visibility?.[typedKey] === 'public') {
-      const value = config[typedKey];
-
-      if (typeof value === 'string' || Array.isArray(value)) {
-        publicConfig[typedKey] = value as string & string[];
-      }
-    }
-  });
-
-  return publicConfig;
-}
+import { TenantConfigProtected } from '../types/tenant.types';
+import { createTenantConfigFromEnv, filterTenantConfig } from '../utils/tenantConfigUtil';
+import { isValidHostname } from '../utils/validationUtil';
 
 export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
   app.get(resolve.urlPath('*'), async (req: Request, res: Response) => {
@@ -65,10 +16,18 @@ export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
 
       if (isMultiTenant) {
         // Multi-tenant mode: Get tenant config based on hostname
-        const host = String(req.hostname).match(/[^:]{0,50}/)?.[0] ?? '';
-        tenantConfig = (await tenantService).getTenantConfigByDomain(host);
+        const host = String(req.hostname).split(':')[0] || '';
+
+        if (!isValidHostname(host)) {
+          // TODO: SSR Error pages
+          res.status(400).send('Invalid Hostname');
+          return;
+        }
+
+        tenantConfig = await TenantCacheService.getInstance().getTenantConfigByDomain(host);
 
         if (!tenantConfig) {
+          // TODO: SSR Error pages
           res.status(404).send('Tenant Not Found');
           return;
         }

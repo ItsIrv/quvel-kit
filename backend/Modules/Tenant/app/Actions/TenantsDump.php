@@ -23,7 +23,6 @@ class TenantsDump
         TenantFindService $tenantFindService,
         CacheRepository $cache,
     ): AnonymousResourceCollection {
-        // TODO: Decide how we want to internalize this.
         $tenants = [];
 
         if ($cache->has(self::CACHE_KEY)) {

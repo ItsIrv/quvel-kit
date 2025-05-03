@@ -1,10 +1,12 @@
 import type { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { Service } from './Service';
+import { BootableService } from '../types/service.types';
+import { ServiceContainer } from './ServiceContainer';
 
 /**
  * API Service Wrapper for Axios.
  */
-export class ApiService extends Service {
+export class ApiService extends Service implements BootableService {
   private readonly api: AxiosInstance;
 
   constructor(apiInstance: AxiosInstance) {
@@ -21,6 +23,17 @@ export class ApiService extends Service {
   }
 
   /**
+   * Boots the service.
+   */
+  register({ config }: ServiceContainer): void {
+    if (config.get('appUrl') === this.api.defaults.baseURL) {
+      throw new Error(
+        'API URL matches app URL, this will cause infinite redirects. Please check your configuration.',
+      );
+    }
+  }
+
+  /**
    * Simplifies GET requests.
    * @param url - The API endpoint.
    * @param config - Optional Axios config.
@@ -28,6 +41,7 @@ export class ApiService extends Service {
    */
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.api.get<T>(url, config);
+
     return response.data;
   }
 

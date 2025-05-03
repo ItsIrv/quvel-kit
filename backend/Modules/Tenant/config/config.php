@@ -1,12 +1,18 @@
 <?php
 
 return [
-    'name' => 'Tenant',
-    'tables' => [
-        'users' => [
-            'after' => 'id',
-            'cascadeDelete' => true,
-            'dropUnique' => [
+    'name'         => 'Tenant',
+    'multi_tenant' => env('SSR_MULTI_TENANT', true),
+    'tenant_cache' => [
+        'preload'          => env('SSR_PRELOAD_TENANTS', true),
+        'ttl'              => env('SSR_TENANT_TTL', 300),
+        'refresh_interval' => env('SSR_TENANT_REFRESH_INTERVAL', 300),
+    ],
+    'tables'       => [
+        'users'         => [
+            'after'          => 'id',
+            'cascadeDelete'  => true,
+            'dropUnique'     => [
                 'email',
                 'provider_id',
             ],
@@ -17,7 +23,7 @@ return [
 
         ],
         'catalog_items' => [
-            'after' => 'id',
+            'after'         => 'id',
             'cascadeDelete' => true,
         ],
     ],

@@ -10,7 +10,7 @@
 
 ## Overview
 
-**QuVel Kit** is a production-ready **Laravel 12 + Vue 3 + Quasar 2** boilerplate designed for building enterprise applications. It features SSR with SPA fallback, mobile/desktop builds, and a modular architecture with TypeScript throughout.
+**QuVel Kit** is a **Laravel 12 + Vue 3 + Quasar 2 + Express** boilerplate designed for building full-stack applications. It features SSR with SPA fallback, mobile/desktop builds, and a modular architecture with TypeScript throughout.
 
 ## Technology Stack
 

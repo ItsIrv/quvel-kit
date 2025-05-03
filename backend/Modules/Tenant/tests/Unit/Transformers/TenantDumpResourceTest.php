@@ -13,7 +13,7 @@ use Tests\TestCase;
 #[CoversClass(TenantDumpResource::class)]
 #[Group('tenant-module')]
 #[Group('tenant-transformers')]
-class TenantDumpTransformerTest extends TestCase
+class TenantDumpResourceTest extends TestCase
 {
     /**
      * Test that the transformer converts a tenant model to an array correctly with no parent or config.

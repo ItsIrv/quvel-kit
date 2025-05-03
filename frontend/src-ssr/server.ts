@@ -18,6 +18,7 @@ import {
   defineSsrServeStaticContent,
   defineSsrRenderPreloadTag,
 } from '#q-app/wrappers';
+import { TenantCacheService } from './services/TenantCache';
 
 /**
  * TODO: Investigate why SSL builds crashes the Fastify server.
@@ -66,6 +67,8 @@ export const create = defineSsrCreate((/* { ... } */) => {
  */
 export const listen = defineSsrListen(({ app, devHttpsApp, port }) => {
   const server = devHttpsApp || app;
+
+  void TenantCacheService.getInstance().loadAllTenants();
 
   return server.listen(port, () => {});
 });

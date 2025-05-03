@@ -29,7 +29,7 @@ export function createApi(
     ssrContext !== null
       ? // ? (configOverrides?.internal_api_url ?? '')
         (configOverrides?.apiUrl ?? '') // When hosting SSR on local machine don't use docker url
-      : (configOverrides?.apiUrl ?? process.env.VITE_API_URL ?? ''); // App url refers to the laravel app
+      : (configOverrides?.apiUrl ?? process.env.VITE_API_URL ?? '');
 
   const axiosConfig: AxiosRequestConfig = {
     baseURL,
@@ -40,16 +40,28 @@ export function createApi(
     },
   };
 
-  const api = axios.create(axiosConfig);
+  const api = createAxios(axiosConfig);
 
   if (ssrContext) {
     const cookies = Cookies.parseSSR(ssrContext);
     const sessionToken = cookies.get(SessionName);
 
     // Attach session cookie (for authentication)
-    api.defaults.headers.Cookie = `${SessionName}=${sessionToken}`;
     api.defaults.headers['Host'] = '';
+
+    if (isValidSessionToken(sessionToken)) {
+      api.defaults.headers.Cookie = `${SessionName}=${sessionToken}`;
+    }
   }
 
   return api;
+}
+
+/**
+ * Validates a session token.
+ * @param token - The token to validate.
+ * @returns True if the token is valid, false otherwise.
+ */
+function isValidSessionToken(token: unknown): token is string {
+  return typeof token === 'string' && /^[A-Za-z0-9-_]{20,512}$/.test(token);
 }

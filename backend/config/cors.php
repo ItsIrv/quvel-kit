@@ -15,27 +15,27 @@ return [
     |
     */
 
-    'paths' => ['*'],
+    'paths'                    => ['*'],
 
-    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'OPTIONS'],
+    'allowed_methods'          => ['GET', 'POST', 'PUT', 'PATCH', 'OPTIONS'],
 
-    'allowed_origins' => [
+    'allowed_origins'          => [
         // Quasar on Docker
         'https://quvel.127.0.0.1.nip.io',
         'https://quvel.127.0.0.1.nip.io:3000',
-        'https://quvel.192.168.86.245.nip.io', // REPLACE_WITH_LOCAL_IP
+        'https://quvel.192.168.86.21.nip.io', // REPLACE_WITH_LOCAL_IP
         // LAN Network
-        'https://cap-tenant.quvel.192.168.86.245.nip.io', // REPLACE_WITH_LOCAL_IP
+        'https://cap-tenant.quvel.192.168.86.21.nip.io', // REPLACE_WITH_LOCAL_IP
     ],
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['Content-Type', 'X-Requested-With', 'Authorization', 'X-XSRF-TOKEN'],
+    'allowed_headers'          => ['Content-Type', 'X-Requested-With', 'Authorization', 'X-XSRF-TOKEN'],
 
-    'exposed_headers' => [],
+    'exposed_headers'          => [],
 
-    'max_age' => 0,
+    'max_age'                  => 0,
 
-    'supports_credentials' => true,
+    'supports_credentials'     => true,
 
 ];

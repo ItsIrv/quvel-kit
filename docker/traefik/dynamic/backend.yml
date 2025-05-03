@@ -7,7 +7,7 @@ http:
       tls: {}
 
     api-lan:
-      rule: 'Host(`api.quvel.192.168.86.245.nip.io`)' # REPLACE_WITH_LOCAL_IP
+      rule: 'Host(`api.quvel.192.168.86.21.nip.io`)' # REPLACE_WITH_LOCAL_IP
       entryPoints: websecure
       service: api-lan
       tls: {}
@@ -16,14 +16,13 @@ http:
     api-local:
       loadBalancer:
         servers:
-#          - url: 'http://127.0.0.1:8000' # If not using docker
+          #          - url: 'http://127.0.0.1:8000' # If not using docker
           - url: 'http://host.docker.internal:8000' # If serving app from local machine
-#          - url: 'http://quvel-app:8000' # If serving from Docker
-
+    #          - url: 'http://quvel-app:8000' # If serving from Docker
 
     api-lan:
       loadBalancer:
         servers:
-#          - url: 'http://127.0.0.1:8000' # If not using docker
+          #          - url: 'http://127.0.0.1:8000' # If not using docker
           - url: 'http://host.docker.internal:8000' # If serving from local machine
 #          - url: 'http://api-lan:8000' # If serving from Docker

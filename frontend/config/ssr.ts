@@ -32,6 +32,7 @@ export default defineConfig(() => {
       port: isLocal ? 3000 : 9000,
       host: isLocal ? 'quvel.127.0.0.1.nip.io' : '0.0.0.0',
       https: getCerts(),
+      open: false,
     },
     ssr: {
       prodPort: 9000,
