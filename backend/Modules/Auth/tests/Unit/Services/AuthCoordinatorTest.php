@@ -178,17 +178,13 @@ class AuthCoordinatorTest extends TestCase
             ->with($provider, $providerUser)
             ->andReturn([$user, $status]);
 
-        // Because status = LOGIN_SUCCESS and flow is stateless
-        // => completeStatelessLogin
-        // => serverTokenService->forget($signedToken)
-        // => clientNonceService->assignUserToNonce($clientNonce, $user->id)
         $this->serverTokenService->shouldReceive('forget')
             ->once()
             ->with($signedToken);
 
         $this->clientNonceService->shouldReceive('assignUserToNonce')
             ->once()
-            ->with($clientNonce, 1);
+            ->with($clientNonce, $user->id);
 
         // We build the result with a "signed nonce"
         $this->clientNonceService->shouldReceive('getSignedNonce')
@@ -217,7 +213,7 @@ class AuthCoordinatorTest extends TestCase
         $clientNonce  = null; // => stateful
         $providerUser = Mockery::mock(\Laravel\Socialite\Contracts\User::class);
 
-        $user   = User::first();
+        $user   = User::factory()->create();
         $status = OAuthStatusEnum::LOGIN_SUCCESS;
 
         $this->serverTokenService->shouldReceive('getClientNonce')
@@ -263,7 +259,7 @@ class AuthCoordinatorTest extends TestCase
         $clientNonce  = 'nonce-456'; // stateless or not doesn't matter if login fails
         $providerUser = Mockery::mock(\Laravel\Socialite\Contracts\User::class);
 
-        $user   = User::first();
+        $user   = User::factory()->create();
         $status = OAuthStatusEnum::EMAIL_NOT_VERIFIED;  // e.g., a failure
 
         $this->serverTokenService->shouldReceive('getClientNonce')
@@ -305,7 +301,7 @@ class AuthCoordinatorTest extends TestCase
         // Arrange
         $requestNonce = 'signed-nonce-789';
         $rawNonce     = 'nonce-789';
-        $user         = User::first();
+        $user         = User::factory()->create();
         $userId       = $user->id;
 
         $this->clientNonceService->shouldReceive('getNonce')
