@@ -10,6 +10,7 @@ use Modules\Auth\Exceptions\OAuthException;
 use Psr\SimpleCache\InvalidArgumentException;
 use Random\RandomException;
 
+// TODO: These big a** methods need to be their own strategies
 class OAuthCoordinator
 {
     public function __construct(

@@ -1,9 +1,5 @@
 # Getting Started with QuVel Kit
 
-## Overview
-
-QuVel Kit is a production-ready boilerplate combining Laravel 12, Vue 3, and Quasar 3 with TypeScript, Tailwind CSS, and Pinia for state management. This guide will help you set up your development environment and start building applications.
-
 ## Prerequisites
 
 ### Required Software

@@ -38,12 +38,14 @@ jobs:
       - name: Install Dependencies
         run: composer install --prefer-dist --no-interaction --no-scripts
 
-      - name: Set Up Environment
+      - name: Set Up Environment and DB for Parallel Testing
         run: |
           cp .env.example .env
           php artisan key:generate
           echo "DB_CONNECTION=sqlite" >> .env
-          touch database/database.sqlite
+          echo "DB_DATABASE=database/test.sqlite" >> .env
+          mkdir -p database
+          touch database/test.sqlite
 
       - name: Run Security & Dependency Audit (enforced)
         run: composer audit
@@ -56,11 +58,11 @@ jobs:
         continue-on-error: true
         run: vendor/bin/php-cs-fixer fix --dry-run --diff
 
-      - name: Run Tests with Coverage
+      - name: Run Tests in Parallel with Coverage
         env:
           DB_CONNECTION: sqlite
-          DB_DATABASE: database/database.sqlite
-        run: php artisan test --coverage-clover=../coverage.xml --testdox
+          DB_DATABASE: database/test.sqlite
+        run: php artisan test --parallel --coverage-clover=../coverage.xml --testdox
 
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v4

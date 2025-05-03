@@ -3,10 +3,10 @@
 ![Backend CI](https://github.com/ItsIrv/quvel-kit/actions/workflows/backend-ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/ItsIrv/quvel-kit/branch/main/graph/badge.svg)](https://codecov.io/gh/ItsIrv/quvel-kit)
 ![License](https://img.shields.io/github/license/ItsIrv/quvel-kit)
-![PHP](https://img.shields.io/badge/PHP-8.3-blue)
+![PHP](https://img.shields.io/badge/PHP-8.3-purple)
 ![Laravel](https://img.shields.io/badge/Laravel-12-red)
 ![Vue](https://img.shields.io/badge/Vue-3.x-42b883)
-![Quasar](https://img.shields.io/badge/Quasar-2.x-purple)
+![Quasar](https://img.shields.io/badge/Quasar-2.x-blue)
 
 ## Overview
 

@@ -1,9 +1,5 @@
 # QuVel Kit Documentation
 
-## Overview
-
-This documentation provides a comprehensive guide to QuVel Kit, a Laravel 12 + Vue 3 + Quasar 2 boilerplate. Here you'll find detailed information on setup, architecture, and development workflows.
-
 ## Documentation Structure
 
 ### Getting Started
@@ -19,7 +15,7 @@ This documentation provides a comprehensive guide to QuVel Kit, a Laravel 12 + V
 
 ### Frontend Development
 
-- **[Frontend Docs](./frontend/README.md)** – Vue, Quasar, and TypeScript development
+- **[Frontend Documentation](./frontend/README.md)** – Vue, Quasar, and TypeScript development
 
 ### Testing & Debugging
 
