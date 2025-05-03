@@ -33,14 +33,6 @@
             <file>app/Providers/TelescopeServiceProvider.php</file>
         </exclude>
     </source>
-
-    <coverage>
-        <report>
-            <clover outputFile="storage/debug/coverage/clover.xml"/>
-            <html outputDirectory="storage/debug/coverage/html"/>
-            <text outputFile="storage/debug/coverage/coverage.txt"/>
-        </report>
-    </coverage>
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>

@@ -68,13 +68,13 @@ class TenantTest extends TestCase
     public function testCreatingTenant(): void
     {
         $tenant = Tenant::factory()->create([
-            'name' => 'Example Tenant',
+            'name'   => 'Example Tenant',
             'domain' => 'example.com',
         ]);
 
         $this->assertDatabaseHas('tenants', [
-            'id' => $tenant->id,
-            'name' => 'Example Tenant',
+            'id'     => $tenant->id,
+            'name'   => 'Example Tenant',
             'domain' => 'example.com',
         ]);
 
@@ -88,18 +88,13 @@ class TenantTest extends TestCase
     {
         // Create a parent tenant with a config
         $parentTenant = Tenant::factory()->create([
-            'config' => new TenantConfig(
-                apiUrl: 'https://api.example.com',
-                appUrl: 'https://app.example.com',
-                appName: 'Parent Tenant',
-                appEnv: 'local',
-            ),
+            'config' => $this->createTenantConfig(),
         ]);
 
         // Create a child tenant that does not have its own config
         $childTenant = Tenant::factory()->create([
             'parent_id' => $parentTenant->id,
-            'config' => null, // No direct config
+            'config'    => null, // No direct config
         ]);
 
         // Ensure the child's effective config is inherited from the parent
@@ -110,11 +105,11 @@ class TenantTest extends TestCase
 
         $this->assertEquals(
             'https://api.example.com',
-            $childTenant->getEffectiveConfig()->apiUrl,
+            $childTenant->getEffectiveConfig()->appUrl,
         );
 
         $this->assertEquals(
-            'Parent Tenant',
+            'Example App',
             $childTenant->getEffectiveConfig()->appName,
         );
     }
@@ -125,12 +120,7 @@ class TenantTest extends TestCase
     public function testGetEffectiveConfigReturnsOwnConfig(): void
     {
         $tenant = Tenant::factory()->create([
-            'config' => new TenantConfig(
-                apiUrl: 'https://api.own.example.com',
-                appUrl: 'https://app.own.example.com',
-                appName: 'Standalone Tenant',
-                appEnv: 'local',
-            ),
+            'config' => $this->createTenantConfig(),
         ]);
 
         $this->assertInstanceOf(
@@ -139,7 +129,7 @@ class TenantTest extends TestCase
         );
 
         $this->assertEquals(
-            'Standalone Tenant',
+            'Example App',
             $tenant->getEffectiveConfig()->appName,
         );
     }
@@ -150,7 +140,7 @@ class TenantTest extends TestCase
     public function testGetEffectiveConfigReturnsNull(): void
     {
         $tenant = Tenant::factory()->create([
-            'config' => null,
+            'config'    => null,
             'parent_id' => null,
         ]);
 
@@ -163,16 +153,11 @@ class TenantTest extends TestCase
     public function testConfigCastsToTenantConfig(): void
     {
         $tenant = Tenant::factory()->create([
-            'config' => new TenantConfig(
-                apiUrl: 'https://api.test.example.com',
-                appUrl: 'https://app.test.example.com',
-                appName: 'Test Tenant',
-                appEnv: 'staging',
-            ),
+            'config' => $this->createTenantConfig(),
         ]);
 
         $this->assertInstanceOf(TenantConfig::class, $tenant->config);
-        $this->assertEquals('https://api.test.example.com', $tenant->config->apiUrl);
-        $this->assertEquals('Test Tenant', $tenant->config->appName);
+        $this->assertEquals('https://api.example.com', $tenant->config->appUrl);
+        $this->assertEquals('Example App', $tenant->config->appName);
     }
 }

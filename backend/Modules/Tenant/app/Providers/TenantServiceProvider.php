@@ -34,22 +34,6 @@ class TenantServiceProvider extends ModuleServiceProvider
 
         $this->app->scoped(TenantContext::class);
 
-        $this->bindTenantConfigs();
-    }
-
-    /**
-     * Boot the application events.
-     */
-    public function boot(): void
-    {
-        parent::boot();
-    }
-
-    /**
-     * Bind config changes when request is rebound.
-     */
-    private function bindTenantConfigs(): void
-    {
         $this->app->rebinding('request', function (Application $app): void {
             try {
                 $tenantContext = $app->make(TenantContext::class);

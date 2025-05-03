@@ -14,8 +14,8 @@ use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[CoversClass(QuvelWelcome::class)]
-#[Group('welcome')]
-#[Group('app-actions')]
+#[Group('core-module')]
+#[Group('core-actions')]
 class QuvelWelcomeTest extends TestCase
 {
     private QuvelWelcome $action;

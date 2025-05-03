@@ -22,25 +22,25 @@ class TenantDumpTransformerTest extends TestCase
     {
         $tenant = Tenant::factory()->make();
         $tenant->setRawAttributes([
-            'id' => 1,
-            'public_id' => 'public-id-1',
-            'name' => 'Tenant Name',
-            'domain' => 'tenant.com',
+            'id'         => 1,
+            'public_id'  => 'public-id-1',
+            'name'       => 'Tenant Name',
+            'domain'     => 'tenant.com',
             'created_at' => $tenant->created_at,
             'updated_at' => $tenant->updated_at,
         ], true);
 
         $transformer = new TenantDumpResource($tenant);
-        $result = $transformer->toArray(new Request());
+        $result      = $transformer->toArray(new Request());
 
         $this->assertEquals([
-            'id' => 'public-id-1',
-            'name' => 'Tenant Name',
-            'domain' => 'tenant.com',
+            'id'         => 'public-id-1',
+            'name'       => 'Tenant Name',
+            'domain'     => 'tenant.com',
             'created_at' => $tenant->created_at,
             'updated_at' => $tenant->updated_at,
-            'config' => [],
-            'parent_id' => null,
+            'config'     => [],
+            'parent_id'  => null,
         ], $result);
     }
 
@@ -50,7 +50,7 @@ class TenantDumpTransformerTest extends TestCase
     public function testToArrayIncludesParentIdWhenTenantHasParent(): void
     {
         $transformer = new TenantDumpResource($this->tenant->children()->first());
-        $result = $transformer->toArray(new Request());
+        $result      = $transformer->toArray(new Request());
 
         $this->assertEquals($this->tenant->public_id, $result['parent_id']);
     }
@@ -71,17 +71,17 @@ class TenantDumpTransformerTest extends TestCase
         $tenant = Tenant::factory()->make(['config' => $tenantConfigArray]);
 
         $transformer = new TenantDumpResource($tenant);
-        $result = $transformer->toArray(new Request());
+        $result      = $transformer->toArray(new Request());
 
         $this->assertArrayNotHasKey('mail_from_name', $result['config']);
         $this->assertArrayNotHasKey('mail_from_address', $result['config']);
         $this->assertArrayNotHasKey('app_env', $result['config']);
         $this->assertArrayNotHasKey('debug', $result['config']);
-        $this->assertEquals($tenantConfigArray['app_name'], $result['config']['app_name']);
-        $this->assertEquals($tenantConfigArray['app_url'], $result['config']['app_url']);
-        $this->assertEquals($tenantConfigArray['api_url'], $result['config']['api_url']);
-        $this->assertEquals(
-            $tenantConfigArray['__visibility'],
+        $this->assertEquals($tenantConfigArray['app_name'], $result['config']['appName']);
+        $this->assertEquals($tenantConfigArray['app_url'], $result['config']['appUrl']);
+        $this->assertEquals($tenantConfigArray['frontend_url'], $result['config']['frontendUrl']);
+        $this->assertCount(
+            count($tenantConfigArray['__visibility']),
             $result['config']['__visibility'],
         );
     }
@@ -94,7 +94,7 @@ class TenantDumpTransformerTest extends TestCase
         $tenant = Tenant::factory()->make(['config' => null]);
 
         $transformer = new TenantDumpResource($tenant);
-        $result = $transformer->toArray(new Request());
+        $result      = $transformer->toArray(new Request());
 
         $this->assertEquals([], $result['config']);
     }

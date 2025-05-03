@@ -32,16 +32,7 @@ class FrontendServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockConfig = TenantConfig::fromArray([
-            'app_url'           => $this->baseUrl,
-            'capacitor_scheme'  => null,
-            'api_url'           => 'https://api.local',
-            'app_name'          => 'Test App',
-            'app_env'           => 'local',
-            'debug'             => false,
-            'mail_from_name'    => 'Quvel',
-            'mail_from_address' => 'test@quvel.app',
-        ]);
+        $this->mockConfig = $this->createTenantConfig();
 
         $this->mockRedirector      = Mockery::mock(Redirector::class);
         $this->mockResponseFactory = Mockery::mock(ResponseFactory::class);
@@ -49,12 +40,10 @@ class FrontendServiceTest extends TestCase
         $mockRequest = Mockery::mock(Request::class);
         $mockRequest->shouldReceive('hasHeader')->with('X-Capacitor')->andReturn(false);
 
-        $this->frontendService = new FrontendService(
-            config: $this->mockConfig,
+        $this->frontendService = (new FrontendService(
             redirector: $this->mockRedirector,
-            request: $mockRequest,
             responseFactory: $this->mockResponseFactory,
-        );
+        ))->setUrl($this->baseUrl);
     }
 
     /**
@@ -115,12 +104,10 @@ class FrontendServiceTest extends TestCase
             'capacitor_scheme' => '_deep',
         ]);
 
-        $frontendService = new FrontendService(
-            config: $config,
+        $frontendService = (new FrontendService(
             redirector: $this->mockRedirector,
-            request: $mockRequest,
             responseFactory: $this->mockResponseFactory,
-        );
+        ))->setUrl($this->baseUrl);
 
         $this->mockRedirector
             ->shouldReceive('away')
@@ -142,28 +129,21 @@ class FrontendServiceTest extends TestCase
         $customUrl    = "$this->baseUrl$path?" . http_build_query($params);
         $expectedUrl  = preg_replace('/^https?/', $customScheme, $customUrl);
 
-        $mockRequest = Mockery::mock(Request::class);
-        $mockRequest->shouldReceive('hasHeader')->with('X-Capacitor')->andReturn(true);
-
-        $config = TenantConfig::fromArray([
-            ...$this->mockConfig->toArray(),
-            'capacitor_scheme' => $customScheme,
-        ]);
-
-        $frontendService = new FrontendService(
-            config: $config,
+        $frontendService = (new FrontendService(
             redirector: $this->mockRedirector,
-            request: $mockRequest,
             responseFactory: $this->mockResponseFactory,
-        );
+        ))->setUrl($this->baseUrl)
+            ->setIsCapacitor(true)
+            ->setCapacitorScheme($customScheme);
 
         $this->mockResponseFactory
             ->shouldReceive('view')
             ->once()
-            ->with('redirect', [
-                'message'   => null,
-                'schemeUrl' => $expectedUrl,
-            ])
+            ->with('redirect', Mockery::on(
+                fn ($viewData) =>
+                $viewData['message'] === null &&
+                $viewData['schemeUrl'] === $expectedUrl
+            ))
             ->andReturn(new RedirectResponse($expectedUrl));
 
         $response = $frontendService->redirect($path, $params);

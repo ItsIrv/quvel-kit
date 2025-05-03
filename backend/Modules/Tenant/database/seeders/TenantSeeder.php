@@ -26,8 +26,8 @@ class TenantSeeder extends Seeder
             $apiDomain,
             'First Tenant - API',
             TenantConfigFactory::create(
-                $apiDomain,
-                'quvel-app',
+                apiDomain: $apiDomain,
+                internalApiDomain: 'quvel-app',
                 appName: 'QuVel Local',
             ),
         );
@@ -36,9 +36,9 @@ class TenantSeeder extends Seeder
             $lanApiDomain,
             'Second Tenant - API',
             TenantConfigFactory::create(
-                $lanApiDomain,
-                'api-lan',
-                'QuVel - LAN',
+                apiDomain: $lanApiDomain,
+                internalApiDomain: 'api-lan',
+                appName: 'QuVel - LAN',
                 capacitorScheme: 'quvel',
             ),
         );

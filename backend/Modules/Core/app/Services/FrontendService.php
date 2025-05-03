@@ -110,15 +110,18 @@ class FrontendService
      *
      * @param  array<string, string>  $query
      */
-    private function buildUrl(string $path, array $query = []): string
+    protected function buildUrl(string $path, array $query = []): string
     {
-        $url = $this->url . '/' . $path;
+        $base = rtrim($this->url, '/');
+        $path = ltrim($path, '/');
+
+        $url = $base . '/' . $path;
 
         if (!empty($query)) {
             $url .= '?' . http_build_query($query);
         }
 
-        // If it's a capacitor request and a custom scheme is defined
+        // Handle capacitor schemes
         if ($this->isCapacitor && $this->capacitorScheme && $this->capacitorScheme !== '_deep') {
             $url = preg_replace('/^https?/', $this->capacitorScheme, $url) ?? $url;
         }

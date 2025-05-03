@@ -12,16 +12,16 @@ class TenantConfigFactory
      */
     public static function create(
         string $apiDomain,
-        string $internalApiDomain,
         string $appName = 'QuVel',
         string $appEnv = 'local',
         string $mailFromName = 'QuVel Support',
         string $mailFromAddress = 'support@quvel.app',
         ?string $capacitorScheme = null,
+        ?string $internalApiDomain = null,
         bool $toArray = true,
     ): array|TenantConfig {
         $apiUrl         = "https://$apiDomain";
-        $appUrl         = 'https://' . str_replace('api.', '', $apiDomain);
+        $frontendUrl    = 'https://' . str_replace('api.', '', $apiDomain);
         $internalApiUrl = $internalApiDomain ? "http://$internalApiDomain:8000" : null;
 
         // Create parameters array for TenantConfig
@@ -33,7 +33,7 @@ class TenantConfigFactory
             'appDebug'                => env('APP_DEBUG', true),
             'appTimezone'             => env('APP_TIMEZONE', 'UTC'),
             'appUrl'                  => $apiUrl,
-            'frontendUrl'             => $appUrl,
+            'frontendUrl'             => $frontendUrl,
             'internalApiUrl'          => $internalApiUrl,
             // Localization
             'appLocale'               => env('APP_LOCALE'),
@@ -41,8 +41,8 @@ class TenantConfigFactory
             'appFakerLocale'          => env('APP_FAKER_LOCALE', 'en_US'),
             // Logging
             'logChannel'              => env('LOG_CHANNEL', 'stack'),
-            'logStack'                => env('LOG_STACK', 'single'),
-            'logDeprecationsChannel'  => env('LOG_DEPRECATIONS_CHANNEL', null),
+            // 'logStack'                => env('LOG_STACK', 'single'),
+            // 'logDeprecationsChannel'  => env('LOG_DEPRECATIONS_CHANNEL', null),
             'logLevel'                => env('LOG_LEVEL', 'debug'),
             // Database
             'dbConnection'            => env('DB_CONNECTION', 'mysql'),
@@ -97,9 +97,6 @@ class TenantConfigFactory
             'pusherPort'              => env('PUSHER_PORT', null),
             'pusherScheme'            => env('PUSHER_SCHEME', null),
             // Internal
-            'quvelDefaultPassword'    => '12345678',
-            'quvelApiDomain'          => $apiDomain,
-            'quvelLanDomain'          => $internalApiDomain,
             'hmacSecretKey'           => env('HMAC_SECRET_KEY', 'hmac_secret_key_here'),
             'disableSocialite'        => env('DISABLE_SOCIALITE', false),
             'verifyEmailBeforeLogin'  => env('VERIFY_EMAIL_BEFORE_LOGIN', true),

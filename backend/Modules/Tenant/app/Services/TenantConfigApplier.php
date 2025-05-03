@@ -39,7 +39,7 @@ class TenantConfigApplier
         // Localization
         $appConfig->set('app.locale', $config->appLocale);
         $appConfig->set('app.fallback_locale', $config->appFallbackLocale);
-        $appConfig->set('app.faker_locale', $config->appFakerLocale);
+        // $appConfig->set('app.faker_locale', $config->appFakerLocale);
 
         // Logging
         $appConfig->set('logging.default', $config->logChannel);
@@ -122,9 +122,6 @@ class TenantConfigApplier
         $appConfig->set('broadcasting.connections.pusher.options.scheme', $config->pusherScheme);
 
         // Internal
-        $appConfig->set('quvel.default_password', $config->quvelDefaultPassword);
-        $appConfig->set('quvel.api_domain', $config->quvelApiDomain);
-        $appConfig->set('quvel.lan_domain', $config->quvelLanDomain);
         $appConfig->set('hmac_secret_key', $config->hmacSecretKey);
 
         $urlGenerator = app(UrlGenerator::class);

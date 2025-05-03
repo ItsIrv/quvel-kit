@@ -14,7 +14,5 @@ abstract class TestCase extends TenantTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seedTenant();
     }
 }

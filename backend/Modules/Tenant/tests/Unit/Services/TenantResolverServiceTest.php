@@ -63,10 +63,29 @@ class TenantResolverServiceTest extends TestCase
             ->method('getTenant')
             ->willReturn($this->tenant);
 
+        $this->requestMock->shouldReceive('getHost')
+            ->andReturn($this->tenant->domain);
+
         $this->assertSame(
             $this->tenant,
             $this->tenantResolverService->resolveTenant($this->requestMock),
         );
+    }
+
+    public function testMismatchedSessionAndCurrentDomainThrowsException(): void
+    {
+        $this->tenantSessionService->expects(
+            $this->once(),
+        )
+            ->method('getTenant')
+            ->willReturn($this->tenant);
+
+        $this->requestMock->shouldReceive('getHost')
+            ->andReturn('host.com');
+
+        $this->expectException(TenantNotFoundException::class);
+
+        $this->tenantResolverService->resolveTenant($this->requestMock);
     }
 
     /**

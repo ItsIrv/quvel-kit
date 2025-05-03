@@ -34,8 +34,8 @@ class TenantConfig implements Arrayable
 
     // Logging
     public readonly ?string $logChannel;
-    public readonly ?string $logStack;
-    public readonly ?string $logDeprecationsChannel;
+    // public readonly ?string $logStack;
+    // public readonly ?string $logDeprecationsChannel;
     public readonly ?string $logLevel;
 
     // Database
@@ -93,9 +93,6 @@ class TenantConfig implements Arrayable
     public readonly ?string $pusherScheme;
 
     // Internal/QuVel Specific
-    public readonly ?string $quvelDefaultPassword;
-    public readonly ?string $quvelApiDomain;
-    public readonly ?string $quvelLanDomain;
     public readonly ?string $hmacSecretKey;
     public readonly ?bool $disableSocialite;
     public readonly ?bool $verifyEmailBeforeLogin;
@@ -116,71 +113,68 @@ class TenantConfig implements Arrayable
         string $appUrl,
         // Frontend
         string $frontendUrl,
-        ?string $internalApiUrl,
-        ?string $capacitorScheme,
+        ?string $internalApiUrl = null,
+        ?string $capacitorScheme = null,
         // Localization
-        ?string $appLocale,
-        ?string $appFallbackLocale,
-        ?string $appFakerLocale,
+        ?string $appLocale = null,
+        ?string $appFallbackLocale = null,
+        ?string $appFakerLocale = null,
         // Logging
-        ?string $logChannel,
-        ?string $logStack,
-        ?string $logDeprecationsChannel,
-        ?string $logLevel,
+        ?string $logChannel = null,
+        // ?string $logStack = null,
+        // ?string $logDeprecationsChannel = null,
+        ?string $logLevel = null,
         // Database
-        ?string $dbConnection,
-        ?string $dbHost,
-        ?int $dbPort,
-        ?string $dbDatabase,
-        ?string $dbUsername,
-        ?string $dbPassword,
+        ?string $dbConnection = null,
+        ?string $dbHost = null,
+        ?int $dbPort = null,
+        ?string $dbDatabase = null,
+        ?string $dbUsername = null,
+        ?string $dbPassword = null,
         // Session & Cache
-        ?string $sessionDriver,
-        ?int $sessionLifetime,
-        ?bool $sessionEncrypt,
-        ?string $sessionPath,
-        ?string $sessionDomain,
-        ?string $cacheStore,
-        ?string $cachePrefix,
+        ?string $sessionDriver = null,
+        ?int $sessionLifetime = null,
+        ?bool $sessionEncrypt = null,
+        ?string $sessionPath = null,
+        ?string $sessionDomain = null,
+        ?string $cacheStore = null,
+        ?string $cachePrefix = null,
         // Redis
-        ?string $redisClient,
-        ?string $redisHost,
-        ?string $redisPassword,
-        ?int $redisPort,
+        ?string $redisClient = null,
+        ?string $redisHost = null,
+        ?string $redisPassword = null,
+        ?int $redisPort = null,
         // Mail
-        ?string $mailMailer,
-        ?string $mailScheme,
-        string $mailHost,
-        ?int $mailPort,
-        ?string $mailUsername,
-        ?string $mailPassword,
+        ?string $mailMailer = null,
+        ?string $mailScheme = null,
+        ?string $mailHost = null,
+        ?int $mailPort = null,
+        ?string $mailUsername = null,
+        ?string $mailPassword = null,
         string $mailFromAddress,
         string $mailFromName,
         // AWS
-        ?string $awsAccessKeyId,
-        ?string $awsSecretAccessKey,
-        ?string $awsDefaultRegion,
-        ?string $awsBucket,
-        ?bool $awsUsePathStyleEndpoint,
+        ?string $awsAccessKeyId = null,
+        ?string $awsSecretAccessKey = null,
+        ?string $awsDefaultRegion = null,
+        ?string $awsBucket = null,
+        ?bool $awsUsePathStyleEndpoint = null,
         // OAuth
-        ?array $socialiteProviders,
-        ?int $socialiteNonceTtl,
-        ?int $socialiteTokenTtl,
-        ?array $oauthCredentials,
+        ?array $socialiteProviders = null,
+        ?int $socialiteNonceTtl = null,
+        ?int $socialiteTokenTtl = null,
+        ?array $oauthCredentials = null,
         // Pusher
-        ?string $pusherAppId,
-        ?string $pusherAppKey,
-        ?string $pusherAppSecret,
-        ?string $pusherAppCluster,
-        ?int $pusherPort,
-        ?string $pusherScheme,
+        ?string $pusherAppId = null,
+        ?string $pusherAppKey = null,
+        ?string $pusherAppSecret = null,
+        ?string $pusherAppCluster = null,
+        ?int $pusherPort = null,
+        ?string $pusherScheme = null,
         // Internal
-        ?string $quvelDefaultPassword,
-        ?string $quvelApiDomain,
-        ?string $quvelLanDomain,
-        ?string $hmacSecretKey,
-        ?bool $disableSocialite,
-        ?bool $verifyEmailBeforeLogin,
+        ?string $hmacSecretKey = null,
+        ?bool $disableSocialite = false,
+        ?bool $verifyEmailBeforeLogin = false,
         // Visibility
         ?array $visibility = [],
     ) {
@@ -199,10 +193,10 @@ class TenantConfig implements Arrayable
         $this->appFallbackLocale = $appFallbackLocale;
         $this->appFakerLocale    = $appFakerLocale;
 
-        $this->logChannel             = $logChannel;
-        $this->logStack               = $logStack;
-        $this->logDeprecationsChannel = $logDeprecationsChannel;
-        $this->logLevel               = $logLevel;
+        $this->logChannel = $logChannel;
+        // $this->logStack               = $logStack;
+        // $this->logDeprecationsChannel = $logDeprecationsChannel;
+        $this->logLevel = $logLevel;
 
         $this->dbConnection = $dbConnection;
         $this->dbHost       = $dbHost;
@@ -251,9 +245,6 @@ class TenantConfig implements Arrayable
         $this->pusherPort       = $pusherPort;
         $this->pusherScheme     = $pusherScheme;
 
-        $this->quvelDefaultPassword   = $quvelDefaultPassword;
-        $this->quvelApiDomain         = $quvelApiDomain;
-        $this->quvelLanDomain         = $quvelLanDomain;
         $this->hmacSecretKey          = $hmacSecretKey;
         $this->disableSocialite       = $disableSocialite;
         $this->verifyEmailBeforeLogin = $verifyEmailBeforeLogin;
@@ -284,8 +275,8 @@ class TenantConfig implements Arrayable
 
             // Logging
             'logChannel'              => $data['log_channel'] ?? 'stack',
-            'logStack'                => $data['log_stack'] ?? 'single',
-            'logDeprecationsChannel'  => $data['log_deprecations_channel'] ?? null,
+            // 'logStack'                => $data['log_stack'] ?? 'single',
+            // 'logDeprecationsChannel'  => $data['log_deprecations_channel'] ?? null,
             'logLevel'                => $data['log_level'] ?? 'debug',
 
             // Database
@@ -343,9 +334,6 @@ class TenantConfig implements Arrayable
             'pusherScheme'            => $data['pusher_scheme'] ?? null,
 
             // Internal
-            'quvelDefaultPassword'    => $data['quvel_default_password'] ?? null,
-            'quvelApiDomain'          => $data['quvel_api_domain'] ?? null,
-            'quvelLanDomain'          => $data['quvel_lan_domain'] ?? null,
             'hmacSecretKey'           => $data['hmac_secret_key'] ?? null,
             'disableSocialite'        => $data['disable_socialite'] ?? null,
             'verifyEmailBeforeLogin'  => $data['verify_email_before_login'] ?? null,
@@ -384,8 +372,8 @@ class TenantConfig implements Arrayable
 
             // Logging
             'log_channel'                 => $this->logChannel,
-            'log_stack'                   => $this->logStack,
-            'log_deprecations_channel'    => $this->logDeprecationsChannel,
+            // 'log_stack'                   => $this->logStack,
+            // 'log_deprecations_channel'    => $this->logDeprecationsChannel,
             'log_level'                   => $this->logLevel,
 
             // Database
@@ -443,9 +431,6 @@ class TenantConfig implements Arrayable
             'pusher_scheme'               => $this->pusherScheme,
 
             // Internal/QuVel
-            'quvel_default_password'      => $this->quvelDefaultPassword,
-            'quvel_api_domain'            => $this->quvelApiDomain,
-            'quvel_lan_domain'            => $this->quvelLanDomain,
             'hmac_secret_key'             => $this->hmacSecretKey,
             'disable_socialite'           => $this->disableSocialite,
             'verify_email_before_login'   => $this->verifyEmailBeforeLogin,

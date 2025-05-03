@@ -20,7 +20,7 @@ class TenantContextTest extends TestCase
      */
     public function testSetAndGetTenant(): void
     {
-        $tenant = Tenant::factory()->make();
+        $tenant  = Tenant::factory()->make();
         $context = new TenantContext();
 
         $context->set($tenant);
@@ -45,19 +45,14 @@ class TenantContextTest extends TestCase
     public function testGetConfig(): void
     {
         $tenant = Tenant::factory()->make([
-            'config' => new TenantConfig(
-                apiUrl: 'https://api.example.com',
-                appUrl: 'https://app.example.com',
-                appName: 'Test Tenant',
-                appEnv: 'local',
-            ),
+            'config' => $this->createTenantConfig(),
         ]);
 
         $context = new TenantContext();
         $context->set($tenant);
 
         $this->assertInstanceOf(TenantConfig::class, $context->getConfig());
-        $this->assertEquals('https://api.example.com', $context->getConfig()->apiUrl);
+        $this->assertEquals('https://api.example.com', $context->getConfig()->appUrl);
     }
 
     /**
@@ -66,24 +61,19 @@ class TenantContextTest extends TestCase
     public function testGetConfigValue(): void
     {
         $tenant = Tenant::factory()->make([
-            'config' => new TenantConfig(
-                apiUrl: 'https://api.example.com',
-                appUrl: 'https://app.example.com',
-                appName: 'Test Tenant',
-                appEnv: 'local',
-            ),
+            'config' => $this->createTenantConfig(),
         ]);
 
         $context = new TenantContext();
         $context->set($tenant);
 
         $this->assertEquals(
-            'https://app.example.com',
+            'https://api.example.com',
             $context->getConfigValue('appUrl'),
         );
 
         $this->assertEquals(
-            'local',
+            'testing',
             $context->getConfigValue('appEnv'),
         );
     }
@@ -94,12 +84,7 @@ class TenantContextTest extends TestCase
     public function testGetConfigValueReturnsDefaultWhenMissing(): void
     {
         $tenant = Tenant::factory()->make([
-            'config' => new TenantConfig(
-                apiUrl: 'https://api.example.com',
-                appUrl: 'https://app.example.com',
-                appName: 'Test Tenant',
-                appEnv: 'local',
-            ),
+            'config' => $this->createTenantConfig(),
         ]);
 
         $context = new TenantContext();
