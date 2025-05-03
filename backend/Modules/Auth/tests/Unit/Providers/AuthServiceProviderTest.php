@@ -4,7 +4,6 @@ namespace Modules\Auth\Tests\Unit\Providers;
 
 use Illuminate\Foundation\Application;
 use Modules\Auth\Providers\AuthServiceProvider;
-use Modules\Auth\Providers\EventServiceProvider;
 use Modules\Auth\Providers\RouteServiceProvider;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\HmacService;
@@ -29,7 +28,7 @@ class AuthServiceProviderTest extends TestCase
         $app = $this->createMock(Application::class);
 
         $singletons = [];
-        $registers = [];
+        $registers  = [];
 
         $app->method('singleton')
             ->willReturnCallback(function ($class) use (&$singletons): void {
@@ -59,7 +58,6 @@ class AuthServiceProviderTest extends TestCase
         ];
 
         $expectedRegisters = [
-            strtolower(EventServiceProvider::class),
             strtolower(RouteServiceProvider::class),
         ];
 

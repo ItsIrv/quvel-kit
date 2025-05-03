@@ -111,27 +111,24 @@ class TenantConfig implements Arrayable
         bool $appDebug,
         string $appTimezone,
         string $appUrl,
-        // Frontend
+        string $mailFromAddress,
+        string $mailFromName,
         string $frontendUrl,
         ?string $internalApiUrl = null,
         ?string $capacitorScheme = null,
-        // Localization
         ?string $appLocale = null,
         ?string $appFallbackLocale = null,
         ?string $appFakerLocale = null,
-        // Logging
         ?string $logChannel = null,
         // ?string $logStack = null,
         // ?string $logDeprecationsChannel = null,
         ?string $logLevel = null,
-        // Database
         ?string $dbConnection = null,
         ?string $dbHost = null,
         ?int $dbPort = null,
         ?string $dbDatabase = null,
         ?string $dbUsername = null,
         ?string $dbPassword = null,
-        // Session & Cache
         ?string $sessionDriver = null,
         ?int $sessionLifetime = null,
         ?bool $sessionEncrypt = null,
@@ -139,43 +136,34 @@ class TenantConfig implements Arrayable
         ?string $sessionDomain = null,
         ?string $cacheStore = null,
         ?string $cachePrefix = null,
-        // Redis
         ?string $redisClient = null,
         ?string $redisHost = null,
         ?string $redisPassword = null,
         ?int $redisPort = null,
-        // Mail
         ?string $mailMailer = null,
         ?string $mailScheme = null,
         ?string $mailHost = null,
         ?int $mailPort = null,
         ?string $mailUsername = null,
         ?string $mailPassword = null,
-        string $mailFromAddress,
-        string $mailFromName,
-        // AWS
         ?string $awsAccessKeyId = null,
         ?string $awsSecretAccessKey = null,
         ?string $awsDefaultRegion = null,
         ?string $awsBucket = null,
         ?bool $awsUsePathStyleEndpoint = null,
-        // OAuth
         ?array $socialiteProviders = null,
         ?int $socialiteNonceTtl = null,
         ?int $socialiteTokenTtl = null,
         ?array $oauthCredentials = null,
-        // Pusher
         ?string $pusherAppId = null,
         ?string $pusherAppKey = null,
         ?string $pusherAppSecret = null,
         ?string $pusherAppCluster = null,
         ?int $pusherPort = null,
         ?string $pusherScheme = null,
-        // Internal
         ?string $hmacSecretKey = null,
         ?bool $disableSocialite = false,
         ?bool $verifyEmailBeforeLogin = false,
-        // Visibility
         ?array $visibility = [],
     ) {
         $this->appName     = $appName;
