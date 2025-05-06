@@ -2,15 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use Modules\Core\Providers\CoreServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends CoreServiceProvider
 {
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        $this->app['request']->server->set('HTTPS', 'on');
-    }
 }

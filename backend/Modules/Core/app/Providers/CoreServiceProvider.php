@@ -32,4 +32,12 @@ class CoreServiceProvider extends ModuleServiceProvider
                 ->setIsCapacitor($app->make(Request::class)->hasHeader('X-Capacitor'));
         });
     }
+
+    /**
+     * Boot any application services.
+     */
+    public function boot(): void
+    {
+        $this->app['request']->server->set('HTTPS', 'on');
+    }
 }

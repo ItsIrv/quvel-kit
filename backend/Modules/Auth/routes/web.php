@@ -27,8 +27,8 @@ Route::group([
     /**
      * Fortify Overwrites
      */
-    Route::post('/login', LoginAction::class)->name('login.store');
-    Route::post('/register', RegisterAction::class)->name('register.store');
+    Route::post('/login', LoginAction::class)->name('login');
+    Route::post('/register', RegisterAction::class)->name('register');
     Route::post('/email/verification-notification', [EmailController::class, 'verificationNotice'])
         ->name('verification.notice');
     Route::get('/email/verify/{id}/{hash}', [EmailController::class, 'verificationVerify'])
