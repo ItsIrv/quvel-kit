@@ -10,10 +10,8 @@ class EmailVerificationRequest extends BaseEmailVerificationRequest
 {
     public function authorize(): bool
     {
-        // If verify_email_before_login is true, allow all requests since the user is not logged in
-        if (config('auth.verify_email_before_login')) {
-            // TODO: Since laravel does /{loggedInId}/{hash} for email verification,
-            // we need a custom flow that does not depend on the user being logged in
+        // If verify_email_before_login is true, allow all requests since the user can't be logged in
+        if (config('auth.verify_email_before_login') === true) {
             return true;
         }
 

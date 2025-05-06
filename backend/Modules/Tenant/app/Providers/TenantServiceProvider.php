@@ -11,6 +11,7 @@ use Modules\Tenant\Services\TenantConfigApplier;
 use Modules\Tenant\Services\TenantFindService;
 use Modules\Tenant\Services\TenantResolverService;
 use Modules\Tenant\Services\TenantSessionService;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 /**
  * Provider for the Tenant module.
@@ -39,7 +40,10 @@ class TenantServiceProvider extends ModuleServiceProvider
                 $tenantContext = $app->make(TenantContext::class);
                 $tenant        = $tenantContext->get();
 
-                TenantConfigApplier::apply($tenant);
+                TenantConfigApplier::apply(
+                    $tenant,
+                    $app->make(ConfigRepository::class),
+                );
             } catch (Exception $e) {
                 Log::critical('Tenant Config Could Not Be Applied: ' . $e->getMessage());
             }

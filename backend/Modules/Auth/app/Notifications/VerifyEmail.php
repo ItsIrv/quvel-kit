@@ -26,4 +26,12 @@ class VerifyEmail extends VerifyEmailBase
             ->line(__('If you didn’t create an account with us, please ignore this email.'))
             ->salutation(__('Best regards,') . "\n" . config('app.name') . ' Team');
     }
+
+    protected function verificationUrl($notifiable)
+    {
+        if (config('auth.verify_email_before_login') === true) {
+        } else {
+            return parent::verificationUrl($notifiable);
+        }
+    }
 }

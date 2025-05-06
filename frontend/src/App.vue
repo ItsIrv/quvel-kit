@@ -15,10 +15,11 @@ defineOptions({
     try {
       if (ssrContext) {
         // On SSR, we have to await
-        await Promise.all([
-          useSessionStore(store).fetchSession(),
-          useNotificationStore(store).fetchNotifications(),
-        ]);
+        const user = await useSessionStore(store).fetchSession();
+
+        if (user) {
+          void useNotificationStore(store).fetchNotifications();
+        }
       } else {
         // On the client we don't have to await unless we want to.
         // If you do await this will block rendering of the page to until the user is fetched.
@@ -27,6 +28,7 @@ defineOptions({
       }
     } catch {
       //
+
     }
   },
 });

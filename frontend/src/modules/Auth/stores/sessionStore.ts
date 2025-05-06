@@ -34,7 +34,7 @@ type SessionGetters = {
  */
 interface SessionActions {
   setSession(data: IUser): void;
-  fetchSession(): Promise<void>;
+  fetchSession(): Promise<IUser | null>;
   logout(): Promise<void>;
   login(email: string, password: string): Promise<void>;
   signUp(email: string, password: string, name: string): Promise<AuthStatusEnum>;
@@ -75,13 +75,15 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
       /**
        * Fetches the user session from the API.
        */
-      async fetchSession(): Promise<void> {
+      async fetchSession(): Promise<IUser | null> {
         try {
           const { data } = await this.$container.api.get<{ data: IUser }>('/auth/session');
 
           this.setSession(data);
+
+          return data;
         } catch {
-          // TODO: Global error handling
+          return null;
         }
       },
 

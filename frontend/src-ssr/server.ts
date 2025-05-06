@@ -68,7 +68,7 @@ export const create = defineSsrCreate((/* { ... } */) => {
 export const listen = defineSsrListen(({ app, devHttpsApp, port }) => {
   const server = devHttpsApp || app;
 
-  void TenantCacheService.getInstance().loadAllTenants();
+  TenantCacheService.getInstance();
 
   return server.listen(port, () => {});
 });

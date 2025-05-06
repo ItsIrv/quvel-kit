@@ -2,7 +2,7 @@
 
 namespace Modules\Tenant\Services;
 
-use Illuminate\Contracts\Config\Repository;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Routing\UrlGenerator;
 use Modules\Tenant\Models\Tenant;
 use RuntimeException;
@@ -12,17 +12,13 @@ class TenantConfigApplier
     /**
      * Apply tenant-specific config at runtime.
      */
-    public static function apply(Tenant $tenant): void
+    public static function apply(Tenant $tenant, ConfigRepository $appConfig): void
     {
         $config = $tenant->getEffectiveConfig();
 
         if (!$config) {
             throw new RuntimeException('Tenant config is missing.');
         }
-
-        $app = app();
-        /** @var Repository $appConfig */
-        $appConfig = $app->make(Repository::class);
 
         // Backend - Core App
         $appConfig->set('app.name', $config->appName);
