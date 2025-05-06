@@ -6,10 +6,11 @@
  */
 import { ref } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
-// import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import type { ErrorHandler } from 'src/modules/Core/types/task.types';
 import EmailField from 'src/modules/Auth/components/Form/EmailField.vue';
 import TaskErrors from 'src/modules/Core/components/Common/TaskErrors.vue';
+import { EmailService } from '../../services/EmailService';
+import { useScopedService } from 'src/modules/Core/composables/useScopedService';
 
 /**
  * Emits
@@ -19,8 +20,9 @@ const emit = defineEmits(['success', 'switch-form', 'reset-success']);
 /**
  * Services
  */
-const { task, i18n } = useContainer();
-// const sessionStore = useSessionStore();
+const container = useContainer();
+const emailService = useScopedService(EmailService);
+
 
 /**
  * Refs
@@ -33,13 +35,13 @@ const authForm = ref<HTMLFormElement>();
  *
  * Handles password reset request.
  */
-const resetTask = task.newTask({
+const resetTask = container.task.newTask({
   showNotification: {
-    success: () => i18n.t('auth.status.success.passwordResetSent'),
+    success: () => container.i18n.t('auth.status.success.passwordResetSent'),
   },
   // task: async () => await sessionStore.forgotPassword(email.value),
-  task: () => { },
-  errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
+  task: async () => await emailService?.sendPasswordResetLink(email.value),
+  errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
   successHandlers: () => {
     emit('reset-success');
     resetForm();

@@ -1,4 +1,4 @@
-import { TenantConfigProtected, TenantConfigVisibilityRecord } from '../types/tenant.types';
+import { TenantConfigProtected, TenantConfigVisibilityRecords } from '../types/tenant.types';
 
 /**
  * Creates a tenant config object from environment variables.
@@ -35,7 +35,7 @@ export function filterTenantConfig(config: TenantConfigProtected): Partial<Tenan
   const publicConfig: Partial<TenantConfigProtected> = {};
 
   Object.keys(config.__visibility).forEach((key) => {
-    const typedKey = key as keyof TenantConfigVisibilityRecord;
+    const typedKey = key as keyof TenantConfigVisibilityRecords;
 
     if (config.__visibility?.[typedKey] === 'public') {
       const value = config[typedKey];

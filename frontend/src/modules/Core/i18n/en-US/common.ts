@@ -24,7 +24,7 @@ export default {
   },
   status: {
     errors: {
-      internalError: 'Internal error.',
+      internalError: 'Internal error, please try again later.',
     },
   },
   language: 'Language',

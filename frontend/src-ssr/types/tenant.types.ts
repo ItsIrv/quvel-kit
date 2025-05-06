@@ -24,15 +24,18 @@ export interface TenantConfigProtected {
   pusherAppKey: string;
   pusherAppCluster: string;
   socialiteProviders: string[];
-  __visibility: TenantConfigVisibilityRecord;
+  __visibility: TenantConfigVisibilityRecords;
 }
 
 /**
- * The visibility of a tenant configuration field.
+ * The visibility of a tenant configuration fields.
  */
 export type TenantConfigVisibility = 'public' | 'protected';
 
-export type TenantConfigVisibilityRecord = Partial<
+/**
+ * The visibility of a tenant configuration fields.
+ */
+export type TenantConfigVisibilityRecords = Partial<
   Record<Exclude<keyof TenantConfigProtected, '__visibility'>, TenantConfigVisibility>
 >;
 

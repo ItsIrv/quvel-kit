@@ -9,9 +9,6 @@ class VerifyEmail extends VerifyEmailBase
 {
     /**
      * Build the email notification.
-     *
-     * @param string $url
-     * @return \Illuminate\Notifications\Messages\MailMessage
      */
     protected function buildMailMessage($url): MailMessage
     {
@@ -25,13 +22,5 @@ class VerifyEmail extends VerifyEmailBase
             ->action(__('Verify Email Address'), $url)
             ->line(__('If you didn’t create an account with us, please ignore this email.'))
             ->salutation(__('Best regards,') . "\n" . config('app.name') . ' Team');
-    }
-
-    protected function verificationUrl($notifiable)
-    {
-        if (config('auth.verify_email_before_login') === true) {
-        } else {
-            return parent::verificationUrl($notifiable);
-        }
     }
 }

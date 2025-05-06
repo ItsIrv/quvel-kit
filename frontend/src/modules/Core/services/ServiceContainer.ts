@@ -81,6 +81,67 @@ export class ServiceContainer {
   }
 
   /**
+   * Gets a service if it exists, or creates and registers it safely.
+   */
+  getOrCreateService<T extends Service>(serviceFactory: () => T, name: string): T;
+  getOrCreateService<T extends Service>(ServiceClass: new () => T): T;
+  getOrCreateService<T extends Service>(arg1: (() => T) | (new () => T), arg2?: string): T {
+    // Determine if we're dealing with a factory function or class constructor
+    const isFactory = typeof arg2 === 'string';
+
+    // Determine the service name
+    const name = isFactory ? arg2 : (arg1 as new () => T).name;
+
+    // Check if service already exists
+    let service = this.getService<T>(name);
+    if (service) return service;
+
+    // Create new service instance
+    service = isFactory ? (arg1 as () => T)() : new (arg1 as new () => T)();
+
+    // Store the service
+    this.services.set(name, service);
+
+    // Handle registration and boot if applicable
+    if (this.isBootable(service)) {
+      if (!this.registeredServices.has(name)) {
+        this.registeredServices.add(name);
+        service.register(this);
+      }
+
+      if (!this.bootedServices.has(name) && service.boot) {
+        this.bootedServices.add(name);
+        service.boot();
+      }
+    }
+
+    return service;
+  }
+
+  /**
+   * Removes a service and shuts it down if possible.
+   * This allows services to perform any necessary cleanup.
+   */
+  removeService(name: string): boolean {
+    const service = this.services.get(name);
+    if (this.isShutdownable(service)) {
+      service.shutdown();
+    }
+
+    this.services.delete(name);
+    this.registeredServices.delete(name);
+    this.bootedServices.delete(name);
+    return true;
+  }
+
+  /**
+   * Checks if a service implements `shutdown` method.
+   */
+  private isShutdownable(service: unknown): service is { shutdown: () => void } {
+    return typeof service === 'object' && service !== null && 'shutdown' in service;
+  }
+
+  /**
    * Registers a service only if it hasn't been registered.
    */
   private registerService(name: string, service: Service): void {

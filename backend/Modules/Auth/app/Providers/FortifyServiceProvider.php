@@ -32,14 +32,82 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
-        RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
+        RateLimiter::for(
+            'login',
+            fn (Request $request) =>
+            Limit::perMinute(5)->by(strtolower($request->input('email')) . '|' . $request->ip())
+        );
 
-            return Limit::perMinute(5)->by($throttleKey);
-        });
+        RateLimiter::for(
+            'register',
+            fn (Request $request) =>
+            Limit::perMinute(3)->by($request->ip())
+        );
 
-        RateLimiter::for('two-factor', function (Request $request) {
-            return Limit::perMinute(5)->by($request->session()->get('login.id'));
-        });
+        RateLimiter::for(
+            'verification.notice',
+            fn (Request $request) =>
+            Limit::perMinutes(60, 3)->by($request->input('email') ?? $request->ip())
+        );
+
+        RateLimiter::for(
+            'password.email',
+            fn (Request $request) =>
+            Limit::perMinutes(60, 3)->by($request->input('email')) . '|' . $request->ip()
+        );
+
+        RateLimiter::for(
+            'password.update',
+            fn (Request $request) =>
+            Limit::perMinute(5)->by($request->ip())
+        );
+
+        RateLimiter::for(
+            'password.confirm',
+            fn (Request $request) =>
+            Limit::perMinute(5)->by($request->ip())
+        );
+
+        RateLimiter::for(
+            'user-password.update',
+            fn (Request $request) =>
+            Limit::perMinute(5)->by($request->ip())
+        );
+
+        RateLimiter::for(
+            'user-profile-information.update',
+            fn (Request $request) =>
+            Limit::perMinute(3)->by($request->ip())
+        );
+
+        RateLimiter::for(
+            'provider.redirect',
+            fn (Request $request) =>
+            Limit::perMinute(10)->by($request->ip())
+        );
+
+        RateLimiter::for(
+            'provider.callback',
+            fn (Request $request) =>
+            Limit::perMinute(10)->by($request->ip())
+        );
+
+        RateLimiter::for(
+            'provider.callback.post',
+            fn (Request $request) =>
+            Limit::perMinute(10)->by($request->ip())
+        );
+
+        RateLimiter::for(
+            'provider.create-nonce',
+            fn (Request $request) =>
+            Limit::perMinute(5)->by($request->ip())
+        );
+
+        RateLimiter::for(
+            'provider.redeem-nonce',
+            fn (Request $request) =>
+            Limit::perMinute(5)->by($request->ip())
+        );
     }
 }

@@ -44,7 +44,7 @@ const signupTask = task.newTask<AuthStatusEnum>({
   task: async () => await sessionStore.signUp(email.value, password.value, name.value),
   errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
   successHandlers: (status) => {
-    if (status === AuthStatusEnum.LOGIN_SUCCESS) {
+    if (status === AuthStatusEnum.REGISTER_SUCCESS) {
       emit('registration-success');
     }
 

@@ -78,6 +78,8 @@ export default {
       checkYourEmail: 'Check your email for a verification link.',
       passwordResetSent: 'Password reset link sent.',
       passwordReset: 'Your password has been reset successfully.',
+      emailVerified: 'Your email has been verified successfully.',
+      emailVerificationNotice: 'A verification link has been sent to your email.',
     },
   },
 };
