@@ -54,8 +54,14 @@ export class ServiceContainer {
   /**
    * Retrieves a registered dynamic service.
    */
-  getService<T>(name: string): T | undefined {
-    return this.services.get(name) as T | undefined;
+  getService<T>(name: string): T {
+    const service = this.services.get(name);
+
+    if (!service) {
+      throw new Error(`Service ${name} not found`);
+    }
+
+    return service as T;
   }
 
   /**
@@ -93,11 +99,12 @@ export class ServiceContainer {
     const name = isFactory ? arg2 : (arg1 as new () => T).name;
 
     // Check if service already exists
-    let service = this.getService<T>(name);
-    if (service) return service;
+    if (this.hasService(name)) {
+      return this.getService<T>(name);
+    }
 
     // Create new service instance
-    service = isFactory ? (arg1 as () => T)() : new (arg1 as new () => T)();
+    const service = isFactory ? (arg1 as () => T)() : new (arg1 as new () => T)();
 
     // Store the service
     this.services.set(name, service);
@@ -135,13 +142,6 @@ export class ServiceContainer {
   }
 
   /**
-   * Checks if a service implements `shutdown` method.
-   */
-  private isShutdownable(service: unknown): service is { shutdown: () => void } {
-    return typeof service === 'object' && service !== null && 'shutdown' in service;
-  }
-
-  /**
    * Registers a service only if it hasn't been registered.
    */
   private registerService(name: string, service: Service): void {
@@ -159,6 +159,13 @@ export class ServiceContainer {
       this.bootedServices.add(name);
       service.boot?.();
     }
+  }
+
+  /**
+   * Checks if a service implements `shutdown` method.
+   */
+  private isShutdownable(service: unknown): service is { shutdown: () => void } {
+    return typeof service === 'object' && service !== null && 'shutdown' in service;
   }
 
   /**

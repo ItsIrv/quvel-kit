@@ -1,10 +1,8 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { User } from 'src/modules/Core/models/User';
 import type { IUser } from 'src/modules/Core/types/user.types';
-import { showNotification } from 'src/modules/Core/utils/notifyUtil';
-import { OAuthStatusEnum } from '../enums/OAuthStatusEnum';
-import { mapStatusToType, normalizeKey } from '../../Core/composables/useQueryMessageHandler';
 import { AuthStatusEnum } from '../enums/AuthStatusEnum';
+import { AuthService } from '../services/AuthService';
 
 /**
  * Type for the authenticated user.
@@ -76,22 +74,22 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Fetches the user session from the API.
        */
       async fetchSession(): Promise<IUser | null> {
-        try {
-          const { data } = await this.$container.api.get<{ data: IUser }>('/auth/session');
+        const authService = this.$container.getService<AuthService>('auth');
+        const userData = await authService.fetchSession();
 
-          this.setSession(data);
-
-          return data;
-        } catch {
-          return null;
+        if (userData) {
+          this.setSession(userData);
         }
+
+        return userData;
       },
 
       /**
        * Logs the user out and resets the session.
        */
       async logout(): Promise<void> {
-        await this.$container.api.post('/auth/logout');
+        const authService = this.$container.getService<AuthService>('auth');
+        await authService.logout();
 
         this.user = null;
       },
@@ -100,10 +98,8 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Logs in the user and sets the session.
        */
       async login(email: string, password: string): Promise<void> {
-        const { user } = await this.$container.api.post<{ message: string; user: IUser }>(
-          '/auth/login',
-          { email, password },
-        );
+        const authService = this.$container.getService<AuthService>('auth');
+        const { user } = await authService.login(email, password);
 
         this.setSession(user);
       },
@@ -112,14 +108,8 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Signs up a new user and sets the session.
        */
       async signUp(email: string, password: string, name: string): Promise<AuthStatusEnum> {
-        const { status, user } = await this.$container.api.post<{
-          status: AuthStatusEnum;
-          user: IUser;
-        }>('/auth/register', {
-          email,
-          password,
-          name,
-        });
+        const authService = this.$container.getService<AuthService>('auth');
+        const { status, user } = await authService.signUp(email, password, name);
 
         if (status === AuthStatusEnum.LOGIN_SUCCESS) {
           this.setSession(user);
@@ -132,75 +122,18 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * OAuth Flow: Request nonce, store it, and redirect.
        */
       async loginWithOAuth(provider: string, stateless: boolean) {
-        const redirectBase = `${this.$container.config.get('apiUrl')}/auth/provider/${provider}/redirect`;
+        const authService = this.$container.getService<AuthService>('auth');
 
-        if (!stateless) {
-          window.location.href = redirectBase;
-          return;
+        // Clean up any existing channel subscription
+        if (this.resultChannel) {
+          this.resultChannel.unsubscribe();
+          this.resultChannel = null;
         }
 
-        const createNonce = async (): Promise<{ nonce: string }> => {
-          return await this.$container.api.post<{ nonce: string }>(
-            `/auth/provider/${provider}/create-nonce`,
-          );
-        };
-
-        const handleOAuthFlow = async (nonce: string) => {
-          const wsService = this.$container.ws;
-          const taskService = this.$container.task;
-          const channelName = `auth.nonce.${nonce}`;
-
-          if (this.resultChannel) {
-            this.resultChannel.unsubscribe();
-          }
-
-          this.resultChannel = await wsService.subscribe({
-            channelName,
-            type: 'public',
-            event: '.oauth.result',
-            callback: ({ status }: { status: OAuthStatusEnum }) => {
-              this.resultChannel!.unsubscribe();
-
-              status = normalizeKey(status, 'auth') as OAuthStatusEnum;
-
-              if (status !== OAuthStatusEnum.LOGIN_SUCCESS) {
-                showNotification(mapStatusToType(status), this.$container.i18n.t(status), {
-                  timeout: 8000,
-                  closeBtn: true,
-                });
-                return;
-              }
-
-              void taskService
-                .newTask<{ user: IUser }>({
-                  showLoading: true,
-                  showNotification: {
-                    success: () => this.$container.i18n.t('auth.status.success.loggedIn'),
-                    error: () => this.$container.i18n.t('auth.status.errors.login'),
-                  },
-                  task: async (): Promise<{ user: IUser }> =>
-                    await this.$container.api.post<{ user: IUser }>(
-                      `/auth/provider/${provider}/redeem-nonce`,
-                      { nonce },
-                    ),
-                  successHandlers: ({ user }): void => {
-                    this.setSession(user);
-                  },
-                })
-                .run();
-            },
-          });
-        };
-
-        try {
-          const { nonce } = await createNonce();
-
-          void handleOAuthFlow(nonce);
-
-          window.location.href = `${redirectBase}?nonce=${encodeURIComponent(nonce)}`;
-        } catch {
-          showNotification('negative', this.$container.i18n.t('common.task.error'));
-        }
+        // Handle the OAuth flow through the service
+        this.resultChannel = await authService.loginWithOAuth(provider, stateless, (user: IUser) =>
+          this.setSession(user),
+        );
       },
     },
   },

@@ -3,24 +3,30 @@
 namespace Modules\Auth\Notifications;
 
 use Illuminate\Auth\Notifications\VerifyEmail as VerifyEmailBase;
-use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\URL;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
 
+/**
+ * Overwrites the default Verification URL with the public_id instead of the primary key.
+ */
 class VerifyEmail extends VerifyEmailBase
 {
     /**
-     * Build the email notification.
+     * Get the verification URL for the given notifiable.
+     *
+     * @param  mixed  $notifiable
+     * @return string
      */
-    protected function buildMailMessage($url): MailMessage
+    protected function verificationUrl($notifiable)
     {
-        return (new MailMessage())
-            ->subject(__('Verify Your Email Address'))
-            ->greeting(__('Hello,'))
-            ->line(__('Welcome to :app_name! We’re excited to have you join us.', [
-                'app_name' => config('app.name'),
-            ]))
-            ->line(__('Before you can start using your account, please verify your email address by clicking the button below:'))
-            ->action(__('Verify Email Address'), $url)
-            ->line(__('If you didn’t create an account with us, please ignore this email.'))
-            ->salutation(__('Best regards,') . "\n" . config('app.name') . ' Team');
+        return URL::temporarySignedRoute(
+            'verification.verify',
+            Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
+            [
+                'id'   => $notifiable->public_id ?? $notifiable->getKey(),
+                'hash' => sha1($notifiable->getEmailForVerification()),
+            ],
+        );
     }
 }

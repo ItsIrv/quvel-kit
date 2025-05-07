@@ -9,8 +9,28 @@ use Illuminate\Routing\Redirector;
 
 class FrontendService
 {
+    /**
+     * The URL.
+     *
+     * @var string
+     */
     private string $url;
+
+    /**
+     * The capacitor scheme.
+     * _deep is used for deep links, which just uses the base URL
+     * null TBD, for now it does the same as _deep. might merge into _deep
+     * any other value replaces http/https with the scheme
+     *
+     * @var ?string
+     */
     private ?string $capacitorScheme;
+
+    /**
+     * Whether the request is from capacitor.
+     *
+     * @var bool
+     */
     private bool $isCapacitor;
 
     public function __construct(
@@ -112,18 +132,18 @@ class FrontendService
      */
     protected function buildUrl(string $path, array $query = []): string
     {
-        $base = rtrim($this->url, '/');
-        $path = ltrim($path, '/');
+        $base = \rtrim($this->url, '/');
+        $path = \ltrim($path, '/');
 
-        $url = $base . '/' . $path;
+        $url = "$base/$path";
 
         if (!empty($query)) {
-            $url .= '?' . http_build_query($query);
+            $url .= '?' . \http_build_query($query);
         }
 
         // Handle capacitor schemes
         if ($this->isCapacitor && $this->capacitorScheme && $this->capacitorScheme !== '_deep') {
-            $url = preg_replace('/^https?/', $this->capacitorScheme, $url) ?? $url;
+            $url = \preg_replace('#^https?://#', $this->capacitorScheme . '://', $url);
         }
 
         return $url;

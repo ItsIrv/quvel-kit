@@ -95,4 +95,12 @@ class UserAuthenticationService
         // @phpstan-ignore-next-line laravel provides loginUsingId
         return $this->auth->guard()->loginUsingId($id);
     }
+
+    /**
+     * Check if the user is authenticated.
+     */
+    public function check(): bool
+    {
+        return $this->auth->guard()->check();
+    }
 }

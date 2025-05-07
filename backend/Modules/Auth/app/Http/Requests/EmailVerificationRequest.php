@@ -2,28 +2,77 @@
 
 namespace Modules\Auth\Http\Requests;
 
-use Modules\Core\Services\FrontendService;
-use Illuminate\Foundation\Auth\EmailVerificationRequest as BaseEmailVerificationRequest;
+use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Foundation\Auth\EmailVerificationRequest as BaseEmailVerificationRequest;
+use Modules\Core\Services\FrontendService;
+use Modules\Core\Services\User\UserFindService;
+use Modules\Auth\Services\UserAuthenticationService;
+use Throwable;
 
+/**
+ * Overwrites the default authorize method to use the public_id instead of the primary key.
+ * This also checks the config to see if the email verification should be done before login.
+ */
 class EmailVerificationRequest extends BaseEmailVerificationRequest
 {
+    /**
+     * The resolved user for verification.
+     */
+    protected ?User $verificationUser = null;
+
+    /**
+     * Determine if the verification request is authorized.
+     */
     public function authorize(): bool
     {
-        // If verify_email_before_login is true, allow all requests since the user can't be logged in
-        if (config('auth.verify_email_before_login') === true) {
-            return true;
+        $publicId          = (string) $this->route('id');
+        $hash              = (string) $this->route('hash');
+        $verifyBeforeLogin = config('auth.verify_email_before_login') === true;
+
+        if ($verifyBeforeLogin) {
+            try {
+                $user = app(UserFindService::class)->findByPublicId($publicId);
+                if (!$user || !hash_equals($hash, sha1($user->getEmailForVerification()))) {
+                    return false;
+                }
+
+                $this->verificationUser = $user;
+
+                return true;
+            } catch (Throwable) {
+                return false;
+            }
         }
 
-        // Otherwise make sure the user is logged in and the signature is valid
+        // User must be logged in
+        if (!app(UserAuthenticationService::class)->check()) {
+            throw new HttpResponseException(app(FrontendService::class)->redirect());
+        }
+
         $user = $this->user();
-
-        if (!$user) {
-            throw new HttpResponseException(
-                app(FrontendService::class)->redirect(),
-            );
+        if (!hash_equals($publicId, (string) ($user->public_id ?? $user->getKey()))) {
+            return false;
         }
 
-        return parent::authorize();
+        if (!hash_equals($hash, sha1($user->getEmailForVerification()))) {
+            return false;
+        }
+
+        $this->verificationUser = $user;
+
+        return true;
+    }
+
+    /**
+     * Mark the user's email as verified.
+     */
+    public function fulfill(): void
+    {
+        $user = $this->verificationUser;
+
+        if ($user && !$user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
     }
 }

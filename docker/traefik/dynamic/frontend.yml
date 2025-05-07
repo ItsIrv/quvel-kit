@@ -40,8 +40,8 @@ http:
     capacitor:
       loadBalancer:
         servers:
-          - url: 'https://127.0.0.1.nip.io:3002'
-        #          - url: 'https://host.docker.internal:3002'
+          # - url: 'https://127.0.0.1.nip.io:3002'
+          - url: 'https://host.docker.internal:3002'
         serversTransport: 'insecureTransport' # Supports self-signed certificates
 
   middlewares:

@@ -3,7 +3,6 @@
 namespace Modules\Core\Services\User;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * Service to handle user lookup operations.
@@ -12,8 +11,6 @@ class UserFindService
 {
     /**
      * Find a user by ID.
-     *
-     * @throws ModelNotFoundException
      */
     public function findById(int|string $id): User
     {
@@ -28,6 +25,15 @@ class UserFindService
     {
         /** @phpstan-ignore-next-line TODO: */
         return User::where('email', '=', $email)->first();
+    }
+
+    /**
+     * Find a user by public ID.
+     */
+    public function findByPublicId(string $publicId): ?User
+    {
+        /** @phpstan-ignore-next-line TODO: */
+        return User::where('public_id', '=', $publicId)->first();
     }
 
     /**

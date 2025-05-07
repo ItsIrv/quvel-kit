@@ -12,6 +12,8 @@ import { ConfigService } from 'src/modules/Core/services/ConfigService';
 import { WebSocketService } from 'src/modules/Core/services/WebSocketService';
 import { createWebsocketConfig } from 'src/modules/Core/utils/websocketUtil';
 import { CatalogService } from 'src/modules/Catalog/sevices/CatalogService';
+import { AuthService } from 'src/modules/Auth/services/AuthService';
+import type { Service } from 'src/modules/Core/types/service.types';
 
 /**
  * Creates the service container per request.
@@ -29,7 +31,10 @@ export function createContainer(ssrContext?: QSsrContext | null): ServiceContain
     new ValidationService(),
     new TaskService(),
     new WebSocketService(createWebsocketConfig(configOverrides)),
-    new Map([['catalog', new CatalogService()]]),
+    new Map<string, Service>([
+      ['catalog', new CatalogService()],
+      ['auth', new AuthService()],
+    ]),
   );
 }
 
