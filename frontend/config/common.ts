@@ -7,6 +7,7 @@ export default defineConfig((ctx) => {
     preFetch: true,
     boot: [
       'container',
+      'services',
       {
         server: false,
         path: 'pinia-hydrator',

@@ -74,7 +74,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Fetches the user session from the API.
        */
       async fetchSession(): Promise<IUser | null> {
-        const authService = this.$container.getService<AuthService>('auth');
+        const authService = this.$container.get(AuthService);
         const userData = await authService.fetchSession();
 
         if (userData) {
@@ -88,7 +88,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Logs the user out and resets the session.
        */
       async logout(): Promise<void> {
-        const authService = this.$container.getService<AuthService>('auth');
+        const authService = this.$container.get(AuthService);
         await authService.logout();
 
         this.user = null;
@@ -98,7 +98,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Logs in the user and sets the session.
        */
       async login(email: string, password: string): Promise<void> {
-        const authService = this.$container.getService<AuthService>('auth');
+        const authService = this.$container.get(AuthService);
         const { user } = await authService.login(email, password);
 
         this.setSession(user);
@@ -108,7 +108,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Signs up a new user and sets the session.
        */
       async signUp(email: string, password: string, name: string): Promise<AuthStatusEnum> {
-        const authService = this.$container.getService<AuthService>('auth');
+        const authService = this.$container.get(AuthService);
         const { status, user } = await authService.signUp(email, password, name);
 
         if (status === AuthStatusEnum.LOGIN_SUCCESS) {
@@ -122,7 +122,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * OAuth Flow: Request nonce, store it, and redirect.
        */
       async loginWithOAuth(provider: string, stateless: boolean) {
-        const authService = this.$container.getService<AuthService>('auth');
+        const authService = this.$container.get(AuthService);
 
         // Clean up any existing channel subscription
         if (this.resultChannel) {

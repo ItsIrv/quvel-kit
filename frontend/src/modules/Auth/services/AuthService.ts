@@ -218,4 +218,14 @@ export class AuthService extends Service implements BootableService {
       return null;
     }
   }
+
+  /**
+   * Sends a password reset link to the user's email.
+   *
+   * @param email - The user's email.
+   * @returns A promise that resolves when the request is complete.
+   */
+  sendPasswordResetLink(email: string): Promise<void> {
+    return this.api.post('/auth/forgot-password', { email });
+  }
 }

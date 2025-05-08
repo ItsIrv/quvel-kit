@@ -67,10 +67,8 @@ export const useCatalogStore = defineStore<'catalog', CatalogState, CatalogGette
       ...createLengthAwareActions<'catalogItems', CatalogItem>({
         stateKey: 'catalogItems',
         async fetcher(options: PaginationRequest) {
-          const service = this.$container.getService<CatalogService>('catalog');
-
           try {
-            return await service.fetchCatalogs(options);
+            return await this.$container.get(CatalogService).fetchCatalogs(options);
           } catch {
             return false;
           }

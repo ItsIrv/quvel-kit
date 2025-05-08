@@ -42,8 +42,6 @@ export class WebSocketService implements BootableService {
     this.api = api;
   }
 
-  public boot(): void {}
-
   public connect(): Promise<void> {
     if (this.isConnected || this.isSsr) return Promise.resolve();
     if (this.connectionPromise) return this.connectionPromise;

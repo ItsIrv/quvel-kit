@@ -11,9 +11,6 @@ import { WebSocketService } from './WebSocketService';
  * The service container manages core services and allows dynamic service registration.
  */
 export class ServiceContainer {
-  private readonly registeredServices = new Set<string>(); // Track registered services
-  private readonly bootedServices = new Set<string>(); // Track booted services
-
   constructor(
     readonly config: ConfigService,
     readonly api: ApiService,
@@ -24,7 +21,6 @@ export class ServiceContainer {
     private readonly services: Map<string, unknown> = new Map(),
   ) {
     this.registerServices();
-    this.bootServices();
   }
 
   /**
@@ -40,89 +36,66 @@ export class ServiceContainer {
   }
 
   /**
-   * Boots all registered services.
+   * Retrieves or lazily creates a service.
+   *
+   * @param def - A class constructor (auto-name) or factory function (must be bootable).
+   * @param boot - Whether to auto-register and boot if needed (default false).
    */
-  private bootServices(): void {
-    for (const [name, service] of Object.entries({
-      ...this,
-      ...Object.fromEntries(this.services),
-    })) {
-      this.bootService(name, service as BootableService);
-    }
-  }
+  get<T extends Service>(def: new () => T): T;
+  get<T extends Service>(def: () => T): T;
+  get<T extends Service>(def: (() => T) | (new () => T)): T {
+    const name = typeof def === 'function' && 'prototype' in def ? def.name : null;
 
-  /**
-   * Retrieves a registered dynamic service.
-   */
-  getService<T>(name: string): T {
-    const service = this.services.get(name);
-
-    if (!service) {
-      throw new Error(`Service ${name} not found`);
+    if (name && this.services.has(name)) {
+      return this.services.get(name) as T;
     }
 
-    return service as T;
+    const instance: T = name ? new (def as new () => T)() : (def as () => T)();
+
+    const serviceName = name ?? (instance.constructor as new () => T).name;
+
+    this.services.set(serviceName, instance);
+
+    if (this.isBootable(instance)) {
+      instance.register(this);
+    }
+
+    return instance;
   }
 
   /**
-   * Checks if a dynamic service exists.
+   * Adds a new service instance by class or factory.
    */
-  hasService(name: string): boolean {
-    return this.services.has(name);
-  }
+  addService<T extends Service>(
+    def: new () => T | (() => T),
+    service: T,
+    overwrite = false,
+  ): boolean {
+    const name =
+      typeof def === 'function' && 'prototype' in def
+        ? (def as new () => T).name
+        : (service.constructor as new () => T).name;
 
-  /**
-   * Adds a new dynamic service.
-   */
-  addService<T>(name: string, service: T & Service, overwrite = false): boolean {
     if (this.services.has(name) && !overwrite) {
       return false;
     }
 
     this.services.set(name, service);
-    this.registerService(name, service);
-    this.bootService(name, service);
+
+    if (this.isBootable(service)) {
+      service.register(this);
+    }
 
     return true;
   }
 
   /**
-   * Gets a service if it exists, or creates and registers it safely.
+   * Checks if a service exists by class or factory definition.
    */
-  getOrCreateService<T extends Service>(serviceFactory: () => T, name: string): T;
-  getOrCreateService<T extends Service>(ServiceClass: new () => T): T;
-  getOrCreateService<T extends Service>(arg1: (() => T) | (new () => T), arg2?: string): T {
-    // Determine if we're dealing with a factory function or class constructor
-    const isFactory = typeof arg2 === 'string';
+  hasService<T extends Service>(def: new () => T | (() => T)): boolean {
+    const name = typeof def === 'function' && 'prototype' in def ? (def as new () => T).name : null;
 
-    // Determine the service name
-    const name = isFactory ? arg2 : (arg1 as new () => T).name;
-
-    // Check if service already exists
-    if (this.hasService(name)) {
-      return this.getService<T>(name);
-    }
-
-    // Create new service instance
-    const service = isFactory ? (arg1 as () => T)() : new (arg1 as new () => T)();
-
-    // Store the service
-    this.services.set(name, service);
-
-    // Handle registration and boot if applicable
-    if (this.isBootable(service)) {
-      if (!this.registeredServices.has(name)) {
-        this.registeredServices.add(name);
-        service.register(this);
-      }
-
-      if (!this.bootedServices.has(name) && service.boot) {
-        this.bootedServices.add(name);
-        service.boot();
-      }
-    }
-
-    return service;
+    return name ? this.services.has(name) : false;
   }
 
   /**
@@ -136,8 +109,6 @@ export class ServiceContainer {
     }
 
     this.services.delete(name);
-    this.registeredServices.delete(name);
-    this.bootedServices.delete(name);
     return true;
   }
 
@@ -145,19 +116,8 @@ export class ServiceContainer {
    * Registers a service only if it hasn't been registered.
    */
   private registerService(name: string, service: Service): void {
-    if (this.isBootable(service) && !this.registeredServices.has(name)) {
-      this.registeredServices.add(name);
+    if (this.isBootable(service)) {
       service.register(this);
-    }
-  }
-
-  /**
-   * Boots a service only if it hasn't been booted yet.
-   */
-  private bootService(name: string, service: Service): void {
-    if (this.isBootable(service) && !this.bootedServices.has(name)) {
-      this.bootedServices.add(name);
-      service.boot?.();
     }
   }
 

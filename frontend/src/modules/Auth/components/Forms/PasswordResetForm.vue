@@ -9,8 +9,7 @@ import { useContainer } from 'src/modules/Core/composables/useContainer';
 import type { ErrorHandler } from 'src/modules/Core/types/task.types';
 import EmailField from 'src/modules/Auth/components/Form/EmailField.vue';
 import TaskErrors from 'src/modules/Core/components/Common/TaskErrors.vue';
-import { EmailService } from '../../services/EmailService';
-import { useScopedService } from 'src/modules/Core/composables/useScopedService';
+import { AuthService } from 'src/modules/Auth/services/AuthService';
 
 /**
  * Emits
@@ -21,8 +20,6 @@ const emit = defineEmits(['success', 'switch-form', 'reset-success']);
  * Services
  */
 const container = useContainer();
-const emailService = useScopedService(EmailService);
-
 
 /**
  * Refs
@@ -40,7 +37,7 @@ const resetTask = container.task.newTask({
     success: () => container.i18n.t('auth.status.success.passwordResetSent'),
   },
   // task: async () => await sessionStore.forgotPassword(email.value),
-  task: async () => await emailService?.sendPasswordResetLink(email.value),
+  task: async () => await container.get(AuthService).sendPasswordResetLink(email.value),
   errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
   successHandlers: () => {
     emit('reset-success');
