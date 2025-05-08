@@ -74,8 +74,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Fetches the user session from the API.
        */
       async fetchSession(): Promise<IUser | null> {
-        const authService = this.$container.get(AuthService);
-        const userData = await authService.fetchSession();
+        const userData = await this.$container.get(AuthService).fetchSession();
 
         if (userData) {
           this.setSession(userData);
@@ -88,8 +87,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Logs the user out and resets the session.
        */
       async logout(): Promise<void> {
-        const authService = this.$container.get(AuthService);
-        await authService.logout();
+        await this.$container.get(AuthService).logout();
 
         this.user = null;
       },
@@ -98,8 +96,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Logs in the user and sets the session.
        */
       async login(email: string, password: string): Promise<void> {
-        const authService = this.$container.get(AuthService);
-        const { user } = await authService.login(email, password);
+        const { user } = await this.$container.get(AuthService).login(email, password);
 
         this.setSession(user);
       },
@@ -108,8 +105,9 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Signs up a new user and sets the session.
        */
       async signUp(email: string, password: string, name: string): Promise<AuthStatusEnum> {
-        const authService = this.$container.get(AuthService);
-        const { status, user } = await authService.signUp(email, password, name);
+        const { status, user } = await this.$container
+          .get(AuthService)
+          .signUp(email, password, name);
 
         if (status === AuthStatusEnum.LOGIN_SUCCESS) {
           this.setSession(user);
@@ -122,8 +120,6 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * OAuth Flow: Request nonce, store it, and redirect.
        */
       async loginWithOAuth(provider: string, stateless: boolean) {
-        const authService = this.$container.get(AuthService);
-
         // Clean up any existing channel subscription
         if (this.resultChannel) {
           this.resultChannel.unsubscribe();
@@ -131,9 +127,9 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
         }
 
         // Handle the OAuth flow through the service
-        this.resultChannel = await authService.loginWithOAuth(provider, stateless, (user: IUser) =>
-          this.setSession(user),
-        );
+        this.resultChannel = await this.$container
+          .get(AuthService)
+          .loginWithOAuth(provider, stateless, (user: IUser) => this.setSession(user));
       },
     },
   },

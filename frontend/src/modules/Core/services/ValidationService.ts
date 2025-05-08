@@ -1,13 +1,13 @@
 import { ZodSchema, ZodIssueCode, ZodIssue } from 'zod';
 import type { ServiceContainer } from './ServiceContainer';
-import type { BootableService } from 'src/modules/Core/types/service.types';
+import type { RegisterService } from 'src/modules/Core/types/service.types';
 import type { I18nService } from 'src/modules/Core/services/I18nService';
 import { Service } from './Service';
 
 /**
  * Validation service with translation and a scoped Zod instance.
  */
-export class ValidationService extends Service implements BootableService {
+export class ValidationService extends Service implements RegisterService {
   private i18n!: I18nService;
 
   /**
@@ -50,6 +50,13 @@ export class ValidationService extends Service implements BootableService {
     if (result.success) return [];
 
     return result.error.issues.map((issue) => this.translateError(issue, attribute));
+  }
+
+  /**
+   * Creates a Quasar-compatible validation rule that stops at the first error.
+   */
+  createInputRule<T>(schema: ZodSchema<T>, attribute: string): (value: unknown) => string | true {
+    return (value: unknown) => this.validateFirstError(value, schema, attribute);
   }
 
   /**
@@ -121,12 +128,5 @@ export class ValidationService extends Service implements BootableService {
       default:
         return issue.message || i18n.t('validation.default', { attribute });
     }
-  }
-
-  /**
-   * Creates a Quasar-compatible validation rule that stops at the first error.
-   */
-  createInputRule<T>(schema: ZodSchema<T>, attribute: string): (value: unknown) => string | true {
-    return (value: unknown) => this.validateFirstError(value, schema, attribute);
   }
 }

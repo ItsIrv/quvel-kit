@@ -60,14 +60,14 @@ export const useUserStore = defineStore('user', {
 
 ## Creating Custom Services
 
-Custom services should implement the `BootableService` interface:
+Custom services should implement the `RegisterService` interface:
 
 ```ts
-import { BootableService } from 'src/modules/Core/types/service.types';
+import { RegisterService } from 'src/modules/Core/types/service.types';
 import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
 import { Service } from 'src/modules/Core/services/Service';
 
-export class NotificationService extends Service implements BootableService {
+export class NotificationService extends Service implements RegisterService {
   private apiService!: ApiService;
   
   // Register dependencies from the container

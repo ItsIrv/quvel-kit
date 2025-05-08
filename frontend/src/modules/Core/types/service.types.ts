@@ -8,7 +8,7 @@ export type Service = object;
 /**
  * Interface for all services that integrate with the DI container.
  */
-export interface BootableService {
+export interface RegisterService {
   /**
    * Runs initialization logic and injects the container.
    */

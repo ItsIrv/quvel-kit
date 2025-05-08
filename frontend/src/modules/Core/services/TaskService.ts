@@ -13,7 +13,7 @@ import { computed, ComputedRef, ref, type Ref } from 'vue';
 import { showNotification } from 'src/modules/Core/utils/notifyUtil';
 import { getSafe, resolveValue } from 'src/modules/Core/utils/objectUtils';
 import { hideLoading, showLoading } from 'src/modules/Core/utils/loadingUtil';
-import type { BootableService } from 'src/modules/Core/types/service.types';
+import type { RegisterService } from 'src/modules/Core/types/service.types';
 import { Service } from './Service';
 import type { ServiceContainer } from './ServiceContainer';
 import { LaravelErrorHandler } from 'src/modules/Core/utils/errorUtil';
@@ -22,7 +22,7 @@ import { ErrorBag } from 'src/modules/Core/types/laravel.types';
 /**
  * Task Service - Manages async operations with built-in error handling, notifications, and loading.
  */
-export class TaskService extends Service implements BootableService {
+export class TaskService extends Service implements RegisterService {
   /** Reference the whole container to provide helpers to the handlers */
   private container: ServiceContainer | null = null;
 

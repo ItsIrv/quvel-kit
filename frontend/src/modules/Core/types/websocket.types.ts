@@ -51,3 +51,7 @@ export type AnyChannel =
   | PrivateChannelType
   | PresenceChannelType
   | EncryptedChannelType;
+
+export type UnsubscribeFn = {
+  unsubscribe: () => void;
+};

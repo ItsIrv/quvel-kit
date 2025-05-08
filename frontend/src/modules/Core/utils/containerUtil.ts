@@ -12,8 +12,11 @@ import { createWebsocketConfig } from 'src/modules/Core/utils/websocketUtil';
 
 /**
  * Creates the service container per request.
+ *
  * @param ssrContext - The SSR context, if in SSR mode.
  * @returns The fully initialized service container.
+ *
+ * TODO: In SSR context, should be have reusable singletons?
  */
 export function createContainer(ssrContext?: QSsrContext | null): ServiceContainer {
   const configService = new ConfigService(ssrContext?.req?.tenantConfig);

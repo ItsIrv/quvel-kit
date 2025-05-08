@@ -61,6 +61,14 @@ export function createApi(
  * @param token - The token to validate.
  * @returns True if the token is valid, false otherwise.
  */
-function isValidSessionToken(token: unknown): token is string {
-  return typeof token === 'string' && /^[A-Za-z0-9-_]{20,512}$/.test(token);
+export function isValidSessionToken(token: unknown): token is string {
+  if (typeof token !== 'string') return false;
+
+  try {
+    const decoded = decodeURIComponent(token);
+
+    return /^[A-Za-z0-9+/=]{20,512}$/.test(decoded);
+  } catch {
+    return false;
+  }
 }

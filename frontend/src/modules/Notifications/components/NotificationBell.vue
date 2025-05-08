@@ -61,7 +61,7 @@ watch(
 
     <div
       v-if="isDropdownOpen"
-      class="NotificationDropdown"
+      class="DialogGradient GenericBorder MainTransition absolute right-0 mt-2 w-48 rounded-lg p-4 rounded-b-lg z-10"
     >
       <q-btn
         v-if="unreadCount > 0"
@@ -76,6 +76,7 @@ watch(
       <q-banner
         v-else
         inline-actions
+        class="bg-transparent"
       >
         No notifications.
       </q-banner>
@@ -96,20 +97,6 @@ watch(
 </template>
 
 <style scoped>
-.NotificationDropdown {
-  position: absolute;
-  right: 0;
-  top: 100%;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 250px;
-  z-index: 1000;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
 @keyframes bell-shake {
 
   from,

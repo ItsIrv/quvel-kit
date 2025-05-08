@@ -1,6 +1,4 @@
 import { defineBoot } from '@quasar/app-vite/wrappers';
-import { AuthService } from 'src/modules/Auth/services/AuthService';
-import { CatalogService } from 'src/modules/Catalog/sevices/CatalogService';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 
 /**
@@ -12,7 +10,4 @@ export default defineBoot(({ ssrContext }) => {
   if (!container) {
     container = useContainer();
   }
-
-  container.addService(CatalogService, new CatalogService());
-  container.addService(AuthService, new AuthService());
 });

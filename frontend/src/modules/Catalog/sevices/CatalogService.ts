@@ -1,4 +1,4 @@
-import { BootableService } from 'src/modules/Core/types/service.types';
+import { RegisterService } from 'src/modules/Core/types/service.types';
 import type { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
 import { ApiService } from 'src/modules/Core/services/ApiService';
 import { CatalogItem } from 'src/modules/Catalog/models/CatalogItem';
@@ -12,7 +12,7 @@ import {
 /**
  * Provides methods to fetch catalogs from the backend.
  */
-export class CatalogService implements BootableService {
+export class CatalogService implements RegisterService {
   private api: ApiService = {} as ApiService;
 
   register({ api }: ServiceContainer) {

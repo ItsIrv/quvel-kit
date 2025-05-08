@@ -9,6 +9,7 @@ import CatalogSection from 'src/modules/Catalog/components/CatalogSection.vue';
 import { ref, watch } from 'vue';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import WebSocketChannelManager from 'src/modules/Core/components/WebSocketChannelManager.vue';
+import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
 
 defineOptions({
   /**
@@ -17,8 +18,15 @@ defineOptions({
   async preFetch({ store, ssrContext }) {
     if (ssrContext) {
       await useCatalogStore(store).catalogItemsFetch();
+
+      const user = await useSessionStore(store).fetchSession();
+
+      if (user) {
+        void useNotificationStore(store).fetchNotifications();
+      }
     } else {
       void useCatalogStore(store).catalogItemsFetch();
+      void useNotificationStore(store).fetchNotifications();
     }
   },
 });
@@ -28,6 +36,7 @@ defineOptions({
  */
 const catalogStore = useCatalogStore();
 const sessionStore = useSessionStore();
+const notificationStore = useNotificationStore();
 
 /**
  * Refs
@@ -72,6 +81,25 @@ watch(
     void catalogStore.catalogItemsFetch();
   },
 );
+
+
+/**
+ * Watchers
+ */
+watch(
+  () => sessionStore.getUser?.id,
+  (userId) => {
+    if (userId) {
+      void notificationStore.subscribe(userId);
+    } else {
+      notificationStore.unsubscribe();
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 import { Service } from 'src/modules/Core/services/Service';
 import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
-import type { BootableService } from 'src/modules/Core/types/service.types';
+import type { RegisterService } from 'src/modules/Core/types/service.types';
 import { ApiService } from 'src/modules/Core/services/ApiService';
 import type { IUser } from 'src/modules/Core/types/user.types';
 import { AuthStatusEnum } from '../enums/AuthStatusEnum';
@@ -15,7 +15,7 @@ import { ConfigService } from 'src/modules/Core/services/ConfigService';
 /**
  * Service responsible for handling authentication-related API requests.
  */
-export class AuthService extends Service implements BootableService {
+export class AuthService extends Service implements RegisterService {
   private api!: ApiService;
   private task!: TaskService;
   private ws!: WebSocketService;

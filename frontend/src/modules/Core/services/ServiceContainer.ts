@@ -1,4 +1,4 @@
-import type { BootableService } from 'src/modules/Core/types/service.types';
+import type { RegisterService } from 'src/modules/Core/types/service.types';
 import type { ApiService } from 'src/modules/Core/services/ApiService';
 import type { I18nService } from 'src/modules/Core/services/I18nService';
 import type { ValidationService } from 'src/modules/Core/services/ValidationService';
@@ -31,7 +31,7 @@ export class ServiceContainer {
       ...this,
       ...Object.fromEntries(this.services),
     })) {
-      this.registerService(name, service as BootableService);
+      this.registerService(name, service as RegisterService);
     }
   }
 
@@ -39,7 +39,6 @@ export class ServiceContainer {
    * Retrieves or lazily creates a service.
    *
    * @param def - A class constructor (auto-name) or factory function (must be bootable).
-   * @param boot - Whether to auto-register and boot if needed (default false).
    */
   get<T extends Service>(def: new () => T): T;
   get<T extends Service>(def: () => T): T;
@@ -129,9 +128,9 @@ export class ServiceContainer {
   }
 
   /**
-   * Type guard to check if a service implements `BootableService`.
+   * Type guard to check if a service implements `RegisterService`.
    */
-  private isBootable(service: unknown): service is BootableService {
+  private isBootable(service: unknown): service is RegisterService {
     return typeof service === 'object' && service !== null && 'register' in service;
   }
 }

@@ -1,6 +1,6 @@
 import Pusher, { Channel } from 'pusher-js';
 import Echo from 'laravel-echo';
-import { BootableService } from 'src/modules/Core/types/service.types';
+import { RegisterService } from 'src/modules/Core/types/service.types';
 import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
 import { ApiService } from 'src/modules/Core/services/ApiService';
 import {
@@ -17,7 +17,7 @@ declare global {
   }
 }
 
-export class WebSocketService implements BootableService {
+export class WebSocketService implements RegisterService {
   #echo: Echo<'pusher'> | null = null;
   private api!: ApiService;
   private connectionPromise: Promise<void> | null = null;
