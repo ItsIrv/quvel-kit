@@ -11,7 +11,7 @@ export class NotificationService extends Service implements RegisterService {
   private api!: ApiService;
   private ws!: WebSocketService;
   private config!: ConfigService;
-  private isSsr = typeof window === 'undefined';
+  private readonly isSsr: boolean = typeof window === 'undefined';
 
   register({
     api,

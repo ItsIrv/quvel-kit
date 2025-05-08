@@ -11,12 +11,9 @@ import {
   SubscribeOptions,
 } from '../types/websocket.types';
 
-declare global {
-  interface Window {
-    Pusher: typeof Pusher;
-  }
-}
-
+/**
+ * Service responsible for handling WebSocket connections.
+ */
 export class WebSocketService implements RegisterService {
   #echo: Echo<'pusher'> | null = null;
   private api!: ApiService;
@@ -29,8 +26,8 @@ export class WebSocketService implements RegisterService {
   constructor({ apiKey, cluster }: { apiKey: string; cluster: string }) {
     this.apiKey = apiKey;
     this.cluster = cluster;
-    if (!this.isSsr && !window.Pusher) {
-      window.Pusher = Pusher;
+    if (!this.isSsr && !(window as unknown as { Pusher: typeof Pusher }).Pusher) {
+      (window as unknown as { Pusher: typeof Pusher }).Pusher = Pusher;
     }
   }
 

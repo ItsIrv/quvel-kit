@@ -17,6 +17,7 @@ export type ThemeOptions = (typeof themeOptions)[number];
  */
 export function loadTheme(): void {
   // TODO: Load theme can only be called after the app has finished booting on the browser.
+  // I think the only way to do this is to ask quasar to add a method to load the theme at the srr level.
   if (typeof window === 'undefined') return;
 
   const userTheme = Cookies.get(THEME_COOKIE_NAME);

@@ -7,6 +7,9 @@ use Modules\Tenant\Actions\TenantsDump;
 
 /*
 | Tenant Web Routes
+|TODO: Add middleware to check that the tenant config matches the internalApiUrl
+    thats a good way to ensure that the tenant endpoints are only accessible internally
+    by docker and not from the outside
 */
 Route::group([
     'prefix'     => 'tenant',

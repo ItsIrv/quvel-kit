@@ -5,13 +5,6 @@ import { WebSocketChannelType, SubscribeOptions } from '../types/websocket.types
 import { PublicChannelType, PrivateChannelType, PresenceChannelType, EncryptedChannelType } from '../types/websocket.types';
 import { QScrollArea } from 'quasar';
 
-// Extend Window interface to avoid TypeScript errors
-declare global {
-  interface Window {
-    showWebSocketManager: () => void;
-    hideWebSocketManager: () => void;
-  }
-}
 
 type AnyChannel = PublicChannelType | PrivateChannelType | PresenceChannelType | EncryptedChannelType;
 
@@ -46,12 +39,13 @@ export default defineComponent({
 
     // Register global methods to show/hide the component
     onMounted(() => {
-      window.showWebSocketManager = () => {
+      (window as unknown as { showWebSocketManager: () => void }).showWebSocketManager = () => {
         isDialogOpen.value = true;
+
         console.log('WebSocket Inspector is now open');
       };
 
-      window.hideWebSocketManager = () => {
+      (window as unknown as { hideWebSocketManager: () => void }).hideWebSocketManager = () => {
         hideManager();
       };
 
