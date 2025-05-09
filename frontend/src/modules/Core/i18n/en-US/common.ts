@@ -18,7 +18,7 @@ export default {
   feature: {
     status: {
       info: {
-        notAvailable: 'This feature is not available.',
+        notAvailable: 'This feature is not available. Please contact support.',
       },
     },
   },

@@ -19,6 +19,7 @@ class TenantResolverService
     public function __construct(
         private readonly TenantFindService $tenantFindService,
         private readonly TenantSessionService $tenantSessionService,
+        private readonly RequestPrivacyService $requestPrivacyService,
         private readonly Repository $cache,
     ) {
     }
@@ -26,20 +27,19 @@ class TenantResolverService
     /**
      * Resolve the tenant by checking the session first, then the database.
      * If no tenant is found, throws an exception.
+     * Also allows for a custom domain to be set through a header when the request is internal.
      *
      * @throws TenantNotFoundException
      */
     public function resolveTenant(Request $request): Tenant
     {
-        // TODO: When the host matches the internalApiUrl in tenant config we need to
-        //       allow $domain to be set through a header. This allows internal docker
-        //       requests to be made under 1 internal domain but still resolve the
-        //       correct tenant.
-        //       On top of that we should add an optional key mechanism to ensure that
-        //       only validated actors can access the tenant endpoints.
-        //       If the internalApiUrl is the same as the appUrl the former won't protect
-        //       against external requests.
-        $domain = $request->getHost();
+        $domain       = $request->getHost();
+        $customDomain = $request->header('X-Tenant-Domain');
+
+        if ($customDomain && $this->requestPrivacyService->isInternalRequest()) {
+            $domain = $customDomain;
+        }
+
         $tenant = $this->tenantSessionService->getTenant();
 
         if ($tenant) {
@@ -51,6 +51,15 @@ class TenantResolverService
 
             return $tenant;
         }
+
+        // TODO: When the host matches the internalApiUrl in tenant config we need to
+        //       allow $domain to be set through a header. This allows internal docker
+        //       requests to be made under 1 internal domain (ie http://quvel-api:8080) but still resolve the
+        //       correct tenant.
+        //       On top of that we should add an optional key mechanism to ensure that
+        //       only validated actors can access the tenant endpoints.
+        //       If the internalApiUrl is the same as the appUrl the former won't protect
+        //       against external requests.
 
         $tenant = $this->cache
             ->remember(

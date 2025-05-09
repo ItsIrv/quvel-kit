@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Auth\Actions\Email\VerificationNotice;
+use Modules\Auth\Actions\Email\VerificationNotification;
 use Modules\Auth\Actions\Socialite\CallbackAction;
 use Modules\Auth\Actions\Socialite\CreateClientNonceAction;
 use Modules\Auth\Actions\Socialite\RedeemClientNonceAction;
@@ -11,6 +11,7 @@ use Modules\Auth\Actions\User\LoginAction;
 use Modules\Auth\Actions\User\LogoutAction;
 use Modules\Auth\Actions\User\RegisterAction;
 use Modules\Auth\Actions\Email\VerificationVerify;
+use Modules\Auth\Actions\Fortify\PasswordViewRedirect;
 use Modules\Core\Http\Middleware\ConfigGate;
 
 /*
@@ -25,29 +26,37 @@ use Modules\Core\Http\Middleware\ConfigGate;
 Route::group([
     'prefix' => 'auth',
 ], static function (): void {
-    /**
-     * Fortify Overwrites
-     */
-    Route::post('/login', LoginAction::class)
-        ->middleware('throttle:login')
-        ->name('login');
+    // Fortify Routes
+    Route::group([
+        'middleware' => 'guest',
+    ], static function (): void {
+        Route::post('/login', LoginAction::class)
+            ->middleware('throttle:login')
+            ->name('login');
 
-    Route::post('/register', RegisterAction::class)
-        ->middleware('throttle:register')
-        ->name('register');
+        Route::post('/register', RegisterAction::class)
+            ->middleware('throttle:register')
+            ->name('register');
 
-    Route::post('/email/verification-notification', VerificationNotice::class)
-        ->middleware('throttle:verification.notice')
-        ->name('verification.notice');
+        Route::post('/email/verification-notification', VerificationNotification::class)
+            ->middleware('throttle:verification.notice')
+            ->name('verification.notice');
 
-    Route::get('/email/verify/{id}/{hash}', VerificationVerify::class)
-        ->middleware('signed')
-        ->name('verification.verify');
+        Route::get('/email/verify/{id}/{hash}', VerificationVerify::class)
+            ->middleware('signed')
+            ->name('verification.verify');
+
+        Route::get('/password/{token}', PasswordViewRedirect::class)
+            ->name('password.reset');
+    });
 
     // Socialite
     Route::group([
         'prefix'     => 'provider/{provider}',
-        'middleware' => ConfigGate::class . ':auth.disable_socialite,false',
+        'middleware' => [
+            ConfigGate::class . ':auth.disable_socialite,false',
+            'guest',
+        ],
     ], static function (): void {
         Route::get('/redirect', RedirectAction::class)
             ->middleware('throttle:provider.redirect')
@@ -71,7 +80,9 @@ Route::group([
     });
 
     // Authenticated
-    Route::middleware(['auth'])->group(static function (): void {
+    Route::group([
+        'middleware' => 'auth',
+    ], static function (): void {
         // Session Status Check
         Route::get('/session', GetSessionAction::class)->name('session');
         // Logout

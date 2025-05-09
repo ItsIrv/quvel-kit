@@ -13,6 +13,11 @@ class EmailNotificationRequest extends FormRequest
     protected bool $preLoginMode;
     protected ?User $resolvedUser = null;
 
+    /**
+     * Checks if the tenant requires email verification before login to skip authorization.
+     *
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     */
     public function authorize(): bool
     {
         $this->preLoginMode = config('auth.verify_email_before_login') === true;
@@ -34,6 +39,11 @@ class EmailNotificationRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     */
     public function rules(): array
     {
         return $this->preLoginMode
@@ -41,6 +51,11 @@ class EmailNotificationRequest extends FormRequest
             : [];
     }
 
+    /**
+     * Fulfill the request.
+     *
+     * @return void
+     */
     public function fulfill(): void
     {
         $userFindService = app(UserFindService::class);

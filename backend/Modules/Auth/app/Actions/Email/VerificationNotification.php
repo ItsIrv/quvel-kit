@@ -12,7 +12,7 @@ use Modules\Core\Services\FrontendService;
 /**
  * Verifies an email address.
  */
-class VerificationNotice
+class VerificationNotification
 {
     public function __construct(
         private readonly FrontendService $frontendService,

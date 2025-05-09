@@ -7,7 +7,6 @@ use Modules\Tenant\Models\Tenant;
 
 /**
  * Service to manage the tenant session.
- * TODO: Change to Repository
  */
 class TenantSessionService
 {

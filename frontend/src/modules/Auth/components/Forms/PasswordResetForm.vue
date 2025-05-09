@@ -33,12 +33,8 @@ const authForm = ref<HTMLFormElement>();
  * Handles password reset request.
  */
 const resetTask = container.task.newTask({
-  showNotification: {
-    success: () => container.i18n.t('auth.status.success.passwordResetSent'),
-  },
-  // task: async () => await sessionStore.forgotPassword(email.value),
   task: async () => await container.get(AuthService).sendPasswordResetLink(email.value),
-  errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel()],
+  errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel(undefined, true)],
   successHandlers: () => {
     emit('reset-success');
     resetForm();
@@ -82,11 +78,7 @@ defineExpose({
       {{ $t('auth.forms.password.resetDescription') }}
     </p>
 
-    <EmailField
-      v-model="email"
-      :error-message="resetTask.errors.value.get('email')"
-      :error="resetTask.errors.value.has('email')"
-    />
+    <EmailField v-model="email" />
 
     <!-- Errors -->
     <TaskErrors

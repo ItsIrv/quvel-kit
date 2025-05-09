@@ -4,16 +4,16 @@ use Illuminate\Support\Facades\Route;
 use Modules\Core\Http\Middleware\ConfigGate;
 use Modules\Tenant\Actions\TenantDump;
 use Modules\Tenant\Actions\TenantsDump;
+use Modules\Tenant\Http\Middleware\IsInternalRequest;
 
 /*
 | Tenant Web Routes
-|TODO: Add middleware to check that the tenant config matches the internalApiUrl
-    thats a good way to ensure that the tenant endpoints are only accessible internally
-    by docker and not from the outside
 */
 Route::group([
     'prefix'     => 'tenant',
-    'middleware' => ConfigGate::class . ':tenant.multi_tenant,true',
+    'middleware' => [
+        IsInternalRequest::class,
+    ],
 ], static function (): void {
     // Dumps Current Tenant
     Route::get('/', TenantDump::class)

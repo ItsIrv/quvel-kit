@@ -55,7 +55,7 @@ export class ServiceContainer {
 
     this.services.set(serviceName, instance);
 
-    if (this.isBootable(instance)) {
+    if (this.isRegisterable(instance)) {
       instance.register(this);
     }
 
@@ -81,7 +81,7 @@ export class ServiceContainer {
 
     this.services.set(name, service);
 
-    if (this.isBootable(service)) {
+    if (this.isRegisterable(service)) {
       service.register(this);
     }
 
@@ -115,7 +115,7 @@ export class ServiceContainer {
    * Registers a service only if it hasn't been registered.
    */
   private registerService(name: string, service: Service): void {
-    if (this.isBootable(service)) {
+    if (this.isRegisterable(service)) {
       service.register(this);
     }
   }
@@ -130,7 +130,7 @@ export class ServiceContainer {
   /**
    * Type guard to check if a service implements `RegisterService`.
    */
-  private isBootable(service: unknown): service is RegisterService {
+  private isRegisterable(service: unknown): service is RegisterService {
     return typeof service === 'object' && service !== null && 'register' in service;
   }
 }

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Services\TenantConfigApplier;
 use Modules\Tenant\Services\TenantFindService;
+use Modules\Tenant\Services\TenantPrivacyService;
 use Modules\Tenant\Services\TenantResolverService;
 use Modules\Tenant\Services\TenantSessionService;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
@@ -29,11 +30,12 @@ class TenantServiceProvider extends ModuleServiceProvider
     {
         $this->app->register(RouteServiceProvider::class);
 
-        $this->app->singleton(TenantSessionService::class);
         $this->app->singleton(TenantFindService::class);
-        $this->app->singleton(TenantResolverService::class);
 
+        $this->app->scoped(TenantResolverService::class);
+        $this->app->scoped(TenantSessionService::class);
         $this->app->scoped(TenantContext::class);
+        $this->app->scoped(TenantPrivacyService::class);
 
         $this->app->rebinding('request', function (Application $app): void {
             try {
