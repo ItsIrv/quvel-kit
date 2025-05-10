@@ -6,11 +6,18 @@ use Modules\Core\Services\FrontendService;
 use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordBase;
 use Illuminate\Notifications\Messages\MailMessage;
 
+/**
+ * Password Reset Notification
+ *
+ * Overrides the default notification to use the frontend URL.
+ */
 class ResetPassword extends ResetPasswordBase
 {
+    /**
+     * Build the mail message for the notification.
+     */
     protected function buildMailMessage($url)
     {
-        // Generate the password reset URL
         $url = app(FrontendService::class)->getPageUrl(
             '',
             [

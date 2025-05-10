@@ -59,6 +59,10 @@ export default {
   status: {
     errors: {
       activeFlowExists: 'An active flow already exists.',
+      captcha: 'Failed to verify you are human. Please try again.',
+      captcha_not_loaded:
+        'Human verification is not loaded. Please refresh the page and try again.',
+      captcha_invalid: 'Human verification failed. Please try again.',
       emailAlreadyInUse: 'This email is already in use.',
       emailTaken: 'This email is already in use.',
       invalidConfig: 'Invalid configuration.',

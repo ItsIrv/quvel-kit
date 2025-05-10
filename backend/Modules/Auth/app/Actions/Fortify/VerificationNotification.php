@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Auth\Actions\Email;
+namespace Modules\Auth\Actions\Fortify;
 
 use Exception;
 use Modules\Auth\Enums\EmailStatusEnum;
-use Modules\Auth\Http\Requests\EmailVerificationRequest;
+use Modules\Auth\Http\Requests\EmailNotificationRequest;
 use Illuminate\Http\RedirectResponse;
 use Modules\Core\Enums\StatusEnum;
 use Modules\Core\Services\FrontendService;
@@ -12,14 +12,14 @@ use Modules\Core\Services\FrontendService;
 /**
  * Verifies an email address.
  */
-class VerificationVerify
+class VerificationNotification
 {
     public function __construct(
         private readonly FrontendService $frontendService,
     ) {
     }
 
-    public function __invoke(EmailVerificationRequest $request): RedirectResponse
+    public function __invoke(EmailNotificationRequest $request): RedirectResponse
     {
         try {
             $request->fulfill();
@@ -27,7 +27,7 @@ class VerificationVerify
             return $this->frontendService->redirect(
                 '',
                 [
-                    'message' => EmailStatusEnum::EMAIL_VERIFIED->value,
+                    'message' => EmailStatusEnum::EMAIL_VERIFICATION_NOTICE->value,
                 ],
             );
         } catch (Exception $e) {

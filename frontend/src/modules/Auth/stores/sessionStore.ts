@@ -35,7 +35,7 @@ interface SessionActions {
   fetchSession(): Promise<IUser | null>;
   logout(): Promise<void>;
   login(email: string, password: string): Promise<void>;
-  signUp(email: string, password: string, name: string): Promise<AuthStatusEnum>;
+  signUp(email: string, password: string, name: string, recaptchaToken?: string): Promise<AuthStatusEnum>;
   loginWithOAuth(provider: string, stateless: boolean): Promise<void>;
 }
 
@@ -103,11 +103,17 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
       /**
        * Signs up a new user and sets the session.
+       * 
+       * @param email - User's email address
+       * @param password - User's password
+       * @param name - User's name
+       * @param recaptchaToken - Google reCAPTCHA token for verification
+       * @returns Authentication status
        */
-      async signUp(email: string, password: string, name: string): Promise<AuthStatusEnum> {
+      async signUp(email: string, password: string, name: string, recaptchaToken?: string): Promise<AuthStatusEnum> {
         const { status, user } = await this.$container
           .get(AuthService)
-          .signUp(email, password, name);
+          .signUp(email, password, name, recaptchaToken);
 
         if (status === AuthStatusEnum.LOGIN_SUCCESS) {
           this.setSession(user);

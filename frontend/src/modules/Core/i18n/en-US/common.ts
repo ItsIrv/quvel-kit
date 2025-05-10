@@ -23,6 +23,9 @@ export default {
     },
   },
   status: {
+    success: {
+      ok: 'Action was successful!',
+    },
     errors: {
       internalError: 'Internal error, please try again later.',
     },

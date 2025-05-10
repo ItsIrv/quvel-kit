@@ -5,6 +5,7 @@ namespace Modules\Core\Providers;
 use Modules\Core\Services\FrontendService;
 use Modules\Core\Services\User\UserCreateService;
 use Modules\Core\Services\User\UserFindService;
+use Modules\Core\Contracts\Security\CaptchaVerifierInterface;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
@@ -31,6 +32,13 @@ class CoreServiceProvider extends ModuleServiceProvider
                 ->setCapacitorScheme(config('frontend.capacitor_scheme'))
                 ->setIsCapacitor($app->make(Request::class)->hasHeader('X-Capacitor'));
         });
+
+        // Default Captcha Verifier
+        $this->app->scoped(CaptchaVerifierInterface::class, function (): CaptchaVerifierInterface {
+            $provider = config('core.recaptcha.provider');
+
+            return app($provider);
+        });
     }
 
     /**
@@ -38,6 +46,8 @@ class CoreServiceProvider extends ModuleServiceProvider
      */
     public function boot(): void
     {
+        parent::boot();
+
         $this->app['request']->server->set('HTTPS', 'on');
     }
 }

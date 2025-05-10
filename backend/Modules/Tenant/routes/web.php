@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Core\Http\Middleware\ConfigGate;
+use Modules\Core\Http\Middleware\Config\CheckValue;
 use Modules\Tenant\Actions\TenantDump;
 use Modules\Tenant\Actions\TenantsDump;
 use Modules\Tenant\Http\Middleware\IsInternalRequest;
@@ -21,6 +21,6 @@ Route::group([
 
     // Dumps All Tenants
     Route::get('/cache', TenantsDump::class)
-        ->middleware(ConfigGate::class . ':tenant.tenant_cache.preload,true')
+        ->middleware(CheckValue::class . ':tenant.tenant_cache.preload,true')
         ->name('tenants.cache');
 });

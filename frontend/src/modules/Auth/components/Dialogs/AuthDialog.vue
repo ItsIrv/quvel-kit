@@ -189,6 +189,7 @@ useUrlQueryHandler({
       i18n.t('auth.forms.passwordReset.token')
     ) === true,
   onMatch: ({ token }) => {
+    isValidToken.value = true;
     resetToken.value = token || '';
     activeStep.value = 'password-reset-token';
 

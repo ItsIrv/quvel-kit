@@ -7,6 +7,7 @@
 import { ref } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
+import { useRecaptcha } from 'src/modules/Core/composables/useRecaptcha';
 import type { ErrorHandler } from 'src/modules/Core/types/task.types';
 import EmailField from 'src/modules/Auth/components/Form/EmailField.vue';
 import PasswordField from 'src/modules/Auth/components/Form/PasswordField.vue';
@@ -23,8 +24,9 @@ const emit = defineEmits(['success', 'switch-form', 'registration-success']);
 /**
  * Services
  */
-const { task } = useContainer();
+const { task, i18n } = useContainer();
 const sessionStore = useSessionStore();
+const { isLoaded, execute } = useRecaptcha();
 
 /**
  * Refs
@@ -38,10 +40,29 @@ const authForm = ref<HTMLFormElement>();
 /**
  * Signup Task
  *
- * Handles user signup.
+ * Handles user signup with reCAPTCHA verification.
  */
 const signupTask = task.newTask<AuthStatusEnum>({
-  task: async () => await sessionStore.signUp(email.value, password.value, name.value),
+  task: async () => {
+    try {
+      // Get reCAPTCHA token
+      const recaptchaToken = await execute('signup');
+
+      // Send token along with signup data
+      return await sessionStore.signUp(
+        email.value,
+        password.value,
+        name.value,
+        recaptchaToken
+      );
+    } catch (error) {
+      // Handle reCAPTCHA errors
+      if (error instanceof Error) {
+        throw new Error(i18n.t('auth.status.errors.captcha'));
+      }
+      throw error;
+    }
+  },
   errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
   successHandlers: (status) => {
     if (status === AuthStatusEnum.REGISTER_SUCCESS) {
@@ -68,6 +89,12 @@ function resetForm() {
  * Handles form submission.
  */
 function onSubmit() {
+  if (!isLoaded.value) {
+    signupTask.errors.value.set('recaptcha', i18n.t('auth.status.errors.captcha_not_loaded'));
+
+    return;
+  }
+
   void signupTask.run();
 }
 

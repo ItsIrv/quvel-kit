@@ -1,6 +1,6 @@
 {
-    "name": "itsirv/auth",
-    "description": "Catalog Module for QuVel Kit. Includes products and categories.",
+    "name": "itsirv/catalog",
+    "description": "Catalog Module for QuVel Kit. Includes products and categories. As of now, used to build pagination helpers. Not production ready by any means.",
     "authors": [
         {
             "name": "Irving Gomez",
@@ -10,9 +10,7 @@
     "extra": {
         "laravel": {
             "providers": [],
-            "aliases": {
-
-            }
+            "aliases": {}
         }
     },
     "autoload": {

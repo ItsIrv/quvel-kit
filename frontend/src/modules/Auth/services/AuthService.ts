@@ -76,12 +76,14 @@ export class AuthService extends Service implements RegisterService {
    * @param email - The user's email.
    * @param password - The user's password.
    * @param name - The user's name.
+   * @param recaptchaToken - Google reCAPTCHA token for verification
    * @returns The registration status and user data.
    */
   async signUp(
     email: string,
     password: string,
     name: string,
+    recaptchaToken?: string,
   ): Promise<{
     status: AuthStatusEnum;
     user: IUser;
@@ -93,6 +95,7 @@ export class AuthService extends Service implements RegisterService {
       email,
       password,
       name,
+      recaptcha_token: recaptchaToken,
     });
   }
 
@@ -223,10 +226,14 @@ export class AuthService extends Service implements RegisterService {
    * Sends a password reset link to the user's email.
    *
    * @param email - The user's email.
+   * @param recaptchaToken - Google reCAPTCHA token for verification
    * @returns A promise that resolves when the request is complete.
    */
-  sendPasswordResetLink(email: string): Promise<void> {
-    return this.api.post('/auth/forgot-password', { email });
+  sendPasswordResetLink(email: string, recaptchaToken?: string): Promise<void> {
+    return this.api.post('/auth/forgot-password', { 
+      email,
+      captcha_token: recaptchaToken
+    });
   }
 
   /**

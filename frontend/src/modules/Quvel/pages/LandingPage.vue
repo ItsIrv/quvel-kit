@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ref, watch } from 'vue';
 import AuthDialog from 'src/modules/Auth/components/Dialogs/AuthDialog.vue';
 import MenuRightDrawer from 'src/modules/Quvel/components/Pages/LandingPage/MenuRightDrawer.vue';
 import MenuLeftDrawer from 'src/modules/Quvel/components/Pages/LandingPage/MenuLeftDrawer.vue';
@@ -6,7 +7,6 @@ import PageHeader from 'src/modules/Quvel/components/Pages/LandingPage/PageHeade
 import PageFooter from 'src/modules/Quvel/components/Pages/LandingPage/PageFooter.vue';
 import { useCatalogStore } from 'src/modules/Catalog/stores/catalogStore';
 import CatalogSection from 'src/modules/Catalog/components/CatalogSection.vue';
-import { ref, watch } from 'vue';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import WebSocketChannelManager from 'src/modules/Core/components/WebSocketChannelManager.vue';
 import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
@@ -129,8 +129,8 @@ watch(
   />
 
   <MenuLeftDrawer v-model="isLeftDrawerOpen" />
-  <AuthDialog 
-    v-model="showAuthForm" 
+  <AuthDialog
+    v-model="showAuthForm"
     @open="showAuthForm = true"
   />
 </template>
