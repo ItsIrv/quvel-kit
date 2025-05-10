@@ -18,8 +18,10 @@ export default {
       button: 'Cerrar sesión',
     },
     oauth: {
-      apple: 'Apple',
-      google: 'Google',
+      providers: {
+        apple: 'Apple',
+        google: 'Google',
+      },
       link: '¿Prefieres correo/contraseña?',
       logInWith: 'Iniciar sesión con {provider}',
       title: 'Iniciar sesión con proveedor',
@@ -29,10 +31,38 @@ export default {
       link: '¿Necesitas una cuenta?',
       title: 'Crear cuenta',
     },
+    password: {
+      title: 'Restablecer contraseña',
+      resetButton: 'Enviar enlace de restablecimiento',
+      resetDescription:
+        'Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.',
+      forgot: '¿Olvidaste tu contraseña?',
+      newPassword: 'Nueva contraseña',
+      confirmNewPassword: 'Confirmar nueva contraseña',
+      changeButton: 'Cambiar contraseña',
+    },
+    passwordReset: {
+      tokenDescription: 'Ingresa tu correo y nueva contraseña para restablecer tu cuenta.',
+      tokenButton: 'Restablecer contraseña',
+      title: 'Restablecer contraseña',
+      token: 'Token',
+    },
+    mfa: {
+      title: 'Autenticación de dos factores',
+      code: 'Código de autenticación',
+      verifyButton: 'Verificar',
+      description: 'Ingresa el código de verificación de tu app de autenticación.',
+      backupCode: 'Usar código de respaldo',
+      backupCodeDescription: 'Ingresa uno de tus códigos de respaldo.',
+    },
   },
   status: {
     errors: {
       activeFlowExists: 'Ya hay un flujo activo.',
+      captcha: 'No pudimos verificar que eres humano. Inténtalo de nuevo.',
+      captcha_not_loaded:
+        'La verificación humana no está cargada. Recarga la página e inténtalo de nuevo.',
+      captcha_invalid: 'La verificación humana falló. Inténtalo de nuevo.',
       emailAlreadyInUse: 'Este correo ya está en uso.',
       emailTaken: 'Este correo ya está en uso.',
       invalidConfig: 'Configuración inválida.',
@@ -50,12 +80,16 @@ export default {
       emailNotVerified: 'Esta cuenta no ha sido verificada.',
     },
     success: {
-      clientTokenGranted: 'Autenticación exitosa, intercambia el nonce por sesión',
+      clientTokenGranted: 'Autenticación exitosa. Intercambia el nonce por una sesión.',
       loggedIn: 'Sesión iniciada correctamente.',
       loggedOut: 'Sesión cerrada correctamente.',
       signedUp: 'Registro completado.',
       userCreated: 'Usuario creado exitosamente.',
       checkYourEmail: 'Revisa tu correo electrónico para verificar tu cuenta.',
+      passwordResetSent: 'Enlace de restablecimiento de contraseña enviado.',
+      passwordReset: 'Tu contraseña se ha restablecido correctamente.',
+      emailVerified: 'Tu correo ha sido verificado exitosamente.',
+      emailVerificationNotice: 'Te hemos enviado un enlace de verificación.',
     },
   },
 };

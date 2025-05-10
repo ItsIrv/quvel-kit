@@ -14,3 +14,13 @@ export interface RegisterService {
    */
   register(container: ServiceContainer): void;
 }
+
+/**
+ * Interface for services that can be shut down.
+ */
+export interface ShutdownService {
+  /**
+   * Runs shutdown logic.
+   */
+  shutdown(): void;
+}

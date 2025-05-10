@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Laravel\Fortify\Http\Controllers\PasswordResetLinkController;
 
 /**
- * Verifies an email address.
+ * Sends a password reset link to the user's email.
  */
 class ForgotPassword
 {

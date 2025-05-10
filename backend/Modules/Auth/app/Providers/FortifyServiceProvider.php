@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Providers;
 
-use Modules\Auth\Actions\Fortify\ResetUserPassword;
+use Modules\Auth\Actions\Fortify\PasswordReset;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -29,7 +29,7 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::ignoreRoutes();
         Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
-        Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+        Fortify::resetUserPasswordsUsing(PasswordReset::class);
 
         RateLimiter::for(
             'login',

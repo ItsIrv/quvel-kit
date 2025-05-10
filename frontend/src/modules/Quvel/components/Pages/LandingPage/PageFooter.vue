@@ -6,7 +6,7 @@ import ThemeSwitcher from 'src/modules/Core/components/Misc/ThemeSwitcher.vue';
 <template>
   <footer class="mt-4 py-6">
     <p class="text-sm text-center">
-      Created by
+      {{ $t('createdBy') }}
       <a
         href="https://irv.codes"
         target="_blank"

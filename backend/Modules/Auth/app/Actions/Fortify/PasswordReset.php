@@ -13,7 +13,7 @@ use Laravel\Fortify\Contracts\ResetsUserPasswords;
  * This action validates the new password using the module's password rules
  * and updates the user's password in the database.
  */
-class ResetUserPassword implements ResetsUserPasswords
+class PasswordReset implements ResetsUserPasswords
 {
     use PasswordValidationRules;
 

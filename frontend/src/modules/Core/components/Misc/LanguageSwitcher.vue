@@ -1,3 +1,48 @@
+<script lang="ts" setup>
+import { computed } from 'vue';
+import { useContainer } from 'src/modules/Core/composables/useContainer';
+/**
+ * LanguageSwitcher component switcher for the i18n locale.
+ */
+
+/**
+ * Container
+ */
+const { i18n } = useContainer();
+
+/**
+ * Computed property that returns the current locale value and sets the locale
+ * when updated.
+ *
+ * @returns The current locale value.
+ */
+const localeRef = computed({
+  /**
+   * Getter function for the computed property.
+   *
+   * @returns The current locale value.
+   */
+  get: () => i18n.instance.global.locale.value,
+
+  /**
+   * Setter function for the computed property.
+   *
+   * @param locale - The new locale value to set.
+   */
+  set: (locale) => {
+    i18n.changeLocale(locale);
+  },
+});
+
+/**
+ * Array of locale options for the select component.
+ */
+const localeOptions = [
+  { value: 'en-US', label: 'English' },
+  { value: 'es-MX', label: 'Español' },
+];
+</script>
+
 <template>
   <q-select
     v-model="localeRef"
@@ -9,25 +54,6 @@
     map-options
   />
 </template>
-
-<script lang="ts" setup>
-import { computed } from 'vue';
-import { useContainer } from 'src/modules/Core/composables/useContainer';
-
-const { i18n } = useContainer();
-
-const localeRef = computed({
-  get: () => i18n.instance.global.locale.value,
-  set: (locale) => {
-    i18n.changeLocale(locale);
-  },
-});
-
-const localeOptions = [
-  { value: 'en-US', label: 'English' },
-  { value: 'es-MX', label: 'Español' },
-];
-</script>
 
 <style lang="scss" scoped>
 .LanguageSwitcher {

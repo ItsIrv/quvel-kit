@@ -13,7 +13,7 @@ import { useNotificationStore } from 'src/modules/Notifications/stores/notificat
 
 defineOptions({
   /**
-   * Pre-fetch some catalogs.
+   * Pre-fetch data for the landing page components.
    */
   async preFetch({ store, ssrContext }) {
     if (ssrContext) {
@@ -101,7 +101,6 @@ watch(
     immediate: true,
   },
 );
-
 </script>
 
 <template>

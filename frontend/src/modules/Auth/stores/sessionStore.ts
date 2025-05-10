@@ -1,8 +1,9 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { User } from 'src/modules/Core/models/User';
 import type { IUser } from 'src/modules/Core/types/user.types';
-import { AuthStatusEnum } from '../enums/AuthStatusEnum';
-import { AuthService } from '../services/AuthService';
+import { AuthStatusEnum } from 'src/modules/Auth/enums/AuthStatusEnum';
+import { AuthService } from 'src/modules/Auth/services/AuthService';
+import { SocialiteService } from 'src/modules/Auth/services/SocialiteService';
 
 /**
  * Type for the authenticated user.
@@ -35,7 +36,12 @@ interface SessionActions {
   fetchSession(): Promise<IUser | null>;
   logout(): Promise<void>;
   login(email: string, password: string): Promise<void>;
-  signUp(email: string, password: string, name: string, recaptchaToken?: string): Promise<AuthStatusEnum>;
+  signUp(
+    email: string,
+    password: string,
+    name: string,
+    recaptchaToken?: string,
+  ): Promise<AuthStatusEnum>;
   loginWithOAuth(provider: string, stateless: boolean): Promise<void>;
 }
 
@@ -103,14 +109,19 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
       /**
        * Signs up a new user and sets the session.
-       * 
+       *
        * @param email - User's email address
        * @param password - User's password
        * @param name - User's name
        * @param recaptchaToken - Google reCAPTCHA token for verification
        * @returns Authentication status
        */
-      async signUp(email: string, password: string, name: string, recaptchaToken?: string): Promise<AuthStatusEnum> {
+      async signUp(
+        email: string,
+        password: string,
+        name: string,
+        recaptchaToken?: string,
+      ): Promise<AuthStatusEnum> {
         const { status, user } = await this.$container
           .get(AuthService)
           .signUp(email, password, name, recaptchaToken);
@@ -134,7 +145,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
 
         // Handle the OAuth flow through the service
         this.resultChannel = await this.$container
-          .get(AuthService)
+          .get(SocialiteService)
           .loginWithOAuth(provider, stateless, (user: IUser) => this.setSession(user));
       },
     },

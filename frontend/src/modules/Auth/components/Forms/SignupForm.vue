@@ -26,7 +26,7 @@ const emit = defineEmits(['success', 'switch-form', 'registration-success']);
  */
 const { task, i18n } = useContainer();
 const sessionStore = useSessionStore();
-const { isLoaded, execute } = useRecaptcha();
+const { isLoaded, execute: executeRecaptcha } = useRecaptcha();
 
 /**
  * Refs
@@ -45,7 +45,7 @@ const authForm = ref<HTMLFormElement>();
 const signupTask = task.newTask<AuthStatusEnum>({
   task: async () => {
     // Get reCAPTCHA token
-    const recaptchaToken = await execute('signup');
+    const recaptchaToken = await executeRecaptcha('signup');
 
     // Send token along with signup data
     return await sessionStore.signUp(
