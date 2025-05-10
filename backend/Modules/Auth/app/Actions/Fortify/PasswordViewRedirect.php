@@ -14,6 +14,12 @@ class PasswordViewRedirect
 
     public function __invoke(string $token): RedirectResponse
     {
-        return $this->frontendService->redirect("/?form=password-reset&token=$token");
+        return $this->frontendService->redirect(
+            '',
+            [
+                'form'  => 'password-reset',
+                'token' => $token,
+            ],
+        );
     }
 }

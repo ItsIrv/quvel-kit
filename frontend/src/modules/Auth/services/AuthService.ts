@@ -228,4 +228,27 @@ export class AuthService extends Service implements RegisterService {
   sendPasswordResetLink(email: string): Promise<void> {
     return this.api.post('/auth/forgot-password', { email });
   }
+
+  /**
+   * Resets a user's password using a token.
+   *
+   * @param token - The password reset token.
+   * @param email - The user's email.
+   * @param password - The new password.
+   * @param passwordConfirmation - The password confirmation.
+   * @returns A promise that resolves when the password has been reset.
+   */
+  resetPassword(
+    token: string,
+    email: string,
+    password: string,
+    passwordConfirmation: string,
+  ): Promise<void> {
+    return this.api.post('/auth/reset-password', {
+      token,
+      email,
+      password,
+      password_confirmation: passwordConfirmation,
+    });
+  }
 }

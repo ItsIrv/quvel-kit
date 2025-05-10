@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { emailSchema, passwordSchema } from './commonValidators';
+import { emailSchema, passwordSchema } from '../../Core/utils/validators/commonValidators';
 
 /**
  * Login Validation Schema.
@@ -36,4 +36,13 @@ export const registerSchema = (): z.ZodEffects<
 export const resetPasswordSchema = (): z.ZodObject<{ email: z.ZodString }> =>
   z.object({
     email: emailSchema(),
+  });
+
+export const resetPasswordTokenSchema = () =>
+  z.object({
+    form: z.literal('password-reset'),
+    token: z
+      .string()
+      .length(64)
+      .regex(/^[a-zA-Z0-9]+$/),
   });

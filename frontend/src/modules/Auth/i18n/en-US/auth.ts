@@ -41,6 +41,12 @@ export default {
       confirmNewPassword: 'Confirm New Password',
       changeButton: 'Change Password',
     },
+    passwordReset: {
+      tokenDescription: 'Enter your email and new password to reset your account.',
+      tokenButton: 'Reset Password',
+      title: 'Reset Password',
+      token: 'Token',
+    },
     mfa: {
       title: 'Two-Factor Authentication',
       code: 'Authentication Code',

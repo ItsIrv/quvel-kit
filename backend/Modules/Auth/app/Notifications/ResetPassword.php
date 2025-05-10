@@ -11,7 +11,13 @@ class ResetPassword extends ResetPasswordBase
     protected function buildMailMessage($url)
     {
         // Generate the password reset URL
-        $url = app(FrontendService::class)->getPageUrl('/?form=password-reset', ['token' => $this->token]);
+        $url = app(FrontendService::class)->getPageUrl(
+            '',
+            [
+                'form'  => 'password-reset',
+                'token' => $this->token,
+            ],
+        );
 
         return (new MailMessage())
             ->subject(__('Reset Your Password'))

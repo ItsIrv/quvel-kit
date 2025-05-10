@@ -99,7 +99,7 @@ QuVel Kit provides specialized field components for common input types:
 <!-- Password confirmation field with match validation -->
 <PasswordConfirmField
   v-model="passwordConfirm"
-  :password-value="password"
+  :password="password"
 />
 ```
 
@@ -179,7 +179,7 @@ function onSubmit() {
     <PasswordField v-model="password" />
     <PasswordConfirmField 
       v-model="passwordConfirm" 
-      :password-value="password" 
+      :password="password"
     />
     
     <q-btn type="submit" label="Submit" />

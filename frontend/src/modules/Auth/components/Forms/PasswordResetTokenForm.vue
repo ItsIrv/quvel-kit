@@ -1,56 +1,64 @@
 <script lang="ts" setup>
 /**
- * SignupForm.vue
+ * PasswordResetTokenForm.vue
  *
- * Form component for user registration.
+ * Form component for resetting password with a token.
+ * This form is displayed after a user clicks on the password reset link in their email.
  */
 import { ref } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
-import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import type { ErrorHandler } from 'src/modules/Core/types/task.types';
 import EmailField from 'src/modules/Auth/components/Form/EmailField.vue';
 import PasswordField from 'src/modules/Auth/components/Form/PasswordField.vue';
 import PasswordConfirmField from 'src/modules/Auth/components/Form/PasswordConfirmField.vue';
-import NameField from 'src/modules/Auth/components/Form/NameField.vue';
 import TaskErrors from 'src/modules/Core/components/Common/TaskErrors.vue';
-import { AuthStatusEnum } from 'src/modules/Auth/enums/AuthStatusEnum';
+import { AuthService } from 'src/modules/Auth/services/AuthService';
 
 /**
- * Emits
+ * Props & Emits
  */
-const emit = defineEmits(['success', 'switch-form', 'registration-success']);
+const props = defineProps<{
+  token: string;
+}>();
+
+const emit = defineEmits(['success', 'switch-form']);
 
 /**
  * Services
  */
-const { task } = useContainer();
-const sessionStore = useSessionStore();
+const container = useContainer();
 
 /**
  * Refs
  */
 const email = ref('');
-const name = ref('');
 const password = ref('');
-const passwordConfirm = ref('');
+const passwordConfirmation = ref('');
 const authForm = ref<HTMLFormElement>();
 
 /**
- * Signup Task
+ * Password Reset Task
  *
- * Handles user signup.
+ * Handles password reset with token.
  */
-const signupTask = task.newTask<AuthStatusEnum>({
-  task: async () => await sessionStore.signUp(email.value, password.value, name.value),
-  errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
-  successHandlers: (status) => {
-    if (status === AuthStatusEnum.REGISTER_SUCCESS) {
-      emit('registration-success');
-    }
-
+const resetTask = container.task.newTask({
+  showNotification: {
+    success: () => container.i18n.t('auth.status.success.passwordReset'),
+  },
+  task: async () =>
+    await container.get(AuthService).resetPassword(
+      props.token,
+      email.value,
+      password.value,
+      passwordConfirmation.value
+    ),
+  errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel(undefined, true)],
+  successHandlers: () => {
     resetForm();
+    emit('switch-form', 'login');
   },
 });
+
 
 /**
  * Resets the form fields to their initial values.
@@ -58,17 +66,16 @@ const signupTask = task.newTask<AuthStatusEnum>({
 function resetForm() {
   email.value = '';
   password.value = '';
-  passwordConfirm.value = '';
-  name.value = '';
+  passwordConfirmation.value = '';
   authForm.value?.reset();
-  signupTask.reset();
+  resetTask.reset();
 }
 
 /**
  * Handles form submission.
  */
 function onSubmit() {
-  void signupTask.run();
+  void resetTask.run();
 }
 
 /**
@@ -88,35 +95,27 @@ defineExpose({
     ref="authForm"
     @submit.prevent="onSubmit"
   >
-    <EmailField
-      v-model="email"
-      :error-message="signupTask.errors.value.get('email')"
-      :error="signupTask.errors.value.has('email')"
-    />
+    <p class="text-base mb-4">
+      {{ $t('auth.forms.passwordReset.tokenDescription') }}
+    </p>
 
-    <NameField
-      v-model="name"
-      :error-message="signupTask.errors.value.get('name')"
-      :error="signupTask.errors.value.has('name')"
-    />
+    <EmailField v-model="email" />
 
     <PasswordField
       v-model="password"
-      :error-message="signupTask.errors.value.get('password')"
-      :error="signupTask.errors.value.has('password')"
+      class="mt-4"
     />
 
-    <div class="overflow-hidden">
-      <PasswordConfirmField
-        v-model="passwordConfirm"
-        :password="password"
-      />
-    </div>
+    <PasswordConfirmField
+      v-model="passwordConfirmation"
+      :password="password"
+      class="mt-4"
+    />
 
     <!-- Errors -->
     <TaskErrors
       class="mt-2"
-      :task-errors="signupTask.errors.value"
+      :task-errors="resetTask.errors.value"
     />
 
     <!-- Links -->
@@ -145,10 +144,10 @@ defineExpose({
         unelevated
         class="PrimaryButton hover:bg-primary-600"
         type="submit"
-        :loading="signupTask.isActive.value"
-        :disabled="signupTask.isActive.value"
+        :loading="resetTask.isActive.value"
+        :disabled="resetTask.isActive.value"
       >
-        {{ $t('auth.forms.signup.button') }}
+        {{ $t('auth.forms.passwordReset.tokenButton') }}
       </q-btn>
     </div>
   </q-form>

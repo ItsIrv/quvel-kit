@@ -10,7 +10,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  passwordValue: {
+  password: {
     type: String,
     required: true,
   },
@@ -37,7 +37,7 @@ const password = computed({
     name="password"
     type="password"
     :rules="[
-      (value: string) => value === props.passwordValue || $t('auth.status.errors.mismatch'),
+      (value: string) => value === props.password || $t('auth.status.errors.mismatch'),
     ]"
     autocomplete="current-password"
   />

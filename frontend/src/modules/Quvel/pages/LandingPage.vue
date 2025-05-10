@@ -45,6 +45,8 @@ const showAuthForm = ref(false);
 const isRightDrawerOpen = ref(false);
 const isLeftDrawerOpen = ref(false);
 
+
+
 /**
  * Methods
  */
@@ -127,5 +129,8 @@ watch(
   />
 
   <MenuLeftDrawer v-model="isLeftDrawerOpen" />
-  <AuthDialog v-model="showAuthForm" />
+  <AuthDialog 
+    v-model="showAuthForm" 
+    @open="showAuthForm = true"
+  />
 </template>
