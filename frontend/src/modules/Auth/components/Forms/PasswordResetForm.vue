@@ -36,19 +36,9 @@ const authForm = ref<HTMLFormElement>();
  */
 const resetTask = container.task.newTask({
   task: async () => {
-    try {
-      // Get reCAPTCHA token
-      const recaptchaToken = await execute('password_reset');
+    const recaptchaToken = await execute('password_reset');
 
-      // Send token along with email
-      return await container.get(AuthService).sendPasswordResetLink(email.value, recaptchaToken);
-    } catch (error) {
-      // Handle reCAPTCHA errors
-      if (error instanceof Error) {
-        throw new Error(container.i18n.t('auth.status.errors.captcha'));
-      }
-      throw error;
-    }
+    return await container.get(AuthService).sendPasswordResetLink(email.value, recaptchaToken);
   },
   errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel(undefined, true)],
   successHandlers: () => {

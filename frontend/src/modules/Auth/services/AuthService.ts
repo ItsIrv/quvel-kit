@@ -95,7 +95,7 @@ export class AuthService extends Service implements RegisterService {
       email,
       password,
       name,
-      recaptcha_token: recaptchaToken,
+      captcha_token: recaptchaToken,
     });
   }
 
@@ -230,9 +230,9 @@ export class AuthService extends Service implements RegisterService {
    * @returns A promise that resolves when the request is complete.
    */
   sendPasswordResetLink(email: string, recaptchaToken?: string): Promise<void> {
-    return this.api.post('/auth/forgot-password', { 
+    return this.api.post('/auth/forgot-password', {
       email,
-      captcha_token: recaptchaToken
+      captcha_token: recaptchaToken,
     });
   }
 

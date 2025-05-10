@@ -6,7 +6,7 @@ import { useContainer } from 'src/modules/Core/composables/useContainer';
 type MessageHandlerOptions<T> = {
   key?: string;
   normalize?: (value: string) => T;
-  type?: (normalized: T) => 'positive' | 'negative' | 'warning' | 'info';
+  type?: (normalized: string) => 'positive' | 'negative' | 'warning' | 'info';
   i18nPrefix?: string;
   timeout?: number;
   silent?: boolean;
@@ -18,8 +18,8 @@ type MessageHandlerOptions<T> = {
 export function useQueryMessageHandler<T = string>(options: MessageHandlerOptions<T> = {}): void {
   const {
     key = 'message',
-    normalize = (val: string) => val as unknown as T,
-    type = () => 'info',
+    normalize = normalizeKey,
+    type = mapStatusToType,
     i18nPrefix = '',
     timeout = 8000,
   } = options;
@@ -41,7 +41,7 @@ export function useQueryMessageHandler<T = string>(options: MessageHandlerOption
         return;
       }
 
-      showNotification(type(normalized), i18n.t(translationKey), { timeout });
+      showNotification(type(normalized as string), i18n.t(translationKey), { timeout });
 
       router.replace({ query: rest }).catch(() => {});
     } catch {

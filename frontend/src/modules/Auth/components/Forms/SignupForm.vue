@@ -44,24 +44,16 @@ const authForm = ref<HTMLFormElement>();
  */
 const signupTask = task.newTask<AuthStatusEnum>({
   task: async () => {
-    try {
-      // Get reCAPTCHA token
-      const recaptchaToken = await execute('signup');
+    // Get reCAPTCHA token
+    const recaptchaToken = await execute('signup');
 
-      // Send token along with signup data
-      return await sessionStore.signUp(
-        email.value,
-        password.value,
-        name.value,
-        recaptchaToken
-      );
-    } catch (error) {
-      // Handle reCAPTCHA errors
-      if (error instanceof Error) {
-        throw new Error(i18n.t('auth.status.errors.captcha'));
-      }
-      throw error;
-    }
+    // Send token along with signup data
+    return await sessionStore.signUp(
+      email.value,
+      password.value,
+      name.value,
+      recaptchaToken
+    );
   },
   errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
   successHandlers: (status) => {
@@ -90,7 +82,10 @@ function resetForm() {
  */
 function onSubmit() {
   if (!isLoaded.value) {
-    signupTask.errors.value.set('recaptcha', i18n.t('auth.status.errors.captcha_not_loaded'));
+    signupTask.errors.value.set(
+      'recaptcha',
+      i18n.t('auth.status.errors.captcha_not_loaded')
+    );
 
     return;
   }

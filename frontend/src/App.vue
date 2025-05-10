@@ -4,7 +4,7 @@ import { useXsrf } from 'src/modules/Core/composables/useXsrf';
 import { useMetaConfig } from 'src/modules/Core/composables/useMetaConfig';
 import { onMounted } from 'vue';
 import { loadTheme } from 'src/modules/Core/utils/themeUtil';
-import { mapStatusToType, normalizeKey, useQueryMessageHandler } from 'src/modules/Core/composables/useQueryMessageHandler';
+import { useQueryMessageHandler } from 'src/modules/Core/composables/useQueryMessageHandler';
 
 defineOptions({
   /**
@@ -33,8 +33,6 @@ useXsrf();
 useMetaConfig();
 useQueryMessageHandler({
   key: 'message',
-  normalize: (val) => normalizeKey(val),
-  type: (val) => mapStatusToType(val),
 });
 
 onMounted(() => {
