@@ -5,11 +5,10 @@ namespace Modules\Tenant\Providers;
 use Exception;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Foundation\Application;
-use Illuminate\Routing\Router;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Tenant\Contexts\TenantContext;
-use Modules\Tenant\Http\Middleware\TenantMiddleware;
 use Modules\Tenant\Services\RequestPrivacyService;
 use Modules\Tenant\Services\TenantConfigApplier;
 use Modules\Tenant\Services\TenantFindService;
@@ -35,25 +34,22 @@ class TenantServiceProvider extends ModuleServiceProvider
         $this->app->scoped(TenantContext::class);
         $this->app->scoped(RequestPrivacyService::class);
 
-        $this->app->rebinding('request', function (Application $app): void {
+        $this->app->rebinding(Request::class, function (Application $app): void {
             try {
-                $tenant = $app->make(TenantContext::class)->get();
+                $tenant = $app->make(abstract: TenantContext::class)->get();
+
                 TenantConfigApplier::apply($tenant, $app->make(ConfigRepository::class));
             } catch (Exception $e) {
-                Log::critical('Tenant Config Could Not Be Applied: ' . $e->getMessage());
+                $request = $app->make(Request::class);
+
+                Log::critical(
+                    'Tenant Config Could Not Be Applied: ' . $e->getMessage(),
+                    [
+                        'host'         => $request->getHost(),
+                        'customDomain' => $request->headers->get('X-Tenant-Domain'),
+                    ],
+                );
             }
-        });
-    }
-
-    /**
-     * Boot services.
-     */
-    public function boot(): void
-    {
-        parent::boot();
-
-        $this->callAfterResolving(Router::class, function (Router $router): void {
-            $router->prependMiddlewareToGroup('web', TenantMiddleware::class);
         });
     }
 }

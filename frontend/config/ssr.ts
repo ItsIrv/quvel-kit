@@ -3,6 +3,9 @@ import { getCerts, isLocal as isLocalFn } from './utils';
 
 const isLocal = isLocalFn();
 
+/**
+ * Quasar SSR Configuration
+ */
 export default defineConfig(() => {
   return {
     build: {

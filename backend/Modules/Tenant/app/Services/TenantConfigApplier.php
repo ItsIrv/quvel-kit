@@ -117,6 +117,14 @@ class TenantConfigApplier
         $appConfig->set('broadcasting.connections.pusher.options.port', $config->pusherPort);
         $appConfig->set('broadcasting.connections.pusher.options.scheme', $config->pusherScheme);
 
+        // CORS
+        $appConfig->set('cors.allowed_origins', [
+            $config->appUrl,
+            $config->frontendUrl,
+            'https://' . app('request')->getHost(),
+            'http://' . app('request')->getHost(),
+        ]);
+
         // Internal
         $appConfig->set('hmac_secret_key', $config->hmacSecretKey);
 

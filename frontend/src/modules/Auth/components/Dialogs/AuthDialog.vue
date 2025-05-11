@@ -16,6 +16,7 @@ import PasswordResetTokenForm from 'src/modules/Auth/components/Forms/PasswordRe
 
 import RegistrationSuccessCard from 'src/modules/Auth/components/Cards/RegistrationSuccessCard.vue';
 import PasswordResetSuccessCard from 'src/modules/Auth/components/Cards/PasswordResetSuccessCard.vue';
+
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 import { resetPasswordTokenSchema } from 'src/modules/Auth/validators/authValidators';
 import { useUrlQueryHandler } from 'src/modules/Core/composables/useUrlQueryHandler';

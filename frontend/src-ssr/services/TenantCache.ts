@@ -1,11 +1,11 @@
-import { createAxios } from 'src/modules/Core/utils/axiosUtil';
+import { AxiosInstance } from 'axios';
 import {
   BackendConfig,
   CachedTenantConfig,
   Tenant,
   TenantConfigProtected,
 } from '../types/tenant.types';
-import { AxiosInstance } from 'axios';
+import { createAxios } from '../utils/createAxios';
 
 /**
  * Service for caching tenant configurations.
@@ -40,7 +40,9 @@ export class TenantCacheService {
     if (!this.instance) {
       this.instance = new TenantCacheService();
 
-      await this.instance.loadAllTenants();
+      if (this.instance.preloadMode) {
+        await this.instance.loadAllTenants();
+      }
     }
 
     return this.instance;

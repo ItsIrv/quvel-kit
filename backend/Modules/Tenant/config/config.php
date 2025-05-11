@@ -13,12 +13,12 @@ return [
         'preload'      => env('TENANT_SSR_PRELOAD_TENANTS', true),
 
         /**
-         * Time for individual tenants to be cached.
+         * Time for individual tenants to be cached by the domain resolver.
          */
         'resolver_ttl' => env('TENANT_SSR_RESOLVER_TTL', 300),
 
         /**
-         * Refresh interval for tenants in cache.
+         * Time for tenants dump endpoint to be cached.
          */
         'cache_ttl'    => env('TENANT_SSR_CACHE_TTL', 300),
     ],

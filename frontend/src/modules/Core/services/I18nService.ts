@@ -1,17 +1,30 @@
+import { RegisterService } from './../types/service.types';
 import type { I18nType } from 'src/modules/Core/types/i18n.types';
 import { isValidLocale, storeLocale } from 'src/modules/Core/utils/i18nUtil';
 import { Service } from './Service';
+import { ServiceContainer } from './ServiceContainer';
+import { ApiService } from './ApiService';
 
 /**
  * I18n Service for managing localization.
  */
-export class I18nService extends Service {
+export class I18nService extends Service implements RegisterService {
   private readonly i18n: I18nType;
+  private api!: ApiService;
 
   constructor(i18nInstance: I18nType) {
     super();
 
     this.i18n = i18nInstance;
+  }
+
+  /**
+   * Registers the service.
+   */
+  register({ api }: ServiceContainer): void {
+    this.api = api;
+
+    this.setApiLocaleHeader();
   }
 
   /**
@@ -22,6 +35,13 @@ export class I18nService extends Service {
   }
 
   /**
+   * Sets the locale header for API requests.
+   */
+  setApiLocaleHeader(): void {
+    this.api.instance.defaults.headers.common['Accept-Language'] = this.i18n.global.locale.value;
+  }
+
+  /**
    * Changes the locale and stores it.
    */
   changeLocale(locale: string): void {
@@ -29,6 +49,8 @@ export class I18nService extends Service {
       this.i18n.global.locale.value = locale;
 
       storeLocale(locale);
+
+      this.setApiLocaleHeader();
     }
   }
 

@@ -27,6 +27,7 @@ class TenantMiddleware
     public function handle(Request $request, Closure $next): mixed
     {
         $tenant = $this->tenantResolver->resolveTenant();
+
         $this->tenantContext->set($tenant);
 
         return $next($request);
