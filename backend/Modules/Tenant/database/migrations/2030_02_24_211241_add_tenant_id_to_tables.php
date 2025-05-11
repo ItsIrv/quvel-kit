@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class () extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -12,22 +13,21 @@ return new class () extends Migration {
     {
         foreach (config('tenant.tables', []) as $tableName => $settings) {
             Schema::table($tableName, static function (Blueprint $table) use ($settings): void {
-
-                // Add tenant_id column
                 $tenantIdColumn = $table->foreignId('tenant_id')
                     ->after($settings['after'] ?? 'id')
                     ->constrained('tenants');
 
-                if ($settings['cascadeDelete'] ?? false) {
+                if ($settings['cascade_delete'] ?? false) {
                     $tenantIdColumn->cascadeOnDelete();
                 }
 
-                foreach ($settings['dropUnique'] ?? [] as $column) {
-                    $table->dropUnique([$column]);
+                foreach ($settings['drop_uniques'] ?? [] as $columns) {
+                    $table->dropUnique($columns);
                 }
 
-                foreach ($settings['compoundUnique'] ?? [] as $column) {
-                    $table->unique(['tenant_id', $column], $column . '_tenant_unique');
+                foreach ($settings['tenant_unique_constraints'] ?? [] as $columns) {
+                    $name = implode('_', $columns) . '_tenant_unique';
+                    $table->unique(array_merge(['tenant_id'], $columns), $name);
                 }
 
                 $table->index('tenant_id');
@@ -42,17 +42,15 @@ return new class () extends Migration {
     {
         foreach (config('tenant.tables', []) as $tableName => $settings) {
             Schema::table($tableName, static function (Blueprint $table) use ($settings): void {
-                // Drop tenant_id column
                 $table->dropConstrainedForeignId('tenant_id');
 
-                // Drop added indexes
-                foreach ($settings['compoundUnique'] ?? [] as $column) {
-                    $table->dropIndex($column . '_tenant_unique');
+                foreach ($settings['tenant_unique_constraints'] ?? [] as $columns) {
+                    $name = implode('_', $columns) . '_tenant_unique';
+                    $table->dropUnique($name);
                 }
 
-                // Restore dropped unique constraints
-                foreach ($settings['dropUnique'] ?? [] as $column) {
-                    $table->unique($column);
+                foreach ($settings['drop_uniques'] ?? [] as $columns) {
+                    $table->unique($columns);
                 }
             });
         }

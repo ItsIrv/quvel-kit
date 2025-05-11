@@ -8,7 +8,7 @@ use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Services\TenantResolverService;
 
 /**
- * Middleware to resolve the tenant based on the domain.
+ * Middleware to resolve the current tenant from the request.
  */
 class TenantMiddleware
 {
@@ -26,11 +26,8 @@ class TenantMiddleware
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        $this->tenantContext->set(
-            $this->tenantResolver->resolveTenant(
-                $request,
-            ),
-        );
+        $tenant = $this->tenantResolver->resolveTenant();
+        $this->tenantContext->set($tenant);
 
         return $next($request);
     }

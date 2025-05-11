@@ -13,26 +13,29 @@ import { AxiosInstance } from 'axios';
 export class TenantCacheService {
   private static instance: TenantCacheService;
   private readonly preloadMode: boolean;
-  private readonly ttl: number;
-  private readonly refreshInterval: number;
+  private readonly resolverTtl: number;
+  private readonly cacheTtl: number;
   private readonly intervalId: NodeJS.Timeout | null = null;
-
   private readonly domainCache = new Map<string, CachedTenantConfig>();
   private readonly tenantMap = new Map<string, Tenant & { config: BackendConfig }>();
   private readonly parentMap = new Map<string, Tenant & { config: BackendConfig }>();
   private readonly axiosInstance: AxiosInstance;
 
   private constructor() {
-    this.preloadMode = Boolean(process.env.VITE_SSR_PRELOAD_TENANTS);
-    this.ttl = Number(process.env.VITE_SSR_TENANT_TTL) || 60 * 5;
-    this.refreshInterval = Number(process.env.VITE_SSR_TENANT_REFRESH_INTERVAL) || this.ttl;
+    this.preloadMode = Boolean(process.env.VITE_TENANT_SSR_PRELOAD_TENANTS);
+    this.resolverTtl = Number(process.env.VITE_TENANT_SSR_RESOLVER_TTL) || 60 * 5;
+    this.cacheTtl = Number(process.env.VITE_TENANT_SSR_CACHE_TTL) || 60 * 5;
     this.axiosInstance = createAxios();
 
     if (this.preloadMode) {
-      this.intervalId = setInterval(() => void this.loadAllTenants(), this.refreshInterval * 1000);
+      this.intervalId = setInterval(() => void this.loadAllTenants(), this.cacheTtl * 1000);
     }
   }
 
+  /**
+   * Gets the singleton instance of the service.
+   * @returns The singleton instance.
+   */
   public static async getInstance(): Promise<TenantCacheService> {
     if (!this.instance) {
       this.instance = new TenantCacheService();
@@ -77,7 +80,7 @@ export class TenantCacheService {
       const config = this.normalizeConfig(tenant);
       this.domainCache.set(domain, {
         config,
-        expiresAt: now + this.ttl * 1000,
+        expiresAt: now + this.resolverTtl * 1000,
       });
 
       return config;

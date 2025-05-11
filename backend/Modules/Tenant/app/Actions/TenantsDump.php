@@ -14,8 +14,6 @@ class TenantsDump
 {
     private const string CACHE_KEY = 'tenants';
 
-    private const int CACHE_TTL = 60; // 1 minute
-
     /**
      * Execute the action.
      */
@@ -29,7 +27,7 @@ class TenantsDump
             $tenants = $cache->get(self::CACHE_KEY);
         } else {
             $tenants = $tenantFindService->findAll();
-            $cache->put(self::CACHE_KEY, $tenants, self::CACHE_TTL);
+            $cache->put(self::CACHE_KEY, $tenants, config('tenant.tenant_cache.cache_ttl'));
         }
 
         return TenantDumpResource::collection($tenants);

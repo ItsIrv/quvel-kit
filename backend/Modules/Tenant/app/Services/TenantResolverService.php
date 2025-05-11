@@ -8,44 +8,48 @@ use Modules\Tenant\Exceptions\TenantNotFoundException;
 use Modules\Tenant\Models\Tenant;
 
 /**
- * Service to resolve tenants.
+ * Resolves the current tenant based on the incoming request.
  */
 class TenantResolverService
 {
-    /**
-     * Create a new TenantResolverService instance.
-     */
     public function __construct(
         private readonly TenantFindService $tenantFindService,
         private readonly RequestPrivacyService $requestPrivacyService,
         private readonly Repository $cache,
+        private readonly Request $request,
     ) {
     }
 
     /**
-     * Resolve the tenant by checking the session first, then the database.
-     * If no tenant is found, throws an exception.
-     * Also allows for a custom domain to be set through a header when the request is internal.
+     * Gets the domain to use for tenant resolution.
+     * Uses header `X-Tenant-Domain` if the request is internal.
+     */
+    public function getDomain(): string
+    {
+        $domain       = $this->request->getHost();
+        $customDomain = $this->request->header('X-Tenant-Domain');
+
+        if ($customDomain && $this->requestPrivacyService->isInternalRequest()) {
+            return $customDomain;
+        }
+
+        return $domain;
+    }
+
+    /**
+     * Resolve the tenant from cache or database.
      *
      * @throws TenantNotFoundException
      */
-    public function resolveTenant(Request $request): Tenant
+    public function resolveTenant(): Tenant
     {
-        $domain       = $request->getHost();
-        $customDomain = $request->header('X-Tenant-Domain');
+        $domain = $this->getDomain();
 
-        if ($customDomain && $this->requestPrivacyService->isInternalRequest()) {
-            $domain = $customDomain;
-        }
-
-        $tenant = $this->cache->remember(
+        return $this->cache->remember(
             $domain,
-            config('tenant.tenant_cache.ttl'),
-            fn (): Tenant => $this->tenantFindService->findTenantByDomain(
-                $domain,
-            ) ?? throw new TenantNotFoundException()
+            config('tenant.tenant_cache.resolver_ttl'),
+            fn (): Tenant => $this->tenantFindService->findTenantByDomain($domain)
+            ?? throw new TenantNotFoundException()
         );
-
-        return $tenant;
     }
 }

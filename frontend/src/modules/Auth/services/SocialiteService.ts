@@ -105,20 +105,7 @@ export class SocialiteService extends Service implements RegisterService {
           return;
         }
 
-        void this.task
-          .newTask<{ user: IUser }>({
-            showLoading: true,
-            showNotification: {
-              success: () => this.i18n.t('auth.status.success.loggedIn'),
-              error: () => this.i18n.t('auth.status.errors.login'),
-            },
-            task: async (): Promise<{ user: IUser }> =>
-              await this.redeemOAuthNonce(provider, nonce),
-            successHandlers: ({ user }): void => {
-              onUserAuthenticated(user);
-            },
-          })
-          .run();
+        void this.redeemOAuthNonceTask(provider, nonce, onUserAuthenticated);
       },
     });
 
@@ -140,6 +127,7 @@ export class SocialiteService extends Service implements RegisterService {
   ): Promise<{ unsubscribe: () => void } | null> {
     if (!stateless) {
       window.location.href = this.getOAuthRedirectUrl(provider);
+
       return null;
     }
 
@@ -155,5 +143,35 @@ export class SocialiteService extends Service implements RegisterService {
 
       return null;
     }
+  }
+
+  /**
+   * Runs the OAuth nonce redemption task and handles user authentication callback.
+   *
+   * @param provider - The OAuth provider.
+   * @param nonce - The nonce for authentication.
+   * @param onUserAuthenticated - Callback for when a user is successfully authenticated.
+   * @returns Promise<void>
+   *
+   * @protected
+   */
+  protected async redeemOAuthNonceTask(
+    provider: string,
+    nonce: string,
+    onUserAuthenticated: (user: IUser) => void,
+  ): Promise<void> {
+    await this.task
+      .newTask<{ user: IUser }>({
+        showLoading: true,
+        showNotification: {
+          success: () => this.i18n.t('auth.status.success.loggedIn'),
+          error: () => this.i18n.t('auth.status.errors.login'),
+        },
+        task: async (): Promise<{ user: IUser }> => await this.redeemOAuthNonce(provider, nonce),
+        successHandlers: ({ user }): void => {
+          onUserAuthenticated(user);
+        },
+      })
+      .run();
   }
 }

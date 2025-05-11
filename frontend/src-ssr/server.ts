@@ -10,7 +10,6 @@
  * anything you import here (except for express and compression).
  */
 import express from 'express';
-// import compression from 'compression'
 import {
   defineSsrCreate,
   defineSsrListen,

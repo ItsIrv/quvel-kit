@@ -26,8 +26,12 @@ class RequestPrivacyService
      */
     public function isInternalIP(): bool
     {
+        if (config('tenant.privacy.disable_ip_check')) {
+            return true;
+        }
+
         $ip         = $this->request->ip();
-        $trustedIps = config('tenant.trusted_ips');
+        $trustedIps = config('tenant.privacy.trusted_ips');
 
         return in_array($ip, $trustedIps, true);
     }
@@ -37,6 +41,10 @@ class RequestPrivacyService
      */
     public function isCorrectApiKey(): bool
     {
-        return $this->request->header('X-SSR-Key') === config('tenant.ssr_api_key');
+        if (config('tenant.privacy.disable_key_check')) {
+            return true;
+        }
+
+        return $this->request->header('X-SSR-Key') === config('tenant.privacy.ssr_api_key');
     }
 }

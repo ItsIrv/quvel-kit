@@ -1,4 +1,4 @@
-import { Express, RequestHandler } from 'express';
+import { Express } from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import compression from 'compression';
@@ -29,7 +29,7 @@ export function configureExpress(app: Express, options: ConfigureExpressOptions 
 
   // Compression (optional)
   if (options.enableCompression) {
-    app.use(compression() as RequestHandler);
+    app.use(compression());
   }
 
   // Helmet with CSP and clickjacking protection
