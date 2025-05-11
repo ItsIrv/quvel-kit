@@ -101,10 +101,10 @@ There is an example `.env` file in the frontend directory.
 
 | Variable                            | Description                                                                                          |
 |-------------------------------------|------------------------------------------------------------------------------------------------------|
-| `VITE_SSR_API_URL`                  | API base URL used by SSR middleware. Should point to a container-local backend (e.g. `127.0.0.1`).   |
-| `VITE_SSR_PRELOAD_TENANTS`         | When `true`, preloads and caches all tenants from `/tenant/cache`. When `false`, resolves per request.|
-| `VITE_SSR_TENANT_TTL`           | TTL in seconds for individual domain cache entries (on-demand mode). Default: 300             |
-| `VITE_SSR_TENANT_REFRESH_INTERVAL` | Interval for refreshing all tenants (preload mode). Default: same as TTL                            |
+| `VITE_TENANT_SSR_API_URL`                  | API base URL used by SSR middleware. Should point to a container-local backend (e.g. `127.0.0.1`).   |
+| `VITE_TENANT_SSR_PRELOAD_TENANTS`         | When `true`, preloads and caches all tenants from `/tenant/cache`. When `false`, resolves per request.|
+| `VITE_TENANT_SSR_TENANT_TTL`           | TTL in seconds for individual domain cache entries (on-demand mode). Default: 300             |
+| `VITE_TENANT_SSR_TENANT_REFRESH_INTERVAL` | Interval for refreshing all tenants (preload mode). Default: same as TTL                            |
 
 ---
 

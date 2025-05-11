@@ -22,9 +22,9 @@ export class TenantCacheService {
   private readonly axiosInstance: AxiosInstance;
 
   private constructor() {
-    this.preloadMode = Boolean(process.env.VITE_TENANT_SSR_PRELOAD_TENANTS);
-    this.resolverTtl = Number(process.env.VITE_TENANT_SSR_RESOLVER_TTL) || 60 * 5;
-    this.cacheTtl = Number(process.env.VITE_TENANT_SSR_CACHE_TTL) || 60 * 5;
+    this.preloadMode = Boolean(process.env.SSR_TENANT_SSR_PRELOAD_TENANTS);
+    this.resolverTtl = Number(process.env.SSR_TENANT_SSR_RESOLVER_TTL) || 60 * 5;
+    this.cacheTtl = Number(process.env.SSR_TENANT_SSR_CACHE_TTL) || 60 * 5;
     this.axiosInstance = createAxios();
 
     if (this.preloadMode) {
@@ -72,7 +72,7 @@ export class TenantCacheService {
     try {
       const response = await this.axiosInstance.get<{
         data: Tenant & { config: BackendConfig };
-      }>(`${process.env.VITE_SSR_API_URL}/tenant`, { params: { domain } });
+      }>(`${process.env.SSR_TENANT_SSR_API_URL}/tenant`, { params: { domain } });
 
       const tenant = response.data.data;
       if (!tenant?.config) return null;
@@ -98,7 +98,7 @@ export class TenantCacheService {
     try {
       const response = await this.axiosInstance.get<{
         data: (Tenant & { config: BackendConfig })[];
-      }>(`${process.env.VITE_SSR_API_URL}/tenant/cache`);
+      }>(`${process.env.SSR_TENANT_SSR_API_URL}/tenant/cache`);
 
       this.tenantMap.clear();
       this.parentMap.clear();
