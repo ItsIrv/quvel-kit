@@ -19,15 +19,7 @@ import {
   defineSsrRenderPreloadTag,
 } from '#q-app/wrappers';
 import { TenantCacheService } from './services/TenantCache';
-
-/**
- * TODO: Investigate why SSL builds crashes the Fastify server.
- * From the logs it had to do something with setting the certs.
- * Quasar is calling Express-specific methods for
- * setting up SSL on SSR.
- *
- * Rverted to Express for now.
- */
+import { configureExpress } from './utils/configureExpress';
 
 /**
  * Create your webserver and return its instance.
@@ -36,18 +28,25 @@ import { TenantCacheService } from './services/TenantCache';
  *
  * Can be async: defineSsrCreate(async ({ ... }) => { ... })
  */
-export const create = defineSsrCreate((/* { ... } */) => {
+export const create = defineSsrCreate(async (/* { ... } */) => {
+  // Fetch Tenants before accepting requests
+  await TenantCacheService.getInstance();
+
   const app = express();
 
-  // attackers can use this header to detect apps running Express
-  // and then launch specifically-targeted attacks
-  app.disable('x-powered-by');
-
-  // place here any middlewares that
-  // absolutely need to run before anything else
-  if (process.env.PROD ?? '') {
-    // app.use(compression());
-  }
+  configureExpress(app, {
+    enableCompression: process.env.NODE_ENV === 'production',
+    enableCors: true,
+    rateLimit:
+      process.env.NODE_ENV === 'production'
+        ? {
+            windowMs: 60_000,
+            max: 100,
+          }
+        : undefined,
+    trustProxy: true,
+    strictGetOnly: true,
+  });
 
   return app;
 });
@@ -67,8 +66,6 @@ export const create = defineSsrCreate((/* { ... } */) => {
  */
 export const listen = defineSsrListen(({ app, devHttpsApp, port }) => {
   const server = devHttpsApp || app;
-
-  TenantCacheService.getInstance();
 
   return server.listen(port, () => {});
 });

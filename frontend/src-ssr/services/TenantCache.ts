@@ -5,6 +5,7 @@ import {
   Tenant,
   TenantConfigProtected,
 } from '../types/tenant.types';
+import { AxiosInstance } from 'axios';
 
 /**
  * Service for caching tenant configurations.
@@ -19,22 +20,24 @@ export class TenantCacheService {
   private readonly domainCache = new Map<string, CachedTenantConfig>();
   private readonly tenantMap = new Map<string, Tenant & { config: BackendConfig }>();
   private readonly parentMap = new Map<string, Tenant & { config: BackendConfig }>();
+  private readonly axiosInstance: AxiosInstance;
 
   private constructor() {
     this.preloadMode = Boolean(process.env.VITE_SSR_PRELOAD_TENANTS);
     this.ttl = Number(process.env.VITE_SSR_TENANT_TTL) || 60 * 5;
     this.refreshInterval = Number(process.env.VITE_SSR_TENANT_REFRESH_INTERVAL) || this.ttl;
+    this.axiosInstance = createAxios();
 
     if (this.preloadMode) {
       this.intervalId = setInterval(() => void this.loadAllTenants(), this.refreshInterval * 1000);
     }
   }
 
-  public static getInstance(): TenantCacheService {
+  public static async getInstance(): Promise<TenantCacheService> {
     if (!this.instance) {
       this.instance = new TenantCacheService();
 
-      void this.instance.loadAllTenants();
+      await this.instance.loadAllTenants();
     }
 
     return this.instance;
@@ -64,7 +67,7 @@ export class TenantCacheService {
     }
 
     try {
-      const response = await createAxios().get<{
+      const response = await this.axiosInstance.get<{
         data: Tenant & { config: BackendConfig };
       }>(`${process.env.VITE_SSR_API_URL}/tenant`, { params: { domain } });
 
@@ -90,7 +93,7 @@ export class TenantCacheService {
    */
   public async loadAllTenants(): Promise<void> {
     try {
-      const response = await createAxios().get<{
+      const response = await this.axiosInstance.get<{
         data: (Tenant & { config: BackendConfig })[];
       }>(`${process.env.VITE_SSR_API_URL}/tenant/cache`);
 

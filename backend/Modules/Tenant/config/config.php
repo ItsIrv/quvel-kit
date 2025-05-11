@@ -17,6 +17,11 @@ return [
     ],
 
     /**
+     * API key for SSR requests.
+     */
+    'ssr_api_key'  => env('SSR_API_KEY'),
+
+    /**
      * The tenant migration loops through each table and applies the tenant scope.
      */
     'tables'       => [

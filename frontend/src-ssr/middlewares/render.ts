@@ -6,6 +6,16 @@ import { TenantConfigProtected } from '../types/tenant.types';
 import { createTenantConfigFromEnv, filterTenantConfig } from '../utils/tenantConfigUtil';
 import { isValidHostname } from '../utils/validationUtil';
 
+/**
+ * SSR Middleware for rendering pages.
+ * Gets the tenant config based on the hostname and attaches it to the request.
+ * Injects the tenant config into the window object for use in the client.
+ *
+ * @param app - The express app instance.
+ * @param resolve - The URL resolver instance.
+ * @param render - The render function.
+ * @param serve - The serve function.
+ */
 export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
   app.get(resolve.urlPath('*'), async (req: Request, res: Response) => {
     res.header('Content-Type', 'text/html');
@@ -24,7 +34,7 @@ export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
           return;
         }
 
-        tenantConfig = await TenantCacheService.getInstance().getTenantConfigByDomain(host);
+        tenantConfig = await (await TenantCacheService.getInstance()).getTenantConfigByDomain(host);
 
         if (!tenantConfig) {
           // TODO: SSR Error pages

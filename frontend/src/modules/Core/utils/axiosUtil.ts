@@ -11,6 +11,12 @@ import { TenantConfig } from 'src/modules/Core/types/tenant.types';
  * @returns An Axios instance.
  */
 export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance {
+  // Attach API key in SSR mode (env vars without VITE_ prefix are not accessible in the browser)
+  if (process.env.SSR_API_KEY) {
+    axiosConfig.headers = axiosConfig.headers || {};
+    axiosConfig.headers['X-SSR-Key'] = process.env.SSR_API_KEY;
+  }
+
   return axios.create(axiosConfig);
 }
 

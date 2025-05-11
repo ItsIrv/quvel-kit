@@ -24,6 +24,20 @@ export default defineConfig((ctx) => {
         vueShim: true,
       },
       vueRouterMode: 'history',
+      /**
+       * Filter out non VITE_ environment variables
+       */
+      envFilter(originalEnv) {
+        const newEnv: Record<string, string> = {};
+
+        for (const key in originalEnv) {
+          if (key.startsWith('VITE_')) {
+            newEnv[key] = originalEnv[key] as string;
+          }
+        }
+
+        return newEnv;
+      },
       vitePlugins: [
         [
           '@intlify/unplugin-vue-i18n/vite',

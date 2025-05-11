@@ -26,9 +26,18 @@ export function useRecaptcha() {
         badge.parentNode.removeChild(badge);
       }
 
-      // Optional: Remove any iframes injected by Google (optional, aggressive)
+      // Remove any iframes injected by Google (optional, aggressive)
       document.querySelectorAll('iframe[src*="recaptcha"]').forEach((iframe) => {
         iframe.remove();
+      });
+
+      // Remove any scripts injected by Google (optional, aggressive)
+      document.querySelectorAll('script[src*="recaptcha"]').forEach((script) => {
+        script.remove();
+      });
+
+      document.querySelectorAll('meta[http-equiv="origin-trial"]').forEach((meta) => {
+        meta.remove();
       });
     },
   });

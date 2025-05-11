@@ -13,11 +13,30 @@ class RequestPrivacyService
     {
     }
 
+    /**
+     * Checks if the request is internal.
+     */
     public function isInternalRequest(): bool
     {
-        $trustedIps = config('tenant.trusted_ips');
+        return $this->isInternalIP() && $this->isCorrectApiKey();
+    }
+
+    /**
+     * Checks if the IP is internal.
+     */
+    public function isInternalIP(): bool
+    {
         $ip         = $this->request->ip();
+        $trustedIps = config('tenant.trusted_ips');
 
         return in_array($ip, $trustedIps, true);
+    }
+
+    /**
+     * Checks if the request is from a trusted IP.
+     */
+    public function isCorrectApiKey(): bool
+    {
+        return $this->request->header('X-SSR-Key') === config('tenant.ssr_api_key');
     }
 }

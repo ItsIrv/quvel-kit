@@ -5,7 +5,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', QuvelWelcome::class)->name('welcome');
-
+Route::get('/test', static fn () => config('app.name'));
 Route::get('_', static function (): RedirectResponse|string {
     if (app()->environment('production')) {
         return redirect('https://quvel.127.0.0.1.nip.io');

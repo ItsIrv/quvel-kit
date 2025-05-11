@@ -8,7 +8,6 @@ import PageFooter from 'src/modules/Quvel/components/Pages/LandingPage/PageFoote
 import { useCatalogStore } from 'src/modules/Catalog/stores/catalogStore';
 import CatalogSection from 'src/modules/Catalog/components/CatalogSection.vue';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
-import WebSocketChannelManager from 'src/modules/Core/components/WebSocketChannelManager.vue';
 import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
 
 defineOptions({
@@ -111,8 +110,6 @@ watch(
       @open-right-drawer="onOpenRightDrawer"
       @open-left-drawer="onOpenLeftDrawer"
     />
-
-    <WebSocketChannelManager />
 
     <!-- Scrollable section -->
     <CatalogSection />
