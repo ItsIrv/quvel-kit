@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Context;
 use Modules\Tenant\Models\Tenant;
 use RuntimeException;
 
+use function app;
+
 class ConfigApplier
 {
     /**
@@ -128,7 +130,7 @@ class ConfigApplier
         $appConfig->set('hmac_secret_key', $config->hmacSecretKey);
 
         $urlGenerator = app(UrlGenerator::class);
-        $urlGenerator->forceRootUrl(config('app.url'));
+        $urlGenerator->forceRootUrl($config->appUrl);
 
         // TODO: Need a way for modules to register their own dynamic configs
         // all the way down to the seeder level

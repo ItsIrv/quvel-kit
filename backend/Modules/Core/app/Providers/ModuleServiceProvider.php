@@ -8,6 +8,12 @@ use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
+use function module_path;
+use function resource_path;
+use function is_dir;
+use function is_array;
+use function config;
+
 class ModuleServiceProvider extends ServiceProvider
 {
     use PathNamespace;

@@ -13,6 +13,9 @@ use Illuminate\Routing\Redirector;
 use Illuminate\Log\Context\Repository;
 use Illuminate\Support\Facades\Context;
 
+use function app;
+use function config;
+
 class CoreServiceProvider extends ModuleServiceProvider
 {
     protected string $name = 'Core';
@@ -54,11 +57,11 @@ class CoreServiceProvider extends ModuleServiceProvider
         $this->app['request']->server->set('HTTPS', 'on');
         $this->app['router']->pushMiddlewareToGroup('web', SetRequestLocale::class);
 
-        Context::dehydrating(function (Repository $context) {
+        Context::dehydrating(function (Repository $context): void {
             $context->addHidden('locale', config('app.locale'));
         });
 
-        Context::hydrated(function (Repository $context) {
+        Context::hydrated(function (Repository $context): void {
             if ($context->hasHidden('locale')) {
                 config(['app.locale' => $context->getHidden('locale')]);
             }

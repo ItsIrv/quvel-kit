@@ -19,7 +19,7 @@ class HmacService
      */
     public function sign(string $value): string
     {
-        return hash_hmac('sha256', $value, $this->hmacSecret);
+        return \hash_hmac('sha256', $value, $this->hmacSecret);
     }
 
     /**
@@ -27,7 +27,7 @@ class HmacService
      */
     public function verify(string $value, string $hmac): bool
     {
-        return hash_equals($this->sign($value), $hmac);
+        return \hash_equals($this->sign($value), $hmac);
     }
 
     /**
@@ -43,7 +43,7 @@ class HmacService
      */
     public function extractAndVerify(string $signedValue): ?string
     {
-        if (! str_contains($signedValue, '.')) {
+        if (!\str_contains($signedValue, '.')) {
             return null;
         }
 

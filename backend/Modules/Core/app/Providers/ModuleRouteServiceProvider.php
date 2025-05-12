@@ -5,6 +5,9 @@ namespace Modules\Core\Providers;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
+use function module_path;
+use function file_exists;
+
 abstract class ModuleRouteServiceProvider extends ServiceProvider
 {
     /**
