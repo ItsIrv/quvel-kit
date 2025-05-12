@@ -60,6 +60,8 @@ class TenantServiceProvider extends ModuleServiceProvider
      */
     public function boot(): void
     {
+        parent::boot();
+
         Context::dehydrating(function (Repository $context): void {
             $context->addHidden('tenant', app(TenantContext::class)->get());
         });
