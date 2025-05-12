@@ -10,11 +10,11 @@ use Modules\Tenant\Models\Tenant;
 /**
  * Resolves the current tenant based on the incoming request.
  */
-class TenantResolverService
+class ResolverService
 {
     public function __construct(
-        private readonly TenantFindService $tenantFindService,
-        private readonly RequestPrivacyService $requestPrivacyService,
+        private readonly FindService $tenantFindService,
+        private readonly RequestPrivacy $requestPrivacyService,
         private readonly Repository $cache,
         private readonly Request $request,
     ) {

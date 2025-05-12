@@ -7,7 +7,7 @@ use Illuminate\Routing\UrlGenerator;
 use Modules\Tenant\Models\Tenant;
 use RuntimeException;
 
-class TenantConfigApplier
+class ConfigApplier
 {
     /**
      * Apply tenant-specific config at runtime.
@@ -121,8 +121,6 @@ class TenantConfigApplier
         $appConfig->set('cors.allowed_origins', [
             $config->appUrl,
             $config->frontendUrl,
-            'https://' . app('request')->getHost(),
-            'http://' . app('request')->getHost(),
         ]);
 
         // Internal

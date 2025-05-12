@@ -38,7 +38,7 @@ export default defineConfig(() => {
       open: false,
     },
     ssr: {
-      prodPort: 9000,
+      prodPort: 3000,
       middlewares: [
         'render', // keep this as last one
       ],

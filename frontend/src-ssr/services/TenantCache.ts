@@ -74,12 +74,18 @@ export class TenantCacheService {
     try {
       const response = await this.axiosInstance.get<{
         data: Tenant & { config: BackendConfig };
-      }>(`${process.env.SSR_TENANT_SSR_API_URL}/tenant`, { params: { domain } });
+      }>(`${process.env.SSR_TENANT_SSR_API_URL}/tenant`, {
+        headers: {
+          'X-Tenant-Domain': domain,
+        },
+      });
 
       const tenant = response.data.data;
+
       if (!tenant?.config) return null;
 
       const config = this.normalizeConfig(tenant);
+
       this.domainCache.set(domain, {
         config,
         expiresAt: now + this.resolverTtl * 1000,

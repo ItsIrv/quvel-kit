@@ -5,7 +5,7 @@ namespace Modules\Tenant\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Modules\Tenant\Contexts\TenantContext;
-use Modules\Tenant\Services\TenantResolverService;
+use Modules\Tenant\Services\ResolverService;
 
 /**
  * Middleware to resolve the current tenant from the request.
@@ -16,7 +16,7 @@ class TenantMiddleware
      * Create a new TenantMiddleware instance.
      */
     public function __construct(
-        private readonly TenantResolverService $tenantResolver,
+        private readonly ResolverService $tenantResolver,
         private readonly TenantContext $tenantContext,
     ) {
     }

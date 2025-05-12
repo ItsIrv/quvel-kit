@@ -3,23 +3,23 @@
 namespace Modules\Tenant\Tests\Unit\Services;
 
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\Services\TenantFindService;
+use Modules\Tenant\Services\FindService;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
-#[CoversClass(TenantFindService::class)]
+#[CoversClass(FindService::class)]
 #[Group('tenant-module')]
 #[Group('tenant-services')]
 class TenantFindServiceTest extends TestCase
 {
-    private TenantFindService $service;
+    private FindService $service;
 
     #[Before]
     public function setUpTest(): void
     {
-        $this->service = new TenantFindService();
+        $this->service = new FindService();
     }
 
     /**
@@ -57,7 +57,7 @@ class TenantFindServiceTest extends TestCase
         ]);
 
         Tenant::factory()->create([
-            'domain' => 'child.com',
+            'domain'    => 'child.com',
             'parent_id' => $parentTenant->id,
         ]);
 

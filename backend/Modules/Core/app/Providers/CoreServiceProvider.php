@@ -2,6 +2,7 @@
 
 namespace Modules\Core\Providers;
 
+use Modules\Core\Http\Middleware\Lang\SetRequestLocale;
 use Modules\Core\Services\FrontendService;
 use Modules\Core\Services\User\UserCreateService;
 use Modules\Core\Services\User\UserFindService;
@@ -49,5 +50,7 @@ class CoreServiceProvider extends ModuleServiceProvider
         parent::boot();
 
         $this->app['request']->server->set('HTTPS', 'on');
+
+        $this->app['router']->pushMiddlewareToGroup('web', SetRequestLocale::class);
     }
 }

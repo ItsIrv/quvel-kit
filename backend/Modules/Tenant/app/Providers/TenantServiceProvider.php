@@ -9,10 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Tenant\Contexts\TenantContext;
-use Modules\Tenant\Services\RequestPrivacyService;
-use Modules\Tenant\Services\TenantConfigApplier;
-use Modules\Tenant\Services\TenantFindService;
-use Modules\Tenant\Services\TenantResolverService;
+use Modules\Tenant\Services\RequestPrivacy;
+use Modules\Tenant\Services\ConfigApplier;
+use Modules\Tenant\Services\FindService;
+use Modules\Tenant\Services\ResolverService;
 
 /**
  * Provider for the Tenant module.
@@ -29,16 +29,16 @@ class TenantServiceProvider extends ModuleServiceProvider
     {
         $this->app->register(RouteServiceProvider::class);
 
-        $this->app->singleton(TenantFindService::class);
-        $this->app->scoped(TenantResolverService::class);
+        $this->app->singleton(FindService::class);
+        $this->app->scoped(ResolverService::class);
         $this->app->scoped(TenantContext::class);
-        $this->app->scoped(RequestPrivacyService::class);
+        $this->app->scoped(RequestPrivacy::class);
 
         $this->app->rebinding(Request::class, function (Application $app): void {
             try {
                 $tenant = $app->make(abstract: TenantContext::class)->get();
 
-                TenantConfigApplier::apply($tenant, $app->make(ConfigRepository::class));
+                ConfigApplier::apply($tenant, $app->make(ConfigRepository::class));
             } catch (Exception $e) {
                 $request = $app->make(Request::class);
 

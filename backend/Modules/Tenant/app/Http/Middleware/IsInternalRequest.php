@@ -4,7 +4,7 @@ namespace Modules\Tenant\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Modules\Tenant\Services\RequestPrivacyService;
+use Modules\Tenant\Services\RequestPrivacy;
 
 /**
  * Middleware to check if the request is internal.
@@ -12,7 +12,7 @@ use Modules\Tenant\Services\RequestPrivacyService;
 class IsInternalRequest
 {
     public function __construct(
-        private readonly RequestPrivacyService $requestPrivacyService,
+        private readonly RequestPrivacy $requestPrivacyService,
     ) {
     }
 

@@ -30,7 +30,7 @@ export function createApi(
     (configOverrides as TenantConfig & { internalApiUrl: string })?.internalApiUrl ??
     configOverrides?.apiUrl ??
     process.env.VITE_API_URL;
-  console.log('baseURL', baseURL);
+
   const axiosConfig: AxiosRequestConfig = {
     baseURL,
     withCredentials: true,

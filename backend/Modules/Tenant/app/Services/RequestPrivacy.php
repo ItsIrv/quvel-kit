@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 /**
  * Service to check if a request is internal.
  */
-class RequestPrivacyService
+class RequestPrivacy
 {
     public function __construct(private readonly Request $request)
     {

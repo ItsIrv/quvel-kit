@@ -4,7 +4,7 @@ namespace Modules\Tenant\Traits;
 
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\Services\TenantFindService;
+use Modules\Tenant\Services\FindService;
 use RuntimeException;
 
 trait GetsTenant
@@ -37,10 +37,10 @@ trait GetsTenant
     }
 
     /**
-     * Get the TenantFindService instance
+     * Get the FindService instance
      */
-    protected function getTenantFindService(): TenantFindService
+    protected function getTenantFindService(): FindService
     {
-        return app(TenantFindService::class);
+        return app(FindService::class);
     }
 }

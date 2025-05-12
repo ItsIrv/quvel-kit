@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Modules\Tenant\Actions\TenantsDump;
 use Modules\Tenant\Http\Resources\TenantDumpResource;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\Services\TenantFindService;
+use Modules\Tenant\Services\FindService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -23,8 +23,8 @@ class TenantsDumpTest extends TestCase
     public function testTenantsDumpReturnsCachedTenants(): void
     {
         // Mock dependencies
-        $cache = $this->createMock(CacheRepository::class);
-        $tenantFindService = $this->createMock(TenantFindService::class);
+        $cache             = $this->createMock(CacheRepository::class);
+        $tenantFindService = $this->createMock(FindService::class);
 
         // Sample tenant data as Eloquent Collection
         $cachedTenants = new Collection([
@@ -57,8 +57,8 @@ class TenantsDumpTest extends TestCase
     public function testTenantsDumpFetchesWhenCacheEmpty(): void
     {
         // Mock dependencies
-        $cache = $this->createMock(CacheRepository::class);
-        $tenantFindService = $this->createMock(TenantFindService::class);
+        $cache             = $this->createMock(CacheRepository::class);
+        $tenantFindService = $this->createMock(FindService::class);
 
         // Sample fresh tenant data as Eloquent Collection
         $freshTenants = new Collection([

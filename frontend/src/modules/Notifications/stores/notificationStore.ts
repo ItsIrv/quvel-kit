@@ -69,7 +69,6 @@ export const useNotificationStore = defineStore<
      * Register a socket listener on the user’s private channel.
      */
     async subscribe(userId: number) {
-      console.log(this.notificationChannel);
       if (this.notificationChannel) {
         this.notificationChannel.unsubscribe();
       }

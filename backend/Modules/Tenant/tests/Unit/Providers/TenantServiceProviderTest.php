@@ -8,9 +8,9 @@ use Mockery;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Providers\RouteServiceProvider;
 use Modules\Tenant\Providers\TenantServiceProvider;
-use Modules\Tenant\Services\TenantConfigApplier;
-use Modules\Tenant\Services\TenantFindService;
-use Modules\Tenant\Services\TenantResolverService;
+use Modules\Tenant\Services\ConfigApplier;
+use Modules\Tenant\Services\FindService;
+use Modules\Tenant\Services\ResolverService;
 use Modules\Tenant\Services\TenantSessionService;
 use Modules\Tenant\ValueObjects\TenantConfig;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -73,8 +73,8 @@ class TenantServiceProviderTest extends TestCase
 
         $expectedSingletons = [
             strtolower(TenantSessionService::class),
-            strtolower(TenantFindService::class),
-            strtolower(TenantResolverService::class),
+            strtolower(FindService::class),
+            strtolower(ResolverService::class),
         ];
 
         $expectedRegisters = [

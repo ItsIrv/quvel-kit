@@ -5,7 +5,7 @@ namespace Modules\Tenant\Services;
 use Illuminate\Database\Eloquent\Collection;
 use Modules\Tenant\Models\Tenant;
 
-class TenantFindService
+class FindService
 {
     /**
      * Finds the parent tenant entity of the domain.

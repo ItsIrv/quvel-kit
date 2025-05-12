@@ -7,7 +7,7 @@ use Mockery;
 use Modules\Tenant\Actions\TenantsDump;
 use Modules\Tenant\Http\Resources\TenantDumpResource;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\Services\TenantFindService;
+use Modules\Tenant\Services\FindService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -22,8 +22,8 @@ class TenantsDumpFeatureTest extends TestCase
      */
     public function testTenantsDumpReturnsCachedTenants(): void
     {
-        // Use $this->createMock() for TenantFindService since it's a normal class
-        $tenantFindServiceMock = $this->createMock(TenantFindService::class);
+        // Use $this->createMock() for FindService since it's a normal class
+        $tenantFindServiceMock = $this->createMock(FindService::class);
 
         // Use Mockery::mock() for CacheRepository since Laravel handles caching internally
         $cacheMock = Mockery::mock(CacheRepository::class);
@@ -48,8 +48,8 @@ class TenantsDumpFeatureTest extends TestCase
      */
     public function testTenantsDumpFetchesWhenCacheEmpty(): void
     {
-        // Use $this->createMock() for TenantFindService
-        $tenantFindServiceMock = $this->createMock(TenantFindService::class);
+        // Use $this->createMock() for FindService
+        $tenantFindServiceMock = $this->createMock(FindService::class);
 
         // Use Mockery::mock() for CacheRepository
         $cacheMock = Mockery::mock(CacheRepository::class);

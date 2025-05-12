@@ -5,7 +5,7 @@ namespace Modules\Tenant\Actions;
 use Illuminate\Cache\Repository as CacheRepository;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Modules\Tenant\Http\Resources\TenantDumpResource;
-use Modules\Tenant\Services\TenantFindService;
+use Modules\Tenant\Services\FindService;
 
 /**
  * Action for frontend SSR to fetch all tenants and allow dynamic config on client.
@@ -18,7 +18,7 @@ class TenantsDump
      * Execute the action.
      */
     public function __invoke(
-        TenantFindService $tenantFindService,
+        FindService $tenantFindService,
         CacheRepository $cache,
     ): AnonymousResourceCollection {
         $tenants = [];

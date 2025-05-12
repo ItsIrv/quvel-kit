@@ -2,13 +2,13 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\Broadcast;
-use Modules\Tenant\Services\TenantFindService;
+use Modules\Tenant\Services\FindService;
 
 Broadcast::channel(
     'tenant.{tenantPublicId}.User.{publicId}',
     function (User $user, string $tenantPublicId, string $publicId): bool {
         if (
-            app(TenantFindService::class)->getTenantPublicIdFromId(
+            app(FindService::class)->getTenantPublicIdFromId(
                 $user->tenant_id,
             ) !== $tenantPublicId
         ) {
@@ -23,7 +23,7 @@ Broadcast::channel(
     'tenant.{tenantPublicId}.chat',
     function (User $user, string $tenantPublicId): array|bool {
         if (
-            app(TenantFindService::class)->getTenantPublicIdFromId(
+            app(FindService::class)->getTenantPublicIdFromId(
                 $user->tenant_id,
             ) !== $tenantPublicId
         ) {

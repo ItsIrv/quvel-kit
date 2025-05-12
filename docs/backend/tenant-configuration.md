@@ -40,9 +40,9 @@ The `TenantConfig` value object is the core of the configuration system. It enca
 
 The `TenantConfigCast` class handles the conversion between the database JSON representation and the `TenantConfig` value object. It implements Laravel's `CastsAttributes` interface to seamlessly integrate with Eloquent models.
 
-### TenantConfigApplier
+### ConfigApplier
 
-The `TenantConfigApplier` service is responsible for applying tenant-specific configuration at runtime. It maps the values from a `TenantConfig` object to Laravel's configuration system.
+The `ConfigApplier` service is responsible for applying tenant-specific configuration at runtime. It maps the values from a `TenantConfig` object to Laravel's configuration system.
 
 ### TenantConfigFactory
 

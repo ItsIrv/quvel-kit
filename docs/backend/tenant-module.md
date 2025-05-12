@@ -24,9 +24,9 @@ The `TenantContext` class is a request-scoped service that holds the current ten
 
 The `TenantMiddleware` resolves the tenant for each request based on the domain. This middleware is automatically applied to routes that require tenant context.
 
-### TenantResolverService
+### ResolverService
 
-The `TenantResolverService` handles the logic for resolving a tenant from a request.
+The `ResolverService` handles the logic for resolving a tenant from a request.
 
 Resolution process:
 
@@ -48,7 +48,7 @@ The Tenant module provides global helper functions for easy access to tenant inf
 function setTenant(int $tenantId): void
 {
     app(TenantContext::class)->set(
-        app(TenantFindService::class)->findById($tenantId)
+        app(FindService::class)->findById($tenantId)
         ?? throw new TenantNotFoundException('Tenant not found'),
     );
 }

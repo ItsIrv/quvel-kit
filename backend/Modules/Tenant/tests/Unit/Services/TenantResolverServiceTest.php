@@ -5,8 +5,8 @@ namespace Modules\Tenant\Tests\Unit\Services;
 use Illuminate\Http\Request;
 use Mockery;
 use Modules\Tenant\Exceptions\TenantNotFoundException;
-use Modules\Tenant\Services\TenantFindService;
-use Modules\Tenant\Services\TenantResolverService;
+use Modules\Tenant\Services\FindService;
+use Modules\Tenant\Services\ResolverService;
 use Modules\Tenant\Services\TenantSessionService;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -15,16 +15,16 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\TestCase;
 
-#[CoversClass(TenantResolverService::class)]
+#[CoversClass(ResolverService::class)]
 #[Group('tenant-module')]
 #[Group('tenant-services')]
 class TenantResolverServiceTest extends TestCase
 {
-    private TenantFindService|MockObject $tenantFindService;
+    private FindService|MockObject $tenantFindService;
 
     private TenantSessionService|MockObject $tenantSessionService;
 
-    private TenantResolverService $tenantResolverService;
+    private ResolverService $tenantResolverService;
 
     private Request|Mockery\MockInterface $requestMock;
 
@@ -35,7 +35,7 @@ class TenantResolverServiceTest extends TestCase
     protected function setUpTest(): void
     {
         $this->tenantFindService = $this->createMock(
-            TenantFindService::class,
+            FindService::class,
         );
 
         $this->tenantSessionService = $this->createMock(
@@ -44,7 +44,7 @@ class TenantResolverServiceTest extends TestCase
 
         $this->requestMock = Mockery::mock(Request::class);
 
-        $this->tenantResolverService = new TenantResolverService(
+        $this->tenantResolverService = new ResolverService(
             $this->tenantFindService,
             $this->tenantSessionService,
         );
