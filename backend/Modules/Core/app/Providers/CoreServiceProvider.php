@@ -10,6 +10,8 @@ use Modules\Core\Contracts\Security\CaptchaVerifierInterface;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
+use Illuminate\Log\Context\Repository;
+use Illuminate\Support\Facades\Context;
 
 class CoreServiceProvider extends ModuleServiceProvider
 {
@@ -24,22 +26,22 @@ class CoreServiceProvider extends ModuleServiceProvider
     {
         $this->app->singleton(UserCreateService::class);
         $this->app->singleton(UserFindService::class);
-        $this->app->scoped(FrontendService::class, function ($app): FrontendService {
-            return (new FrontendService(
+        $this->app->scoped(
+            FrontendService::class,
+            fn ($app) => (new FrontendService(
                 $app->make(Redirector::class),
                 $app->make(ResponseFactory::class),
+                $app->make(Request::class),
             ))
                 ->setUrl(config('frontend.url'))
-                ->setCapacitorScheme(config('frontend.capacitor_scheme'))
-                ->setIsCapacitor($app->make(Request::class)->hasHeader('X-Capacitor'));
-        });
+                ->setCapacitorScheme(config('frontend.capacitor_scheme')),
+        );
 
         // Default Captcha Verifier
-        $this->app->scoped(CaptchaVerifierInterface::class, function (): CaptchaVerifierInterface {
-            $provider = config('core.recaptcha.provider');
-
-            return app($provider);
-        });
+        $this->app->scoped(
+            CaptchaVerifierInterface::class,
+            fn (): CaptchaVerifierInterface => app(config('core.recaptcha.provider'))
+        );
     }
 
     /**
@@ -50,7 +52,16 @@ class CoreServiceProvider extends ModuleServiceProvider
         parent::boot();
 
         $this->app['request']->server->set('HTTPS', 'on');
-
         $this->app['router']->pushMiddlewareToGroup('web', SetRequestLocale::class);
+
+        Context::dehydrating(function (Repository $context) {
+            $context->addHidden('locale', config('app.locale'));
+        });
+
+        Context::hydrated(function (Repository $context) {
+            if ($context->hasHidden('locale')) {
+                config(['app.locale' => $context->getHidden('locale')]);
+            }
+        });
     }
 }

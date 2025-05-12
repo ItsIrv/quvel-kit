@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Log;
 use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Tenant\Contexts\TenantContext;
@@ -13,6 +14,7 @@ use Modules\Tenant\Services\RequestPrivacy;
 use Modules\Tenant\Services\ConfigApplier;
 use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\ResolverService;
+use Illuminate\Log\Context\Repository;
 
 /**
  * Provider for the Tenant module.
@@ -48,6 +50,25 @@ class TenantServiceProvider extends ModuleServiceProvider
                         'host'         => $request->getHost(),
                         'customDomain' => $request->headers->get('X-Tenant-Domain'),
                     ],
+                );
+            }
+        });
+    }
+
+    /**
+     * Bootstrap services.
+     */
+    public function boot(): void
+    {
+        Context::dehydrating(function (Repository $context): void {
+            $context->addHidden('tenant', app(TenantContext::class)->get());
+        });
+
+        Context::hydrated(function (Repository $context): void {
+            if ($context->hasHidden('tenant')) {
+                ConfigApplier::apply(
+                    $context->getHidden('tenant'),
+                    $this->app->make(ConfigRepository::class),
                 );
             }
         });

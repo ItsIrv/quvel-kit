@@ -4,6 +4,7 @@ namespace Modules\Core\Services;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 
@@ -36,10 +37,12 @@ class FrontendService
     public function __construct(
         private readonly Redirector $redirector,
         private readonly ResponseFactory $responseFactory,
+        private readonly Request $request,
     ) {
         $this->url             = '';
         $this->capacitorScheme = null;
-        $this->isCapacitor     = false;
+
+        $this->isCapacitor = $this->request->hasHeader('X-Capacitor');
     }
 
     /**

@@ -26,7 +26,7 @@ http:
       loadBalancer:
         servers:
           #           - url: 'https://127.0.0.1.nip.io:3000'
-          - url: 'http://host.docker.internal:3000' # If serving from local machine
+          - url: 'https://host.docker.internal:3000' # If serving from local machine
         #           - url: 'https://quvel-frontend:9000'
         serversTransport: 'insecureTransport' # Supports self-signed certificates
 

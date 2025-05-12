@@ -4,6 +4,7 @@ namespace Modules\Tenant\Services;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Routing\UrlGenerator;
+use Illuminate\Support\Facades\Context;
 use Modules\Tenant\Models\Tenant;
 use RuntimeException;
 
@@ -133,5 +134,8 @@ class ConfigApplier
         // all the way down to the seeder level
         $appConfig->set('auth.disable_socialite', $config->disableSocialite);
         $appConfig->set('auth.verify_email_before_login', $config->verifyEmailBeforeLogin);
+
+        // Laravel Context
+        Context::add('tenant_id', $tenant->public_id);
     }
 }

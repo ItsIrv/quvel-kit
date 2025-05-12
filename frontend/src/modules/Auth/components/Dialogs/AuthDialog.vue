@@ -4,25 +4,30 @@
  *
  * Modular authentication dialog supporting login, signup, password reset, and MFA.
  */
-import { computed, ref, watch, type Component } from 'vue';
+import { computed, ref, watch, defineAsyncComponent, type Component } from 'vue';
 import { QForm } from 'quasar';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import QuvelKit from 'src/modules/Quvel/components/Common/QuvelKit.vue';
-
-import LoginForm from 'src/modules/Auth/components/Forms/LoginForm.vue';
-import SignupForm from 'src/modules/Auth/components/Forms/SignupForm.vue';
-import PasswordResetForm from 'src/modules/Auth/components/Forms/PasswordResetForm.vue';
-import PasswordResetTokenForm from 'src/modules/Auth/components/Forms/PasswordResetTokenForm.vue';
-
-import RegistrationSuccessCard from 'src/modules/Auth/components/Cards/RegistrationSuccessCard.vue';
-import PasswordResetSuccessCard from 'src/modules/Auth/components/Cards/PasswordResetSuccessCard.vue';
 
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 import { resetPasswordTokenSchema } from 'src/modules/Auth/validators/authValidators';
 import { useUrlQueryHandler } from 'src/modules/Core/composables/useUrlQueryHandler';
 
+/**
+ * Types
+ */
 type AuthFormStep = 'login' | 'signup' | 'password-reset' | 'password-reset-token' | 'mfa';
 type SuccessCardStep = 'registration' | 'password-reset' | false;
+
+/*
+ * Components
+ */
+const LoginForm = defineAsyncComponent(() => import('src/modules/Auth/components/Forms/LoginForm.vue'));
+const SignupForm = defineAsyncComponent(() => import('src/modules/Auth/components/Forms/SignupForm.vue'));
+const PasswordResetForm = defineAsyncComponent(() => import('src/modules/Auth/components/Forms/PasswordResetForm.vue'));
+const PasswordResetTokenForm = defineAsyncComponent(() => import('src/modules/Auth/components/Forms/PasswordResetTokenForm.vue'));
+const RegistrationSuccessCard = defineAsyncComponent(() => import('src/modules/Auth/components/Cards/RegistrationSuccessCard.vue'));
+const PasswordResetSuccessCard = defineAsyncComponent(() => import('src/modules/Auth/components/Cards/PasswordResetSuccessCard.vue'));
 
 /**
  * Props & Emits
@@ -48,6 +53,8 @@ const { validation, i18n } = useContainer();
  */
 const activeStep = ref<AuthFormStep>('login');
 const successStep = ref<SuccessCardStep>(false);
+const resetToken = ref<string>('');
+const isValidToken = ref<true | string | null>(null);
 
 /**
  * Refs
@@ -75,11 +82,34 @@ const stepTitle = computed(() => {
 });
 
 /**
- * Password Reset Handler State
+ * Current form component
  */
-const resetToken = ref<string>('');
-const isValidToken = ref<true | string | null>(null);
+const currentFormComponent = computed<Component | null>(() => {
+  switch (activeStep.value) {
+    case 'login':
+      return LoginForm;
+    case 'signup':
+      return SignupForm;
+    case 'password-reset':
+      return PasswordResetForm;
+    case 'password-reset-token':
+      return PasswordResetTokenForm;
+    default:
+      return null;
+  }
+});
 
+/**
+ * Props for the current form
+ */
+const currentFormProps = computed(() => {
+  if (activeStep.value === 'password-reset-token') {
+    return {
+      token: resetToken.value,
+    };
+  }
+  return {};
+});
 
 /**
  * Methods
@@ -138,35 +168,6 @@ function handleCloseSuccessCard() {
   switchStep('login');
 }
 
-/**
- * Current form component
- */
-const currentFormComponent = computed<Component | null>(() => {
-  switch (activeStep.value) {
-    case 'login':
-      return LoginForm;
-    case 'signup':
-      return SignupForm;
-    case 'password-reset':
-      return PasswordResetForm;
-    case 'password-reset-token':
-      return PasswordResetTokenForm;
-    default:
-      return null;
-  }
-});
-
-/**
- * Props for the current form
- */
-const currentFormProps = computed(() => {
-  if (activeStep.value === 'password-reset-token') {
-    return {
-      token: resetToken.value,
-    };
-  }
-  return {};
-});
 
 /**
  * Effects
