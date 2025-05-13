@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prepend(TenantMiddleware::class);
+        $middleware->priority([
+            TenantMiddleware::class,
+            \Illuminate\Http\Middleware\HandleCors::class,
+        ]);
     })
     ->withBroadcasting('')
     ->withExceptions(function (Exceptions $exceptions): void {
