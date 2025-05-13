@@ -3,8 +3,10 @@
 namespace Modules\Tenant\Http\Middleware;
 
 use Closure;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Request;
 use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Services\ConfigApplier;
 use Modules\Tenant\Services\ResolverService;
 
 /**
@@ -29,6 +31,8 @@ class TenantMiddleware
         $tenant = $this->tenantResolver->resolveTenant();
 
         $this->tenantContext->set($tenant);
+
+        ConfigApplier::apply($tenant, app(ConfigRepository::class));
 
         return $next($request);
     }
