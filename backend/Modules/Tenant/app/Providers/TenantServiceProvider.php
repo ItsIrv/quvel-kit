@@ -34,7 +34,7 @@ class TenantServiceProvider extends ModuleServiceProvider
     }
 
     /**
-     * Bootstrap services.
+     * Bootstraps services and manage the logging context for tenant.
      */
     public function boot(): void
     {

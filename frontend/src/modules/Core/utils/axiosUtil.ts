@@ -23,13 +23,11 @@ export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance
  */
 export function createApi(
   ssrContext?: QSsrContext | null,
-  configOverrides?: TenantConfig,
+  configOverrides?: TenantConfig & { internalApiUrl?: string },
 ): AxiosInstance {
   // In order: Internal API URL, Public API URL, Vite API URL
   const baseURL =
-    (configOverrides as TenantConfig & { internalApiUrl: string })?.internalApiUrl ??
-    configOverrides?.apiUrl ??
-    process.env.VITE_API_URL;
+    configOverrides?.internalApiUrl ?? configOverrides?.apiUrl ?? process.env.VITE_API_URL ?? '';
 
   const axiosConfig: AxiosRequestConfig = {
     baseURL,
@@ -48,9 +46,19 @@ export function createApi(
 
     // Attach session cookie (for authentication)
     api.defaults.headers['Host'] = '';
+    api.defaults.maxRedirects = 0;
 
     if (isValidSessionToken(sessionToken)) {
       api.defaults.headers.Cookie = `${SessionName}=${sessionToken}`;
+    }
+
+    // If the internal api url is set, and it does not match the api url, set the custom domain header
+    if (
+      configOverrides?.internalApiUrl &&
+      configOverrides.internalApiUrl !== configOverrides.apiUrl
+    ) {
+      api.defaults.headers['X-Tenant-Domain'] = configOverrides.apiUrl;
+      api.defaults.headers['X-SSR-Key'] = process.env.SSR_TENANT_SSR_KEY ?? '';
     }
   }
 

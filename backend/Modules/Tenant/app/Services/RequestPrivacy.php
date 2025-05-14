@@ -3,6 +3,7 @@
 namespace Modules\Tenant\Services;
 
 use Illuminate\Http\Request;
+use Modules\Tenant\Enums\TenantHeader;
 
 /**
  * Service to check if a request is internal.
@@ -45,6 +46,6 @@ class RequestPrivacy
             return true;
         }
 
-        return $this->request->header('X-SSR-Key') === config('tenant.privacy.ssr_api_key');
+        return $this->request->header(TenantHeader::SSR_KEY->value) === config('tenant.privacy.ssr_api_key');
     }
 }

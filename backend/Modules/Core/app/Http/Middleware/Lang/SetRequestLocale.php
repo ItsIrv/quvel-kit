@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
+use Modules\Core\Enums\CoreHeader;
 
 /**
  * Middleware to set the application locale from the Accept-Language header,
@@ -23,7 +24,7 @@ class SetRequestLocale
     public function handle(Request $request, Closure $next): mixed
     {
         $allowedLocales = app(ConfigRepository::class)->get('frontend.allowed_locales', ['en-US']);
-        $header         = $request->header('Accept-Language');
+        $header         = $request->header(CoreHeader::ACCEPT_LANGUAGE->value);
 
         if ($header && in_array($header, $allowedLocales)) {
             app(Application::class)->setLocale(

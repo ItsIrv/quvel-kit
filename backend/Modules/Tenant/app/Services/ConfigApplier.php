@@ -126,7 +126,8 @@ class ConfigApplier
         $appConfig->set('auth.disable_socialite', $config->disableSocialite);
         $appConfig->set('auth.verify_email_before_login', $config->verifyEmailBeforeLogin);
 
-        // TODO: add google recaptcha key
+        // TODO: add google recaptcha key, this brings up that we need to be able to
+        // register config at runtime with dynamic keys.
 
         // Laravel Context
         Context::add('tenant_id', $tenant->public_id);

@@ -12,6 +12,9 @@ return [
          */
         'provider' => GoogleRecaptchaVerifier::class,
 
+        /**
+         * Google recaptcha configuration.
+         */
         'google'   => [
             'secret' => env('RECAPTCHA_SECRET'),
         ],
