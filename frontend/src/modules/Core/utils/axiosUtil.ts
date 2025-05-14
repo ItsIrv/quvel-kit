@@ -60,6 +60,8 @@ export function createApi(
       api.defaults.headers['X-Tenant-Domain'] = configOverrides.apiUrl;
       api.defaults.headers['X-SSR-Key'] = process.env.SSR_API_KEY ?? '';
     }
+  } else {
+    // TODO: On browser, add interceptors for XSRF expired/missing
   }
 
   return api;

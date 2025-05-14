@@ -12,6 +12,12 @@ const markAsReadTask = task.newTask({
   },
 });
 
+const fetchTask = task.newTask({
+  task: async () => {
+    await notificationStore.fetchNotifications();
+  },
+});
+
 const isDropdownOpen = ref(false);
 const bellAnimation = ref(false);
 
@@ -28,20 +34,21 @@ function markAllAsRead() {
 
 // Watch for new notifications to trigger animation
 watch(
-  () => notificationStore.items.length,
-  (newLength, oldLength) => {
-    if (newLength > oldLength) {
+  () => notificationStore.unreadCount,
+  (newCount, oldCount) => {
+    // Trigger animation only if new unread notifications are added
+    if (newCount > oldCount && newCount > 0) {
       bellAnimation.value = true;
 
       setTimeout(() => {
         bellAnimation.value = false;
-      }, 500); // Duration of the animation
+      }, 500);
     }
-  },
+  }
 );
 
 onMounted(() => {
-  void notificationStore.fetchNotifications();
+  void fetchTask.run();
 });
 </script>
 
@@ -54,6 +61,8 @@ onMounted(() => {
       dense
       icon="eva-bell-outline"
       :class="{ 'animate-bell': bellAnimation }"
+      :loading="fetchTask.isActive.value"
+      :disable="fetchTask.isActive.value"
       @click="toggleDropdown"
     >
       <q-badge
@@ -72,8 +81,8 @@ onMounted(() => {
         :disable="markAsReadTask.isActive.value"
         :loading="markAsReadTask.isActive.value"
         flat
-        label="Mark all as read"
-        class="!w-full block bg-amber-2"
+        :label="$t('notifications.markAllAsRead')"
+        class="!w-full block text-blue-5"
         @click="markAllAsRead"
       />
 
@@ -82,7 +91,7 @@ onMounted(() => {
         inline-actions
         class="bg-transparent"
       >
-        No notifications.
+        {{ $t('notifications.noNotifications') }}
       </q-banner>
 
       <q-list>

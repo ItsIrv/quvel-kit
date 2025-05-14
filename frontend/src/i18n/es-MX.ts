@@ -6,6 +6,7 @@
  */
 import coreTranslations from 'src/modules/Core/i18n/es-MX';
 import authTranslations from 'src/modules/Auth/i18n/es-MX';
+import notificationsTranslations from 'src/modules/Notifications/i18n/es-MX';
 
 /**
  * Application-specific translations that extend the core translations
@@ -21,5 +22,6 @@ const appTranslations = {
 export default {
   ...coreTranslations,
   ...authTranslations,
+  ...notificationsTranslations,
   ...appTranslations,
 } as const;
