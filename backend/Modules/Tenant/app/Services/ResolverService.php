@@ -34,9 +34,13 @@ class ResolverService
             PHP_URL_HOST,
         );
 
+        logger()->debug('TenantResolverService: Requested custom domain: ' . $customDomain);
+
         if ($customDomain && $this->requestPrivacyService->isInternalRequest()) {
+            logger()->debug('TenantResolverService: Using custom domain: ' . $customDomain);
             return $customDomain;
         } else {
+            logger()->debug('TenantResolverService: Internal request failed, using getHost domain: ' . $domain);
         }
 
         return $domain;
