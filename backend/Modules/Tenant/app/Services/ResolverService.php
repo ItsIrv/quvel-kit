@@ -49,7 +49,7 @@ class ResolverService
             $domain,
             config('tenant.tenant_cache.resolver_ttl'),
             fn (): Tenant => $this->tenantFindService->findTenantByDomain($domain)
-            ?? throw new TenantNotFoundException()
+            ?? throw new TenantNotFoundException($domain)
         );
     }
 }
