@@ -17,15 +17,8 @@ defineOptions({
   async preFetch({ store, ssrContext }) {
     if (ssrContext) {
       await useCatalogStore(store).catalogItemsFetch();
-
-      const user = await useSessionStore(store).fetchSession();
-
-      if (user) {
-        void useNotificationStore(store).fetchNotifications();
-      }
     } else {
       void useCatalogStore(store).catalogItemsFetch();
-      void useNotificationStore(store).fetchNotifications();
     }
   },
 });

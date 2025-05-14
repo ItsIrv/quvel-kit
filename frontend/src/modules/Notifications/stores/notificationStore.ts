@@ -60,6 +60,8 @@ export const useNotificationStore = defineStore<
         this.items = (await this.$container.get(NotificationService).getNotifications()).data.map(
           (notification) => Notification.fromApi(notification),
         );
+
+        console.log(this.items);
       } catch {
         // TODO: Global error handling
       }

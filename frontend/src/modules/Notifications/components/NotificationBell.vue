@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 
@@ -39,6 +39,10 @@ watch(
     }
   },
 );
+
+onMounted(() => {
+  void notificationStore.fetchNotifications();
+});
 </script>
 
 <template>
@@ -74,7 +78,7 @@ watch(
       />
 
       <q-banner
-        v-else
+        v-else-if="notificationStore.items.length === 0"
         inline-actions
         class="bg-transparent"
       >
