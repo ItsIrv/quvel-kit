@@ -62,13 +62,7 @@ class ConfigApplier
         $appHost = parse_url($config->appUrl, PHP_URL_HOST);
 
         if ($appHost) {
-            $parts = explode('.', $appHost);
-
-            if (count($parts) > 2) {
-                array_shift($parts);
-            }
-
-            $sessionDomain = '.' . implode('.', $parts);
+            $sessionDomain = ".$appHost";
             $appConfig->set('session.domain', $sessionDomain);
         }
 
@@ -136,6 +130,8 @@ class ConfigApplier
         // all the way down to the seeder level
         $appConfig->set('auth.disable_socialite', $config->disableSocialite);
         $appConfig->set('auth.verify_email_before_login', $config->verifyEmailBeforeLogin);
+
+        // TODO: add google recaptcha key
 
         // Laravel Context
         Context::add('tenant_id', $tenant->public_id);

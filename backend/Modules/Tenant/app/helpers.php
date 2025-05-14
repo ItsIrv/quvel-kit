@@ -6,11 +6,12 @@ use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Services\ConfigApplier;
 use Modules\Tenant\Services\FindService;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Foundation\Application;
 
 if (!function_exists('setTenant')) {
     function setTenant(int $tenantId): void
     {
-        $app    = app();
+        $app    = app(Application::class);
         $tenant = $app->make(FindService::class)->findById($tenantId)
             ?? throw new TenantNotFoundException('Tenant not found');
 

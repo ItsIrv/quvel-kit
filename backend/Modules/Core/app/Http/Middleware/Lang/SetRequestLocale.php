@@ -3,6 +3,8 @@
 namespace Modules\Core\Http\Middleware\Lang;
 
 use Closure;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 
 /**
@@ -20,11 +22,11 @@ class SetRequestLocale
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        $allowedLocales = config('frontend.allowed_locales', ['en-US']);
+        $allowedLocales = app(ConfigRepository::class)->get('frontend.allowed_locales', ['en-US']);
         $header         = $request->header('Accept-Language');
 
         if ($header && in_array($header, $allowedLocales)) {
-            app()->setLocale(
+            app(Application::class)->setLocale(
                 $this->normalizeLocale($header),
             );
 
