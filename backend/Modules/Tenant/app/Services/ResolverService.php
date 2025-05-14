@@ -35,6 +35,9 @@ class ResolverService
         );
 
         if ($customDomain && $this->requestPrivacyService->isInternalRequest()) {
+            $this->request->headers->set('host', $customDomain);
+            $this->request->server->set('HTTP_HOST', $customDomain);
+
             return $customDomain;
         }
 

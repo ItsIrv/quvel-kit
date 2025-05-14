@@ -10,8 +10,11 @@ use Modules\Tenant\Enums\TenantHeader;
  */
 class RequestPrivacy
 {
+    private readonly bool $isInternalRequest;
+
     public function __construct(private readonly Request $request)
     {
+        $this->isInternalRequest = $this->isInternalIP() && $this->isCorrectApiKey();
     }
 
     /**
@@ -19,13 +22,13 @@ class RequestPrivacy
      */
     public function isInternalRequest(): bool
     {
-        return $this->isInternalIP() && $this->isCorrectApiKey();
+        return $this->isInternalRequest;
     }
 
     /**
      * Checks if the IP is internal.
      */
-    public function isInternalIP(): bool
+    private function isInternalIP(): bool
     {
         if (config('tenant.privacy.disable_ip_check')) {
             return true;
@@ -40,7 +43,7 @@ class RequestPrivacy
     /**
      * Checks if the request is from a trusted IP.
      */
-    public function isCorrectApiKey(): bool
+    private function isCorrectApiKey(): bool
     {
         if (config('tenant.privacy.disable_key_check')) {
             return true;
