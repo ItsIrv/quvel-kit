@@ -58,7 +58,7 @@ export function createApi(
       configOverrides.internalApiUrl !== configOverrides.apiUrl
     ) {
       api.defaults.headers['X-Tenant-Domain'] = configOverrides.apiUrl;
-      api.defaults.headers['X-SSR-Key'] = process.env.SSR_TENANT_SSR_KEY ?? '';
+      api.defaults.headers['X-SSR-Key'] = process.env.SSR_API_KEY ?? '';
     }
   }
 
