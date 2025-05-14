@@ -59,12 +59,7 @@ class ConfigApplier
         $appConfig->set('session.lifetime', $config->sessionLifetime);
         $appConfig->set('session.encrypt', $config->sessionEncrypt);
         $appConfig->set('session.path', $config->sessionPath);
-        $appHost = parse_url($config->appUrl, PHP_URL_HOST);
-
-        if ($appHost) {
-            $sessionDomain = ".$appHost";
-            $appConfig->set('session.domain', $sessionDomain);
-        }
+        $appConfig->set('session.domain', $config->sessionDomain);
 
         // Cache
         $appConfig->set('cache.default', $config->cacheStore);
