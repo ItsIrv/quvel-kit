@@ -7,7 +7,7 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Request;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Services\ConfigApplier;
-use Modules\Tenant\Services\ResolverService;
+use Modules\Tenant\Services\HostResolver;
 
 /**
  * Middleware to resolve the current tenant from the request.
@@ -18,7 +18,7 @@ class TenantMiddleware
      * Create a new TenantMiddleware instance.
      */
     public function __construct(
-        private readonly ResolverService $tenantResolver,
+        private readonly HostResolver $tenantResolver,
         private readonly TenantContext $tenantContext,
     ) {
     }

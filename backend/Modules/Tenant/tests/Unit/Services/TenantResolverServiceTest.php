@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Mockery;
 use Modules\Tenant\Exceptions\TenantNotFoundException;
 use Modules\Tenant\Services\FindService;
-use Modules\Tenant\Services\ResolverService;
+use Modules\Tenant\Services\HostResolver;
 use Modules\Tenant\Services\TenantSessionService;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -15,7 +15,7 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\TestCase;
 
-#[CoversClass(ResolverService::class)]
+#[CoversClass(HostResolver::class)]
 #[Group('tenant-module')]
 #[Group('tenant-services')]
 class TenantResolverServiceTest extends TestCase
@@ -24,7 +24,7 @@ class TenantResolverServiceTest extends TestCase
 
     private TenantSessionService|MockObject $tenantSessionService;
 
-    private ResolverService $tenantResolverService;
+    private HostResolver $tenantResolverService;
 
     private Request|Mockery\MockInterface $requestMock;
 
@@ -44,7 +44,7 @@ class TenantResolverServiceTest extends TestCase
 
         $this->requestMock = Mockery::mock(Request::class);
 
-        $this->tenantResolverService = new ResolverService(
+        $this->tenantResolverService = new HostResolver(
             $this->tenantFindService,
             $this->tenantSessionService,
         );

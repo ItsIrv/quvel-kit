@@ -6,10 +6,11 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Support\Facades\Context;
 use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Services\RequestPrivacy;
 use Modules\Tenant\Services\ConfigApplier;
 use Modules\Tenant\Services\FindService;
-use Modules\Tenant\Services\ResolverService;
+use Modules\Tenant\Services\HostResolver;
 use Illuminate\Log\Context\Repository;
 
 /**
@@ -28,9 +29,10 @@ class TenantServiceProvider extends ModuleServiceProvider
         $this->app->register(RouteServiceProvider::class);
 
         $this->app->singleton(FindService::class);
-        $this->app->scoped(ResolverService::class);
+
         $this->app->scoped(TenantContext::class);
         $this->app->scoped(RequestPrivacy::class);
+        $this->app->scoped(TenantResolver::class, HostResolver::class);
     }
 
     /**

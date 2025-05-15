@@ -1,7 +1,14 @@
 <?php
 
+use Modules\Tenant\Services\HostResolver;
+
 return [
     'name'         => 'Tenant',
+
+    /**
+     * Tenant resolver service.
+     */
+    'resolver'     => HostResolver::class,
 
     /**
      * SSR tenant cache configuration.

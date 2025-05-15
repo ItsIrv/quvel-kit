@@ -10,7 +10,7 @@ use Modules\Tenant\Providers\RouteServiceProvider;
 use Modules\Tenant\Providers\TenantServiceProvider;
 use Modules\Tenant\Services\ConfigApplier;
 use Modules\Tenant\Services\FindService;
-use Modules\Tenant\Services\ResolverService;
+use Modules\Tenant\Services\HostResolver;
 use Modules\Tenant\Services\TenantSessionService;
 use Modules\Tenant\ValueObjects\TenantConfig;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -74,7 +74,7 @@ class TenantServiceProviderTest extends TestCase
         $expectedSingletons = [
             strtolower(TenantSessionService::class),
             strtolower(FindService::class),
-            strtolower(ResolverService::class),
+            strtolower(HostResolver::class),
         ];
 
         $expectedRegisters = [

@@ -8,11 +8,12 @@ use Illuminate\Http\Request;
 use Modules\Tenant\Enums\TenantHeader;
 use Modules\Tenant\Models\Tenant;
 use Modules\Core\Services\FrontendService;
+use Modules\Tenant\Contracts\TenantResolver;
 
 /**
- * Resolves the current tenant based on the incoming request.
+ * Resolves the current tenant based on the incoming request host.
  */
-class ResolverService
+class HostResolver implements TenantResolver
 {
     public function __construct(
         private readonly FindService $tenantFindService,
@@ -26,22 +27,22 @@ class ResolverService
      * Gets the domain to use for tenant resolution.
      * Uses header `X-Tenant-Domain` if the request is internal.
      */
-    public function getDomain(): string
+    public function getHost(): string
     {
-        $domain       = $this->request->getHost();
-        $customDomain = parse_url(
+        $host       = $this->request->getHost();
+        $customHost = parse_url(
             $this->request->header(TenantHeader::TENANT_DOMAIN->value),
             PHP_URL_HOST,
         );
 
-        if ($customDomain && $this->requestPrivacyService->isInternalRequest()) {
-            $this->request->headers->set('host', $customDomain);
-            $this->request->server->set('HTTP_HOST', $customDomain);
+        if ($customHost && $this->requestPrivacyService->isInternalRequest()) {
+            $this->request->headers->set('host', $customHost);
+            $this->request->server->set('HTTP_HOST', $customHost);
 
-            return $customDomain;
+            return $customHost;
         }
 
-        return $domain;
+        return $host;
     }
 
     /**
@@ -49,12 +50,12 @@ class ResolverService
      */
     public function resolveTenant(): Tenant
     {
-        $domain = $this->getDomain();
+        $host = $this->getHost();
 
         return $this->cache->remember(
-            $domain,
+            $host,
             config('tenant.tenant_cache.resolver_ttl'),
-            fn (): Tenant => $this->tenantFindService->findTenantByDomain($domain)
+            fn (): Tenant => $this->tenantFindService->findTenantByDomain($host)
             ?? throw new HttpResponseException(
                 app(FrontendService::class)->redirect(''),
             )

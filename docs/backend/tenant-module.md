@@ -24,9 +24,9 @@ The `TenantContext` class is a request-scoped service that holds the current ten
 
 The `TenantMiddleware` resolves the tenant for each request based on the domain. This middleware is automatically applied to routes that require tenant context.
 
-### ResolverService
+### HostResolver
 
-The `ResolverService` handles the logic for resolving a tenant from a request.
+The `HostResolver` handles the logic for resolving a tenant from a request.
 
 Resolution process:
 

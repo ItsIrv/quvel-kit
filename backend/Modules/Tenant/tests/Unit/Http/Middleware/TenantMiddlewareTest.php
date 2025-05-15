@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Mockery\MockInterface;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Http\Middleware\TenantMiddleware;
-use Modules\Tenant\Services\ResolverService;
+use Modules\Tenant\Services\HostResolver;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -16,7 +16,7 @@ use Tests\TestCase;
 #[Group('tenant-middleware')]
 class TenantMiddlewareTest extends TestCase
 {
-    private ResolverService|MockInterface $tenantResolver;
+    private HostResolver|MockInterface $tenantResolver;
 
     private TenantMiddleware $middleware;
 
@@ -24,9 +24,9 @@ class TenantMiddlewareTest extends TestCase
     {
         parent::setUp();
 
-        $this->tenantResolver = $this->mock(ResolverService::class);
+        $this->tenantResolver    = $this->mock(HostResolver::class);
         $this->tenantContextMock = $this->mock(TenantContext::class);
-        $this->middleware = new TenantMiddleware(
+        $this->middleware        = new TenantMiddleware(
             $this->tenantResolver,
             $this->tenantContextMock,
         );
