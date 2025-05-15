@@ -30,7 +30,6 @@ class TenantConfig implements Arrayable
     // Localization
     public readonly ?string $appLocale;
     public readonly ?string $appFallbackLocale;
-    public readonly ?string $appFakerLocale;
 
     // Logging
     public readonly ?string $logChannel;
@@ -118,7 +117,6 @@ class TenantConfig implements Arrayable
         ?string $capacitorScheme = null,
         ?string $appLocale = null,
         ?string $appFallbackLocale = null,
-        ?string $appFakerLocale = null,
         ?string $logChannel = null,
         // ?string $logStack = null,
         // ?string $logDeprecationsChannel = null,
@@ -179,7 +177,6 @@ class TenantConfig implements Arrayable
 
         $this->appLocale         = $appLocale;
         $this->appFallbackLocale = $appFallbackLocale;
-        $this->appFakerLocale    = $appFakerLocale;
 
         $this->logChannel = $logChannel;
         // $this->logStack               = $logStack;
@@ -259,7 +256,6 @@ class TenantConfig implements Arrayable
             // Localization
             'appLocale'               => $data['app_locale'] ?? 'en',
             'appFallbackLocale'       => $data['app_fallback_locale'] ?? 'en',
-            'appFakerLocale'          => $data['app_faker_locale'] ?? 'en_US',
 
             // Logging
             'logChannel'              => $data['log_channel'] ?? 'stack',
@@ -356,7 +352,6 @@ class TenantConfig implements Arrayable
             // Localization
             'app_locale'                  => $this->appLocale,
             'app_fallback_locale'         => $this->appFallbackLocale,
-            'app_faker_locale'            => $this->appFakerLocale,
 
             // Logging
             'log_channel'                 => $this->logChannel,

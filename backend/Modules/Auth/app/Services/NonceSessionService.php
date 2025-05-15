@@ -38,7 +38,7 @@ class NonceSessionService
      */
     public function getNonce(): ?string
     {
-        if (! $this->isValid()) {
+        if (!$this->isValid()) {
             $this->clear();
 
             return null;
@@ -52,14 +52,14 @@ class NonceSessionService
      */
     public function isValid(): bool
     {
-        $nonce = $this->session->get(self::SESSION_KEY);
+        $nonce     = $this->session->get(self::SESSION_KEY);
         $timestamp = $this->session->get(self::TIMESTAMP_KEY);
 
-        if (! isset($nonce, $timestamp)) {
+        if (!isset($nonce, $timestamp)) {
             return false;
         }
 
-        $ttl = $this->config->get('auth.oauth.nonce_ttl', 1);
+        $ttl       = $this->config->get('auth.socialite.nonce_ttl', 1);
         $expiresAt = Carbon::parse($timestamp)->addSeconds($ttl);
 
         return Carbon::now()->lessThan($expiresAt);

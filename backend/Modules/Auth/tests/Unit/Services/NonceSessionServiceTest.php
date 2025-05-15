@@ -29,7 +29,7 @@ class NonceSessionServiceTest extends TestCase
 
         // Mock dependencies
         $this->session = Mockery::mock(Session::class);
-        $this->config = Mockery::mock(ConfigRepository::class);
+        $this->config  = Mockery::mock(ConfigRepository::class);
 
         // Initialize the service with the mocked dependencies
         $this->service = new NonceSessionService($this->session, $this->config);
@@ -37,7 +37,7 @@ class NonceSessionServiceTest extends TestCase
 
     public function testSetNonceStoresNonceAndTimestamp(): void
     {
-        $nonce = 'test_nonce';
+        $nonce     = 'test_nonce';
         $timestamp = Carbon::now();
 
         // Mock session `put` calls
@@ -69,7 +69,7 @@ class NonceSessionServiceTest extends TestCase
             ->andReturn(Carbon::now()->subSeconds(10)); // Return valid previous timestamp
 
         $this->config->shouldReceive('get')
-            ->with('auth.oauth.nonce_ttl', 1)
+            ->with('auth.socialite.nonce_ttl', 1)
             ->andReturn(60);
 
         // Act
@@ -91,7 +91,7 @@ class NonceSessionServiceTest extends TestCase
             ->andReturn(Carbon::now()->subSeconds(120)); // Expired timestamp
 
         $this->config->shouldReceive('get')
-            ->with('auth.oauth.nonce_ttl', 1)
+            ->with('auth.socialite.nonce_ttl', 1)
             ->andReturn(60);
 
         $this->session->shouldReceive('forget')->once()->with('auth.nonce');
@@ -117,7 +117,7 @@ class NonceSessionServiceTest extends TestCase
             ->andReturn($timestamp);
 
         $this->config->shouldReceive('get')
-            ->with('auth.oauth.nonce_ttl', 1)
+            ->with('auth.socialite.nonce_ttl', 1)
             ->andReturn(60); // TTL is 60 seconds
 
         // Act
@@ -158,7 +158,7 @@ class NonceSessionServiceTest extends TestCase
             ->andReturn($timestamp);
 
         $this->config->shouldReceive('get')
-            ->with('auth.oauth.nonce_ttl', 1)
+            ->with('auth.socialite.nonce_ttl', 1)
             ->andReturn(60); // TTL is 60 seconds
 
         // Act

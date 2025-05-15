@@ -24,7 +24,7 @@ class ProviderRuleTest extends TestCase
         parent::setUp();
         $this->configMock = Mockery::mock(ConfigRepository::class);
         $this->configMock->shouldReceive('get')
-            ->with('auth.oauth.providers', [])
+            ->with('auth.socialite.providers', [])
             ->andReturn(['google', 'facebook', 'apple']);
     }
 
@@ -36,17 +36,17 @@ class ProviderRuleTest extends TestCase
             ['provider' => ProviderRule::RULES()],
         );
 
-        $passes = ! $validator->fails();
+        $passes = !$validator->fails();
         $this->assertEquals($shouldPass, $passes, "Failed asserting that '$provider' validation is correct.");
     }
 
     public static function providerData(): array
     {
         return [
-            'valid provider (google)' => ['google', true],
+            'valid provider (google)'   => ['google', true],
             'valid provider (facebook)' => ['facebook', false],
-            'valid provider (apple)' => ['apple', false],
-            'invalid provider (xyz)' => ['xyz', false],
+            'valid provider (apple)'    => ['apple', false],
+            'invalid provider (xyz)'    => ['xyz', false],
         ];
     }
 
@@ -67,7 +67,7 @@ class ProviderRuleTest extends TestCase
             ['provider' => ProviderRule::RULES()],
         );
 
-        $fails = $validator->fails();
+        $fails         = $validator->fails();
         $errorMessages = $validator->errors()->get('provider');
 
         $this->assertTrue($fails, 'Validation should fail for an invalid provider.');

@@ -25,7 +25,7 @@ class ServerTokenService
      */
     private function getCacheKey(string $token): string
     {
-        return self::CACHE_KEY_PREFIX.$token;
+        return self::CACHE_KEY_PREFIX . $token;
     }
 
     /**
@@ -36,7 +36,7 @@ class ServerTokenService
     public function create(string $nonce): string
     {
         $serverToken = $this->generateRandomToken();
-        $ttl = $this->config->get('auth.oauth.token_ttl', 1);
+        $ttl         = $this->config->get('auth.oauth.token_ttl', 1);
 
         $this->cache->put(
             $this->getCacheKey($serverToken),
@@ -92,7 +92,7 @@ class ServerTokenService
     {
         $serverToken = $this->hmacService->extractAndVerify($signedServerToken);
 
-        if (! $serverToken) {
+        if (!$serverToken) {
             throw new OAuthException(OAuthStatusEnum::INVALID_TOKEN);
         }
 

@@ -25,7 +25,7 @@ class HmacServiceTest extends TestCase
 
         // Initialize the service with the mocked config
         $config->shouldReceive('get')
-            ->with('auth.oauth.hmac_secret')
+            ->with('auth.socialite.hmac_secret')
             ->andReturn('test_secret_key');
 
         $this->service = new HmacService($config);
@@ -61,7 +61,7 @@ class HmacServiceTest extends TestCase
 
     public function testVerifyReturnsFalseForInvalidHmac(): void
     {
-        $value = 'test_value';
+        $value       = 'test_value';
         $invalidHmac = 'invalid_hmac';
 
         // Verify the invalid HMAC
@@ -79,7 +79,7 @@ class HmacServiceTest extends TestCase
         $result = $this->service->signWithHmac($value);
 
         // Manually calculate expected value
-        $expectedHmac = hash_hmac('sha256', $value, 'test_secret_key');
+        $expectedHmac   = hash_hmac('sha256', $value, 'test_secret_key');
         $expectedResult = "$value.$expectedHmac";
 
         // Assert
@@ -91,7 +91,7 @@ class HmacServiceTest extends TestCase
         $value = 'test_value';
 
         // Generate a signed value
-        $hmac = hash_hmac('sha256', $value, 'test_secret_key');
+        $hmac        = hash_hmac('sha256', $value, 'test_secret_key');
         $signedValue = "$value.$hmac";
 
         // Extract and verify

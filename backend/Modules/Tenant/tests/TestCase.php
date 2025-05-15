@@ -71,7 +71,6 @@ abstract class TestCase extends BaseTestCase
             appEnv: 'testing',
             appLocale: 'en',
             appFallbackLocale: 'en',
-            appFakerLocale: 'en',
             logChannel: 'stack',
             logLevel: 'debug',
             dbConnection: 'mysql',

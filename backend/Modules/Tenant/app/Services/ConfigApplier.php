@@ -38,7 +38,6 @@ class ConfigApplier
         // Localization
         $appConfig->set('app.locale', $config->appLocale);
         $appConfig->set('app.fallback_locale', $config->appFallbackLocale);
-        // $appConfig->set('app.faker_locale', $config->appFakerLocale);
 
         // Logging
         $appConfig->set('logging.default', $config->logChannel);

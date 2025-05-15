@@ -144,7 +144,6 @@ The tenant configuration includes the following sections:
 
 - `appLocale`: The application locale
 - `appFallbackLocale`: The fallback locale
-- `appFakerLocale`: The locale for Faker
 
 ### Logging
 

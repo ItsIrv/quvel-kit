@@ -38,7 +38,6 @@ class TenantConfigFactory
             // Localization
             'appLocale'               => env('APP_LOCALE'),
             'appFallbackLocale'       => env('APP_FALLBACK_LOCALE'),
-            'appFakerLocale'          => env('APP_FAKER_LOCALE', 'en_US'),
             // Logging
             'logChannel'              => env('LOG_CHANNEL', 'stack'),
             // 'logStack'                => env('LOG_STACK', 'single'),

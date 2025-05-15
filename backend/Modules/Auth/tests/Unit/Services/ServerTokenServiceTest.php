@@ -34,15 +34,15 @@ class ServerTokenServiceTest extends TestCase
         parent::setUp();
 
         // Mock dependencies
-        $this->cache = Mockery::mock(CacheRepository::class);
-        $this->config = Mockery::mock(ConfigRepository::class);
+        $this->cache       = Mockery::mock(CacheRepository::class);
+        $this->config      = Mockery::mock(ConfigRepository::class);
         $this->hmacService = Mockery::mock(HmacService::class);
 
         // Initialize the service
         $this->service = new ServerTokenService(
             $this->cache,
             $this->config,
-            $this->hmacService
+            $this->hmacService,
         );
     }
 
@@ -51,9 +51,9 @@ class ServerTokenServiceTest extends TestCase
      */
     public function testCreateGeneratesSecureTokenAndStoresItInCache(): void
     {
-        $nonce = 'test_nonce';
+        $nonce       = 'test_nonce';
         $serverToken = 'secure_random_token';
-        $ttl = 60; // Token TTL
+        $ttl         = 60; // Token TTL
         $signedToken = 'signed_server_token';
 
         // Mock random token generation
@@ -70,16 +70,16 @@ class ServerTokenServiceTest extends TestCase
 
         // Mock config retrieval for TTL
         $this->config->shouldReceive('get')
-            ->with('auth.oauth.token_ttl', 1)
+            ->with('auth.socialite.token_ttl', 1)
             ->andReturn($ttl);
 
         // Mock cache storage
         $this->cache->shouldReceive('put')
             ->once()
             ->with(
-                'server_token_'.$serverToken,
+                'server_token_' . $serverToken,
                 $nonce,
-                $ttl
+                $ttl,
             );
 
         // Mock HMAC signing
@@ -132,8 +132,8 @@ class ServerTokenServiceTest extends TestCase
     public function testGetClientNonceRetrievesAssociatedNonce(): void
     {
         $signedServerToken = 'signed_token';
-        $serverToken = 'plain_server_token';
-        $nonce = 'test_nonce';
+        $serverToken       = 'plain_server_token';
+        $nonce             = 'test_nonce';
 
         // Mock extracting server token
         $this->hmacService->shouldReceive('extractAndVerify')
@@ -143,7 +143,7 @@ class ServerTokenServiceTest extends TestCase
 
         // Mock cache retrieval
         $this->cache->shouldReceive('get')
-            ->with('server_token_'.$serverToken)
+            ->with('server_token_' . $serverToken)
             ->once()
             ->andReturn($nonce);
 
@@ -180,7 +180,7 @@ class ServerTokenServiceTest extends TestCase
     public function testForgetRemovesTokenFromCache(): void
     {
         $signedServerToken = 'signed_token';
-        $serverToken = 'plain_server_token';
+        $serverToken       = 'plain_server_token';
 
         // Mock extracting server token
         $this->hmacService->shouldReceive('extractAndVerify')
@@ -190,7 +190,7 @@ class ServerTokenServiceTest extends TestCase
 
         // Mock cache forget
         $this->cache->shouldReceive('forget')
-            ->with('server_token_'.$serverToken)
+            ->with('server_token_' . $serverToken)
             ->once()
             ->andReturnTrue();
 

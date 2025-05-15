@@ -11,7 +11,7 @@ class HmacService
     public function __construct(
         private readonly ConfigRepository $config,
     ) {
-        $this->hmacSecret = $this->config->get('auth.oauth.hmac_secret');
+        $this->hmacSecret = $this->config->get('auth.socialite.hmac_secret');
     }
 
     /**

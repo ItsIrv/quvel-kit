@@ -43,7 +43,7 @@ class ClientNonceService
      */
     private function getCacheKey(string $nonce): string
     {
-        return self::CACHE_KEY_PREFIX.$nonce;
+        return self::CACHE_KEY_PREFIX . $nonce;
     }
 
     /**
@@ -86,11 +86,11 @@ class ClientNonceService
     {
         $nonce = $this->hmacService->extractAndVerify($signedNonce);
 
-        if (! $nonce) {
+        if (!$nonce) {
             throw new OAuthException(OAuthStatusEnum::INVALID_NONCE);
         }
 
-        $key = $this->getCacheKey($nonce);
+        $key   = $this->getCacheKey($nonce);
         $value = $this->cache->get($key);
 
         if ($expectedState && $value !== $expectedState) {
@@ -111,7 +111,7 @@ class ClientNonceService
             $this->getCacheKey($nonce),
         );
 
-        if (! is_int($userId) || $userId <= 0) {
+        if (!is_int($userId) || $userId <= 0) {
             throw new OAuthException(OAuthStatusEnum::INVALID_NONCE);
         }
 
@@ -149,7 +149,7 @@ class ClientNonceService
         $this->cache->put(
             $this->getCacheKey($nonce),
             $userId,
-            $this->config->get('auth.oauth.nonce_ttl', 1),
+            $this->config->get('auth.socialite.nonce_ttl', 1),
         );
     }
 

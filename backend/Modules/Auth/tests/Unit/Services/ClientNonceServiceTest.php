@@ -33,14 +33,14 @@ class ClientNonceServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->cache = Mockery::mock(CacheRepository::class);
-        $this->config = Mockery::mock(ConfigRepository::class);
+        $this->cache       = Mockery::mock(CacheRepository::class);
+        $this->config      = Mockery::mock(ConfigRepository::class);
         $this->hmacService = Mockery::mock(HmacService::class);
 
         $this->service = new ClientNonceService(
             $this->cache,
             $this->config,
-            $this->hmacService
+            $this->hmacService,
         );
     }
 
@@ -49,7 +49,7 @@ class ClientNonceServiceTest extends TestCase
      */
     public function testCreateNonceSuccessfully(): void
     {
-        $nonce = 'fixed_nonce_value';
+        $nonce       = 'fixed_nonce_value';
         $signedNonce = 'signed_nonce';
 
         $serviceMock = Mockery::mock(ClientNonceService::class, [
@@ -64,13 +64,13 @@ class ClientNonceServiceTest extends TestCase
             ->andReturn($nonce);
 
         $this->cache->shouldReceive('has')
-            ->with('client_nonce_'.$nonce)
+            ->with('client_nonce_' . $nonce)
             ->once()
             ->andReturn(false);
 
         $this->cache->shouldReceive('put')
             ->once()
-            ->with('client_nonce_'.$nonce, ClientNonceService::TOKEN_CREATED, 1);
+            ->with('client_nonce_' . $nonce, ClientNonceService::TOKEN_CREATED, 1);
 
         $this->config->shouldReceive('get')
             ->with('auth.oauth.nonce_ttl', 1)
@@ -106,7 +106,7 @@ class ClientNonceServiceTest extends TestCase
      */
     public function testGetSignedNonce(): void
     {
-        $nonce = 'test_nonce';
+        $nonce       = 'test_nonce';
         $signedNonce = 'signed_nonce';
 
         $this->hmacService->shouldReceive('signWithHmac')
@@ -124,8 +124,8 @@ class ClientNonceServiceTest extends TestCase
      */
     public function testGetNonceSuccessfully(): void
     {
-        $signedNonce = 'signed_nonce';
-        $nonce = 'test_nonce';
+        $signedNonce   = 'signed_nonce';
+        $nonce         = 'test_nonce';
         $expectedState = ClientNonceService::TOKEN_CREATED;
 
         $this->hmacService->shouldReceive('extractAndVerify')
@@ -134,7 +134,7 @@ class ClientNonceServiceTest extends TestCase
             ->andReturn($nonce);
 
         $this->cache->shouldReceive('get')
-            ->with('client_nonce_'.$nonce)
+            ->with('client_nonce_' . $nonce)
             ->once()
             ->andReturn($expectedState);
 
@@ -182,7 +182,7 @@ class ClientNonceServiceTest extends TestCase
 
     public function testAssignUserToNonce(): void
     {
-        $nonce = 'test_nonce';
+        $nonce  = 'test_nonce';
         $userId = 123;
 
         $this->config->shouldReceive('get')
@@ -190,7 +190,7 @@ class ClientNonceServiceTest extends TestCase
             ->andReturn(1);
 
         $this->cache->shouldReceive('put')
-            ->with('client_nonce_'.$nonce, $userId, 1)
+            ->with('client_nonce_' . $nonce, $userId, 1)
             ->once();
 
         $this->service->assignUserToNonce($nonce, $userId);
@@ -201,7 +201,7 @@ class ClientNonceServiceTest extends TestCase
         $nonce = 'test_nonce';
 
         $this->cache->shouldReceive('forget')
-            ->with('client_nonce_'.$nonce)
+            ->with('client_nonce_' . $nonce)
             ->once()
             ->andReturn(true);
 
@@ -220,7 +220,7 @@ class ClientNonceServiceTest extends TestCase
 
         $this->cache->shouldReceive('put')
             ->once()
-            ->with('client_nonce_'.$nonce, ClientNonceService::TOKEN_REDIRECTED, 1);
+            ->with('client_nonce_' . $nonce, ClientNonceService::TOKEN_REDIRECTED, 1);
 
         $this->service->assignRedirectedToNonce($nonce);
     }
@@ -230,11 +230,11 @@ class ClientNonceServiceTest extends TestCase
      */
     public function testGetUserIdFromNonceSuccessfully(): void
     {
-        $nonce = 'test_nonce';
+        $nonce  = 'test_nonce';
         $userId = 123;
 
         $this->cache->shouldReceive('get')
-            ->with('client_nonce_'.$nonce)
+            ->with('client_nonce_' . $nonce)
             ->once()
             ->andReturn($userId);
 
@@ -251,7 +251,7 @@ class ClientNonceServiceTest extends TestCase
         $nonce = 'test_nonce';
 
         $this->cache->shouldReceive('get')
-            ->with('client_nonce_'.$nonce)
+            ->with('client_nonce_' . $nonce)
             ->once()
             ->andReturn(ClientNonceService::TOKEN_CREATED);
 

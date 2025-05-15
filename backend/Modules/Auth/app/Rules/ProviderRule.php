@@ -14,7 +14,7 @@ class ProviderRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $validProviders = app(ConfigRepository::class)->get('auth.oauth.providers', []);
+        $validProviders = app(ConfigRepository::class)->get('auth.socialite.providers', []);
 
         assert(is_array($validProviders));
 
