@@ -15,7 +15,8 @@ export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance
 }
 
 /**
- * Creates an Axios instance with the given configuration.
+ * Creates an Axios with support for making requests to the API
+ * with the SSR internal request system.
  *
  * @param ssrContext
  * @param configOverrides - Optional overrides for API configuration.
@@ -57,6 +58,7 @@ export function createApi(
       configOverrides?.internalApiUrl &&
       configOverrides.internalApiUrl !== configOverrides.apiUrl
     ) {
+      api.defaults.headers['Host'] = configOverrides.apiUrl;
       api.defaults.headers['X-Tenant-Domain'] = configOverrides.apiUrl;
       api.defaults.headers['X-SSR-Key'] = process.env.SSR_API_KEY ?? '';
     }
