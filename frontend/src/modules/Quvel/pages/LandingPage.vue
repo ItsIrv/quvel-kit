@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
-import AuthDialog from 'src/modules/Auth/components/Dialogs/AuthDialog.vue';
-import MenuRightDrawer from 'src/modules/Quvel/components/Pages/LandingPage/MenuRightDrawer.vue';
-import MenuLeftDrawer from 'src/modules/Quvel/components/Pages/LandingPage/MenuLeftDrawer.vue';
-import PageHeader from 'src/modules/Quvel/components/Pages/LandingPage/PageHeader.vue';
-import PageFooter from 'src/modules/Quvel/components/Pages/LandingPage/PageFooter.vue';
+import { ref, watch, defineAsyncComponent } from 'vue';
 import { useCatalogStore } from 'src/modules/Catalog/stores/catalogStore';
-import CatalogSection from 'src/modules/Catalog/components/CatalogSection.vue';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
+
+const AuthDialog = defineAsyncComponent(() => import('src/modules/Auth/components/Dialogs/AuthDialog.vue'));
+const MenuRightDrawer = defineAsyncComponent(() => import('src/modules/Quvel/components/Pages/LandingPage/MenuRightDrawer.vue'));
+const MenuLeftDrawer = defineAsyncComponent(() => import('src/modules/Quvel/components/Pages/LandingPage/MenuLeftDrawer.vue'));
+const PageHeader = defineAsyncComponent(() => import('src/modules/Quvel/components/Pages/LandingPage/PageHeader.vue'));
+const PageFooter = defineAsyncComponent(() => import('src/modules/Quvel/components/Pages/LandingPage/PageFooter.vue'));
+const CatalogSection = defineAsyncComponent(() => import('src/modules/Catalog/components/CatalogSection.vue'));
 
 defineOptions({
   /**
