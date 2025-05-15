@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prepend(TenantMiddleware::class);
+        $middleware->trustProxies([
+            '127.0.0.1',
+            'localhost',
+        ]);
     })
     ->withBroadcasting('')
     ->withExceptions(function (Exceptions $exceptions): void {
