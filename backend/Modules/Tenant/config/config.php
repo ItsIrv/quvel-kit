@@ -6,7 +6,7 @@ return [
     'name'         => 'Tenant',
 
     /**
-     * Tenant resolver service.
+     * Tenant resolver.
      */
     'resolver'     => HostResolver::class,
 

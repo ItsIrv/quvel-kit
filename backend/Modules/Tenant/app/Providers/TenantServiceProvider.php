@@ -32,7 +32,10 @@ class TenantServiceProvider extends ModuleServiceProvider
 
         $this->app->scoped(TenantContext::class);
         $this->app->scoped(RequestPrivacy::class);
-        $this->app->scoped(TenantResolver::class, HostResolver::class);
+        $this->app->scoped(
+            TenantResolver::class,
+            fn (): TenantResolver => app(config('tenant.resolver'))
+        );
     }
 
     /**

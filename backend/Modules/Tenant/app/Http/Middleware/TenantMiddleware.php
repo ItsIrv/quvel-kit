@@ -6,8 +6,8 @@ use Closure;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Request;
 use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Services\ConfigApplier;
-use Modules\Tenant\Services\HostResolver;
 
 /**
  * Middleware to resolve the current tenant from the request.
@@ -18,7 +18,7 @@ class TenantMiddleware
      * Create a new TenantMiddleware instance.
      */
     public function __construct(
-        private readonly HostResolver $tenantResolver,
+        private readonly TenantResolver $tenantResolver,
         private readonly TenantContext $tenantContext,
     ) {
     }
