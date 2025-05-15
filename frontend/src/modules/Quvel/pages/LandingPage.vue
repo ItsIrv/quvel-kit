@@ -1,15 +1,16 @@
 <script lang="ts" setup>
-import { ref, watch, defineAsyncComponent } from 'vue';
+import { defineAsyncComponent, ref, watch } from 'vue';
 import { useCatalogStore } from 'src/modules/Catalog/stores/catalogStore';
+import CatalogSection from 'src/modules/Catalog/components/CatalogSection.vue';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
+import ClientOnly from 'src/modules/Core/components/Misc/ClientOnly.vue';
+import PageHeader from 'src/modules/Quvel/components/Pages/LandingPage/PageHeader.vue';
+import PageFooter from 'src/modules/Quvel/components/Pages/LandingPage/PageFooter.vue';
 
 const AuthDialog = defineAsyncComponent(() => import('src/modules/Auth/components/Dialogs/AuthDialog.vue'));
 const MenuRightDrawer = defineAsyncComponent(() => import('src/modules/Quvel/components/Pages/LandingPage/MenuRightDrawer.vue'));
 const MenuLeftDrawer = defineAsyncComponent(() => import('src/modules/Quvel/components/Pages/LandingPage/MenuLeftDrawer.vue'));
-const PageHeader = defineAsyncComponent(() => import('src/modules/Quvel/components/Pages/LandingPage/PageHeader.vue'));
-const PageFooter = defineAsyncComponent(() => import('src/modules/Quvel/components/Pages/LandingPage/PageFooter.vue'));
-const CatalogSection = defineAsyncComponent(() => import('src/modules/Catalog/components/CatalogSection.vue'));
 
 defineOptions({
   /**
@@ -37,8 +38,6 @@ const notificationStore = useNotificationStore();
 const showAuthForm = ref(false);
 const isRightDrawerOpen = ref(false);
 const isLeftDrawerOpen = ref(false);
-
-
 
 /**
  * Methods
@@ -113,12 +112,15 @@ watch(
   </div>
 
   <!-- Drawers and dialogs -->
-  <MenuRightDrawer
-    v-model="isRightDrawerOpen"
-    @login-click="onLoginClick"
-  />
+  <ClientOnly>
+    <MenuRightDrawer
+      v-model="isRightDrawerOpen"
+      @login-click="onLoginClick"
+    />
 
-  <MenuLeftDrawer v-model="isLeftDrawerOpen" />
+    <MenuLeftDrawer v-model="isLeftDrawerOpen" />
+  </ClientOnly>
+
   <AuthDialog
     v-model="showAuthForm"
     @open="showAuthForm = true"

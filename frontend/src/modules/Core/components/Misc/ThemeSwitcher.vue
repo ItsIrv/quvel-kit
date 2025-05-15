@@ -1,17 +1,38 @@
-<template>
-  <q-btn dense round flat @click="toggleDarkMode">
-    <q-icon :name="isDark ? 'eva-sun-outline' : 'eva-moon-outline'" size="24px" />
-  </q-btn>
-</template>
-
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { Dark } from 'quasar';
 import { toggleTheme } from 'src/modules/Core/utils/themeUtil';
+import ClientOnly from 'src/modules/Core/components/Misc/ClientOnly.vue';
 
+/**
+ * ThemeSwitcher component for toggling dark mode.
+ */
+
+/**
+ * Computed property that returns whether the current theme is dark.
+ */
 const isDark = computed(() => Dark.isActive);
 
+/**
+ * Toggles the theme between dark and light.
+ */
 function toggleDarkMode(): void {
   toggleTheme();
 }
 </script>
+
+<template>
+  <ClientOnly>
+    <q-btn
+      dense
+      round
+      flat
+      @click="toggleDarkMode"
+    >
+      <q-icon
+        :name="isDark ? 'eva-sun-outline' : 'eva-moon-outline'"
+        size="24px"
+      />
+    </q-btn>
+  </ClientOnly>
+</template>
