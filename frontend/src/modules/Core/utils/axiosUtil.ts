@@ -1,4 +1,8 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
+import axios, {
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  InternalAxiosRequestConfig,
+} from 'axios';
 import { Cookies } from 'quasar';
 import type { QSsrContext } from '@quasar/app-vite';
 import { SessionName } from 'src/modules/Auth/models/Session';
@@ -10,8 +14,26 @@ import { TenantConfig } from 'src/modules/Core/types/tenant.types';
  * @param axiosConfig - The configuration for the Axios instance.
  * @returns An Axios instance.
  */
+// Extend axios request config to include metadata for timing
+declare module 'axios' {
+  export interface InternalAxiosRequestConfig {
+    metadata?: {
+      startTime: number;
+    };
+  }
+}
+
 export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance {
-  return axios.create(axiosConfig);
+  const instance = axios.create(axiosConfig);
+
+  // Add request interceptor to track timing
+  instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    config.metadata = { startTime: Date.now() };
+
+    return config;
+  });
+
+  return instance;
 }
 
 /**

@@ -6,6 +6,7 @@ import type { TaskService } from './TaskService';
 import type { Service } from './Service';
 import { ConfigService } from './ConfigService';
 import { WebSocketService } from './WebSocketService';
+import { LogService } from './LogService';
 
 /**
  * The service container manages core services and allows dynamic service registration.
@@ -13,6 +14,7 @@ import { WebSocketService } from './WebSocketService';
 export class ServiceContainer {
   constructor(
     readonly config: ConfigService,
+    readonly log: LogService,
     readonly api: ApiService,
     readonly i18n: I18nService,
     readonly validation: ValidationService,

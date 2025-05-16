@@ -1,11 +1,20 @@
-import type { AxiosInstance, AxiosRequestConfig } from 'axios';
+import type {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios';
 import { Service } from './Service';
+import type { RegisterService } from '../types/service.types';
+import { ServiceContainer } from './ServiceContainer';
+import { LogService } from './LogService';
 
 /**
  * API Service Wrapper for Axios.
  */
-export class ApiService extends Service {
+export class ApiService extends Service implements RegisterService {
   private readonly api: AxiosInstance;
+  private log!: LogService;
 
   constructor(apiInstance: AxiosInstance) {
     super();
@@ -18,6 +27,111 @@ export class ApiService extends Service {
    */
   get instance(): AxiosInstance {
     return this.api;
+  }
+
+  /**
+   * Registers the service.
+   */
+  register({ log }: ServiceContainer): void {
+    this.log = log;
+    this.setupInterceptors();
+  }
+
+  /**
+   * Sets up request and response interceptors with logging
+   */
+  private setupInterceptors(): void {
+    // Request interceptor
+    this.api.interceptors.request.use(
+      (config: InternalAxiosRequestConfig) => {
+        const method = config.method?.toUpperCase() || 'UNKNOWN';
+        const url = config.url || 'unknown-url';
+
+        // Add trace headers to every request
+        config.headers.set('X-Trace-ID', this.log.getTraceId());
+        config.headers.set('X-Tenant-ID', this.log.getTraceInfo().tenant);
+
+        this.log.info(`API Request: ${method} ${url}`, {
+          method,
+          url,
+          baseURL: config.baseURL,
+          headers: this.sanitizeHeaders(config.headers),
+        });
+
+        return config;
+      },
+      (error) => {
+        this.log.error('API Request Error', { error: error.message });
+        return Promise.reject(error as Error);
+      },
+    );
+
+    // Response interceptor
+    this.api.interceptors.response.use(
+      (response: AxiosResponse) => {
+        const method = response.config.method?.toUpperCase() || 'UNKNOWN';
+        const url = response.config.url || 'unknown-url';
+        const status = response.status;
+        const statusText = response.statusText;
+
+        this.log.info(`API Response: ${method} ${url} ${status} ${statusText}`, {
+          method,
+          url,
+          status,
+          statusText,
+          responseTime: this.getResponseTime(response),
+          contentType: response.headers['content-type'],
+          contentLength: response.headers['content-length'],
+        });
+
+        return response;
+      },
+      (error) => {
+        const config = error.config || {};
+        const method = config.method?.toUpperCase() || 'UNKNOWN';
+        const url = config.url || 'unknown-url';
+        const status = error.response?.status || 0;
+        const statusText = error.response?.statusText || '';
+
+        this.log.error(`API Error: ${method} ${url} ${status} ${statusText}`, {
+          method,
+          url,
+          status,
+          statusText,
+          message: error.message,
+          stack: error.stack,
+          responseData: error.response?.data,
+        });
+
+        return Promise.reject(error as Error);
+      },
+    );
+  }
+
+  /**
+   * Sanitizes headers to avoid logging sensitive information
+   */
+  private sanitizeHeaders(headers: Record<string, unknown>): Record<string, unknown> {
+    const sanitized = { ...headers };
+    const sensitiveHeaders = ['authorization', 'cookie', 'set-cookie'];
+
+    for (const header of sensitiveHeaders) {
+      if (header in sanitized) {
+        sanitized[header] = '[REDACTED]';
+      }
+    }
+
+    return sanitized;
+  }
+
+  /**
+   * Calculates response time if available
+   */
+  private getResponseTime(response: AxiosResponse): number | undefined {
+    if (response.config.metadata?.startTime) {
+      return Date.now() - response.config.metadata.startTime;
+    }
+    return undefined;
   }
 
   /**

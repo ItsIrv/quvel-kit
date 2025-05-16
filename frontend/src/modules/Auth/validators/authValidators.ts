@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { emailSchema, passwordSchema } from '../../Core/utils/validators/commonValidators';
+import { emailSchema, passwordSchema } from '../../Core/validators/commonValidators';
 
 /**
  * Login Validation Schema.

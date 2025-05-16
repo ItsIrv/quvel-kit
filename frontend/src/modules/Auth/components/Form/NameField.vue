@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, PropType } from 'vue';
-import { nameSchema } from 'src/modules/Core/utils/validators/commonValidators';
+import { nameSchema } from 'src/modules/Core/validators/commonValidators';
 import BaseField from '../../../Core/components/Form/BaseField.vue';
 /**
  * Props

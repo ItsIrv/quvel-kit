@@ -8,6 +8,7 @@ import { I18nService } from 'src/modules/Core/services/I18nService';
 import { createI18n } from 'src/modules/Core/utils/i18nUtil';
 import { ConfigService } from 'src/modules/Core/services/ConfigService';
 import { WebSocketService } from 'src/modules/Core/services/WebSocketService';
+import { LogService } from 'src/modules/Core/services/LogService';
 import { createWebsocketConfig } from 'src/modules/Core/utils/websocketUtil';
 
 /**
@@ -22,8 +23,19 @@ export function createContainer(ssrContext?: QSsrContext | null): ServiceContain
   const configService = new ConfigService(ssrContext?.req?.tenantConfig);
   const configOverrides = configService.getAll();
 
+  const logService = new LogService(
+    ssrContext?.req?.__TRACE__ ?? {
+      id: '',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
+      tenant: ssrContext?.req?.tenantConfig?.tenantId ?? 'unknown',
+      runtime: 'server',
+    },
+  );
+
   return new ServiceContainer(
     configService,
+    logService,
     new ApiService(createApi(ssrContext, configOverrides)),
     new I18nService(createI18n(ssrContext)),
     new ValidationService(),

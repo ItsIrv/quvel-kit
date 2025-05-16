@@ -1,6 +1,7 @@
 import { type RenderError } from '#q-app';
 import { defineSsrMiddleware } from '#q-app/wrappers';
 import type { Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import { TenantCacheService } from '../services/TenantCache';
 import { TenantConfigProtected } from '../types/tenant.types';
 import { createTenantConfigFromEnv, filterTenantConfig } from '../utils/tenantConfigUtil';
@@ -49,16 +50,32 @@ export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
       // Attach full tenantConfig to the request for SSR
       req.tenantConfig = tenantConfig;
 
+      // Generate a trace ID for this request
+      const traceId = uuidv4();
+      const traceInfo = {
+        id: traceId,
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development',
+        tenant: tenantConfig.tenantId,
+        runtime: 'server' as const,
+      };
+
+      // Attach trace info to the request for use in SSR
+      req.__TRACE__ = traceInfo;
+
       // Filter non-public fields before injecting into window
       const publicTenantConfig = filterTenantConfig(tenantConfig);
 
       // Render the page using Vue SSR
       const html = await render({ req, res });
 
-      // Inject only public fields into `window.__TENANT_CONFIG__`
+      // Inject tenant config and trace info into window
       const hydratedHtml = html.replace(
         '</body>',
-        `<script>window.__TENANT_CONFIG__ = ${JSON.stringify(publicTenantConfig)};</script></body>`,
+        `<script>
+          window.__TENANT_CONFIG__ = ${JSON.stringify(publicTenantConfig)};
+          window.__TRACE__ = ${JSON.stringify(traceInfo)};
+        </script></body>`,
       );
 
       res.send(hydratedHtml);

@@ -3,6 +3,7 @@
 namespace Modules\Core\Providers;
 
 use Modules\Core\Http\Middleware\Lang\SetRequestLocale;
+use Modules\Core\Http\Middleware\Trace\SetTraceId;
 use Modules\Core\Services\FrontendService;
 use Modules\Core\Services\User\UserCreateService;
 use Modules\Core\Services\User\UserFindService;
@@ -56,6 +57,9 @@ class CoreServiceProvider extends ModuleServiceProvider
 
         $this->app['request']->server->set('HTTPS', 'on');
         $this->app['router']->pushMiddlewareToGroup('web', SetRequestLocale::class);
+
+        $this->app['router']->pushMiddlewareToGroup('web', SetTraceId::class);
+        $this->app['router']->pushMiddlewareToGroup('api', SetTraceId::class);
 
         Context::dehydrating(function (Repository $context): void {
             $context->addHidden('locale', config('app.locale'));
