@@ -1,5 +1,5 @@
 import { LogLevel } from 'src/modules/Core/models/Logging/LogLevel';
-import { LoggerInterface } from 'src/modules/Core/types/logging.types';
+import { LoggerInterface, TraceInfo } from 'src/modules/Core/types/logging.types';
 
 /**
  * Console logger implementation
@@ -23,13 +23,20 @@ export class ConsoleLogger implements LoggerInterface {
   /**
    * Creates a new ConsoleLogger
    *
-   * @param traceId - Optional trace ID to include with all log messages
+   * @param traceInfo - Optional trace info to include with all log messages
    * @param context - Optional default context to include with all log messages
    */
   constructor(
-    private readonly traceId?: string,
+    private readonly traceInfo: TraceInfo,
     private readonly defaultContext: Record<string, unknown> = {},
   ) {}
+
+  /**
+   * Gets the current trace info
+   */
+  public getTraceInfo(): TraceInfo {
+    return this.traceInfo;
+  }
 
   /**
    * System is unusable
@@ -92,7 +99,7 @@ export class ConsoleLogger implements LoggerInterface {
    */
   public log(level: string, message: string, context?: Record<string, unknown>): void {
     const timestamp = new Date().toISOString();
-    const tracePrefix = this.traceId ? `[${this.traceId}] ` : '';
+    const tracePrefix = this.traceInfo ? `[${this.traceInfo.id}] ` : '';
     const formattedMessage = `[${timestamp}] [${level.toUpperCase()}] ${tracePrefix}${message}`;
 
     // Merge default context with provided context

@@ -4,6 +4,11 @@
  */
 export interface LoggerInterface {
   /**
+   * Gets the current trace info
+   */
+  getTraceInfo(): TraceInfo;
+
+  /**
    * System is unusable
    */
   emergency(message: string, context?: Record<string, unknown>): void;

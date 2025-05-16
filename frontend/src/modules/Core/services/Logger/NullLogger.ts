@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { LoggerInterface } from 'src/modules/Core/types/logging.types';
+import { LoggerInterface, TraceInfo } from 'src/modules/Core/types/logging.types';
 
 /**
  * Null logger implementation that discards all log messages
@@ -9,7 +9,14 @@ export class NullLogger implements LoggerInterface {
   /**
    * Creates a new NullLogger
    */
-  constructor() {}
+  constructor(private readonly traceInfo: TraceInfo) {}
+
+  /**
+   * Gets the current trace info
+   */
+  public getTraceInfo(): TraceInfo {
+    return this.traceInfo;
+  }
 
   /**
    * Discards emergency message

@@ -48,8 +48,8 @@ export class ApiService extends Service implements RegisterService {
         const url = config.url || 'unknown-url';
 
         // Add trace headers to every request
-        config.headers.set('X-Trace-ID', this.log.getTraceId());
-        config.headers.set('X-Tenant-ID', this.log.getTraceInfo().tenant);
+        config.headers.set('X-Trace-ID', this.log.getLogger().getTraceInfo().id);
+        config.headers.set('X-Tenant-ID', this.log.getLogger().getTraceInfo().tenant);
 
         this.log.info(`API Request: ${method} ${url}`, {
           method,
@@ -81,7 +81,6 @@ export class ApiService extends Service implements RegisterService {
           statusText,
           responseTime: this.getResponseTime(response),
           contentType: response.headers['content-type'],
-          contentLength: response.headers['content-length'],
         });
 
         return response;

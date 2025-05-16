@@ -1,49 +1,21 @@
 import type { Service } from './Service';
-import { LoggerInterface, TraceInfo } from 'src/modules/Core/types/logging.types';
-import { createLogger } from 'src/modules/Core/utils/loggerUtil';
+import { LoggerInterface } from 'src/modules/Core/types/logging.types';
 
 /**
  * Service for application logging and tracing
  * Provides standardized logging capabilities and trace context management
  */
 export class LogService implements Service {
-  private logger: LoggerInterface;
-
   /**
    * Creates a new LogService instance
    */
-  constructor(private readonly traceInfo: TraceInfo) {
-    this.logger = createLogger(process.env.VITE_LOGGER, this.traceInfo.id);
-  }
-
-  /**
-   * Gets the current trace info
-   */
-  getTraceInfo(): TraceInfo {
-    return this.traceInfo;
-  }
-
-  /**
-   * Gets the current trace ID
-   */
-  getTraceId(): string {
-    return this.traceInfo.id;
-  }
+  constructor(private readonly logger: LoggerInterface) {}
 
   /**
    * Gets the current logger instance
    */
   getLogger(): LoggerInterface {
     return this.logger;
-  }
-
-  /**
-   * Sets a custom logger implementation
-   *
-   * @param logger - Custom logger implementation
-   */
-  setLogger(logger: LoggerInterface): void {
-    this.logger = logger;
   }
 
   // Proxy logger methods for convenience
