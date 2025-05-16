@@ -1,6 +1,6 @@
 import type { Service } from './Service';
-import { ConsoleLogger } from './Logger/ConsoleLogger';
 import { LoggerInterface, TraceInfo } from 'src/modules/Core/types/logging.types';
+import { createLogger } from 'src/modules/Core/utils/loggerUtil';
 
 /**
  * Service for application logging and tracing
@@ -13,7 +13,7 @@ export class LogService implements Service {
    * Creates a new LogService instance
    */
   constructor(private readonly traceInfo: TraceInfo) {
-    this.logger = new ConsoleLogger(this.traceInfo.id);
+    this.logger = createLogger(process.env.VITE_LOGGER, this.traceInfo.id);
   }
 
   /**
