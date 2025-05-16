@@ -73,7 +73,7 @@ class ClientNonceServiceTest extends TestCase
             ->with('client_nonce_' . $nonce, ClientNonceService::TOKEN_CREATED, 1);
 
         $this->config->shouldReceive('get')
-            ->with('auth.oauth.nonce_ttl', 1)
+            ->with('auth.socialite.nonce_ttl', 1)
             ->andReturn(1);
 
         $this->hmacService->shouldReceive('signWithHmac')
@@ -186,7 +186,7 @@ class ClientNonceServiceTest extends TestCase
         $userId = 123;
 
         $this->config->shouldReceive('get')
-            ->with('auth.oauth.nonce_ttl', 1)
+            ->with('auth.socialite.nonce_ttl', 1)
             ->andReturn(1);
 
         $this->cache->shouldReceive('put')
@@ -215,7 +215,7 @@ class ClientNonceServiceTest extends TestCase
         $nonce = 'test_nonce';
 
         $this->config->shouldReceive('get')
-            ->with('auth.oauth.nonce_ttl', 1)
+            ->with('auth.socialite.nonce_ttl', 1)
             ->andReturn(1);
 
         $this->cache->shouldReceive('put')

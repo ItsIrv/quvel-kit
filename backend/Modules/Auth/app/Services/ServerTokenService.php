@@ -36,7 +36,7 @@ class ServerTokenService
     public function create(string $nonce): string
     {
         $serverToken = $this->generateRandomToken();
-        $ttl         = $this->config->get('auth.oauth.token_ttl', 1);
+        $ttl         = $this->config->get('auth.socialite.token_ttl', 1);
 
         $this->cache->put(
             $this->getCacheKey($serverToken),

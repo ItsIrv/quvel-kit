@@ -87,9 +87,10 @@ class ConfigApplier
         $appConfig->set('filesystems.disks.s3.use_path_style_endpoint', $config->awsUsePathStyleEndpoint);
 
         // Socialite / OAuth
-        $appConfig->set('auth.oauth.providers', $config->socialiteProviders);
-        $appConfig->set('auth.oauth.nonce_ttl', $config->socialiteNonceTtl);
-        $appConfig->set('auth.oauth.token_ttl', $config->socialiteTokenTtl);
+        $appConfig->set('auth.socialite.providers', $config->socialiteProviders);
+        $appConfig->set('auth.socialite.nonce_ttl', $config->socialiteNonceTtl);
+        $appConfig->set('auth.socialite.token_ttl', $config->socialiteTokenTtl);
+        $appConfig->set('auth.socialite.hmac_secret', $config->hmacSecretKey);
 
         foreach (($config->oauthCredentials ?? []) as $provider => $credentials) {
             $appConfig->set("services.$provider.client_id", $credentials['client_id'] ?? '');
@@ -114,9 +115,7 @@ class ConfigApplier
             $config->frontendUrl,
         ]);
 
-        // Internal
-        $appConfig->set('hmac_secret_key', $config->hmacSecretKey);
-
+        // URLs
         $urlGenerator = app(UrlGenerator::class);
         $urlGenerator->forceRootUrl($config->appUrl);
 
