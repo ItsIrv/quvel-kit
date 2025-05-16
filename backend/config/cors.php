@@ -35,6 +35,8 @@ return [
         'X-Requested-With',
         'Authorization',
         'X-XSRF-TOKEN',
+        'X-Tenant-ID',
+        'X-Trace-ID',
     ],
 
     'exposed_headers'          => [],

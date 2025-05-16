@@ -12,11 +12,6 @@ use Illuminate\Log\LogManager;
 class LoginActionLogs extends BaseLogger
 {
     /**
-     * The log channel to use.
-     */
-    protected string $channel = 'auth';
-
-    /**
      * The log context prefix.
      */
     protected string $contextPrefix = 'login';
