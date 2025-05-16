@@ -1,9 +1,30 @@
 import type {
   AxiosInstance,
-  AxiosRequestConfig,
+  AxiosRequestConfig as BaseAxiosRequestConfig,
   AxiosResponse,
-  InternalAxiosRequestConfig,
+  InternalAxiosRequestConfig as BaseInternalAxiosRequestConfig,
 } from 'axios';
+
+/**
+ * Extended Axios request config with metadata
+ */
+interface AxiosRequestConfig extends BaseAxiosRequestConfig {
+  metadata?: {
+    startTime: number;
+    [key: string]: unknown;
+  };
+  signal?: AbortSignal;
+}
+
+/**
+ * Extended internal Axios request config with metadata
+ */
+interface InternalAxiosRequestConfig extends BaseInternalAxiosRequestConfig {
+  metadata?: {
+    startTime: number;
+    [key: string]: unknown;
+  };
+}
 import { Service } from './Service';
 import type { RegisterService } from '../types/service.types';
 import { ServiceContainer } from './ServiceContainer';
@@ -15,6 +36,7 @@ import { LogService } from './LogService';
 export class ApiService extends Service implements RegisterService {
   private readonly api: AxiosInstance;
   private log!: LogService;
+  private abortControllers: Map<string, AbortController> = new Map();
 
   constructor(apiInstance: AxiosInstance) {
     super();
@@ -58,6 +80,9 @@ export class ApiService extends Service implements RegisterService {
           headers: this.sanitizeHeaders(config.headers),
         });
 
+        // Add metadata for response time tracking
+        config.metadata = { startTime: Date.now() };
+
         return config;
       },
       (error) => {
@@ -79,7 +104,7 @@ export class ApiService extends Service implements RegisterService {
           url,
           status,
           statusText,
-          responseTime: this.getResponseTime(response),
+          responseTimeMs: this.getResponseTime(response),
           contentType: response.headers['content-type'],
         });
 
@@ -97,6 +122,7 @@ export class ApiService extends Service implements RegisterService {
           url,
           status,
           statusText,
+          responseTimeMs: error.config?.metadata?.startTime ? Date.now() - error.config.metadata.startTime : undefined,
           message: error.message,
           stack: error.stack,
           responseData: error.response?.data,
@@ -144,43 +170,177 @@ export class ApiService extends Service implements RegisterService {
   }
 
   /**
-   * Simplifies GET requests.
+   * Creates a unique request ID for tracking abort controllers
    */
-  async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.api.get<T>(url, config);
+  private createRequestId(url: string, method: string): string {
+    return `${method}:${url}:${Date.now()}`;
+  }
 
-    return response.data;
+  /**
+   * Creates a cancellable request configuration
+   * 
+   * @param requestId - Unique identifier for the request
+   * @param config - Original request configuration
+   * @returns Enhanced configuration with abort signal
+   */
+  private createCancellableRequest(requestId: string, config?: AxiosRequestConfig): AxiosRequestConfig {
+    // Clean up any existing controller for this request ID
+    this.cancelRequest(requestId);
+    
+    // Create a new abort controller
+    const controller = new AbortController();
+    this.abortControllers.set(requestId, controller);
+    
+    // Merge the signal with the existing config
+    return {
+      ...config,
+      signal: controller.signal,
+    };
+  }
+
+  /**
+   * Cancels a specific request by ID
+   * 
+   * @param requestId - ID of the request to cancel
+   * @returns True if a request was cancelled, false otherwise
+   */
+  public cancelRequest(requestId: string): boolean {
+    const controller = this.abortControllers.get(requestId);
+    if (controller) {
+      controller.abort();
+      this.abortControllers.delete(requestId);
+      this.log.info(`Cancelled request: ${requestId}`);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Cancels all pending requests
+   * 
+   * @returns Number of requests cancelled
+   */
+  public cancelAllRequests(): number {
+    let count = 0;
+    this.abortControllers.forEach((controller, requestId) => {
+      controller.abort();
+      this.log.info(`Cancelled request: ${requestId}`);
+      count++;
+    });
+    this.abortControllers.clear();
+    return count;
+  }
+
+  /**
+   * Simplifies GET requests.
+   * 
+   * @param url - Request URL
+   * @param config - Request configuration
+   * @param requestId - Optional request ID for cancellation (auto-generated if not provided)
+   * @returns Promise resolving to the response data
+   */
+  async get<T>(url: string, config?: AxiosRequestConfig, requestId?: string): Promise<T> {
+    const id = requestId || this.createRequestId(url, 'GET');
+    const cancellableConfig = this.createCancellableRequest(id, config);
+    
+    try {
+      const response = await this.api.get<T>(url, cancellableConfig);
+      this.abortControllers.delete(id);
+      return response.data;
+    } catch (error) {
+      this.abortControllers.delete(id);
+      throw error;
+    }
   }
 
   /**
    * Simplifies POST requests.
+   * 
+   * @param url - Request URL
+   * @param data - Request payload
+   * @param config - Request configuration
+   * @param requestId - Optional request ID for cancellation (auto-generated if not provided)
+   * @returns Promise resolving to the response data
    */
-  async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.api.post<T>(url, data, config);
-    return response.data;
+  async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig, requestId?: string): Promise<T> {
+    const id = requestId || this.createRequestId(url, 'POST');
+    const cancellableConfig = this.createCancellableRequest(id, config);
+    
+    try {
+      const response = await this.api.post<T>(url, data, cancellableConfig);
+      this.abortControllers.delete(id);
+      return response.data;
+    } catch (error) {
+      this.abortControllers.delete(id);
+      throw error;
+    }
   }
 
   /**
    * Simplifies PUT requests.
+   * 
+   * @param url - Request URL
+   * @param data - Request payload
+   * @param config - Request configuration
+   * @param requestId - Optional request ID for cancellation (auto-generated if not provided)
+   * @returns Promise resolving to the response data
    */
-  async put<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.api.put<T>(url, data, config);
-    return response.data;
+  async put<T>(url: string, data?: unknown, config?: AxiosRequestConfig, requestId?: string): Promise<T> {
+    const id = requestId || this.createRequestId(url, 'PUT');
+    const cancellableConfig = this.createCancellableRequest(id, config);
+    
+    try {
+      const response = await this.api.put<T>(url, data, cancellableConfig);
+      this.abortControllers.delete(id);
+      return response.data;
+    } catch (error) {
+      this.abortControllers.delete(id);
+      throw error;
+    }
   }
 
   /**
    * Simplifies DELETE requests.
+   * 
+   * @param url - Request URL
+   * @param config - Request configuration
+   * @param requestId - Optional request ID for cancellation (auto-generated if not provided)
+   * @returns Promise resolving to the response data
    */
-  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.api.delete<T>(url, config);
-    return response.data;
+  async delete<T>(url: string, config?: AxiosRequestConfig, requestId?: string): Promise<T> {
+    const id = requestId || this.createRequestId(url, 'DELETE');
+    const cancellableConfig = this.createCancellableRequest(id, config);
+    
+    try {
+      const response = await this.api.delete<T>(url, cancellableConfig);
+      this.abortControllers.delete(id);
+      return response.data;
+    } catch (error) {
+      this.abortControllers.delete(id);
+      throw error;
+    }
   }
 
   /**
    * Simplifies PATCH requests.
+   * 
+   * @param url - Request URL
+   * @param data - Request payload
+   * @param config - Request configuration
+   * @param requestId - Optional request ID for cancellation (auto-generated if not provided)
+   * @returns Promise resolving to the response data
    */
-  async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.api.patch<T>(url, data, config);
-    return response.data;
+  async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig, requestId?: string): Promise<T> {
+    const id = requestId || this.createRequestId(url, 'PATCH');
+    const cancellableConfig = this.createCancellableRequest(id, config);
+    
+    try {
+      const response = await this.api.patch<T>(url, data, cancellableConfig);
+      this.abortControllers.delete(id);
+      return response.data;
+    } catch (error) {
+      this.abortControllers.delete(id);
+      throw error;
+    }
   }
 }
