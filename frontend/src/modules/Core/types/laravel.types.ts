@@ -105,6 +105,7 @@ export interface BasePaginationState<Model> {
   isLoadingMore: boolean;
   hasMore: boolean;
   currentPage: number;
+  hasLoaded: boolean;
 }
 
 /**

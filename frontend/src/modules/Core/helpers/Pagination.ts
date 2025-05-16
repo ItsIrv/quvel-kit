@@ -98,6 +98,8 @@ export function createPaginationActions<
           throw new Error('Failed to fetch data');
         }
 
+        state.hasLoaded = true;
+
         transform(state, response);
       } catch {
         if (clearPrevious) {
@@ -153,6 +155,7 @@ export function createLengthAwareState<T>(): LengthAwareState<T> {
     currentPage: 1,
     hasMore: true,
     isLoadingMore: false,
+    hasLoaded: false,
     meta: {
       current_page: 1,
       from: 1,
@@ -202,6 +205,7 @@ export function createSimpleState<T>(): SimpleState<T> {
     currentPage: 1,
     hasMore: true,
     isLoadingMore: false,
+    hasLoaded: false,
     meta: {
       current_page: 1,
       from: null,
@@ -248,6 +252,7 @@ export function createCursorState<T>(): CursorState<T> {
     currentPage: 1,
     hasMore: true,
     isLoadingMore: false,
+    hasLoaded: false,
     meta: {
       path: '',
       per_page: 10,

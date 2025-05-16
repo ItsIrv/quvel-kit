@@ -18,7 +18,7 @@ async function reloadCatalog() {
     <q-inner-loading :showing="catalogStore.catalogItems.isLoadingMore" />
 
     <div
-      v-if="!catalogStore.hasCatalogItems && !catalogStore.catalogItems.isLoadingMore"
+      v-if="!catalogStore.catalogItems.hasLoaded && !catalogStore.catalogItems.isLoadingMore"
       class="py-8 text-center"
     >
       <p class="text-lg text-gray-600">Unable to load catalog items. Please try again later.</p>
@@ -27,6 +27,13 @@ async function reloadCatalog() {
         class="mt-4"
         @click="reloadCatalog"
       >Retry</q-btn>
+    </div>
+
+    <div
+      v-else-if="catalogStore.catalogItems.hasLoaded && !catalogStore.hasCatalogItems && !catalogStore.catalogItems.isLoadingMore"
+      class="py-8 text-center"
+    >
+      <p class="text-lg text-gray-600">No catalog items found.</p>
     </div>
 
     <div
