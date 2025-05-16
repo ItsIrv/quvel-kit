@@ -1,5 +1,4 @@
 import type { Service } from './Service';
-import type { ServiceContainer } from './ServiceContainer';
 import { ConsoleLogger } from './Logger/ConsoleLogger';
 import { LoggerInterface, TraceInfo } from 'src/modules/Core/types/logging.types';
 
@@ -14,29 +13,7 @@ export class LogService implements Service {
    * Creates a new LogService instance
    */
   constructor(private readonly traceInfo: TraceInfo) {
-    if (typeof window !== 'undefined') {
-      const traceInfo = (window as { __TRACE__?: TraceInfo }).__TRACE__;
-
-      if (traceInfo) {
-        this.traceInfo = traceInfo;
-        this.traceInfo.runtime = 'client';
-      }
-    }
-
     this.logger = new ConsoleLogger(this.traceInfo.id);
-  }
-
-  /**
-   * Registers the service with the container
-   *
-   * @param container - The service container
-   */
-  register(container: ServiceContainer): void {
-    const config = container.config;
-
-    if (config) {
-      this.traceInfo.tenant = config.get('tenantId');
-    }
   }
 
   /**

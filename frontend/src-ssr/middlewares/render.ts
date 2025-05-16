@@ -6,6 +6,7 @@ import { TenantCacheService } from '../services/TenantCache';
 import { TenantConfigProtected } from '../types/tenant.types';
 import { createTenantConfigFromEnv, filterTenantConfig } from '../utils/tenantConfigUtil';
 import { isValidHostname } from '../utils/validationUtil';
+import { TraceInfo } from 'src/modules/Core/types/logging.types';
 
 /**
  * SSR Middleware for rendering pages.
@@ -57,7 +58,7 @@ export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
         timestamp: new Date().toISOString(),
         environment: process.env.NODE_ENV || 'development',
         tenant: tenantConfig.tenantId,
-        runtime: 'server' as const,
+        runtime: 'server' as TraceInfo['runtime'],
       };
 
       // Attach trace info to the request for use in SSR
@@ -68,6 +69,9 @@ export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
 
       // Render the page using Vue SSR
       const html = await render({ req, res });
+
+      // Change runtime to client
+      traceInfo.runtime = 'client';
 
       // Inject tenant config and trace info into window
       const hydratedHtml = html.replace(

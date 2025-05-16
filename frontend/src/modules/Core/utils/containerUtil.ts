@@ -10,6 +10,7 @@ import { ConfigService } from 'src/modules/Core/services/ConfigService';
 import { WebSocketService } from 'src/modules/Core/services/WebSocketService';
 import { LogService } from 'src/modules/Core/services/LogService';
 import { createWebsocketConfig } from 'src/modules/Core/utils/websocketUtil';
+import { TraceInfo } from 'src/modules/Core/types/logging.types';
 
 /**
  * Creates the service container per request.
@@ -24,13 +25,14 @@ export function createContainer(ssrContext?: QSsrContext | null): ServiceContain
   const configOverrides = configService.getAll();
 
   const logService = new LogService(
-    ssrContext?.req?.__TRACE__ ?? {
-      id: '',
-      timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV,
-      tenant: ssrContext?.req?.tenantConfig?.tenantId ?? 'unknown',
-      runtime: 'server',
-    },
+    ssrContext?.req?.__TRACE__ ??
+      (window as { __TRACE__?: TraceInfo }).__TRACE__ ?? {
+        id: '',
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV,
+        tenant: ssrContext?.req?.tenantConfig?.tenantId ?? 'unknown',
+        runtime: 'server',
+      },
   );
 
   return new ServiceContainer(

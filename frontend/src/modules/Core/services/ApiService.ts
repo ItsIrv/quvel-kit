@@ -112,12 +112,22 @@ export class ApiService extends Service implements RegisterService {
    * Sanitizes headers to avoid logging sensitive information
    */
   private sanitizeHeaders(headers: Record<string, unknown>): Record<string, unknown> {
-    const sanitized = { ...headers };
-    const sensitiveHeaders = ['authorization', 'cookie', 'set-cookie'];
+    const sanitized: Record<string, unknown> = {};
+    const allowedHeaders = [
+      'X-Trace-ID',
+      'X-Tenant-ID',
+      'X-Tenant-Domain',
+      'Cookie',
+      'Accept-Language',
+    ];
 
-    for (const header of sensitiveHeaders) {
-      if (header in sanitized) {
-        sanitized[header] = '[REDACTED]';
+    for (const header of allowedHeaders) {
+      if (header === 'Cookie' && headers['Cookie']) {
+        sanitized[header] = (headers['Cookie'] as string)
+          ?.split(';')
+          .map((cookie) => cookie.split('=')[0]);
+      } else {
+        sanitized[header] = headers[header];
       }
     }
 
@@ -136,9 +146,6 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Simplifies GET requests.
-   * @param url - The API endpoint.
-   * @param config - Optional Axios config.
-   * @returns The response data.
    */
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.api.get<T>(url, config);
@@ -148,10 +155,6 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Simplifies POST requests.
-   * @param url - The API endpoint.
-   * @param data - The request payload.
-   * @param config - Optional Axios config.
-   * @returns The response data.
    */
   async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.api.post<T>(url, data, config);
@@ -160,10 +163,6 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Simplifies PUT requests.
-   * @param url - The API endpoint.
-   * @param data - The request payload.
-   * @param config - Optional Axios config.
-   * @returns The response data.
    */
   async put<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.api.put<T>(url, data, config);
@@ -172,9 +171,6 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Simplifies DELETE requests.
-   * @param url - The API endpoint.
-   * @param config - Optional Axios config.
-   * @returns The response data.
    */
   async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.api.delete<T>(url, config);
@@ -183,10 +179,6 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Simplifies PATCH requests.
-   * @param url - The API endpoint.
-   * @param data - The request payload.
-   * @param config - Optional Axios config.
-   * @returns The response data.
    */
   async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.api.patch<T>(url, data, config);

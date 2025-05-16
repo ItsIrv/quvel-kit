@@ -18,13 +18,13 @@ import { Service } from './Service';
 import type { ServiceContainer } from './ServiceContainer';
 import { LaravelErrorHandler } from 'src/modules/Core/utils/errorUtil';
 import { ErrorBag } from 'src/modules/Core/types/laravel.types';
+import { I18nService } from './I18nService';
 
 /**
  * Task Service - Manages async operations with built-in error handling, notifications, and loading.
  */
 export class TaskService extends Service implements RegisterService {
-  /** Reference the whole container to provide helpers to the handlers */
-  private container: ServiceContainer | null = null;
+  private i18n!: I18nService;
 
   /**
    * Common error handlers.
@@ -36,8 +36,8 @@ export class TaskService extends Service implements RegisterService {
   /**
    * Injects the service container dependencies.
    */
-  register(container: ServiceContainer): void {
-    this.container = container;
+  register({ i18n }: ServiceContainer): void {
+    this.i18n = i18n;
   }
 
   /**
@@ -59,8 +59,7 @@ export class TaskService extends Service implements RegisterService {
     const currentErrors = ref<ErrorBag>(new Map());
     const currentResult = ref<Result>();
     const currentState = ref<TaskState>('fresh');
-    const container = this.container as ServiceContainer;
-
+    const i18n = this.i18n;
     function resetTask(): void {
       currentError.value = undefined;
       currentErrors.value = new Map();
@@ -138,15 +137,10 @@ export class TaskService extends Service implements RegisterService {
       notification?: Resolvable<boolean | string>,
       isError = false,
     ): void {
-      const t = container.i18n.instance.global.t?.bind(container);
-      const te = container.i18n.instance.global.te?.bind(container);
       const errorContext: ErrorHandlerContext = {
         error: data,
         errors: currentErrors.value || {},
-        i18n: {
-          t,
-          te,
-        },
+        i18n,
       };
 
       const successContext: SuccessHandlerContext<Payload> = { result: data as Payload };
@@ -183,7 +177,7 @@ export class TaskService extends Service implements RegisterService {
       if (resolvedNotification === true) {
         showNotification(
           isError ? 'negative' : 'positive',
-          isError ? container.i18n.t('common.task.error') : container.i18n.t('common.task.success'),
+          isError ? i18n.t('common.task.error') : i18n.t('common.task.success'),
         );
 
         return;
