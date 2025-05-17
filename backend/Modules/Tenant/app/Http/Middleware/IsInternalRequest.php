@@ -3,7 +3,10 @@
 namespace Modules\Tenant\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Modules\Core\Enums\StatusEnum;
 use Modules\Tenant\Services\RequestPrivacy;
 
 /**
@@ -26,7 +29,12 @@ class IsInternalRequest
     public function handle(Request $request, Closure $next): mixed
     {
         if (!$this->requestPrivacyService->isInternalRequest()) {
-            abort(401);
+            throw new HttpResponseException(
+                new Response(
+                    StatusEnum::UNAUTHORIZED->value,
+                    401,
+                ),
+            );
         }
 
         return $next($request);

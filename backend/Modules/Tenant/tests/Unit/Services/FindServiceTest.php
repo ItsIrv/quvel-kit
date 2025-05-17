@@ -12,7 +12,7 @@ use Tests\TestCase;
 #[CoversClass(FindService::class)]
 #[Group('tenant-module')]
 #[Group('tenant-services')]
-class TenantFindServiceTest extends TestCase
+class FindServiceTest extends TestCase
 {
     private FindService $service;
 
@@ -85,5 +85,17 @@ class TenantFindServiceTest extends TestCase
         $this->assertCount(2, $tenants);
         $this->assertTrue($tenants->contains($tenant1));
         $this->assertTrue($tenants->contains($tenant2));
+    }
+
+    /**
+     * Test that getTenantPublicIdFromId method returns the correct public ID.
+     */
+    public function testGetTenantPublicIdFromId(): void
+    {
+        $tenant = $this->tenant;
+
+        $publicId = $this->service->getTenantPublicIdFromId($tenant->id);
+
+        $this->assertEquals($tenant->public_id, $publicId);
     }
 }

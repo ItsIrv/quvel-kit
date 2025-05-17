@@ -63,6 +63,16 @@ class TenantTest extends TestCase
     }
 
     /**
+     * Test that the users relationship returns a HasMany instance.
+     */
+    public function testUsersRelationship(): void
+    {
+        $tenant = new Tenant();
+
+        $this->assertInstanceOf(HasMany::class, $tenant->users());
+    }
+
+    /**
      * Test that a tenant can be created.
      */
     public function testCreatingTenant(): void

@@ -20,6 +20,8 @@ class TenantMiddleware
     public function __construct(
         private readonly TenantResolver $tenantResolver,
         private readonly TenantContext $tenantContext,
+        private readonly ConfigApplier $configApplier,
+        private readonly ConfigRepository $config,
     ) {
     }
 
@@ -32,7 +34,7 @@ class TenantMiddleware
 
         $this->tenantContext->set($tenant);
 
-        ConfigApplier::apply($tenant, app(ConfigRepository::class));
+        $this->configApplier->apply($tenant, $this->config);
 
         return $next($request);
     }

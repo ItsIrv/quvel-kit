@@ -83,7 +83,10 @@ class TenantsDumpTest extends TestCase
 
         // Execute the action
         $action = new TenantsDump();
-        $result = $action->__invoke($tenantFindService, $cache);
+        $result = $action->__invoke(
+            $tenantFindService,
+            $cache,
+        );
 
         // Assert correct response type
         $this->assertEquals(TenantDumpResource::collection($freshTenants), $result);

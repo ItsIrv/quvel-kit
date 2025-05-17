@@ -2,20 +2,16 @@
 
 namespace Modules\Tenant\Tests\Unit\Providers;
 
-use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Foundation\Application;
 use Mockery;
 use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Providers\RouteServiceProvider;
 use Modules\Tenant\Providers\TenantServiceProvider;
-use Modules\Tenant\Services\ConfigApplier;
 use Modules\Tenant\Services\FindService;
-use Modules\Tenant\Services\HostResolver;
-use Modules\Tenant\Services\TenantSessionService;
-use Modules\Tenant\ValueObjects\TenantConfig;
+use Modules\Tenant\Services\RequestPrivacy;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
-use ReflectionClass;
 use Tests\TestCase;
 
 #[CoversClass(TenantServiceProvider::class)]
@@ -72,9 +68,7 @@ class TenantServiceProviderTest extends TestCase
         $provider->register();
 
         $expectedSingletons = [
-            strtolower(TenantSessionService::class),
             strtolower(FindService::class),
-            strtolower(HostResolver::class),
         ];
 
         $expectedRegisters = [
@@ -83,6 +77,8 @@ class TenantServiceProviderTest extends TestCase
 
         $expectedScoped = [
             strtolower(TenantContext::class),
+            strtolower(RequestPrivacy::class),
+            strtolower(TenantResolver::class),
         ];
 
         $this->assertEquals($expectedSingletons, $singletons);

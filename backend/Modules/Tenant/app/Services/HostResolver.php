@@ -3,6 +3,8 @@
 namespace Modules\Tenant\Services;
 
 use Illuminate\Cache\Repository;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Modules\Tenant\Enums\TenantHeader;
@@ -20,6 +22,9 @@ class HostResolver implements TenantResolver
         private readonly RequestPrivacy $requestPrivacyService,
         private readonly Repository $cache,
         private readonly Request $request,
+        private readonly FrontendService $frontendService,
+        private readonly Application $app,
+        private readonly ConfigRepository $config,
     ) {
     }
 
@@ -28,16 +33,17 @@ class HostResolver implements TenantResolver
      */
     public function resolveTenant(): Tenant
     {
-        $host = $this->getHost();
+        return $this->app->environment('local')
+            ? $this->resolveTenantFromDatabase()
+            : $this->resolveTenantFromCache();
+    }
 
-        if (app()->isLocal()) {
-            return $this->resolveTenantFromDatabase();
-        }
-
+    protected function resolveTenantFromCache(): ?Tenant
+    {
         return $this->cache->remember(
-            $host,
-            config('tenant.tenant_cache.resolver_ttl'),
-            fn (): Tenant => $this->resolveTenantFromDatabase()
+            key: $this->getHost(),
+            ttl: $this->config->get('tenant.tenant_cache.resolver_ttl'),
+            callback: fn (): Tenant => $this->resolveTenantFromDatabase()
         );
     }
 
@@ -45,7 +51,7 @@ class HostResolver implements TenantResolver
     {
         return $this->tenantFindService->findTenantByDomain($this->getHost())
             ?? throw new HttpResponseException(
-                app(FrontendService::class)->redirect(''),
+                $this->frontendService->redirect(''),
             );
     }
 
@@ -56,12 +62,11 @@ class HostResolver implements TenantResolver
     protected function getHost(): string
     {
         $host       = $this->request->getHost();
-        $customHost = parse_url(
-            $this->request->header(TenantHeader::TENANT_DOMAIN->value),
-            PHP_URL_HOST,
-        );
+        $customHost = $this->request->header(TenantHeader::TENANT_DOMAIN->value);
 
         if ($customHost && $this->requestPrivacyService->isInternalRequest()) {
+            $customHost = parse_url($customHost, PHP_URL_HOST);
+
             $this->request->headers->set('host', $customHost);
             $this->request->server->set('HTTP_HOST', $customHost);
 
@@ -71,3 +76,4 @@ class HostResolver implements TenantResolver
         return $host;
     }
 }
+
