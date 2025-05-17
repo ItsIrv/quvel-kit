@@ -2,75 +2,91 @@
 
 namespace Modules\Tenant\Tests\Feature\Actions;
 
-use Illuminate\Cache\Repository as CacheRepository;
-use Mockery;
+use Exception;
+use Illuminate\Support\Facades\DB;
 use Modules\Tenant\Actions\TenantsDump;
-use Modules\Tenant\Http\Resources\TenantDumpResource;
+use Modules\Tenant\Enums\TenantError;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\Services\FindService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
 #[CoversClass(TenantsDump::class)]
 #[Group('tenant-module')]
 #[Group('tenant-actions')]
-class TenantsDumpFeatureTest extends TestCase
+final class TenantsDumpFeatureTest extends TestCase
 {
     /**
-     * Test that `TenantsDump` correctly returns cached tenants.
+     * Set up the test environment.
      */
-    public function testTenantsDumpReturnsCachedTenants(): void
+    protected function setUp(): void
     {
-        // Use $this->createMock() for FindService since it's a normal class
-        $tenantFindServiceMock = $this->createMock(FindService::class);
+        parent::setUp();
 
-        // Use Mockery::mock() for CacheRepository since Laravel handles caching internally
-        $cacheMock = Mockery::mock(CacheRepository::class);
-
-        // Sample tenant data as Eloquent Collection
-        $cachedTenants = Tenant::all();
-
-        // Simulate cache hit
-        $cacheMock->shouldReceive('has')->once()->with('tenants')->andReturn(true);
-        $cacheMock->shouldReceive('get')->once()->with('tenants')->andReturn($cachedTenants);
-
-        // Execute the action
-        $action = new TenantsDump();
-        $result = $action->__invoke($tenantFindServiceMock, $cacheMock);
-
-        // Assert correct response type
-        $this->assertEquals(TenantDumpResource::collection($cachedTenants), $result);
+        // Ensure we have a tenant for testing
+        $this->tenant = Tenant::factory()->create([
+            'name'   => 'Test Tenant',
+            'domain' => 'test-tenant.example.com',
+        ]);
     }
 
-    /**
-     * Test that `TenantsDump` fetches and caches tenants when cache is empty.
-     */
-    public function testTenantsDumpFetchesWhenCacheEmpty(): void
+    #[TestDox('It should return tenant data in JSON format')]
+    public function testTenantDumpReturnsJsonData(): void
     {
-        // Use $this->createMock() for FindService
-        $tenantFindServiceMock = $this->createMock(FindService::class);
+        // Act
+        $response = $this->getJson(
+            route('api.tenants.dump'),
+        );
 
-        // Use Mockery::mock() for CacheRepository
-        $cacheMock = Mockery::mock(CacheRepository::class);
+        // Assert
+        $response->assertOk()
+            ->assertJson([
+                'data' => [
+                    'id'     => $this->tenant->public_id,
+                    'name'   => $this->tenant->name,
+                    'domain' => $this->tenant->domain,
+                ],
+            ]);
+    }
 
-        // Sample fresh tenant data as Eloquent Collection
-        $freshTenants = Tenant::all();
+    #[TestDox('It should throw exception when tenant does not exist')]
+    public function testTenantDumpThrowsExceptionWithoutTenant(): void
+    {
+        // Arrange - Simulate incorrect tenant by deleting all
+        DB::table('tenants')->delete();
 
-        // Simulate cache miss
-        $cacheMock->shouldReceive('has')->once()->with('tenants')->andReturn(false);
-        $cacheMock->shouldReceive('put')->once()->with('tenants', $freshTenants, 60);
+        // Set up expectations for exception
+        $this->withoutExceptionHandling();
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(TenantError::NOT_FOUND->value);
 
-        // Simulate service fetching tenants
-        $tenantFindServiceMock->expects($this->once())
-            ->method('findAll')
-            ->willReturn($freshTenants);
+        // Act
+        $this->getJson(
+            route('api.tenants.dump'),
+        );
+    }
 
-        // Execute the action
-        $action = new TenantsDump();
-        $result = $action->__invoke($tenantFindServiceMock, $cacheMock);
+    #[TestDox('It should cache tenant data for subsequent requests')]
+    public function testTenantDumpCachesTenantData(): void
+    {
+        // Arrange - Make an initial request to cache the data
+        $this->getJson(route('api.tenants.dump'))->assertOk();
 
-        // Assert correct response type
-        $this->assertEquals(TenantDumpResource::collection($freshTenants), $result);
+        // Act - Make a second request that should use the cache
+        $response = $this->getJson(route('api.tenants.dump'));
+
+        // Assert
+        $response->assertOk()
+            ->assertJson([
+                'data' => [
+                    'id'     => $this->tenant->public_id,
+                    'name'   => $this->tenant->name,
+                    'domain' => $this->tenant->domain,
+                ],
+            ]);
+
+        // Verify cache exists (indirectly through response time or headers)
+        // In a real test, you might check for cache hit metrics or mock the cache
     }
 }

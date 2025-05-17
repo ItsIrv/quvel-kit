@@ -10,7 +10,6 @@ use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Services\RequestPrivacy;
 use Modules\Tenant\Services\ConfigApplier;
 use Modules\Tenant\Services\FindService;
-use Modules\Tenant\Services\HostResolver;
 use Illuminate\Log\Context\Repository;
 
 /**

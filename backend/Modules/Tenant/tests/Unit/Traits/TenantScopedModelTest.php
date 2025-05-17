@@ -5,17 +5,25 @@ namespace Modules\Tenant\Tests\Unit\Traits;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Mockery;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Exceptions\TenantMismatchException;
+use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Tests\Models\TestTenantModel;
 use Modules\Tenant\Traits\TenantScopedModel;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
 #[CoversClass(TenantScopedModel::class)]
 #[Group('tenant-module')]
 #[Group('tenant-traits')]
-class TenantScopedModelTest extends TestCase
+final class TenantScopedModelTest extends TestCase
 {
+    /**
+     * Set up the test environment.
+     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -25,6 +33,7 @@ class TenantScopedModelTest extends TestCase
             $table->id();
             $table->unsignedBigInteger('tenant_id'); // No foreign key constraint
             $table->string('name')->nullable();
+            $table->string('public_id')->nullable();
             $table->timestamps();
         });
 
@@ -43,6 +52,7 @@ class TenantScopedModelTest extends TestCase
                 TestTenantModel::insert([
                     'tenant_id'  => $i,
                     'name'       => "Tenant $i Record",
+                    'public_id'  => "tenant-$i-record",
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -50,6 +60,9 @@ class TenantScopedModelTest extends TestCase
         }
     }
 
+    /**
+     * Clean up the test environment.
+     */
     protected function tearDown(): void
     {
         // Drop test schema after test execution
@@ -58,62 +71,68 @@ class TenantScopedModelTest extends TestCase
         parent::tearDown();
     }
 
-    /**
-     * Test that a model with the TenantScopedModel trait automatically sets the tenant_id on creation.
-     */
+    #[TestDox('It should set tenant_id automatically on model creation')]
     public function testTenantIdSetOnCreation(): void
     {
-        $model = TestTenantModel::create();
+        // Arrange & Act
+        $model = TestTenantModel::create(['name' => 'Auto Tenant ID Test']);
 
+        // Assert
         $this->assertEquals($this->tenant->id, $model->tenant_id);
+        $this->assertDatabaseHas('test_tenant_models', [
+            'id'        => $model->id,
+            'tenant_id' => $this->tenant->id,
+            'name'      => 'Auto Tenant ID Test',
+        ]);
     }
 
-    /**
-     * Test that queries are properly scoped to the current tenant.
-     */
+    #[TestDox('It should scope queries to the current tenant')]
     public function testQueriesAreScopedToCurrentTenant(): void
     {
+        // Arrange
+        // Create a record for the current tenant
+        TestTenantModel::create(['name' => 'Current Tenant Test Record']);
+
         // Count total records in the table (including our seeded multi-tenant records)
         $totalCount = DB::table('test_tenant_models')->count();
 
-        // This should be greater than what we get with the tenant scope
-        $this->assertGreaterThan(0, $totalCount);
-
+        // Act
         // Count records using the model (which applies the tenant scope)
         $scopedCount = TestTenantModel::count();
 
-        // Verify that the tenant scope is filtering records
-        $this->assertLessThanOrEqual($totalCount, $scopedCount);
+        // Assert
+        // This should be greater than what we get with the tenant scope
+        $this->assertGreaterThan(0, $totalCount, 'Total records count should be greater than zero');
 
         // Count records for other tenants directly from DB
         $otherTenantsCount = DB::table('test_tenant_models')
             ->where('tenant_id', '!=', $this->tenant->id)
             ->count();
 
-        // If we have records for other tenants, verify the scope is working
-        if ($otherTenantsCount > 0) {
-            $this->assertLessThan($totalCount, $scopedCount, 'Tenant scope should filter out records from other tenants');
-        }
+        // Verify the scope is working if we have records for other tenants
+        $this->assertGreaterThan(0, $otherTenantsCount, 'Should have records for other tenants');
+        $this->assertLessThan($totalCount, $scopedCount, 'Tenant scope should filter out records from other tenants');
 
         // Verify that all records returned have the current tenant ID
         $allRecords = TestTenantModel::all();
         foreach ($allRecords as $record) {
-            $this->assertEquals($this->tenant->id, $record->tenant_id);
+            $this->assertEquals($this->tenant->id, $record->tenant_id, 'All records should have the current tenant ID');
         }
     }
 
-    /**
-     * Test that saving a model always enforces the current tenant ID from context.
-     */
+    #[TestDox('It should enforce tenant_id from context when saving a model')]
     public function testTenantIdEnforcedOnSave(): void
     {
-        // Create a model without explicitly setting tenant_id
+        // Arrange
         $model       = new TestTenantModel();
         $model->name = 'Test Model';
-        $model->save();
 
-        // Verify the tenant_id was set from the context
-        $this->assertEquals($this->tenant->id, $model->tenant_id);
+        // Act
+        $saveResult = $model->save();
+
+        // Assert
+        $this->assertTrue($saveResult, 'Model should save successfully');
+        $this->assertEquals($this->tenant->id, $model->tenant_id, 'Model should have current tenant ID');
         $this->assertDatabaseHas('test_tenant_models', [
             'id'        => $model->id,
             'tenant_id' => $this->tenant->id,
@@ -121,36 +140,40 @@ class TenantScopedModelTest extends TestCase
         ]);
     }
 
-    /**
-     * Test that updating a model with the correct tenant_id works.
-     */
+    #[TestDox('It should update a model with the correct tenant_id successfully')]
     public function testUpdateWithCorrectTenantId(): void
     {
-        $model        = TestTenantModel::create();
+        // Arrange
+        $model = TestTenantModel::create(['name' => 'Original Name']);
+
+        // Act
         $updateResult = $model->update(['name' => 'Updated Name']);
 
-        $this->assertTrue($updateResult);
-        $this->assertEquals('Updated Name', $model->fresh()->name);
+        // Assert
+        $this->assertTrue($updateResult, 'Update operation should succeed');
+        $this->assertEquals('Updated Name', $model->fresh()->name, 'Name should be updated');
+        $this->assertEquals($this->tenant->id, $model->tenant_id, 'Tenant ID should remain unchanged');
     }
 
-    /**
-     * Test that updating a model enforces the current tenant ID from context.
-     */
+    #[TestDox('It should enforce tenant_id from context when updating a model')]
     public function testTenantIdEnforcedOnUpdate(): void
     {
-        // Create a model
+        // Arrange
         $model      = TestTenantModel::create(['name' => 'Original Name']);
         $originalId = $model->id;
 
-        // Try to update with a different tenant_id (will be ignored/overridden)
-        $model->update([
+        // Act - Try to update with a different tenant_id (will be ignored/overridden)
+        $updateResult = $model->update([
             'name' => 'Updated Name',
         ]);
 
+        // Assert
+        $this->assertTrue($updateResult, 'Update operation should succeed');
+
         // Verify the tenant_id remains the same from context
         $updatedModel = TestTenantModel::find($originalId);
-        $this->assertEquals($this->tenant->id, $updatedModel->tenant_id);
-        $this->assertEquals('Updated Name', $updatedModel->name);
+        $this->assertEquals($this->tenant->id, $updatedModel->tenant_id, 'Tenant ID should remain unchanged');
+        $this->assertEquals('Updated Name', $updatedModel->name, 'Name should be updated');
         $this->assertDatabaseHas('test_tenant_models', [
             'id'        => $originalId,
             'tenant_id' => $this->tenant->id,
@@ -158,24 +181,28 @@ class TenantScopedModelTest extends TestCase
         ]);
     }
 
-    /**
-     * Test that deleting a model with the correct tenant_id works.
-     */
+    #[TestDox('It should delete a model with the correct tenant_id successfully')]
     public function testDeleteWithCorrectTenantId(): void
     {
-        $model        = TestTenantModel::create();
+        // Arrange
+        $model   = TestTenantModel::create(['name' => 'To Be Deleted']);
+        $modelId = $model->id;
+
+        // Act
         $deleteResult = $model->delete();
 
-        $this->assertTrue($deleteResult);
-        $this->assertNull(TestTenantModel::find($model->id));
+        // Assert
+        $this->assertTrue($deleteResult, 'Delete operation should succeed');
+        $this->assertNull(TestTenantModel::find($modelId), 'Model should be deleted');
+        $this->assertDatabaseMissing('test_tenant_models', [
+            'id' => $modelId,
+        ]);
     }
 
-    /**
-     * Test that models can only be deleted within the current tenant scope.
-     */
+    #[TestDox('It should respect tenant scope when deleting models')]
     public function testDeleteRespectsTenantScope(): void
     {
-        // Create a model
+        // Arrange
         $model   = TestTenantModel::create(['name' => 'To Be Deleted']);
         $modelId = $model->id;
 
@@ -185,20 +212,20 @@ class TenantScopedModelTest extends TestCase
             'tenant_id' => $this->tenant->id,
         ]);
 
-        // Delete it
-        $model->delete();
+        // Act
+        $deleteResult = $model->delete();
 
-        // Verify it's gone
+        // Assert
+        $this->assertTrue($deleteResult, 'Delete operation should succeed');
         $this->assertDatabaseMissing('test_tenant_models', [
             'id' => $modelId,
         ]);
     }
 
-    /**
-     * Test that global delete operations are properly scoped to current tenant.
-     */
+    #[TestDox('It should scope global delete operations to the current tenant')]
     public function testGlobalDeleteIsScoped(): void
     {
+        // Arrange
         // Create some records for the current tenant
         TestTenantModel::create(['name' => 'Current Tenant Record 1']);
         TestTenantModel::create(['name' => 'Current Tenant Record 2']);
@@ -214,8 +241,12 @@ class TenantScopedModelTest extends TestCase
         // Verify we have records for other tenants
         $this->assertGreaterThan(0, $otherTenantsCountBefore, 'Should have records for other tenants');
 
+        // Act
         // This should delete ONLY records for the current tenant
-        TestTenantModel::where('id', '>', 0)->delete();
+        $deleteResult = TestTenantModel::where('id', '>', 0)->delete();
+
+        // Assert
+        $this->assertGreaterThan(0, $deleteResult, 'Delete operation should affect at least one record');
 
         // Verify that records from other tenants still exist
         $otherTenantsCountAfter = DB::table('test_tenant_models')
@@ -226,5 +257,22 @@ class TenantScopedModelTest extends TestCase
 
         // Verify no records exist for current tenant
         $this->assertEquals(0, TestTenantModel::count(), 'All records for current tenant should be deleted');
+    }
+
+    #[TestDox('It should generate correct broadcast notification channel with tenant context')]
+    public function testReceivesBroadcastNotificationsOnWithTenantContext(): void
+    {
+        // Arrange
+        $model = TestTenantModel::create([
+            'name'      => 'Broadcast Test Model',
+            'public_id' => 'test-model-123',
+        ]);
+
+        // Act
+        $channel = $model->receivesBroadcastNotificationsOn();
+
+        // Assert
+        $expectedChannel = "tenant.{$this->tenant->public_id}.TestTenantModel.{$model->id}";
+        $this->assertEquals($expectedChannel, $channel, 'Should generate correct broadcast channel with tenant context');
     }
 }

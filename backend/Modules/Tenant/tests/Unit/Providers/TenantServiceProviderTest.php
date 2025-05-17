@@ -3,6 +3,8 @@
 namespace Modules\Tenant\Tests\Unit\Providers;
 
 use Illuminate\Foundation\Application;
+use Illuminate\Log\Context\Repository;
+use Illuminate\Support\Facades\Context;
 use Mockery;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Contracts\TenantResolver;
@@ -51,19 +53,6 @@ class TenantServiceProviderTest extends TestCase
         $tenantContext->shouldReceive('get')
             ->andReturn($this->tenant);
 
-        $app->method('rebinding')
-            ->with(
-                $this->equalTo('request'),
-                $this->callback(function ($callback) use ($app, $tenantContext): bool {
-                    $app->method('make')
-                        ->with($this->equalTo(TenantContext::class))
-                        ->willReturn($tenantContext);
-
-                    $callback($app);
-                    return true;
-                }),
-            );
-
         $provider = new TenantServiceProvider($app);
         $provider->register();
 
@@ -84,5 +73,25 @@ class TenantServiceProviderTest extends TestCase
         $this->assertEquals($expectedSingletons, $singletons);
         $this->assertEquals($expectedRegisters, $registers);
         $this->assertEquals($expectedScoped, $scoped);
+    }
+
+    public function testBootCallsContextHydration(): void
+    {
+        Context::shouldReceive('dehydrating')
+            ->once()
+            ->with(Mockery::type('Closure'));
+
+        Context::shouldReceive('hydrated')
+            ->once()
+            ->with(Mockery::type('Closure'));
+
+        $tenantContext = $this->mock(TenantContext::class);
+        $tenantContext->shouldReceive('get')
+            ->andReturn($this->tenant);
+
+        $this->app->instance(TenantContext::class, $tenantContext);
+
+        $provider = new TenantServiceProvider($this->app);
+        $provider->boot();
     }
 }
