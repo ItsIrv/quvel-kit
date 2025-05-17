@@ -102,6 +102,12 @@ onMounted(() => {
           <q-item-section>
             <q-item-label>{{ notification.message }}</q-item-label>
             <q-item-label caption>{{ notification.created_at }}</q-item-label>
+            <q-item-label
+              :class="notification.read_at ? 'text-green-5' : 'text-red-5'"
+              caption
+            >
+              {{ notification.read_at ? $t('notifications.read') : $t('notifications.unread') }}
+            </q-item-label>
           </q-item-section>
         </q-item>
       </q-list>

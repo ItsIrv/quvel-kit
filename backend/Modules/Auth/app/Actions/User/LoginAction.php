@@ -56,17 +56,6 @@ class LoginAction
             throw new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);
         }
 
-        // Attempt to authenticate the user
-        if (!$this->userAuthenticationService->attempt($loginData['email'], $loginData['password'])) {
-            $this->logs->loginFailedInvalidCredentials(
-                $loginData['email'],
-                $request->ip(),
-                $request->userAgent(),
-            );
-
-            throw new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);
-        }
-
         // Check if the user has verified their email if verify_email_before_login is true
         if (!$user->hasVerifiedEmail() && config('auth.verify_email_before_login')) {
             $this->logs->loginFailedAccountInactive(
@@ -77,6 +66,17 @@ class LoginAction
             );
 
             throw new LoginActionException(AuthStatusEnum::EMAIL_NOT_VERIFIED);
+        }
+
+        // Attempt to authenticate the user
+        if (!$this->userAuthenticationService->attempt($loginData['email'], $loginData['password'])) {
+            $this->logs->loginFailedInvalidCredentials(
+                $loginData['email'],
+                $request->ip(),
+                $request->userAgent(),
+            );
+
+            throw new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);
         }
 
         // Log successful login

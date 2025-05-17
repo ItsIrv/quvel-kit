@@ -122,7 +122,9 @@ export class ApiService extends Service implements RegisterService {
           url,
           status,
           statusText,
-          responseTimeMs: error.config?.metadata?.startTime ? Date.now() - error.config.metadata.startTime : undefined,
+          responseTimeMs: error.config?.metadata?.startTime
+            ? Date.now() - error.config.metadata.startTime
+            : undefined,
           message: error.message,
           stack: error.stack,
           responseData: error.response?.data,
@@ -178,19 +180,22 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Creates a cancellable request configuration
-   * 
+   *
    * @param requestId - Unique identifier for the request
    * @param config - Original request configuration
    * @returns Enhanced configuration with abort signal
    */
-  private createCancellableRequest(requestId: string, config?: AxiosRequestConfig): AxiosRequestConfig {
+  private createCancellableRequest(
+    requestId: string,
+    config?: AxiosRequestConfig,
+  ): AxiosRequestConfig {
     // Clean up any existing controller for this request ID
     this.cancelRequest(requestId);
-    
+
     // Create a new abort controller
     const controller = new AbortController();
     this.abortControllers.set(requestId, controller);
-    
+
     // Merge the signal with the existing config
     return {
       ...config,
@@ -200,7 +205,7 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Cancels a specific request by ID
-   * 
+   *
    * @param requestId - ID of the request to cancel
    * @returns True if a request was cancelled, false otherwise
    */
@@ -217,7 +222,7 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Cancels all pending requests
-   * 
+   *
    * @returns Number of requests cancelled
    */
   public cancelAllRequests(): number {
@@ -233,7 +238,7 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Simplifies GET requests.
-   * 
+   *
    * @param url - Request URL
    * @param config - Request configuration
    * @param requestId - Optional request ID for cancellation (auto-generated if not provided)
@@ -242,7 +247,7 @@ export class ApiService extends Service implements RegisterService {
   async get<T>(url: string, config?: AxiosRequestConfig, requestId?: string): Promise<T> {
     const id = requestId || this.createRequestId(url, 'GET');
     const cancellableConfig = this.createCancellableRequest(id, config);
-    
+
     try {
       const response = await this.api.get<T>(url, cancellableConfig);
       this.abortControllers.delete(id);
@@ -255,17 +260,22 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Simplifies POST requests.
-   * 
+   *
    * @param url - Request URL
    * @param data - Request payload
    * @param config - Request configuration
    * @param requestId - Optional request ID for cancellation (auto-generated if not provided)
    * @returns Promise resolving to the response data
    */
-  async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig, requestId?: string): Promise<T> {
+  async post<T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+    requestId?: string,
+  ): Promise<T> {
     const id = requestId || this.createRequestId(url, 'POST');
     const cancellableConfig = this.createCancellableRequest(id, config);
-    
+
     try {
       const response = await this.api.post<T>(url, data, cancellableConfig);
       this.abortControllers.delete(id);
@@ -278,17 +288,22 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Simplifies PUT requests.
-   * 
+   *
    * @param url - Request URL
    * @param data - Request payload
    * @param config - Request configuration
    * @param requestId - Optional request ID for cancellation (auto-generated if not provided)
    * @returns Promise resolving to the response data
    */
-  async put<T>(url: string, data?: unknown, config?: AxiosRequestConfig, requestId?: string): Promise<T> {
+  async put<T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+    requestId?: string,
+  ): Promise<T> {
     const id = requestId || this.createRequestId(url, 'PUT');
     const cancellableConfig = this.createCancellableRequest(id, config);
-    
+
     try {
       const response = await this.api.put<T>(url, data, cancellableConfig);
       this.abortControllers.delete(id);
@@ -301,7 +316,7 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Simplifies DELETE requests.
-   * 
+   *
    * @param url - Request URL
    * @param config - Request configuration
    * @param requestId - Optional request ID for cancellation (auto-generated if not provided)
@@ -310,7 +325,7 @@ export class ApiService extends Service implements RegisterService {
   async delete<T>(url: string, config?: AxiosRequestConfig, requestId?: string): Promise<T> {
     const id = requestId || this.createRequestId(url, 'DELETE');
     const cancellableConfig = this.createCancellableRequest(id, config);
-    
+
     try {
       const response = await this.api.delete<T>(url, cancellableConfig);
       this.abortControllers.delete(id);
@@ -323,17 +338,22 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Simplifies PATCH requests.
-   * 
+   *
    * @param url - Request URL
    * @param data - Request payload
    * @param config - Request configuration
    * @param requestId - Optional request ID for cancellation (auto-generated if not provided)
    * @returns Promise resolving to the response data
    */
-  async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig, requestId?: string): Promise<T> {
+  async patch<T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+    requestId?: string,
+  ): Promise<T> {
     const id = requestId || this.createRequestId(url, 'PATCH');
     const cancellableConfig = this.createCancellableRequest(id, config);
-    
+
     try {
       const response = await this.api.patch<T>(url, data, cancellableConfig);
       this.abortControllers.delete(id);
