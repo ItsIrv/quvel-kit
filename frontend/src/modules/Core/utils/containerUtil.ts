@@ -10,7 +10,7 @@ import { ConfigService } from 'src/modules/Core/services/ConfigService';
 import { WebSocketService } from 'src/modules/Core/services/WebSocketService';
 import { LogService } from 'src/modules/Core/services/LogService';
 import { createWebsocketConfig } from 'src/modules/Core/utils/websocketUtil';
-import { createLogger } from 'src/modules/Core/utils/loggerUtil';
+import { createLogger } from 'src/modules/Core/utils/loggingUtil';
 
 /**
  * Creates the service container per request.

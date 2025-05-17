@@ -1,5 +1,6 @@
 import { LogLevel } from 'src/modules/Core/models/Logging/LogLevel';
 import { LoggerInterface, TraceInfo } from 'src/modules/Core/types/logging.types';
+import { shouldLog } from 'src/modules/Core/utils/loggingUtil';
 
 /**
  * Console logger implementation
@@ -98,6 +99,10 @@ export class ConsoleLogger implements LoggerInterface {
    * Logs with an arbitrary level
    */
   public log(level: string, message: string, context?: Record<string, unknown>): void {
+    if (!shouldLog(level)) {
+      return;
+    }
+
     const timestamp = new Date().toISOString();
     const tracePrefix = this.traceInfo ? `[${this.traceInfo.id}] ` : '';
     const formattedMessage = `[${timestamp}] [${level.toUpperCase()}] ${tracePrefix}${message}`;

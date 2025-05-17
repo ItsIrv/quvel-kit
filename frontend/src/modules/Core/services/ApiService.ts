@@ -37,6 +37,7 @@ export class ApiService extends Service implements RegisterService {
   private readonly api: AxiosInstance;
   private log!: LogService;
   private abortControllers: Map<string, AbortController> = new Map();
+  private requestCounter = 0;
 
   constructor(apiInstance: AxiosInstance) {
     super();
@@ -144,6 +145,7 @@ export class ApiService extends Service implements RegisterService {
       'X-Trace-ID',
       'X-Tenant-ID',
       'X-Tenant-Domain',
+      'X-SSR-Key',
       'Cookie',
       'Accept-Language',
     ];
@@ -153,6 +155,8 @@ export class ApiService extends Service implements RegisterService {
         sanitized[header] = (headers['Cookie'] as string)
           ?.split(';')
           .map((cookie) => cookie.split('=')[0]);
+      } else if (header === 'X-SSR-Key' && headers['X-SSR-Key']) {
+        sanitized[header] = 'REDACTED';
       } else {
         sanitized[header] = headers[header];
       }
@@ -173,9 +177,11 @@ export class ApiService extends Service implements RegisterService {
 
   /**
    * Creates a unique request ID for tracking abort controllers
+   * Uses an incrementing counter to ensure uniqueness and track total requests
    */
   private createRequestId(url: string, method: string): string {
-    return `${method}:${url}:${Date.now()}`;
+    this.requestCounter += 1;
+    return `${method}:${url}:${this.requestCounter}`;
   }
 
   /**
