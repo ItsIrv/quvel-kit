@@ -2,6 +2,7 @@
 
 namespace Modules\Tenant\Tests\Unit\Services;
 
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Request;
 use Mockery;
 use Mockery\MockInterface;
@@ -23,6 +24,11 @@ final class RequestPrivacyTest extends TestCase
     protected Request $request;
 
     /**
+     * @var ConfigRepository|MockInterface
+     */
+    protected ConfigRepository $config;
+
+    /**
      * @var RequestPrivacy
      */
     protected RequestPrivacy $requestPrivacy;
@@ -32,6 +38,7 @@ final class RequestPrivacyTest extends TestCase
         parent::setUp();
 
         $this->request = Mockery::mock(Request::class);
+        $this->config  = Mockery::mock(ConfigRepository::class);
     }
 
     #[TestDox('It should consider request internal when both IP and API key checks pass')]
@@ -52,28 +59,24 @@ final class RequestPrivacyTest extends TestCase
             ->andReturn($apiKey);
 
         // Mock config calls
-        $this->app->shouldReceive('make')
-            ->with('config')
-            ->andReturn($this->app);
-
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.disable_ip_check')
             ->andReturn(false);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.trusted_ips')
             ->andReturn($trustedIps);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.disable_key_check')
             ->andReturn(false);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.ssr_api_key')
             ->andReturn($apiKey);
 
         // Act
-        $this->requestPrivacy = new RequestPrivacy($this->request);
+        $this->requestPrivacy = new RequestPrivacy($this->request, $this->config);
         $result               = $this->requestPrivacy->isInternalRequest();
 
         // Assert
@@ -84,7 +87,6 @@ final class RequestPrivacyTest extends TestCase
     public function testConsidersRequestInternalWhenIpCheckDisabled(): void
     {
         // Arrange
-        $ip     = '192.168.1.1';
         $apiKey = 'valid-api-key';
 
         $this->request->shouldReceive('ip')
@@ -96,24 +98,20 @@ final class RequestPrivacyTest extends TestCase
             ->andReturn($apiKey);
 
         // Mock config calls
-        $this->app->shouldReceive('make')
-            ->with('config')
-            ->andReturn($this->app);
-
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.disable_ip_check')
             ->andReturn(true);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.disable_key_check')
             ->andReturn(false);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.ssr_api_key')
             ->andReturn($apiKey);
 
         // Act
-        $this->requestPrivacy = new RequestPrivacy($this->request);
+        $this->requestPrivacy = new RequestPrivacy($this->request, $this->config);
         $result               = $this->requestPrivacy->isInternalRequest();
 
         // Assert
@@ -135,24 +133,20 @@ final class RequestPrivacyTest extends TestCase
             ->never();
 
         // Mock config calls
-        $this->app->shouldReceive('make')
-            ->with('config')
-            ->andReturn($this->app);
-
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.disable_ip_check')
             ->andReturn(false);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.trusted_ips')
             ->andReturn($trustedIps);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.disable_key_check')
             ->andReturn(true);
 
         // Act
-        $this->requestPrivacy = new RequestPrivacy($this->request);
+        $this->requestPrivacy = new RequestPrivacy($this->request, $this->config);
         $result               = $this->requestPrivacy->isInternalRequest();
 
         // Assert
@@ -172,33 +166,29 @@ final class RequestPrivacyTest extends TestCase
             ->andReturn($ip);
 
         $this->request->shouldReceive('header')
-            ->once()
+            ->never()
             ->with(TenantHeader::SSR_KEY->value)
             ->andReturn($apiKey);
 
         // Mock config calls
-        $this->app->shouldReceive('make')
-            ->with('config')
-            ->andReturn($this->app);
-
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.disable_ip_check')
             ->andReturn(false);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.trusted_ips')
             ->andReturn($trustedIps);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.disable_key_check')
             ->andReturn(false);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.ssr_api_key')
             ->andReturn($apiKey);
 
         // Act
-        $this->requestPrivacy = new RequestPrivacy($this->request);
+        $this->requestPrivacy = new RequestPrivacy($this->request, $this->config);
         $result               = $this->requestPrivacy->isInternalRequest();
 
         // Assert
@@ -224,28 +214,24 @@ final class RequestPrivacyTest extends TestCase
             ->andReturn($apiKey);
 
         // Mock config calls
-        $this->app->shouldReceive('make')
-            ->with('config')
-            ->andReturn($this->app);
-
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.disable_ip_check')
             ->andReturn(false);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.trusted_ips')
             ->andReturn($trustedIps);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.disable_key_check')
             ->andReturn(false);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.ssr_api_key')
             ->andReturn($validApiKey);
 
         // Act
-        $this->requestPrivacy = new RequestPrivacy($this->request);
+        $this->requestPrivacy = new RequestPrivacy($this->request, $this->config);
         $result               = $this->requestPrivacy->isInternalRequest();
 
         // Assert
@@ -259,20 +245,16 @@ final class RequestPrivacyTest extends TestCase
         // No need to mock request methods as they shouldn't be called
 
         // Mock config calls
-        $this->app->shouldReceive('make')
-            ->with('config')
-            ->andReturn($this->app);
-
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.disable_ip_check')
             ->andReturn(true);
 
-        $this->app->shouldReceive('get')
+        $this->config->shouldReceive('get')
             ->with('tenant.privacy.disable_key_check')
             ->andReturn(true);
 
         // Act
-        $this->requestPrivacy = new RequestPrivacy($this->request);
+        $this->requestPrivacy = new RequestPrivacy($this->request, $this->config);
         $result               = $this->requestPrivacy->isInternalRequest();
 
         // Assert

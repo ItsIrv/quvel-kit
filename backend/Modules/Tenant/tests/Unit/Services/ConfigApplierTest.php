@@ -3,6 +3,7 @@
 namespace Modules\Tenant\Tests\Unit\Services;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Support\Facades\Context;
 use Mockery;
 use Mockery\MockInterface;
 use Modules\Tenant\Models\Tenant;
@@ -38,8 +39,8 @@ final class ConfigApplierTest extends TestCase
     {
         parent::setUp();
 
-        $this->tenant = Mockery::mock(Tenant::class);
-        $this->config = Mockery::mock(ConfigRepository::class);
+        $this->tenant       = Mockery::mock(Tenant::class);
+        $this->config       = Mockery::mock(ConfigRepository::class);
         $this->tenantConfig = Mockery::mock(TenantConfig::class);
     }
 
@@ -47,67 +48,88 @@ final class ConfigApplierTest extends TestCase
     public function testAppliesTenantConfigToAppConfig(): void
     {
         // Arrange
-        // Set up tenant config properties
-        $this->tenantConfig->appName = 'Test Tenant';
-        $this->tenantConfig->appEnv = 'testing';
-        $this->tenantConfig->appKey = 'test-key';
-        $this->tenantConfig->appDebug = true;
-        $this->tenantConfig->appUrl = 'https://test.example.com';
-        $this->tenantConfig->frontendUrl = 'https://app.test.example.com';
-        $this->tenantConfig->internalApiUrl = 'https://internal-api.test.example.com';
-        $this->tenantConfig->capacitorScheme = 'test-scheme';
-        $this->tenantConfig->appLocale = 'en';
-        $this->tenantConfig->appFallbackLocale = 'en';
-        $this->tenantConfig->logChannel = 'stack';
-        $this->tenantConfig->logLevel = 'debug';
-        $this->tenantConfig->dbConnection = 'mysql';
-        $this->tenantConfig->dbHost = 'localhost';
-        $this->tenantConfig->dbPort = 3306;
-        $this->tenantConfig->dbDatabase = 'test_db';
-        $this->tenantConfig->dbUsername = 'test_user';
-        $this->tenantConfig->dbPassword = 'test_password';
-        $this->tenantConfig->sessionDriver = 'file';
-        $this->tenantConfig->sessionLifetime = 120;
-        $this->tenantConfig->sessionEncrypt = false;
-        $this->tenantConfig->sessionPath = '/';
-        $this->tenantConfig->sessionDomain = 'test.example.com';
-        $this->tenantConfig->sessionCookie = 'test_session';
-        $this->tenantConfig->cacheStore = 'file';
-        $this->tenantConfig->cachePrefix = 'test_';
-        $this->tenantConfig->redisClient = 'phpredis';
-        $this->tenantConfig->redisHost = 'localhost';
-        $this->tenantConfig->redisPassword = null;
-        $this->tenantConfig->redisPort = 6379;
-        $this->tenantConfig->mailMailer = 'smtp';
-        $this->tenantConfig->mailHost = 'smtp.example.com';
-        $this->tenantConfig->mailPort = 587;
-        $this->tenantConfig->mailUsername = 'test@example.com';
-        $this->tenantConfig->mailPassword = 'mail_password';
-        $this->tenantConfig->mailFromAddress = 'no-reply@example.com';
-        $this->tenantConfig->mailFromName = 'Test App';
-        $this->tenantConfig->awsAccessKeyId = 'aws_key';
-        $this->tenantConfig->awsSecretAccessKey = 'aws_secret';
-        $this->tenantConfig->awsDefaultRegion = 'us-west-2';
-        $this->tenantConfig->awsBucket = 'test-bucket';
-        $this->tenantConfig->awsUsePathStyleEndpoint = true;
-        $this->tenantConfig->socialiteProviders = ['github', 'google'];
-        $this->tenantConfig->socialiteNonceTtl = 3600;
-        $this->tenantConfig->socialiteTokenTtl = 86400;
-        $this->tenantConfig->hmacSecretKey = 'hmac_secret';
-        $this->tenantConfig->oauthCredentials = [
-            'github' => [
-                'client_id' => 'github_client_id',
-                'client_secret' => 'github_client_secret',
+        // Create a TenantConfig instance with all required properties
+        $tenantConfig = new TenantConfig(
+            appUrl: 'https://test.example.com',
+            frontendUrl: 'https://app.test.example.com',
+            internalApiUrl: 'https://internal-api.test.example.com',
+            appDebug: true,
+            appTimezone: 'UTC',
+            appKey: 'test-key',
+            appName: 'Test Tenant',
+            appEnv: 'testing',
+            appLocale: 'en',
+            appFallbackLocale: 'en',
+            logChannel: 'stack',
+            logLevel: 'debug',
+            dbConnection: 'mysql',
+            dbHost: 'localhost',
+            dbPort: 3306,
+            dbDatabase: 'test_db',
+            dbUsername: 'test_user',
+            dbPassword: 'test_password',
+            sessionDriver: 'file',
+            sessionLifetime: 120,
+            sessionEncrypt: false,
+            sessionPath: '/',
+            sessionDomain: 'test.example.com',
+            sessionCookie: 'test_session',
+            cacheStore: 'file',
+            cachePrefix: 'test_',
+            redisClient: 'phpredis',
+            redisHost: 'localhost',
+            redisPassword: null,
+            redisPort: 6379,
+            mailMailer: 'smtp',
+            mailScheme: null,
+            mailHost: 'smtp.example.com',
+            mailPort: 587,
+            mailUsername: 'test@example.com',
+            mailPassword: 'mail_password',
+            mailFromAddress: 'no-reply@example.com',
+            mailFromName: 'Test App',
+            capacitorScheme: 'test-scheme',
+            awsAccessKeyId: 'aws_key',
+            awsSecretAccessKey: 'aws_secret',
+            awsDefaultRegion: 'us-west-2',
+            awsBucket: 'test-bucket',
+            awsUsePathStyleEndpoint: true,
+            socialiteProviders: ['github', 'google'],
+            socialiteNonceTtl: 3600,
+            socialiteTokenTtl: 86400,
+            pusherAppId: 'pusher_app_id',
+            pusherAppKey: 'pusher_app_key',
+            pusherAppSecret: 'pusher_app_secret',
+            pusherAppCluster: 'pusher_app_cluster',
+            pusherPort: 443,
+            pusherScheme: 'https',
+            hmacSecretKey: 'hmac_secret',
+            recaptchaGoogleSecret: 'recaptcha_google_secret',
+            disableSocialite: false,
+            verifyEmailBeforeLogin: true,
+            oauthCredentials: [
+                'github' => [
+                    'client_id'     => 'github_client_id',
+                    'client_secret' => 'github_client_secret',
+                ],
+                'google' => [
+                    'client_id'     => 'google_client_id',
+                    'client_secret' => 'google_client_secret',
+                ],
             ],
-            'google' => [
-                'client_id' => 'google_client_id',
-                'client_secret' => 'google_client_secret',
-            ],
-        ];
+        );
+
+        // Replace the mocked tenantConfig with the real instance
+        $this->tenantConfig = $tenantConfig;
 
         $this->tenant->shouldReceive('getEffectiveConfig')
             ->once()
             ->andReturn($this->tenantConfig);
+
+        $this->tenant->shouldReceive('getAttribute')
+            ->twice()
+            ->with('public_id')
+            ->andReturn('test-tenant-id');
 
         // Expect config settings to be applied
         // Core App Settings
@@ -186,10 +208,29 @@ final class ConfigApplierTest extends TestCase
         $this->config->shouldReceive('set')->with('services.google.client_secret', 'google_client_secret')->once();
         $this->config->shouldReceive('set')->with('services.google.redirect', 'https://test.example.com/auth/provider/google/callback')->once();
 
+        // Pusher
+        $this->config->shouldReceive('set')->with('broadcasting.connections.pusher.key', 'pusher_app_key')->once();
+        $this->config->shouldReceive('set')->with('broadcasting.connections.pusher.secret', 'pusher_app_secret')->once();
+        $this->config->shouldReceive('set')->with('broadcasting.connections.pusher.app_id', 'pusher_app_id')->once();
+        $this->config->shouldReceive('set')->with('broadcasting.connections.pusher.options.cluster', 'pusher_app_cluster')->once();
+        $this->config->shouldReceive('set')->with('broadcasting.connections.pusher.options.port', 443)->once();
+        $this->config->shouldReceive('set')->with('broadcasting.connections.pusher.options.scheme', 'https')->once();
+
+        // CORS
+        $this->config->shouldReceive('set')->with('cors.allowed_origins', ['https://test.example.com', 'https://app.test.example.com'])->once();
+
+        // Auth
+        $this->config->shouldReceive('set')->with('auth.disable_socialite', false)->once();
+        $this->config->shouldReceive('set')->with('auth.verify_email_before_login', true)->once();
+
+        // Recaptcha
+        $this->config->shouldReceive('set')->with('core.recaptcha.google.secret', 'recaptcha_google_secret')->once();
+
+        // Context
+        Context::shouldReceive('add')->with('tenant_id', $this->tenant->public_id)->once();
+
         // Act
         ConfigApplier::apply($this->tenant, $this->config);
-
-        // No assertion needed as we're verifying the expectations on the mock
     }
 
     #[TestDox('It should throw exception when tenant config is missing')]

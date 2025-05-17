@@ -27,8 +27,8 @@ class TenantDumpFeatureTest extends TestCase
         $response->assertOk()
             ->assertJson([
                 'data' => [
-                    'id' => $this->tenant->public_id,
-                    'name' => $this->tenant->name,
+                    'id'     => $this->tenant->public_id,
+                    'name'   => $this->tenant->name,
                     'domain' => $this->tenant->domain,
                 ],
             ]);
@@ -37,13 +37,10 @@ class TenantDumpFeatureTest extends TestCase
     /**
      * Test retrieving the tenant fails when tenant is incorrect or does not exist.
      */
-    public function testTenantDumpThrowsExceptionWithoutTenat(): void
+    public function testTenantDumpThrowsExceptionWithoutTenant(): void
     {
         // Simulate incorrect tenant by deleting all.
         DB::table('tenants')->delete();
-
-        $this->withoutExceptionHandling();
-        $this->expectException(Exception::class);
 
         $this->withoutExceptionHandling();
         $this->expectException(Exception::class);
