@@ -21,7 +21,7 @@ export class ConfigService {
         pusherAppKey: import.meta.env.VITE_PUSHER_APP_KEY ?? '',
         pusherAppCluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? '',
         socialiteProviders: import.meta.env.VITE_SOCIALITE_PROVIDERS?.split(',') ?? [],
-        sessionName: import.meta.env.VITE_SESSION_NAME ?? SessionName,
+        sessionCookie: import.meta.env.VITE_SESSION_NAME ?? SessionName,
         recaptchaGoogleSiteKey: import.meta.env.VITE_RECAPTCHA_GOOGLE_SITE_KEY ?? '',
       };
   }

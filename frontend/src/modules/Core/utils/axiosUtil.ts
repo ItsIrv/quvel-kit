@@ -54,14 +54,15 @@ export function createApi(
 
   if (ssrContext) {
     const cookies = Cookies.parseSSR(ssrContext);
-    const sessionToken = cookies.get(configOverrides?.sessionName ?? SessionName);
+    const sessionCookie = configOverrides?.sessionCookie ?? SessionName;
+    const sessionToken = cookies.get(sessionCookie);
 
     // Attach session cookie (for authentication)
     api.defaults.headers['Host'] = '';
     api.defaults.maxRedirects = 0;
 
     if (isValidSessionToken(sessionToken)) {
-      api.defaults.headers.Cookie = `${SessionName}=${sessionToken}`;
+      api.defaults.headers.Cookie = `${sessionCookie}=${sessionToken}`;
     }
 
     api.defaults.headers['X-Tenant-Domain'] = configOverrides?.apiUrl ?? '';

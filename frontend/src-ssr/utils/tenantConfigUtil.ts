@@ -15,7 +15,7 @@ export function createTenantConfigFromEnv(): TenantConfigProtected {
     pusherAppKey: process.env.VITE_PUSHER_APP_KEY || '',
     pusherAppCluster: process.env.VITE_PUSHER_APP_CLUSTER || '',
     socialiteProviders: (process.env.VITE_SOCIALITE_PROVIDERS || '').split(',').filter(Boolean),
-    sessionName: process.env.VITE_SESSION_NAME || '',
+    sessionCookie: process.env.VITE_SESSION_NAME || '',
     recaptchaGoogleSiteKey: process.env.VITE_RECAPTCHA_GOOGLE_SITE_KEY || '',
     __visibility: {
       apiUrl: 'public',
@@ -26,7 +26,7 @@ export function createTenantConfigFromEnv(): TenantConfigProtected {
       pusherAppKey: 'public',
       pusherAppCluster: 'public',
       socialiteProviders: 'public',
-      sessionName: 'protected',
+      sessionCookie: 'protected',
       recaptchaGoogleSiteKey: 'public',
     },
   };

@@ -107,7 +107,7 @@ class TenantConfigFactory
             'visibility'              => [
                 'internalApiUrl'         => TenantConfigVisibility::PROTECTED ,
                 'frontendUrl'            => TenantConfigVisibility::PROTECTED ,
-                'sessionName'            => TenantConfigVisibility::PROTECTED ,
+                'sessionCookie'          => TenantConfigVisibility::PROTECTED ,
                 'appUrl'                 => TenantConfigVisibility::PUBLIC ,
                 'appName'                => TenantConfigVisibility::PUBLIC ,
                 'pusherAppKey'           => TenantConfigVisibility::PUBLIC ,
