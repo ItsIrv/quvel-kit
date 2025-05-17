@@ -54,7 +54,7 @@ export class TenantCacheService {
    * @returns The tenant configuration or null if not found.
    */
   public async getTenantConfigByDomain(domain: string): Promise<TenantConfigProtected | null> {
-    if (this.preloadMode) {
+    if (this.preloadMode && process.env.NODE_ENV === 'production') {
       const tenant = this.tenantMap.get(domain);
 
       if (!tenant?.config) return null;
@@ -67,7 +67,7 @@ export class TenantCacheService {
     const now = Date.now();
     const cached = this.domainCache.get(domain);
 
-    if (cached && cached.expiresAt > now) {
+    if (cached && cached.expiresAt > now && process.env.NODE_ENV === 'production') {
       return cached.config;
     }
 

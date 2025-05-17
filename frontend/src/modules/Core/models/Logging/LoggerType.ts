@@ -1,7 +1,7 @@
 /**
  * Logger type enumeration
  */
-export const LoggerType = {
-  NULL: 'null',
-  CONSOLE: 'console',
-};
+export enum LoggerType {
+  NULL = 'null',
+  CONSOLE = 'console',
+}

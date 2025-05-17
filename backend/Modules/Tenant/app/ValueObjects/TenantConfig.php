@@ -51,6 +51,7 @@ class TenantConfig implements Arrayable
     public readonly ?bool $sessionEncrypt;
     public readonly ?string $sessionPath;
     public readonly ?string $sessionDomain;
+    public readonly ?string $sessionCookie;
     public readonly ?string $cacheStore;
     public readonly ?string $cachePrefix;
 
@@ -95,6 +96,8 @@ class TenantConfig implements Arrayable
     public readonly ?string $hmacSecretKey;
     public readonly ?bool $disableSocialite;
     public readonly ?bool $verifyEmailBeforeLogin;
+    public readonly ?string $recaptchaGoogleSecret;
+    public readonly ?string $recaptchaGoogleSiteKey;
 
     // Frontend visibility control
     public readonly array $visibility;
@@ -132,6 +135,7 @@ class TenantConfig implements Arrayable
         ?bool $sessionEncrypt = null,
         ?string $sessionPath = null,
         ?string $sessionDomain = null,
+        ?string $sessionCookie = null,
         ?string $cacheStore = null,
         ?string $cachePrefix = null,
         ?string $redisClient = null,
@@ -162,6 +166,8 @@ class TenantConfig implements Arrayable
         ?string $hmacSecretKey = null,
         ?bool $disableSocialite = false,
         ?bool $verifyEmailBeforeLogin = false,
+        ?string $recaptchaGoogleSecret = null,
+        ?string $recaptchaGoogleSiteKey = null,
         ?array $visibility = [],
     ) {
         $this->appName     = $appName;
@@ -195,6 +201,7 @@ class TenantConfig implements Arrayable
         $this->sessionEncrypt  = $sessionEncrypt;
         $this->sessionPath     = $sessionPath;
         $this->sessionDomain   = $sessionDomain;
+        $this->sessionCookie   = $sessionCookie;
         $this->cacheStore      = $cacheStore;
         $this->cachePrefix     = $cachePrefix;
 
@@ -233,6 +240,8 @@ class TenantConfig implements Arrayable
         $this->hmacSecretKey          = $hmacSecretKey;
         $this->disableSocialite       = $disableSocialite;
         $this->verifyEmailBeforeLogin = $verifyEmailBeforeLogin;
+        $this->recaptchaGoogleSecret  = $recaptchaGoogleSecret;
+        $this->recaptchaGoogleSiteKey = $recaptchaGoogleSiteKey;
 
         $this->visibility = $visibility;
     }
@@ -277,6 +286,7 @@ class TenantConfig implements Arrayable
             'sessionEncrypt'          => (bool) ($data['session_encrypt'] ?? false),
             'sessionPath'             => $data['session_path'] ?? '/',
             'sessionDomain'           => $data['session_domain'] ?? '',
+            'sessionCookie'           => $data['session_cookie'] ?? '',
             'cacheStore'              => $data['cache_store'] ?? 'file',
             'cachePrefix'             => $data['cache_prefix'] ?? '',
 
@@ -321,6 +331,8 @@ class TenantConfig implements Arrayable
             'hmacSecretKey'           => $data['hmac_secret_key'] ?? null,
             'disableSocialite'        => $data['disable_socialite'] ?? null,
             'verifyEmailBeforeLogin'  => $data['verify_email_before_login'] ?? null,
+            'recaptchaGoogleSecret'   => $data['recaptcha_google_secret'] ?? null,
+            'recaptchaGoogleSiteKey'  => $data['recaptcha_google_site_key'] ?? null,
 
             // Visibility
             'visibility'              => array_map(
@@ -373,6 +385,7 @@ class TenantConfig implements Arrayable
             'session_encrypt'             => $this->sessionEncrypt,
             'session_path'                => $this->sessionPath,
             'session_domain'              => $this->sessionDomain,
+            'session_cookie'              => $this->sessionCookie,
             'cache_store'                 => $this->cacheStore,
             'cache_prefix'                => $this->cachePrefix,
 
@@ -417,6 +430,8 @@ class TenantConfig implements Arrayable
             'hmac_secret_key'             => $this->hmacSecretKey,
             'disable_socialite'           => $this->disableSocialite,
             'verify_email_before_login'   => $this->verifyEmailBeforeLogin,
+            'recaptcha_google_secret'     => $this->recaptchaGoogleSecret,
+            'recaptcha_google_site_key'   => $this->recaptchaGoogleSiteKey,
             // Visibility
             '__visibility'                => array_map(
                 static fn (TenantConfigVisibility $v) => $v->value,

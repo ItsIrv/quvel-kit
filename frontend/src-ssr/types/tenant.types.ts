@@ -1,3 +1,5 @@
+import { TenantConfig } from 'src/modules/Core/types/tenant.types';
+
 /**
  * The tenant model.
  */
@@ -14,16 +16,8 @@ export interface Tenant {
 /**
  * The tenant configuration (processed config used in app).
  */
-export interface TenantConfigProtected {
-  apiUrl: string;
-  appUrl: string;
-  appName: string;
+export interface TenantConfigProtected extends TenantConfig {
   internalApiUrl?: string;
-  tenantId: string;
-  tenantName: string;
-  pusherAppKey: string;
-  pusherAppCluster: string;
-  socialiteProviders: string[];
   __visibility: TenantConfigVisibilityRecords;
 }
 

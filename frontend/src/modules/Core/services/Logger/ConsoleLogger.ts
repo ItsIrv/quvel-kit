@@ -98,7 +98,7 @@ export class ConsoleLogger implements LoggerInterface {
   /**
    * Logs with an arbitrary level
    */
-  public log(level: string, message: string, context?: Record<string, unknown>): void {
+  public log(level: LogLevel, message: string, context?: Record<string, unknown>): void {
     if (!shouldLog(level)) {
       return;
     }

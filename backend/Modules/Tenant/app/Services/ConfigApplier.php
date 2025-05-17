@@ -59,6 +59,7 @@ class ConfigApplier
         $appConfig->set('session.encrypt', $config->sessionEncrypt);
         $appConfig->set('session.path', $config->sessionPath);
         $appConfig->set('session.domain', $config->sessionDomain);
+        $appConfig->set('session.cookie', $config->sessionCookie);
 
         // Cache
         $appConfig->set('cache.default', $config->cacheStore);
@@ -120,12 +121,10 @@ class ConfigApplier
         $urlGenerator->forceRootUrl($config->appUrl);
 
         // TODO: Need a way for modules to register their own dynamic configs
-        // all the way down to the seeder level
+        // all the way down to the seeder level up to dynamic runtime
         $appConfig->set('auth.disable_socialite', $config->disableSocialite);
         $appConfig->set('auth.verify_email_before_login', $config->verifyEmailBeforeLogin);
-
-        // TODO: add google recaptcha key, this brings up that we need to be able to
-        // register config at runtime with dynamic keys.
+        $appConfig->set('core.recaptcha.google.secret', $config->recaptchaGoogleSecret);
 
         // Laravel Context
         Context::add('tenant_id', $tenant->public_id);

@@ -56,6 +56,7 @@ class TenantConfigFactory
             'sessionEncrypt'          => env('SESSION_ENCRYPT', false),
             'sessionPath'             => env('SESSION_PATH', '/'),
             'sessionDomain'           => env('SESSION_DOMAIN', ''),
+            'sessionCookie'           => env('SESSION_COOKIE', 'quvel_session'),
             'cacheStore'              => env('CACHE_STORE', 'file'),
             'cachePrefix'             => env('CACHE_PREFIX', ''),
             // Redis
@@ -100,15 +101,19 @@ class TenantConfigFactory
             'disableSocialite'        => env('DISABLE_SOCIALITE', false),
             'verifyEmailBeforeLogin'  => env('VERIFY_EMAIL_BEFORE_LOGIN', true),
             'capacitorScheme'         => $capacitorScheme,
+            'recaptchaGoogleSecret'   => env('RECAPTCHA_GOOGLE_SECRET', null),
+            'recaptchaGoogleSiteKey'  => env('RECAPTCHA_GOOGLE_SITE_KEY', null),
             // Visibility
             'visibility'              => [
-                'internalApiUrl'     => TenantConfigVisibility::PROTECTED ,
-                'frontendUrl'        => TenantConfigVisibility::PROTECTED ,
-                'appUrl'             => TenantConfigVisibility::PUBLIC ,
-                'appName'            => TenantConfigVisibility::PUBLIC ,
-                'pusherAppKey'       => TenantConfigVisibility::PUBLIC ,
-                'pusherAppCluster'   => TenantConfigVisibility::PUBLIC ,
-                'socialiteProviders' => TenantConfigVisibility::PUBLIC ,
+                'internalApiUrl'         => TenantConfigVisibility::PROTECTED ,
+                'frontendUrl'            => TenantConfigVisibility::PROTECTED ,
+                'sessionName'            => TenantConfigVisibility::PROTECTED ,
+                'appUrl'                 => TenantConfigVisibility::PUBLIC ,
+                'appName'                => TenantConfigVisibility::PUBLIC ,
+                'pusherAppKey'           => TenantConfigVisibility::PUBLIC ,
+                'pusherAppCluster'       => TenantConfigVisibility::PUBLIC ,
+                'socialiteProviders'     => TenantConfigVisibility::PUBLIC ,
+                'recaptchaGoogleSiteKey' => TenantConfigVisibility::PUBLIC ,
             ],
         ];
 

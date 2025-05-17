@@ -24,10 +24,36 @@ class HostResolver implements TenantResolver
     }
 
     /**
+     * Resolve the tenant from cache or database.
+     */
+    public function resolveTenant(): Tenant
+    {
+        $host = $this->getHost();
+
+        if (app()->isLocal()) {
+            return $this->resolveTenantFromDatabase();
+        }
+
+        return $this->cache->remember(
+            $host,
+            config('tenant.tenant_cache.resolver_ttl'),
+            fn (): Tenant => $this->resolveTenantFromDatabase()
+        );
+    }
+
+    protected function resolveTenantFromDatabase(): Tenant
+    {
+        return $this->tenantFindService->findTenantByDomain($this->getHost())
+            ?? throw new HttpResponseException(
+                app(FrontendService::class)->redirect(''),
+            );
+    }
+
+    /**
      * Gets the domain to use for tenant resolution.
      * Uses header `X-Tenant-Domain` if the request is internal.
      */
-    public function getHost(): string
+    protected function getHost(): string
     {
         $host       = $this->request->getHost();
         $customHost = parse_url(
@@ -43,22 +69,5 @@ class HostResolver implements TenantResolver
         }
 
         return $host;
-    }
-
-    /**
-     * Resolve the tenant from cache or database.
-     */
-    public function resolveTenant(): Tenant
-    {
-        $host = $this->getHost();
-
-        return $this->cache->remember(
-            $host,
-            config('tenant.tenant_cache.resolver_ttl'),
-            fn (): Tenant => $this->tenantFindService->findTenantByDomain($host)
-            ?? throw new HttpResponseException(
-                app(FrontendService::class)->redirect(''),
-            )
-        );
     }
 }

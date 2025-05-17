@@ -43,6 +43,13 @@ export class ApiService extends Service implements RegisterService {
     super();
 
     this.api = apiInstance;
+
+    // Add request interceptor to track timing
+    this.api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+      config.metadata = { startTime: Date.now() };
+
+      return config;
+    });
   }
 
   /**

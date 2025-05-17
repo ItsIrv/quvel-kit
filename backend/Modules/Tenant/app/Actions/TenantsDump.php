@@ -23,7 +23,7 @@ class TenantsDump
     ): AnonymousResourceCollection {
         $tenants = [];
 
-        if ($cache->has(self::CACHE_KEY)) {
+        if (!app()->isLocal() && $cache->has(self::CACHE_KEY)) {
             $tenants = $cache->get(self::CACHE_KEY);
         } else {
             $tenants = $tenantFindService->findAll();

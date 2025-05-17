@@ -1,8 +1,4 @@
-import axios, {
-  type AxiosInstance,
-  type AxiosRequestConfig,
-  InternalAxiosRequestConfig,
-} from 'axios';
+import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { Cookies } from 'quasar';
 import type { QSsrContext } from '@quasar/app-vite';
 import { SessionName } from 'src/modules/Auth/models/Session';
@@ -25,13 +21,6 @@ declare module 'axios' {
 
 export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance {
   const instance = axios.create(axiosConfig);
-
-  // Add request interceptor to track timing
-  instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-    config.metadata = { startTime: Date.now() };
-
-    return config;
-  });
 
   return instance;
 }
@@ -65,7 +54,7 @@ export function createApi(
 
   if (ssrContext) {
     const cookies = Cookies.parseSSR(ssrContext);
-    const sessionToken = cookies.get(SessionName);
+    const sessionToken = cookies.get(configOverrides?.sessionName ?? SessionName);
 
     // Attach session cookie (for authentication)
     api.defaults.headers['Host'] = '';
@@ -75,14 +64,8 @@ export function createApi(
       api.defaults.headers.Cookie = `${SessionName}=${sessionToken}`;
     }
 
-    // If the internal api url is set, and it does not match the api url, set the custom domain header
-    if (
-      configOverrides?.internalApiUrl &&
-      configOverrides.internalApiUrl !== configOverrides.apiUrl
-    ) {
-      api.defaults.headers['X-Tenant-Domain'] = configOverrides.apiUrl;
-      api.defaults.headers['X-SSR-Key'] = process.env.SSR_API_KEY ?? '';
-    }
+    api.defaults.headers['X-Tenant-Domain'] = configOverrides?.apiUrl ?? '';
+    api.defaults.headers['X-SSR-Key'] = process.env.SSR_API_KEY ?? '';
   } else {
     // TODO: On browser, add interceptors for XSRF expired/missing
   }

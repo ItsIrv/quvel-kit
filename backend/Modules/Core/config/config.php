@@ -37,7 +37,8 @@ return [
          * Google recaptcha configuration.
          */
         'google'   => [
-            'secret' => env('RECAPTCHA_SECRET'),
+            'secret'  => env('RECAPTCHA_GOOGLE_SECRET'),
+            'siteKey' => env('RECAPTCHA_GOOGLE_SITE_KEY'),
         ],
     ],
 ];
