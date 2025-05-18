@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import ProjectLinks from 'src/modules/Quvel/components/Pages/LandingPage/ProjectLinks.vue';
+import ProjectLinks from 'src/modules/Quvel/components/Layouts/MainLayout/ProjectLinks.vue';
 </script>
 
 <template>
@@ -9,8 +9,6 @@ import ProjectLinks from 'src/modules/Quvel/components/Pages/LandingPage/Project
       Essential resources for development, testing, and documentation.
     </p>
 
-    <ProjectLinks
-      class="LandingProjectLinks grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-    />
+    <ProjectLinks class="LandingProjectLinks grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" />
   </section>
 </template>

@@ -6,7 +6,7 @@
 import { computed } from 'vue';
 import LanguageSwitcher from 'src/modules/Core/components/Misc/LanguageSwitcher.vue';
 import ThemeSwitcher from 'src/modules/Core/components/Misc/ThemeSwitcher.vue';
-import ProjectLinks from 'src/modules/Quvel/components/Pages/LandingPage/ProjectLinks.vue';
+import ProjectLinks from 'src/modules/Quvel/components/Layouts/MainLayout/ProjectLinks.vue';
 
 /**
  * Props

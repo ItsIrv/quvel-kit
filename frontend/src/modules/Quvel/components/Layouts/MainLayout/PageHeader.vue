@@ -2,8 +2,8 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import QuvelKit from 'src/modules/Quvel/components/Common/QuvelKit.vue';
-import AuthMenu from 'src/modules/Quvel/components/Pages/LandingPage/AuthMenu.vue';
-import MenuList from 'src/modules/Quvel/components/Pages/LandingPage/MenuList.vue';
+import AuthMenu from 'src/modules/Quvel/components/Layouts/MainLayout/AuthMenu.vue';
+import MenuList from 'src/modules/Quvel/components/Layouts/MainLayout/MenuList.vue';
 
 /**
  * Emits
@@ -44,15 +44,13 @@ onUnmounted(() => {
 
 <template>
   <header class="relative flex justify-center pt-6">
-    <nav
-      :class="[
-        'LanderNav',
-        isHidden
-          ? 'opacity-0 -translate-y-10 pointer-events-none'
-          : 'opacity-100 translate-y-0 pointer-events-auto',
-        sessionStore.isAuthenticated ? 'max-w-5xl' : 'max-w-2xl',
-      ]"
-    >
+    <nav :class="[
+      'LanderNav',
+      isHidden
+        ? 'opacity-0 -translate-y-10 pointer-events-none'
+        : 'opacity-100 translate-y-0 pointer-events-auto',
+      sessionStore.isAuthenticated ? 'max-w-5xl' : 'max-w-2xl',
+    ]">
       <div class="row items-center">
         <QuvelKit :link="true" />
 

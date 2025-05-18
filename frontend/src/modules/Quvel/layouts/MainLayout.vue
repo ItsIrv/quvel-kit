@@ -3,12 +3,12 @@ import { defineAsyncComponent, ref, watch } from 'vue';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
 import ClientOnly from 'src/modules/Core/components/Misc/ClientOnly.vue';
-import PageHeader from 'src/modules/Quvel/components/Pages/LandingPage/PageHeader.vue';
-import PageFooter from 'src/modules/Quvel/components/Pages/LandingPage/PageFooter.vue';
+import PageHeader from 'src/modules/Quvel/components/Layouts/MainLayout/PageHeader.vue';
+import PageFooter from 'src/modules/Quvel/components/Layouts/MainLayout/PageFooter.vue';
 
 const AuthDialog = defineAsyncComponent(() => import('src/modules/Auth/components/Dialogs/AuthDialog.vue'));
-const MenuRightDrawer = defineAsyncComponent(() => import('src/modules/Quvel/components/Pages/LandingPage/MenuRightDrawer.vue'));
-const MenuLeftDrawer = defineAsyncComponent(() => import('src/modules/Quvel/components/Pages/LandingPage/MenuLeftDrawer.vue'));
+const MenuRightDrawer = defineAsyncComponent(() => import('src/modules/Quvel/components/Layouts/MainLayout/MenuRightDrawer.vue'));
+const MenuLeftDrawer = defineAsyncComponent(() => import('src/modules/Quvel/components/Layouts/MainLayout/MenuLeftDrawer.vue'));
 
 /**
  * Services
