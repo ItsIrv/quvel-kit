@@ -24,6 +24,7 @@ The service container provides these core services:
 | `task`      | Async operation orchestration | [Task Management](./frontend-task-management.md) |
 | `ws`        | Real-time communication with Laravel Echo | [WebSockets](./frontend-websockets.md) |
 | `config`    | Configuration with tiered visibility system | [Configuration Service](./frontend-config-service.md) |
+| `log`       | Logging service for client and server | [Logging Service](./frontend-logging.md) |
 
 ## Using the Service Container
 
@@ -89,7 +90,9 @@ export class NotificationService extends Service implements RegisterService {
 
 ## Dynamic Service Registration
 
-You can register your own services to the container:
+You can register your own services to the container in multiple ways:
+
+### Using Class Constructor
 
 ```ts
 import { NotificationService } from './NotificationService';
@@ -97,12 +100,38 @@ import { NotificationService } from './NotificationService';
 // Get the container
 const container = useContainer();
 
-// Add a service
-container.addService("notification", new NotificationService());
+// Get or lazily create a service by class constructor
+const notification = container.get(NotificationService);
+notification.send("Operation completed");
+```
 
-// Retrieve a service with proper typing
-const notification = container.getService<NotificationService>("notification");
-notification?.send("Operation completed");
+### Using Factory Function
+
+```ts
+import { NotificationService } from './NotificationService';
+
+// Get the container
+const container = useContainer();
+
+// Get or lazily create a service by factory function
+const notification = container.get(() => new NotificationService());
+notification.send("Operation completed");
+```
+
+### Using addService Method
+
+```ts
+import { NotificationService } from './NotificationService';
+
+// Get the container
+const container = useContainer();
+
+// Add a service instance
+container.addService(NotificationService, new NotificationService());
+
+// Later, retrieve the service
+const notification = container.get(NotificationService);
+notification.send("Operation completed");
 ```
 
 ## Rules and Gotchas

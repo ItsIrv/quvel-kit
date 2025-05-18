@@ -34,13 +34,27 @@ QuVel Kit implements a security-focused visibility system for configuration valu
 ```ts
 // Example configuration with visibility
 {
-  "api_url": "https://api.example.com",
-  "api_key": "secret-key-123",
-  "tenant_name": "Example Tenant",
+  "apiUrl": "https://api.example.com",
+  "appUrl": "https://app.example.com",
+  "appName": "Example App",
+  "tenantId": "1",
+  "tenantName": "Example Tenant",
+  "pusherAppKey": "app-key-123",
+  "pusherAppCluster": "us2",
+  "socialiteProviders": ["google", "github"],
+  "sessionCookie": "quvel_session",
+  "recaptchaGoogleSiteKey": "recaptcha-key-123",
   "__visibility": {
-    "api_url": "public",
-    "api_key": "protected",
-    "tenant_name": "public"
+    "apiUrl": "public",
+    "appUrl": "public",
+    "appName": "public",
+    "tenantId": "public",
+    "tenantName": "public",
+    "pusherAppKey": "public",
+    "pusherAppCluster": "public",
+    "socialiteProviders": "public",
+    "sessionCookie": "protected",
+    "recaptchaGoogleSiteKey": "public"
   }
 }
 ```
@@ -65,7 +79,7 @@ import { useContainer } from 'src/modules/Core/composables/useContainer';
 const { config } = useContainer();
 
 // Get a specific config value
-const apiUrl = config.get('api_url');
+const apiUrl = config.get('apiUrl');
 
 // Get all available config values
 const allConfig = config.getAll();
@@ -113,25 +127,6 @@ The ConfigService uses the following priority order when loading configuration:
 2. Browser-injected configuration (`window.__TENANT_CONFIG__`)
 3. Environment variables (lowest priority)
 
-```ts
-// From ConfigService.ts
-constructor(ssrConfig?: TenantConfig) {
-  // Check if running in browser and `window.__TENANT_CONFIG__` is available
-  const clientConfig =
-    typeof window !== 'undefined' && window.__TENANT_CONFIG__ ? window.__TENANT_CONFIG__ : null;
-
-  // Prefer SSR config > Client Hydrated Config > Environment Variables
-  this.config = ssrConfig ??
-    clientConfig ?? {
-      api_url: import.meta.env.VITE_API_URL ?? '',
-      app_url: import.meta.env.VITE_APP_URL ?? '',
-      app_name: import.meta.env.VITE_APP_NAME ?? 'QuVel',
-      tenant_id: import.meta.env.VITE_TENANT_ID ?? '',
-      tenant_name: import.meta.env.VITE_TENANT_NAME ?? '',
-    };
-}
-```
-
 ---
 
 ## Tenant Configuration
@@ -142,12 +137,17 @@ The tenant configuration includes essential application settings:
 
 ```ts
 export interface TenantConfig {
-  api_url: string;         // API endpoint URL
-  app_url: string;         // Frontend application URL
-  app_name: string;        // Application name
-  internal_api_url?: string; // Internal API URL (for SSR)
-  tenant_id: string;       // Current tenant ID
-  tenant_name: string;     // Current tenant name
+  apiUrl: string;              // API endpoint URL
+  appUrl: string;              // Frontend application URL
+  appName: string;             // Application name
+  tenantId: string;            // Current tenant ID
+  tenantName: string;          // Current tenant name
+  pusherAppKey: string;        // Pusher app key for WebSockets
+  pusherAppCluster: string;    // Pusher app cluster
+  socialiteProviders: string[]; // Available OAuth providers
+  sessionCookie: string;       // Session cookie name
+  recaptchaGoogleSiteKey: string; // Google reCAPTCHA site key
+  internalApiUrl?: string;     // Internal API URL (for SSR)
 }
 ```
 
@@ -156,14 +156,9 @@ export interface TenantConfig {
 The SSR context uses an extended configuration type that includes the visibility property:
 
 ```ts
-export interface TenantConfigProtected {
-  api_url: string;
-  app_url: string;
-  app_name: string;
-  internal_api_url?: string;
-  __visibility?: Partial<Record<keyof TenantConfigProtected, TenantConfigVisibility>>;
-  tenant_id: string;
-  tenant_name: string;
+export interface TenantConfigProtected extends TenantConfig {
+  internalApiUrl?: string;
+  __visibility: TenantConfigVisibilityRecords;
 }
 
 export type TenantConfigVisibility = 'public' | 'protected';

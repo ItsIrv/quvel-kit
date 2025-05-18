@@ -4,13 +4,15 @@
 
 The Task Service simplifies asynchronous operations by handling loading states, error handling, success notifications, and lifecycle hooks. It provides a consistent approach to managing API calls and other async processes throughout your application.
 
-## Key Features
+## Core Features
 
-- **State Management** - Tracks loading, success, and error states
-- **Automatic Loading Indicators** - Shows and hides loading spinners
-- **Error Handling** - Built-in Laravel validation error extraction
-- **Success/Error Notifications** - Configurable toast messages
-- **Reactive Properties** - Vue-compatible reactive state
+- **Managed Async Operations** – Handles loading states, errors, and success cases
+- **Automatic Loading Indicators** – Shows and hides loading overlays
+- **Error Handling** – Processes errors with customizable handlers, including Laravel validation errors
+- **Success Handling** – Processes successful responses with customizable handlers
+- **Notifications** – Automatic success/error notifications with customizable messages
+- **Conditional Execution** – Tasks can be conditionally executed based on validation or other conditions
+- **Mutable Options** – Specific task options can be updated at runtime
 
 ## Task Options
 
@@ -27,19 +29,32 @@ The `newTask` method accepts these options:
 | `errorHandlers` | `Function[]` | Functions to run on error |
 | `always` | `Function` | Function that runs regardless of outcome |
 
-## Task States
+### Task Return Value
 
-Each task has reactive state properties you can use in your components:
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `isActive` | `ComputedRef<boolean>` | Whether the task is currently running |
-| `state` | `Ref<'fresh' \| 'active' \| 'success' \| 'error'>` | Current state of the task |
-| `error` | `Ref<unknown>` | The error if one occurred |
-| `errors` | `Ref<ErrorBag>` | Validation errors (Map of field to error message) |
-| `result` | `Ref<Result \| undefined>` | The result of the task |
-| `reset` | `Function` | Method to reset the task state |
-| `run` | `Function` | Method to execute the task |
+```ts
+interface TaskResult<T> {
+  // Is the task currently running?
+  isActive: ComputedRef<boolean>;
+  
+  // Run the task with optional custom options
+  run: (customOptions?: Partial<TaskOptions<T>>) => Promise<T | false>;
+  
+  // Reset the task state
+  reset: () => void;
+  
+  // Current task state
+  state: Ref<TaskState>; // 'fresh' | 'active' | 'success' | 'error'
+  
+  // Error if the task failed
+  error: Ref<unknown>;
+  
+  // Laravel validation errors
+  errors: Ref<ErrorBag>; // Map<string, string>
+  
+  // Result of the task
+  result: Ref<T | undefined>;
+}
+```
 
 ## Creating Tasks
 
@@ -50,49 +65,85 @@ import { useContainer } from 'src/modules/Core/composables/useContainer';
 
 const { task } = useContainer();
 
-// Create a basic task
-const loginTask = task.newTask({
-  // The main function to execute
+// Create a task
+const fetchDataTask = task.newTask({
+  // The main async operation to perform
   task: async () => {
-    return await api.post('/auth/login', { email, password });
+    return await fetch('/api/data').then(res => res.json());
   },
-  
-  // Show loading indicator while running
+  // Show loading overlay during execution
   showLoading: true,
-  
-  // Show success notification when complete
+  // Automatic notifications
   showNotification: {
-    success: 'Login successful',
+    success: true, // Use default success message
+    error: 'Failed to fetch data' // Custom error message
   },
-  
-  // Handle errors (Laravel validation errors)
+  // Custom error handlers
   errorHandlers: [task.errorHandlers.Laravel()],
-  
-  // Execute after success
-  successHandlers: (result) => {
-    // Do something with the result
-  },
+  // Condition to check before running
+  shouldRun: async () => true,
+  // Always execute this callback
+  always: () => console.log('Task completed')
 });
 
 // Run the task
-await loginTask.run();
+const result = await fetchDataTask.run();
+
+// Access task state
+console.log(fetchDataTask.isActive.value); // Is the task currently running?
+console.log(fetchDataTask.state.value); // 'fresh', 'active', 'success', or 'error'
+console.log(fetchDataTask.result.value); // The result of the task
+console.log(fetchDataTask.error.value); // The error if the task failed
+console.log(fetchDataTask.errors.value); // Error bag for Laravel validation errors
 ```
 
-## Error Handling
+### Built-in Error Handlers
 
-The task service includes built-in error handling for Laravel validation errors:
+The task service includes built-in error handlers for common scenarios:
 
 ```ts
-// Create a task with Laravel error handling
-const submitTask = task.newTask({
-  task: async () => { /* API call */ },
-  errorHandlers: [task.errorHandlers.Laravel()],
+// Laravel error handler (processes validation errors)
+const laravelErrorHandler = task.errorHandlers.Laravel();
+
+// Create a task with the Laravel error handler
+const submitFormTask = task.newTask({
+  task: async () => {
+    return await api.post('/api/form', formData);
+  },
+  errorHandlers: [laravelErrorHandler]
 });
 
-// After an error occurs, validation errors are available in a Map
-if (submitTask.errors.value.has('email')) {
-  console.log(submitTask.errors.value.get('email')); // "The email field is required"
-}
+// Access validation errors from the errors map
+const emailError = submitFormTask.errors.value.get('email');
+
+// Check if a field has an error
+const hasEmailError = submitFormTask.errors.value.has('email');
+```
+
+### Using with Form Components
+
+```vue
+<template>
+  <q-form @submit.prevent="submitFormTask.run()">
+    <EmailField 
+      v-model="email"
+      :error-message="submitFormTask.errors.value.get('email')"
+      :error="submitFormTask.errors.value.has('email')"
+    />
+    
+    <PasswordField 
+      v-model="password"
+      :error-message="submitFormTask.errors.value.get('password')"
+      :error="submitFormTask.errors.value.has('password')"
+    />
+    
+    <q-btn 
+      type="submit" 
+      label="Submit"
+      :loading="submitFormTask.isActive.value"
+    />
+  </q-form>
+</template>
 ```
 
 ## Using Tasks in Components and Stores

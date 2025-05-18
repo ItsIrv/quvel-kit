@@ -28,7 +28,7 @@ QuVel Kit's validation system consists of several key components:
 The validation service is accessible through the service container:
 
 ```ts
-import { useContainer } from 'src/composables/useContainer';
+import { useContainer } from 'src/modules/Core/composables/useContainer';
 
 const container = useContainer();
 ```
@@ -133,7 +133,7 @@ const name = nameSchema();
 For validating entire forms with cross-field validation:
 
 ```ts
-import { registerSchema } from 'src/modules/Core/utils/validators/authValidators';
+import { registerSchema } from 'src/modules/Auth/validators/authValidators';
 
 // Validate registration form with password confirmation
 const formData = {
@@ -193,8 +193,8 @@ Integrating validation with the task service for API requests:
 
 ```ts
 import { ref } from 'vue';
-import { useContainer } from 'src/composables/useContainer';
-import { loginSchema } from 'src/modules/Core/utils/validators/authValidators';
+import { useContainer } from 'src/modules/Core/composables/useContainer';
+import { loginSchema } from 'src/modules/Auth/validators/authValidators';
 
 const container = useContainer();
 const email = ref('');
@@ -231,7 +231,7 @@ function login() {
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useContainer } from 'src/composables/useContainer';
+import { useContainer } from 'src/modules/Core/composables/useContainer';
 import EmailField from 'src/modules/Auth/components/Form/EmailField.vue';
 import PasswordField from 'src/modules/Auth/components/Form/PasswordField.vue';
 
@@ -343,7 +343,7 @@ export const changePasswordSchema = () =>
 - **[BaseField.vue](../../frontend/src/modules/Core/components/Form/BaseField.vue)** – Base field component
 - **[EmailField.vue](../../frontend/src/modules/Auth/components/Form/EmailField.vue)** – Email field component
 - **[commonValidators.ts](../../frontend/src/modules/Core/utils/validators/commonValidators.ts)** – Common validation schemas
-- **[authValidators.ts](../../frontend/src/modules/Core/utils/validators/authValidators.ts)** – Auth form validators
+- **[authValidators.ts](../../frontend/src/modules/Auth/validators/authValidators.ts)** – Auth form validators
 
 ---
 

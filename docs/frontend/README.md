@@ -27,8 +27,9 @@ frontend/
 │   ├── modules/         # Feature modules
 │   │   ├── Core/        # Core functionality
 │   │   ├── Auth/        # Authentication
-│   │   ├── User/        # User management
-│   │   └── ...          # Other feature modules
+│   │   ├── Notifications/ # Notification system
+│   │   ├── Catalog/     # Catalog management
+│   │   └── Quvel/       # Quvel-specific components
 │   ├── boot/            # Quasar boot files
 │   ├── i18n/            # Translations
 │   └── composables/     # Shared Vue composables
