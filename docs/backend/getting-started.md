@@ -2,7 +2,7 @@
 
 ## Overview
 
-QuVel Kit's backend is built with Laravel 11, using a modular architecture pattern for maintainable and scalable applications. This guide covers the basics of working with the Laravel backend, including setup, development workflow, and key concepts.
+QuVel Kit's backend is built with Laravel 12, using a modular architecture pattern for maintainable and scalable applications. This guide covers the basics of working with the Laravel backend, including setup, development workflow, and key concepts.
 
 ## Backend Architecture
 

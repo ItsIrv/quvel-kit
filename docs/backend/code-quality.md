@@ -6,36 +6,15 @@ QuVel Kit includes several code quality tools that you can use in your developme
 
 ## Available Tools
 
-### PHPStan
+### PHPStan/Larastan
 
-PHPStan is included for static analysis to detect potential errors and type inconsistencies:
+Larastan (a Laravel-specific extension for PHPStan) is included for static analysis to detect potential errors and type inconsistencies:
 
 ```bash
-# Run PHPStan analysis
 ./vendor/bin/phpstan analyse
 ```
 
-A default configuration is provided in `phpstan.neon`:
-
-```yaml
-parameters:
-    level: 8
-    paths:
-        - app
-        - Modules
-    excludePaths:
-        - tests/*
-    checkMissingIterableValueType: false
-```
-
-### Larastan
-
-Larastan extends PHPStan with Laravel-specific rules:
-
-```bash
-# Run Larastan analysis
-./vendor/bin/phpstan analyse --configuration=larastan.neon
-```
+A default configuration is provided in `phpstan.neon` which includes the Larastan extension.
 
 ### Laravel Pint
 
@@ -48,6 +27,8 @@ Laravel Pint is included for code formatting based on PSR-12 standards:
 # Apply code formatting
 ./vendor/bin/pint --fix
 ```
+
+A default configuration is provided in `pint.json`.
 
 ## Automation Options
 
@@ -63,7 +44,7 @@ composer install-hooks
 The included pre-commit hook runs:
 
 1. Laravel Pint
-2. PHPStan
+2. PHPStan (Larastan)
 3. PHP Unit Tests
 
 ### GitHub Actions Workflow
@@ -71,38 +52,80 @@ The included pre-commit hook runs:
 A GitHub Actions workflow template is included for CI/CD:
 
 ```yaml
-name: Code Quality
+name: Backend CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main, develop]
+    paths: ['backend/**']
   pull_request:
-    branches: [ main ]
+    branches: [main, develop]
+    paths: ['backend/**']
 
 jobs:
-  quality:
+  backend-tests:
+    name: Backend CI Pipeline
     runs-on: ubuntu-latest
-    
+    environment: testing
+    defaults:
+      run:
+        working-directory: backend
+
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.3'
-        extensions: mbstring, dom, fileinfo
-    
-    - name: Install Composer dependencies
-      run: composer install --prefer-dist --no-progress
-    
-    - name: Run PHP CS Fixer
-      run: ./vendor/bin/php-cs-fixer fix --dry-run --diff
-    
-    - name: Run PHPStan
-      run: ./vendor/bin/phpstan analyse
-    
-    - name: Run Tests
-      run: php artisan test
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo, sqlite3
+          coverage: xdebug
+
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: vendor-${{ runner.os }}-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: vendor-${{ runner.os }}-
+
+      - name: Install Dependencies
+        run: composer install --prefer-dist --no-interaction --no-scripts
+
+      - name: Set Up Environment and DB for Parallel Testing
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          echo "DB_CONNECTION=sqlite" >> .env
+          echo "DB_DATABASE=database/test.sqlite" >> .env
+          mkdir -p database
+          touch database/test.sqlite
+
+      - name: Run Security & Dependency Audit (enforced)
+        run: composer audit
+
+      - name: Run Static Analysis (PHPStan)
+        continue-on-error: true
+        run: vendor/bin/phpstan analyse --configuration phpstan.neon
+
+      - name: Run Code Style Check
+        continue-on-error: true
+        run: vendor/bin/pint --test
+
+      - name: Run Tests in Parallel with Coverage
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/test.sqlite
+        run: php artisan test --parallel --coverage-clover=../coverage.xml --testdox
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          flags: backend
+          name: backend
+          fail_ci_if_error: true
 ```
 
 [← Back to Backend Documentation](./README.md)

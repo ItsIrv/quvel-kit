@@ -8,7 +8,7 @@ QuVel Kit's backend is built with Laravel 12 and follows a modular architecture 
 
 | Component | Technology | Version |
 |-----------|------------|--------|
-| Framework | Laravel | 12.x |
+| Framework | Laravel | 12.0 |
 | PHP | PHP | 8.3+ |
 | Database | MySQL | 8.0+ |
 | Cache | Redis | 6.0+ |
@@ -27,6 +27,7 @@ QuVel Kit's backend is built with Laravel 12 and follows a modular architecture 
 - [Module Development](./module-development.md) - Working with Laravel Modules
 - [Tenant Module](./tenant-module.md) - Multi-tenancy support
 - [Auth Module](./auth-module.md) - Authentication and authorization
+- [Core Module](./core-module.md) - Core functionality and utilities
 
 ### Development Tools
 

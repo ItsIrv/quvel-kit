@@ -55,7 +55,7 @@ QuVel Kit extends the default Laravel Modules functionality with custom service 
 
 ### Module Service Provider
 
-Replace the default service provider with one that extends `App\Providers\ModuleServiceProvider`:
+Replace the default service provider with one that extends `Modules\Core\Providers\ModuleServiceProvider`:
 
 ```php
 <?php
@@ -86,7 +86,7 @@ class YourModuleServiceProvider extends ModuleServiceProvider
 
 ### Route Service Provider
 
-Create a route service provider that extends `App\Providers\ModuleRouteServiceProvider`:
+Create a route service provider that extends `Modules\Core\Providers\ModuleRouteServiceProvider`:
 
 ```php
 <?php
@@ -191,6 +191,16 @@ You can run tests for specific modules using PHPUnit filters:
 
 ```bash
 php artisan test --filter=YourModuleTest
+```
+
+All modules provided by Quvel also use the Group attribute to group their tests. You can run tests for specific modules using PHPUnit filters:
+
+```bash
+php artisan test --group=auth-module
+php artisan test --group=auth-actions
+
+php artisan test --group=tenant-module --testsuite=Unit
+php artisan test --group=tenant-module --testsuite=Feature
 ```
 
 ## Additional Resources

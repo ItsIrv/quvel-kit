@@ -2,7 +2,7 @@
 
 ## Overview
 
-QuVel Kit includes a testing infrastructure built on PHPUnit 10+ with tenant-aware capabilities. The testing architecture provides a foundation that you can extend and customize for your specific project needs.
+QuVel Kit includes a testing infrastructure built on PHPUnit 11 with tenant-aware capabilities. The testing architecture provides a foundation that you can extend and customize for your specific project needs.
 
 ## Test Configuration
 
@@ -98,11 +98,15 @@ namespace Tests\Unit\Models;
 
 use App\Models\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
 #[Group('user-module')]
+#[CoversClass(User::class)]
 class UserTest extends TestCase
 {
+    #[TestDox('It should instantiate a user model')]
     public function test_user_model_instantiation(): void
     {
         $user = new User();

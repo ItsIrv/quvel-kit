@@ -17,8 +17,18 @@ The tenant configuration system allows you to:
 Configuration values have different visibility levels defined in the `TenantConfigVisibility` enum:
 
 - `PUBLIC` - Exposed all the way to the browser window level with window.**TENANT_CONFIG**
-- `PROTECTED` - Exposed down to the SSR server level, saved in src-ssr/services/TenantCache
+- `PROTECTED` - Exposed down to the SSR server level, saved in src-ssr/services/TenantCache.ts
 - `PRIVATE` - Never exposed, for internal backend use only
+
+### Frontend Integration
+
+The tenant configuration system integrates with the frontend through the `TenantCacheService` in `src-ssr/services/TenantCache.ts`. This service:
+
+- Caches tenant configurations for performance
+- Normalizes configuration between backend and frontend formats
+- Handles tenant resolution by domain
+- Supports configuration inheritance from parent tenants
+- Provides configuration to the SSR server and client-side application
 
 ## Key Components
 

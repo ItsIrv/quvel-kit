@@ -167,6 +167,7 @@ This automatically:
 - Adds the tenant_id when creating new records
 - Filters queries to only include records for the current tenant
 - Prevents cross-tenant operations (saves, updates, deletes)
+- Configures broadcast channels with tenant context for notifications
 
 ## Tenant Management
 
