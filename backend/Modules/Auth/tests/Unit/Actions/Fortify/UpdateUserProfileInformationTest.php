@@ -21,7 +21,7 @@ class UpdateUserProfileInformationTest extends TestCase
     {
         // Create a mock for the validator
         $validatorMock = $this->createMock(ValidationFactory::class);
-        
+
         // Create the action with mocked dependencies
         $action = new UpdateUserProfileInformation($validatorMock);
 

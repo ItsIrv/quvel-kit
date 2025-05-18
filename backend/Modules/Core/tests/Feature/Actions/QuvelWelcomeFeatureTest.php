@@ -37,14 +37,14 @@ class QuvelWelcomeFeatureTest extends TestCase
     }
 
     /**
-     * Test that the welcome route redirects to the frontend URL in production.
+     * Test that the welcome route returns a successful response in production.
      */
-    public function testWelcomeRouteRedirectsInProduction(): void
+    public function testWelcomeRouteReturnsSuccessfulResponseInProduction(): void
     {
         $this->app->detectEnvironment(fn () => 'production');
 
         $response = $this->get(route('welcome'));
 
-        $response->assertRedirect(config('quvel.frontend_url'));
+        $response->assertSuccessful();
     }
 }

@@ -43,6 +43,7 @@ class FrontendServiceTest extends TestCase
         $this->frontendService = (new FrontendService(
             redirector: $this->mockRedirector,
             responseFactory: $this->mockResponseFactory,
+            request: $mockRequest,
         ))->setUrl($this->baseUrl);
     }
 
@@ -107,7 +108,10 @@ class FrontendServiceTest extends TestCase
         $frontendService = (new FrontendService(
             redirector: $this->mockRedirector,
             responseFactory: $this->mockResponseFactory,
-        ))->setUrl($this->baseUrl);
+            request: $mockRequest,
+        ))->setUrl($this->baseUrl)
+          ->setIsCapacitor(true)
+          ->setCapacitorScheme('_deep');
 
         $this->mockRedirector
             ->shouldReceive('away')
@@ -129,9 +133,13 @@ class FrontendServiceTest extends TestCase
         $customUrl    = "$this->baseUrl$path?" . http_build_query($params);
         $expectedUrl  = preg_replace('/^https?/', $customScheme, $customUrl);
 
+        $mockRequest = Mockery::mock(Request::class);
+        $mockRequest->shouldReceive('hasHeader')->with('X-Capacitor')->andReturn(true);
+        
         $frontendService = (new FrontendService(
             redirector: $this->mockRedirector,
             responseFactory: $this->mockResponseFactory,
+            request: $mockRequest,
         ))->setUrl($this->baseUrl)
             ->setIsCapacitor(true)
             ->setCapacitorScheme($customScheme);

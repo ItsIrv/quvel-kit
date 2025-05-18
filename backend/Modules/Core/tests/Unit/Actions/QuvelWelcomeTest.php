@@ -5,7 +5,6 @@ namespace Modules\Core\Tests\Unit\Actions;
 use Modules\Core\Actions\QuvelWelcome;
 use Modules\Core\Services\FrontendService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Before;
@@ -50,34 +49,22 @@ class QuvelWelcomeTest extends TestCase
     }
 
     /**
-     * Test that the action redirects to the frontend URL in production.
+     * Test that the action returns the welcome view in production.
      */
-    public function testRedirectsToFrontendUrlInProduction(): void
+    public function testReturnsWelcomeViewInProduction(): void
     {
-        $url = 'https://quvel.app';
-
         $this->app->detectEnvironment(fn () => 'production');
 
-        $this->frontendService->shouldReceive('redirect')
-            ->once()
-            ->with('')
-            ->andReturn(new RedirectResponse($url));
-
-        $response = ($this->action)($this->frontendService);
+        $response = ($this->action)();
 
         $this->assertInstanceOf(
-            RedirectResponse::class,
+            View::class,
             $response,
         );
 
         $this->assertEquals(
-            $url,
-            $response->getTargetUrl(),
-        );
-
-        $this->assertEquals(
-            302,
-            $response->getStatusCode(),
+            'welcome',
+            $response->name(),
         );
     }
 }

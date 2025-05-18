@@ -38,11 +38,11 @@ class UpdateUserPasswordTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create mocks for dependencies
         $this->validatorMock = $this->createMock(ValidationFactory::class);
-        $this->hasherMock = $this->createMock(Hasher::class);
-        
+        $this->hasherMock    = $this->createMock(Hasher::class);
+
         // Create the action with mocked dependencies
         $this->action = new UpdateUserPassword($this->validatorMock, $this->hasherMock);
     }
