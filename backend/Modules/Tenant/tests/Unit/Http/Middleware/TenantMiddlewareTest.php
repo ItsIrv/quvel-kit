@@ -2,7 +2,6 @@
 
 namespace Modules\Tenant\Tests\Unit\Http\Middleware;
 
-use Closure;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Request;
 use Mockery;

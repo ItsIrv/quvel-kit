@@ -21,8 +21,7 @@ class TranslatableEnumTest extends TestCase
      */
     public function testGetTranslatedMessage(): void
     {
-        $enumInstance = new class ()
-        {
+        $enumInstance = new class () {
             use TranslatableEnum;
 
             public $value = 'example_message';

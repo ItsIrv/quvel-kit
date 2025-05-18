@@ -57,10 +57,10 @@ final class SetTraceIdTest extends TestCase
         $this->request = Mockery::mock(Request::class);
         $this->requestPrivacy = Mockery::mock(RequestPrivacy::class);
         $this->response = Mockery::mock(Response::class);
-        
+
         // Properly mock the headers property
         $this->response->headers = Mockery::mock(ResponseHeaderBag::class);
-        
+
         $this->next = function ($request) {
             return $this->response;
         };

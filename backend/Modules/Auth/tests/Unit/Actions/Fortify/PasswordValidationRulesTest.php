@@ -23,8 +23,7 @@ class PasswordValidationRulesTest extends TestCase
             ->andReturn('password-rule-instance');
 
         // Create a test class that uses the trait
-        $testClass = new class
-        {
+        $testClass = new class () {
             use PasswordValidationRules;
 
             public function getPasswordRules(): array

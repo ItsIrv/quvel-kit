@@ -41,8 +41,7 @@ final class GetsTenantTest extends TestCase
         $this->app->instance(FindService::class, $this->findService);
 
         // Create a class that uses the GetsTenant trait
-        $this->traitUser = new class
-        {
+        $this->traitUser = new class () {
             use GetsTenant {
                 getTenant as public;
                 getTenantId as public;

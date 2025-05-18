@@ -30,8 +30,7 @@ class UseAuthModuleNotificationsTest extends TestCase
         Notification::fake();
 
         // Create a test user that uses the trait
-        $user = new class extends User
-        {
+        $user = new class () extends User {
             use UseAuthModuleNotifications;
         };
 
@@ -55,8 +54,7 @@ class UseAuthModuleNotificationsTest extends TestCase
         $token = 'test-token';
 
         // Create a test user that uses the trait
-        $user = new class extends User
-        {
+        $user = new class () extends User {
             use UseAuthModuleNotifications;
         };
 
@@ -81,8 +79,7 @@ class UseAuthModuleNotificationsTest extends TestCase
         $token = 'test-token';
 
         // Create a test user that uses the trait
-        $user              = new class extends User
-        {
+        $user              = new class () extends User {
             use UseAuthModuleNotifications;
         };
         $user->provider_id = 'oauth-provider';

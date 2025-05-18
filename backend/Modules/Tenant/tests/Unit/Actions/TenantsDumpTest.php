@@ -10,7 +10,6 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Mockery;
 use Mockery\MockInterface;
 use Modules\Tenant\Actions\TenantsDump;
-use Modules\Tenant\Http\Resources\TenantDumpResource;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Services\FindService;
 use PHPUnit\Framework\Attributes\CoversClass;

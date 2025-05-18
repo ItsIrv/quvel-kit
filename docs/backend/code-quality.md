@@ -43,10 +43,10 @@ Laravel Pint is included for code formatting based on PSR-12 standards:
 
 ```bash
 # Check coding standards without making changes
-./vendor/bin/pint --psr12 --dry-run
+./vendor/bin/pint --test
 
 # Apply code formatting
-./vendor/bin/pint --psr12 --fix
+./vendor/bin/pint --fix
 ```
 
 ## Automation Options

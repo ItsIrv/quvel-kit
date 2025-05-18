@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Store the current directory
+CURRENT_DIR=$(pwd)
+
+# Change to the backend directory
+cd "$(git rev-parse --show-toplevel)/backend" || exit 1
+
+echo "Running Laravel Pint..."
+php artisan pint --test
+if [ $? -ne 0 ]; then
+    echo "Laravel Pint found code style issues. Please fix them before committing."
+    # Return to the original directory
+    cd "$CURRENT_DIR" || exit 1
+    exit 1
+fi
+
+echo "Running PHPStan..."
+./vendor/bin/phpstan analyse
+if [ $? -ne 0 ]; then
+    echo "PHPStan found issues. Please fix them before committing."
+    # Return to the original directory
+    cd "$CURRENT_DIR" || exit 1
+    exit 1
+fi
+
+echo "Running PHP Unit Tests..."
+php artisan test
+if [ $? -ne 0 ]; then
+    echo "Some tests failed. Please fix them before committing."
+    # Return to the original directory
+    cd "$CURRENT_DIR" || exit 1
+    exit 1
+fi
+
+# Return to the original directory
+cd "$CURRENT_DIR" || exit 1
+
+echo "All checks passed! Proceeding with commit..."
+exit 0

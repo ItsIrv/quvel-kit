@@ -5,8 +5,6 @@ namespace Modules\Tenant\Tests\Feature\Actions;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 use Modules\Tenant\Actions\TenantDump;
-use Modules\Tenant\Contracts\FrontendService;
-use Modules\Tenant\Exceptions\TenantNotFoundException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;

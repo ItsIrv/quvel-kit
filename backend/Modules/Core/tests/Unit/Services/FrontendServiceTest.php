@@ -135,7 +135,7 @@ class FrontendServiceTest extends TestCase
 
         $mockRequest = Mockery::mock(Request::class);
         $mockRequest->shouldReceive('hasHeader')->with('X-Capacitor')->andReturn(true);
-        
+
         $frontendService = (new FrontendService(
             redirector: $this->mockRedirector,
             responseFactory: $this->mockResponseFactory,

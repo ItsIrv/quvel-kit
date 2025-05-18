@@ -2,11 +2,9 @@
 
 namespace Modules\Tenant\Tests\Feature\Actions;
 
-use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Modules\Tenant\Actions\TenantsDump;
-use Modules\Tenant\Enums\TenantError;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -24,7 +22,7 @@ final class TenantsDumpFeatureTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // The tenant is already set up by the parent TestCase
         // No need to create another one
     }
@@ -34,7 +32,7 @@ final class TenantsDumpFeatureTest extends TestCase
     {
         // Arrange - Make sure caching is enabled
         Config::set('tenant.tenant_cache.preload', true);
-        
+
         // Act
         $response = $this->getJson(
             route('tenants.cache'),
@@ -42,10 +40,10 @@ final class TenantsDumpFeatureTest extends TestCase
 
         // Assert
         $response->assertOk();
-        
+
         // Verify that the response contains a collection of tenants
         $this->assertIsArray($response->json('data'));
-        
+
         // Find our tenant in the collection
         $tenantFound = false;
         foreach ($response->json('data') as $tenant) {
@@ -56,7 +54,7 @@ final class TenantsDumpFeatureTest extends TestCase
                 break;
             }
         }
-        
+
         $this->assertTrue($tenantFound, 'Expected tenant not found in response');
     }
 
@@ -65,7 +63,7 @@ final class TenantsDumpFeatureTest extends TestCase
     {
         // Arrange - Make sure caching is enabled
         Config::set('tenant.tenant_cache.preload', true);
-        
+
         // Simulate no tenants by deleting all
         DB::table('tenants')->delete();
 
@@ -74,7 +72,7 @@ final class TenantsDumpFeatureTest extends TestCase
         $response = $this->getJson(
             route('tenants.cache'),
         );
-        
+
         // Assert - We should get a non-200 response (either redirect or error)
         $this->assertNotEquals(200, $response->getStatusCode(), 'Should not return OK status when no tenants exist');
     }
@@ -84,7 +82,7 @@ final class TenantsDumpFeatureTest extends TestCase
     {
         // Arrange - Make sure caching is enabled
         Config::set('tenant.tenant_cache.preload', true);
-        
+
         // Make an initial request to cache the data
         $this->getJson(route('tenants.cache'))->assertOk();
 
@@ -93,10 +91,10 @@ final class TenantsDumpFeatureTest extends TestCase
 
         // Assert
         $response->assertOk();
-        
+
         // Verify that the response contains a collection of tenants
         $this->assertIsArray($response->json('data'));
-        
+
         // Find our tenant in the collection
         $tenantFound = false;
         foreach ($response->json('data') as $tenant) {
@@ -107,22 +105,22 @@ final class TenantsDumpFeatureTest extends TestCase
                 break;
             }
         }
-        
+
         $this->assertTrue($tenantFound, 'Expected tenant not found in response');
-        
+
         // Verify cache exists (indirectly through response time or headers)
         // In a real test, you might check for cache hit metrics or mock the cache
     }
-    
+
     #[TestDox('It should block access when tenant cache preload is disabled')]
     public function testMiddlewareBlocksAccessWhenPreloadDisabled(): void
     {
         // Arrange - Disable tenant cache preload
         Config::set('tenant.tenant_cache.preload', false);
-        
+
         // Act
         $response = $this->getJson(route('tenants.cache'));
-        
+
         // Assert
         $response->assertForbidden()
             ->assertJson([

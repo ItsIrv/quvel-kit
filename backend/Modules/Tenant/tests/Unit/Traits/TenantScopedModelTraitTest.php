@@ -117,7 +117,7 @@ final class TenantScopedModelTraitTest extends TestCase
         // Arrange
         $model = new TestTenantModel();
         $model->name = 'Test Model';
-        
+
         // Act
         $saveResult = $model->save();
 
@@ -136,7 +136,7 @@ final class TenantScopedModelTraitTest extends TestCase
     {
         // Arrange
         $model = TestTenantModel::create(['name' => 'Original Name']);
-        
+
         // Act
         $updateResult = $model->update(['name' => 'Updated Name']);
 
@@ -161,7 +161,7 @@ final class TenantScopedModelTraitTest extends TestCase
 
         // Assert
         $this->assertTrue($updateResult);
-        
+
         // Verify the tenant_id remains the same from context
         $updatedModel = TestTenantModel::find($originalId);
         $this->assertEquals($this->tenant->id, $updatedModel->tenant_id);
@@ -179,7 +179,7 @@ final class TenantScopedModelTraitTest extends TestCase
         // Arrange
         $model = TestTenantModel::create(['name' => 'To Be Deleted']);
         $modelId = $model->id;
-        
+
         // Act
         $deleteResult = $model->delete();
 

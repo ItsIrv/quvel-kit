@@ -72,11 +72,11 @@ class TenantConfigCastTest extends TestCase
         $this->assertEquals('no-reply@example.com', $result->mailFromAddress);
         $this->assertCount(2, $result->visibility);
         $this->assertEquals(
-            TenantConfigVisibility::PUBLIC ,
+            TenantConfigVisibility::PUBLIC,
             $result->visibility['app_url'],
         );
         $this->assertEquals(
-            TenantConfigVisibility::PUBLIC ,
+            TenantConfigVisibility::PUBLIC,
             $result->visibility['app_name'],
         );
         $this->assertNull($result->capacitorScheme);
