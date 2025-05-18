@@ -14,5 +14,7 @@ export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance
     axiosConfig.headers['X-SSR-Key'] = process.env.SSR_API_KEY;
   }
 
+  axiosConfig.maxRedirects = 0;
+
   return axios.create(axiosConfig);
 }

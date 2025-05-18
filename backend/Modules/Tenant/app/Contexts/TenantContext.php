@@ -32,7 +32,7 @@ class TenantContext
      */
     public function get(): Tenant
     {
-        if (! isset($this->tenant)) {
+        if (!isset($this->tenant)) {
             throw new TenantNotFoundException(
                 TenantError::NO_CONTEXT_TENANT->value,
             );

@@ -28,15 +28,13 @@ class TenantsDump
     ): AnonymousResourceCollection {
         $tenants = [];
 
-        if ($app->environment('local')) {
-            $tenants = $tenantFindService->findAll();
-        } else {
-            $tenants = $cache->remember(
+        $tenants = $app->environment('local')
+            ? $tenantFindService->findAll()
+            : $cache->remember(
                 self::CACHE_KEY,
                 $config->get('tenant.tenant_cache.cache_ttl'),
                 fn (): Collection => $tenantFindService->findAll()
             );
-        }
 
         return TenantDumpResource::collection($tenants);
     }

@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import { AxiosError, AxiosInstance } from 'axios';
 import {
   BackendConfig,
   CachedTenantConfig,
@@ -32,6 +32,10 @@ export class TenantCacheService {
     }
   }
 
+  private shouldUseCache(): boolean {
+    return process.env.NODE_ENV === 'production' && this.preloadMode;
+  }
+
   /**
    * Gets the singleton instance of the service.
    * @returns The singleton instance.
@@ -40,7 +44,7 @@ export class TenantCacheService {
     if (!this.instance) {
       this.instance = new TenantCacheService();
 
-      if (this.instance.preloadMode) {
+      if (this.instance.shouldUseCache()) {
         await this.instance.loadAllTenants();
       }
     }
@@ -54,7 +58,7 @@ export class TenantCacheService {
    * @returns The tenant configuration or null if not found.
    */
   public async getTenantConfigByDomain(domain: string): Promise<TenantConfigProtected | null> {
-    if (this.preloadMode && process.env.NODE_ENV === 'production') {
+    if (this.shouldUseCache()) {
       const tenant = this.tenantMap.get(domain);
 
       if (!tenant?.config) return null;
@@ -67,7 +71,7 @@ export class TenantCacheService {
     const now = Date.now();
     const cached = this.domainCache.get(domain);
 
-    if (cached && cached.expiresAt > now && process.env.NODE_ENV === 'production') {
+    if (cached && cached.expiresAt > now && this.shouldUseCache()) {
       return cached.config;
     }
 
@@ -92,8 +96,11 @@ export class TenantCacheService {
       });
 
       return config;
-    } catch {
-      console.error(`[TenantCacheService] Failed to fetch tenant [${domain}]`);
+    } catch (e) {
+      console.error(
+        `[TenantCacheService] Failed to fetch tenant [${domain}]`,
+        (e as AxiosError).response?.data,
+      );
 
       return null;
     }

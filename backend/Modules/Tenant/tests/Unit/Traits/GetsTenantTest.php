@@ -56,7 +56,7 @@ final class GetsTenantTest extends TestCase
     public function testGetTenantReturnsFromContext(): void
     {
         // Arrange
-        $tenant = new Tenant(['id' => 1, 'public_id' => 'test-tenant-id', 'name' => 'Test Tenant']);
+        $tenant = Mockery::mock(Tenant::class);
 
         $this->tenantContext->shouldReceive('get')
             ->once()
@@ -73,8 +73,13 @@ final class GetsTenantTest extends TestCase
     public function testGetTenantIdReturnsFromTenant(): void
     {
         // Arrange
-        $tenant = new Tenant(['id' => 1, 'public_id' => 'test-tenant-id', 'name' => 'Test Tenant']);
+        // Create a partial mock of the Tenant class
+        $tenant = Mockery::mock(Tenant::class);
 
+        // Mock both getAttribute and __get methods
+        $tenant->shouldReceive('getAttribute')->with('id')->andReturn(1);
+
+        // Mock the context to return our tenant
         $this->tenantContext->shouldReceive('get')
             ->once()
             ->andReturn($tenant);
@@ -90,8 +95,13 @@ final class GetsTenantTest extends TestCase
     public function testGetTenantPublicIdReturnsFromTenant(): void
     {
         // Arrange
-        $tenant = new Tenant(['id' => 1, 'public_id' => 'test-tenant-id', 'name' => 'Test Tenant']);
+        // Create a partial mock of the Tenant class
+        $tenant = Mockery::mock(Tenant::class);
 
+        // Mock both getAttribute and __get methods
+        $tenant->shouldReceive('getAttribute')->with('public_id')->andReturn('test-tenant-id');
+
+        // Mock the context to return our tenant
         $this->tenantContext->shouldReceive('get')
             ->once()
             ->andReturn($tenant);
