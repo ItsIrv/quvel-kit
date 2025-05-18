@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Modules\Tenant\Services;
+namespace Modules\Tenant\Tests\Unit\Services;
 
 use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
