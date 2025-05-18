@@ -3,8 +3,8 @@
 namespace Modules\Auth\Actions\Fortify;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
 
 /**
@@ -18,6 +18,25 @@ class UpdateUserPassword implements UpdatesUserPasswords
     use PasswordValidationRules;
 
     /**
+     * The validation factory implementation.
+     */
+    protected ValidationFactory $validator;
+
+    /**
+     * The hasher implementation.
+     */
+    protected Hasher $hasher;
+
+    /**
+     * Create a new action instance.
+     */
+    public function __construct(ValidationFactory $validator, Hasher $hasher)
+    {
+        $this->validator = $validator;
+        $this->hasher = $hasher;
+    }
+
+    /**
      * Validate and update the user's password.
      *
      * @param  array<string, string>  $input The input data containing the current and new password
@@ -25,7 +44,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
     public function update(User $user, array $input): void
     {
         // Validate the current and new password
-        Validator::make($input, [
+        $this->validator->make($input, [
             'current_password' => ['required', 'string', 'current_password:web'],
             'password'         => $this->passwordRules(),
         ], [
@@ -34,7 +53,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
 
         // Update the user's password
         $user->forceFill([
-            'password' => Hash::make($input['password']),
+            'password' => $this->hasher->make($input['password']),
         ])->save();
     }
 }

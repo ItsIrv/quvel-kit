@@ -4,7 +4,7 @@ namespace Modules\Auth\Actions\Fortify;
 
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 use Modules\Auth\Rules\EmailRule;
@@ -21,6 +21,18 @@ use Modules\Auth\Rules\NameRule;
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
     /**
+     * The validation factory implementation.
+     */
+    protected ValidationFactory $validator;
+
+    /**
+     * Create a new action instance.
+     */
+    public function __construct(ValidationFactory $validator)
+    {
+        $this->validator = $validator;
+    }
+    /**
      * Validate and update the given user's profile information.
      *
      * @param  array<string, string>  $input The input data containing the profile information
@@ -28,7 +40,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
     public function update(User $user, array $input): void
     {
         // Validate the profile information
-        Validator::make($input, [
+        $this->validator->make($input, [
             'name' => ['required', ...NameRule::RULES],
             // 'email' => [
             //     'required',
