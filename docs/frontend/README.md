@@ -59,26 +59,6 @@ frontend/
 
 - **[Environment Setup & Usage](./frontend-usage.md)** - Development workflow
 
-## Key Concepts
-
-### Service Container
-
-The service container is the central piece of the frontend architecture. It provides access to core services:
-
-```ts
-import { useContainer } from 'src/modules/Core/composables/useContainer';
-
-// In Vue components
-const { api, task, validation, i18n, ws, config } = useContainer();
-
-// In Pinia stores (automatically injected)
-actions: {
-  async fetchData() {
-    return await this.$container.api.get('/endpoint');
-  }
-}
-```
-
 ## Need Help?
 
 For troubleshooting, check the [Troubleshooting Guide](../troubleshooting.md) or open an issue in the project repository.

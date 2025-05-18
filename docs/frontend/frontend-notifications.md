@@ -161,9 +161,7 @@ The notification system integrates with Laravel's notification system. When a no
 
 ```php
 // In your Laravel controller
-use App\Notifications\DatabaseNotification;
-
-$user->notify(new DatabaseNotification('Your message here'));
+$user->notify(new TestNotification('Your message here'));
 ```
 
 The notification is broadcast via WebSockets to the user's private channel:
