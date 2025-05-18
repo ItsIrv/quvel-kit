@@ -58,7 +58,7 @@ function onDropdownToggle() {
     class="relative"
   >
     <div class="row items-center">
-      <NotificationBell class="pr-8" />
+      <NotificationBell class="pr-8 hidden sm:!flex" />
 
       <span
         class="mr-2 text-xl font-bold hidden sm:!flex cursor-pointer"
@@ -113,7 +113,7 @@ function onDropdownToggle() {
     <!-- Login Button -->
     <q-btn
       :ripple="false"
-      class="PrimaryButton"
+      class="PrimaryButton hidden sm:!flex"
       unelevated
       @click="emits('login-click')"
     >

@@ -1,11 +1,8 @@
 import type { RouteRecordRaw } from 'vue-router';
+import quvelRoutes from 'src/modules/Quvel/router/routes';
 
 const routes: RouteRecordRaw[] = [
-  {
-    path: '/',
-    component: () => import('src/modules/Quvel/layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('src/modules/Quvel/pages/LandingPage.vue') }],
-  },
+  ...quvelRoutes,
   // Always leave this as last one,
   // but you can also remove it
   {

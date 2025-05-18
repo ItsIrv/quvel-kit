@@ -30,9 +30,6 @@ const inputValue = computed({
   get: () => props.modelValue,
   set: (value) => emits('update:modelValue', value),
 });
-
-
-
 </script>
 
 <template>
