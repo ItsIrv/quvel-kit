@@ -12,6 +12,7 @@ use Modules\Auth\Actions\User\LoginAction;
 use Modules\Auth\Http\Requests\LoginRequest;
 use Modules\Auth\Enums\AuthStatusEnum;
 use Modules\Auth\Exceptions\LoginActionException;
+use Modules\Auth\Logs\Actions\User\LoginActionLogs;
 use Modules\Auth\Services\UserAuthenticationService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -28,6 +29,8 @@ class LoginActionTest extends TestCase
 
     private Mockery\MockInterface|ResponseFactory $responseFactory;
 
+    private Mockery\MockInterface|LoginActionLogs $loginActionLogs;
+
     private LoginAction $action;
 
     protected function setUp(): void
@@ -38,11 +41,19 @@ class LoginActionTest extends TestCase
         $this->userFindService           = Mockery::mock(UserFindService::class);
         $this->userAuthenticationService = Mockery::mock(UserAuthenticationService::class);
         $this->responseFactory           = Mockery::mock(ResponseFactory::class);
+        $this->loginActionLogs           = Mockery::mock(LoginActionLogs::class);
+
+        // Set up common expectations for the logs
+        $this->loginActionLogs->shouldReceive('loginSuccess')->zeroOrMoreTimes();
+        $this->loginActionLogs->shouldReceive('loginFailedUserNotFound')->zeroOrMoreTimes();
+        $this->loginActionLogs->shouldReceive('loginFailedInvalidCredentials')->zeroOrMoreTimes();
+        $this->loginActionLogs->shouldReceive('loginFailedAccountInactive')->zeroOrMoreTimes();
 
         $this->action = new LoginAction(
             $this->userFindService,
             $this->userAuthenticationService,
             $this->responseFactory,
+            $this->loginActionLogs,
         );
     }
 
@@ -69,8 +80,15 @@ class LoginActionTest extends TestCase
         $user->shouldReceive('jsonSerialize')
             ->andReturn(['id' => 1, 'email' => 'test@example.com']);
 
+        // Add missing getAttribute for id
+        $user->shouldReceive('getAttribute')
+            ->with('id')
+            ->andReturn(1);
+
         $request = Mockery::mock(LoginRequest::class);
         $request->shouldReceive('validated')->once()->andReturn($loginData);
+        $request->shouldReceive('ip')->zeroOrMoreTimes()->andReturn('127.0.0.1');
+        $request->shouldReceive('userAgent')->zeroOrMoreTimes()->andReturn('PHPUnit Test');
 
         $this->userFindService->shouldReceive('findByEmail')
             ->with($loginData['email'])
@@ -112,6 +130,8 @@ class LoginActionTest extends TestCase
 
         $request = Mockery::mock(LoginRequest::class);
         $request->shouldReceive('validated')->once()->andReturn($loginData);
+        $request->shouldReceive('ip')->zeroOrMoreTimes()->andReturn('127.0.0.1');
+        $request->shouldReceive('userAgent')->zeroOrMoreTimes()->andReturn('PHPUnit Test');
 
         $this->userFindService->shouldReceive('findByEmail')
             ->with($loginData['email'])
@@ -133,12 +153,26 @@ class LoginActionTest extends TestCase
         // Arrange
         $loginData = ['email' => 'test@example.com', 'password' => 'password'];
         $user      = Mockery::mock(User::class);
-        $user->shouldReceive('password')->andReturn(null);
-        $user->shouldReceive('provider_id')->andReturn('google');
-        $user->shouldReceive('getAttribute')->andReturn('hashed-password');
+        $user->shouldReceive('getAttribute')
+            ->with('password')
+            ->andReturn(null);
+
+        $user->shouldReceive('getAttribute')
+            ->with('provider_id')
+            ->andReturn('google');
+
+        $user->shouldReceive('hasVerifiedEmail')
+            ->zeroOrMoreTimes()
+            ->andReturn(true);
+
+        $user->shouldReceive('getAttribute')
+            ->with('id')
+            ->andReturn(1);
 
         $request = Mockery::mock(LoginRequest::class);
         $request->shouldReceive('validated')->once()->andReturn($loginData);
+        $request->shouldReceive('ip')->zeroOrMoreTimes()->andReturn('127.0.0.1');
+        $request->shouldReceive('userAgent')->zeroOrMoreTimes()->andReturn('PHPUnit Test');
 
         $this->userFindService->shouldReceive('findByEmail')
             ->with($loginData['email'])
@@ -169,8 +203,17 @@ class LoginActionTest extends TestCase
             ->with('password')
             ->andReturn('password');
 
+        $user->shouldReceive('hasVerifiedEmail')
+            ->andReturn(true);
+
+        $user->shouldReceive('getAttribute')
+            ->with('id')
+            ->andReturn(1);
+
         $request = Mockery::mock(LoginRequest::class);
         $request->shouldReceive('validated')->once()->andReturn($loginData);
+        $request->shouldReceive('ip')->zeroOrMoreTimes()->andReturn('127.0.0.1');
+        $request->shouldReceive('userAgent')->zeroOrMoreTimes()->andReturn('PHPUnit Test');
 
         $this->userFindService->shouldReceive('findByEmail')
             ->with($loginData['email'])
@@ -207,13 +250,24 @@ class LoginActionTest extends TestCase
             ->andReturn('password');
 
         $user->shouldReceive('hasVerifiedEmail')->andReturn(false);
-        $user->shouldReceive('getAttribute')->andReturn('hashed-password');
+
+        // Add missing getAttribute for id
+        $user->shouldReceive('getAttribute')
+            ->with('id')
+            ->andReturn(1);
 
         $request = Mockery::mock(LoginRequest::class);
         $request->shouldReceive('validated')->once()->andReturn($loginData);
+        $request->shouldReceive('ip')->zeroOrMoreTimes()->andReturn('127.0.0.1');
+        $request->shouldReceive('userAgent')->zeroOrMoreTimes()->andReturn('PHPUnit Test');
 
-        $this->userFindService->shouldReceive('findByEmail')->once()->andReturn($user);
-        $this->userAuthenticationService->shouldReceive('attempt')->once()->andReturn(true);
+        $this->userFindService->shouldReceive('findByEmail')
+            ->with($loginData['email'])
+            ->once()
+            ->andReturn($user);
+
+        // We don't expect attempt to be called since the email verification check happens first
+        // and throws an exception before we get to the authentication attempt
 
         $this->expectException(LoginActionException::class);
         $this->expectExceptionMessage(AuthStatusEnum::EMAIL_NOT_VERIFIED->value);
