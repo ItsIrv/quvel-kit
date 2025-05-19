@@ -66,7 +66,46 @@ class Product extends Model
 }`,
 
   services: `// Core Services
+export class TestService extends Service implements RegisterService {
+  private api!: ApiService;
+
+  // Register service with container
+  register({ api, task, i18n, config, log }: ServiceContainer): void {
+    this.api = api;
+  }
+
+  test(): Promise<void> {
+    // Create a task
+    this.task.newTask({
+      // Only run if tenantId is 1
+      shouldRun: () => this.config.get('tenantId') === 1,
+      // Task to run
+      task: () => this.api.post('/test'),
+      // Show notification
+      showNotification: {
+        success: () => this.i18n.t('common.task.success'),
+        error: () => this.i18n.t('common.task.error'),
+      },
+      // Show a global loading spinner while running
+      showLoading: true,
+      // Success handlers
+      successHandlers: () => {
+        this.log.info('Test');
+      },
+      // Error handlers
+      errorHandlers: () => {
+        this.log.error('Test');
+      },
+    }).run();
+  }
+}
+`,
+
+  component: `<script setup lang="ts">
+// Basic component with container
+import { ref } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
+
 
 // Get services from container
 const { api, task, config, i18n, log } = useContainer();
@@ -75,28 +114,35 @@ const { api, task, config, i18n, log } = useContainer();
 api.get('/users');
 api.post('/users', { name: 'John' });
 
-// Task management
-task.newTask({
-  task: () => api.post('/auth/login'),
-  showLoading: true
-}).run();
-
 // Configuration
-const apiTimeout = config.get('api.timeout', 30000);
+const tenantId = config.get('tenantId');
 
 // Translations
 const welcome = i18n.t('auth.welcome');
 
 // Logging
-log.info('User action', { userId: 123 });`,
+log.info('User action', { userId: 123 });
 
-  component: `<script setup lang="ts">
-// Basic component with container
-import { ref } from 'vue';
-import { useContainer } from 'src/modules/Core/composables/useContainer';
+// Task management
+task.newTask({
+  shouldRun: () => config.get('tenantId') === 1,
+  showNotification: {
+    success: () => i18n.t('common.task.success'),
+    error: () => i18n.t('common.task.error'),
+  },
+  task: () => api.post('/auth/login'),
+  showLoading: true,
+  always: () => {
+    // Do something always
+  },
+  successHandlers: () => {
+    // Do something on success
+  },
+  errorHandlers: () => {
+    // Do something on error
+  },
+}).run();
 
-// Get what you need
-const { api } = useContainer();
 const isLoading = ref(false);
 const items = ref([]);
 
@@ -117,28 +163,39 @@ async function fetchItems() {
   </div>
 </template>`,
 
-  store: `// Pinia store with container
+  store: `// Pinia store using pagination and container
 import { defineStore } from 'pinia';
-import { useContainer } from 'src/modules/Core/composables/useContainer';
 
-export const useUserStore = defineStore('user', {
-  state: () => ({
-    user: null,
-    isLoggedIn: false
-  }),
+interface CatalogState {
+  catalogItems: LengthAwareState<CatalogItem>;
+}
 
-  actions: {
-    async login(email, password) {
-      // Access container in actions
-      const { api } = useContainer();
+type CatalogGetters = PaginationGetters<'catalogItems', CatalogItem, LengthAwareState<CatalogItem>>;
 
-      const response = await api.post('/login', {
-        email, password
-      });
+type CatalogActions = PaginationActions<'catalogItems', LengthAwarePaginatorResponse<CatalogItem>>;
 
-      this.user = response.data.user;
-      this.isLoggedIn = true;
-    }
+export const useCatalogStore = defineStore<'catalog', CatalogState, CatalogGetters, CatalogActions>(
+  'catalog',
+  {
+    state: () => ({
+      catalogItems: createLengthAwareState<CatalogItem>(),
+    }),
+
+    getters: {
+      ...createLengthAwareGetters<'catalogItems', CatalogItem>('catalogItems'),
+    },
+
+    actions: {
+    ...createLengthAwareActions<'catalogItems', CatalogItem>({
+      stateKey: 'catalogItems',
+      async fetcher(options: PaginationRequest) {
+        try {
+          return await this.$container.get(CatalogService).fetchCatalogs(options);
+        } catch {
+          return false;
+        }
+      },
+    }),
   }
-});`,
+);`,
 } as const;

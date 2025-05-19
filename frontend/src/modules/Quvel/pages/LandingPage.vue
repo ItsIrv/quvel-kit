@@ -134,7 +134,7 @@ watch(
               }"
               @click="activeTab = 'services'"
             >
-              Services
+              TS Services
             </button>
             <button
               class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
@@ -144,7 +144,7 @@ watch(
               }"
               @click="activeTab = 'component'"
             >
-              Component
+              Vue Component
             </button>
             <button
               class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
@@ -154,7 +154,7 @@ watch(
               }"
               @click="activeTab = 'store'"
             >
-              Store
+              Pinia Store
             </button>
           </div>
         </div>
