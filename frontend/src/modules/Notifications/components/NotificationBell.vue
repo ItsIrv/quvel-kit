@@ -53,7 +53,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="relative">
+  <div class="tw:relative">
     <q-btn
       block
       flat
@@ -74,7 +74,7 @@ onMounted(() => {
 
     <div
       v-if="isDropdownOpen"
-      class="DialogGradient GenericBorder MainTransition absolute right-0 mt-2 w-48 rounded-lg p-4 rounded-b-lg z-10"
+      class="DialogGradient GenericBorder MainTransition tw:absolute tw:right-0 tw:mt-10 tw:w-48 tw:rounded-lg tw:p-4 tw:rounded-b-lg tw:z-10"
     >
       <q-btn
         v-if="unreadCount > 0"
@@ -82,7 +82,7 @@ onMounted(() => {
         :loading="markAsReadTask.isActive.value"
         flat
         :label="$t('notifications.markAllAsRead')"
-        class="!w-full block text-blue-5"
+        class="tw:!w-full tw:block text-blue-5"
         @click="markAllAsRead"
       />
 

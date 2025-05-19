@@ -24,11 +24,11 @@
   font-size: 14px;
 }
 
-// .q-menu {
-//   @extend .MainTransition;
-//   @apply tw:p-2 tw:rounded-xl tw:shadow-xl tw:border tw:border-stone-200 tw:dark:border-gray-700 tw:bg-white tw:dark:bg-gray-900;
-//   box-shadow: none;
-// }
+.q-menu {
+  @extend .MainTransition;
+  @apply tw:p-2 tw:rounded-xl tw:shadow-xl tw:border tw:border-stone-200 tw:dark:border-gray-700 tw:bg-white tw:dark:bg-gray-900;
+  box-shadow: none;
+}
 
 .q-item--active {
   @apply tw:text-orange-600;

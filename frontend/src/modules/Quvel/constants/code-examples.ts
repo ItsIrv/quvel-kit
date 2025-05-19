@@ -64,4 +64,81 @@ class Product extends Model
     // All queries automatically scoped to current tenant
     // $products = Product::all(); // Only returns current tenant's products
 }`,
+
+  services: `// Core Services
+import { useContainer } from 'src/modules/Core/composables/useContainer';
+
+// Get services from container
+const { api, task, config, i18n, log } = useContainer();
+
+// API calls
+api.get('/users');
+api.post('/users', { name: 'John' });
+
+// Task management
+task.newTask({
+  task: () => api.post('/auth/login'),
+  showLoading: true
+}).run();
+
+// Configuration
+const apiTimeout = config.get('api.timeout', 30000);
+
+// Translations
+const welcome = i18n.t('auth.welcome');
+
+// Logging
+log.info('User action', { userId: 123 });`,
+
+  component: `<script setup lang="ts">
+// Basic component with container
+import { ref } from 'vue';
+import { useContainer } from 'src/modules/Core/composables/useContainer';
+
+// Get what you need
+const { api } = useContainer();
+const isLoading = ref(false);
+const items = ref([]);
+
+// Simple data fetching
+async function fetchItems() {
+  isLoading.value = true;
+  items.value = await api.get('/items');
+  isLoading.value = false;
+}
+</script>
+
+<template>
+  <div>
+    <button @click="fetchItems">Load</button>
+    <div v-for="item in items" :key="item.id">
+      {{ item.name }}
+    </div>
+  </div>
+</template>`,
+
+  store: `// Pinia store with container
+import { defineStore } from 'pinia';
+import { useContainer } from 'src/modules/Core/composables/useContainer';
+
+export const useUserStore = defineStore('user', {
+  state: () => ({
+    user: null,
+    isLoggedIn: false
+  }),
+  
+  actions: {
+    async login(email, password) {
+      // Access container in actions
+      const { api } = useContainer();
+      
+      const response = await api.post('/login', { 
+        email, password 
+      });
+      
+      this.user = response.data.user;
+      this.isLoggedIn = true;
+    }
+  }
+});`,
 } as const;

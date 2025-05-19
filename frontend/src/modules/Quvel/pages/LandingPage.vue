@@ -4,6 +4,7 @@ import { useCatalogStore } from 'src/modules/Catalog/stores/catalogStore';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import hljs from 'highlight.js/lib/core';
 import php from 'highlight.js/lib/languages/php';
+import typescript from 'highlight.js/lib/languages/typescript';
 import 'highlight.js/styles/devibeans.min.css';
 import { CODE_EXAMPLES } from '../constants/code-examples';
 
@@ -38,6 +39,7 @@ const codeRefs = ref<HTMLElement[]>([]);
 
 // Register languages once
 hljs.registerLanguage('php', php);
+hljs.registerLanguage('typescript', typescript);
 
 /**
  * Lifecycle
@@ -124,6 +126,36 @@ watch(
             >
               Product.php
             </button>
+            <button
+              class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
+              :class="{
+                'tw:bg-white tw:dark:bg-gray-900 tw:!text-blue-600 tw:dark:!text-blue-400': activeTab === 'services',
+                'tw:!text-gray-600 tw:dark:!text-gray-400 hover:tw:bg-gray-200 hover:tw:dark:bg-gray-700': activeTab !== 'services'
+              }"
+              @click="activeTab = 'services'"
+            >
+              Services
+            </button>
+            <button
+              class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
+              :class="{
+                'tw:bg-white tw:dark:bg-gray-900 tw:!text-blue-600 tw:dark:!text-blue-400': activeTab === 'component',
+                'tw:!text-gray-600 tw:dark:!text-gray-400 hover:tw:bg-gray-200 hover:tw:dark:bg-gray-700': activeTab !== 'component'
+              }"
+              @click="activeTab = 'component'"
+            >
+              Component
+            </button>
+            <button
+              class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
+              :class="{
+                'tw:bg-white tw:dark:bg-gray-900 tw:!text-blue-600 tw:dark:!text-blue-400': activeTab === 'store',
+                'tw:!text-gray-600 tw:dark:!text-gray-400 hover:tw:bg-gray-200 hover:tw:dark:bg-gray-700': activeTab !== 'store'
+              }"
+              @click="activeTab = 'store'"
+            >
+              Store
+            </button>
           </div>
         </div>
 
@@ -137,7 +169,10 @@ watch(
             <pre class="tw:!text-sm tw:font-mono tw:rounded-md tw:!bg-transparent tw:!m-0">
               <code
                 ref="codeRefs"
-                class="language-php tw:!text-gray-800 tw:dark:!text-gray-200"
+                :class="[
+                  ['services', 'composables', 'session'].includes(tab) ? 'language-typescript' : 'language-php',
+                  'tw:!text-gray-800 tw:dark:!text-gray-200'
+                ]"
               >{{ code }}</code>
             </pre>
           </div>

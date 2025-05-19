@@ -55,9 +55,9 @@ function onDropdownToggle() {
 <template>
   <div
     v-if="sessionStore.isAuthenticated"
-    class="tw:relative"
+    class="tw:flex tw:items-center"
   >
-    <div class="tw:row tw:items-center">
+    <div class="tw:relative tw:flex tw:items-center">
       <NotificationBell class="tw:pr-8 tw:hidden tw:sm:!flex" />
 
       <span

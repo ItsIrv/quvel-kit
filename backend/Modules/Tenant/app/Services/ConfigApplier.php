@@ -127,8 +127,6 @@ class ConfigApplier
         $appConfig->set('auth.verify_email_before_login', $config->verifyEmailBeforeLogin);
         $appConfig->set('core.recaptcha.google.secret', $config->recaptchaGoogleSecret);
 
-        app(FrontendService::class)->setUrl($config->frontendUrl);
-
         // Laravel Context
         Context::add('tenant_id', $tenant->public_id);
     }
