@@ -102,7 +102,7 @@ defineExpose({
     @submit.prevent="onSubmit"
   >
     <!-- Oauth providers -->
-    <div class="mt-4 my-8 w-full">
+    <div class="tw:mt-4 tw:my-8 tw:w-full">
       <q-select
         :model-value="null"
         :options="socialiteProviders.map(p => ({
@@ -132,12 +132,12 @@ defineExpose({
 
     <!-- Errors -->
     <TaskErrors
-      class="mt-2"
+      class="tw:mt-2"
       :task-errors="loginTask.errors.value"
     />
 
     <!-- Links -->
-    <div class="pt-4 text-base flex gap-2 justify-between">
+    <div class="tw:pt-4 tw:text-base tw:flex tw:gap-2 tw:justify-between">
       <span>
         <a
           class="underline cursor-pointer"
@@ -158,7 +158,7 @@ defineExpose({
     </div>
 
     <!-- Buttons -->
-    <div class="mt-6 flex justify-end gap-4">
+    <div class="tw:mt-6 tw:flex tw:justify-end tw:gap-4">
       <q-btn
         flat
         class="Button"
@@ -169,7 +169,7 @@ defineExpose({
 
       <q-btn
         unelevated
-        class="PrimaryButton hover:bg-primary-600"
+        class="PrimaryButton tw:hover:bg-primary-600"
         type="submit"
         :loading="loginTask.isActive.value"
         :disabled="loginTask.isActive.value || isOAuthRedirecting"

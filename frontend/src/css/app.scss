@@ -196,12 +196,6 @@
   }
 }
 
-/* Auth Dialog */
-.AuthDialog {
-  @extend .DialogGradient, .GenericBorder, .MainTransition;
-  @apply tw:p-6 tw:w-96 tw:rounded-xl tw:shadow-sm;
-}
-
 .UserDropdown {
   @extend .GenericBorder, .GenericCardGradient;
   @apply tw:absolute tw:right-0 tw:mt-2 tw:w-48 tw:rounded-lg tw:p-4 tw:rounded-b-lg tw:z-10;
@@ -260,7 +254,7 @@
 
 .LanderNav {
   @extend .GenericBorder, .GenericCardGradient, .MainTransition;
-  @apply tw:z-10 
+  @apply tw:z-50 
   tw:py-2 
   tw:fixed 
   tw:top-6 
@@ -358,4 +352,10 @@
 .hero-gradient-text {
   @apply tw:text-transparent tw:bg-clip-text;
   background-image: linear-gradient(135deg, #3b82f6, #f3552c);
+}
+
+/* Override highlight.js styles to respect Tailwind dark/light theme */
+.hljs {
+  /* Reset background to be transparent */
+  background: transparent !important;
 }

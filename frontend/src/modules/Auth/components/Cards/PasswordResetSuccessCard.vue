@@ -19,25 +19,25 @@ function onClose() {
 </script>
 
 <template>
-  <q-card-section class="flex flex-col items-center">
+  <q-card-section class="tw:flex tw:flex-col tw:items-center">
     <q-icon
       name="eva-email-outline"
       color="green"
       size="6em"
-      class="mb-4"
+      class="tw:mb-4"
     />
 
-    <div class="text-h6">
+    <div class="tw:text-h6">
       {{ $t('auth.status.success.passwordResetSent') }}
     </div>
 
-    <div class="text-base mb-4">
+    <div class="tw:text-base tw:mb-4">
       {{ $t('auth.status.success.checkYourEmail') }}
     </div>
 
     <q-btn
       unelevated
-      class="PrimaryButton hover:bg-primary-600"
+      class="PrimaryButton tw:hover:bg-primary-600"
       @click="onClose"
     >
       {{ $t('common.buttons.close') }}

@@ -43,10 +43,18 @@ class FindService
     }
 
     /**
+     * Find tenant by public ID
+     */
+    public function findByPublicId(string $publicId): ?Tenant
+    {
+        return Tenant::where('public_id', '=', $publicId)->first();
+    }
+
+    /**
      * Get tenant public ID from tenant ID
      */
     public function getTenantPublicIdFromId(int $tenantId): ?string
     {
-        return Tenant::select('public_id')->find($tenantId)?->public_id;
+        return $this->findById($tenantId)?->public_id;
     }
 }

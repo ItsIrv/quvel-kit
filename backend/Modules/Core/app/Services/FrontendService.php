@@ -135,7 +135,7 @@ class FrontendService
      */
     protected function buildUrl(string $path, array $query = []): string
     {
-        $base = \rtrim($this->url, '/');
+        $base = \rtrim(config('app.url'), '/');
         $path = \ltrim($path, '/');
 
         $url = "$base/$path";

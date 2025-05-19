@@ -25,7 +25,7 @@ function toggleDarkMode(): void {
   <ClientOnly>
     <div class="flex flex-center">
       <q-icon
-        :class="['cursor-pointer', 'text-grey-7']"
+        :class="['cursor-pointer', 'text-grey-5']"
         :name="isDark ? 'eva-sun-outline' : 'eva-moon-outline'"
         size="24px"
         @click="toggleDarkMode"

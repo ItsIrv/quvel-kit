@@ -207,8 +207,10 @@ useUrlQueryHandler({
     @before-show="handleBeforeShow"
   >
     <!-- Form or Success Card -->
-    <q-card class="AuthDialog duration-1000 relative overflow-hidden">
-      <h3 class="text-h4 font-semibold text-gray-900 dark:text-white">
+    <q-card
+      class="DialogGradient GenericBorder MainTransition duration-1000 relative overflow-hidden tw:p-6 tw:w-96 tw:rounded-xl tw:shadow-sm"
+    >
+      <h3 class="tw:text-h4 tw:font-semibold tw:text-gray-900 tw:dark:text-white">
         <QuvelKit>{{ $t(stepTitle) }}</QuvelKit>
       </h3>
 

@@ -97,7 +97,7 @@ defineExpose({
     ref="authForm"
     @submit.prevent="onSubmit"
   >
-    <p class="text-base mb-4">
+    <p class="tw:text-base tw:mb-4">
       {{ $t('auth.forms.passwordReset.tokenDescription') }}
     </p>
 
@@ -105,23 +105,23 @@ defineExpose({
 
     <PasswordField
       v-model="password"
-      class="mt-4"
+      class="tw:mt-4"
     />
 
     <PasswordConfirmField
       v-model="passwordConfirmation"
       :password="password"
-      class="mt-4"
+      class="tw:mt-4"
     />
 
     <!-- Errors -->
     <TaskErrors
-      class="mt-2"
+      class="tw:mt-2"
       :task-errors="resetTask.errors.value"
     />
 
     <!-- Links -->
-    <div class="pt-4 text-base">
+    <div class="tw:pt-4 tw:text-base">
       <span>
         <a
           class="underline cursor-pointer"
@@ -133,7 +133,7 @@ defineExpose({
     </div>
 
     <!-- Buttons -->
-    <div class="mt-6 flex justify-end gap-4">
+    <div class="tw:mt-6 tw:flex tw:justify-end tw:gap-4">
       <q-btn
         flat
         class="Button"
@@ -144,7 +144,7 @@ defineExpose({
 
       <q-btn
         unelevated
-        class="PrimaryButton hover:bg-primary-600"
+        class="PrimaryButton tw:hover:bg-primary-600"
         type="submit"
         :loading="resetTask.isActive.value"
         :disabled="resetTask.isActive.value"

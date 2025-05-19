@@ -137,12 +137,12 @@ defineExpose({
 
     <!-- Errors -->
     <TaskErrors
-      class="mt-2"
+      class="tw:mt-2"
       :task-errors="signupTask.errors.value"
     />
 
     <!-- Links -->
-    <div class="pt-4 text-base">
+    <div class="tw:pt-4 tw:text-base">
       <span>
         <a
           class="underline cursor-pointer"
@@ -154,7 +154,7 @@ defineExpose({
     </div>
 
     <!-- Buttons -->
-    <div class="mt-6 flex justify-end gap-4">
+    <div class="tw:mt-6 tw:flex tw:justify-end tw:gap-4">
       <q-btn
         flat
         class="Button"
@@ -165,7 +165,7 @@ defineExpose({
 
       <q-btn
         unelevated
-        class="PrimaryButton hover:bg-primary-600"
+        class="PrimaryButton tw:hover:bg-primary-600"
         type="submit"
         :loading="signupTask.isActive.value"
         :disabled="signupTask.isActive.value"

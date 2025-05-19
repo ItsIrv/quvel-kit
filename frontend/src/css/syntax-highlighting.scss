@@ -1,0 +1,84 @@
+/**
+ * Custom syntax highlighting that respects Tailwind's dark/light theme
+ * Based on atom-one theme but with CSS variables for theme compatibility
+ */
+
+// Base styling for code blocks
+.hljs-code-block {
+  @apply tw:text-gray-800 tw:dark:text-gray-200;
+  @apply tw:bg-transparent;
+  @apply tw:font-mono tw:text-sm;
+}
+
+// Keywords
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-title.function_ {
+  @apply tw:text-purple-600 tw:dark:text-purple-400;
+}
+
+// Strings
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-attribute {
+  @apply tw:text-green-600 tw:dark:text-green-400;
+}
+
+// Numbers, booleans
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable {
+  @apply tw:text-orange-600 tw:dark:text-orange-400;
+}
+
+// Types, classes
+.hljs-type,
+.hljs-class,
+.hljs-title.class_ {
+  @apply tw:text-yellow-600 tw:dark:text-yellow-400;
+}
+
+// Functions
+.hljs-function .hljs-title,
+.hljs-title.function_ {
+  @apply tw:text-blue-600 tw:dark:text-blue-400;
+}
+
+// Comments
+.hljs-comment,
+.hljs-quote,
+.hljs-deletion {
+  @apply tw:text-gray-500 tw:dark:text-gray-400;
+  @apply tw:italic;
+}
+
+// Built-in names
+.hljs-built_in {
+  @apply tw:text-cyan-600 tw:dark:text-cyan-400;
+}
+
+// Meta information
+.hljs-meta {
+  @apply tw:text-gray-600 tw:dark:text-gray-400;
+}
+
+// Tags
+.hljs-section,
+.hljs-name,
+.hljs-selector-tag,
+.hljs-selector-id,
+.hljs-selector-class {
+  @apply tw:text-red-600 tw:dark:text-red-400;
+}
+
+// Emphasis
+.hljs-emphasis {
+  @apply tw:italic;
+}
+
+// Strong
+.hljs-strong {
+  @apply tw:font-bold;
+}

@@ -1,8 +1,8 @@
-# QuVel Kit Frontend Documentation
+# Frontend Documentation
 
 ## Overview
 
-The QuVel Kit frontend is built with Vue 3, TypeScript, and Quasar 2 in SSR mode with Express. This documentation covers the architecture, services, and development patterns used throughout the frontend codebase.
+QuVel Kit's frontend is built with Vue 3 and Quasar 2, featuring server-side rendering (SSR) with SPA fallback and Capacitor support for native mobile/desktop builds. The architecture follows a modular, service-oriented approach with strict TypeScript typing throughout.
 
 ## Technology Stack
 

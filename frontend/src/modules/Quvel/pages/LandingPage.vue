@@ -1,8 +1,11 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useCatalogStore } from 'src/modules/Catalog/stores/catalogStore';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
-import { useQuasar } from 'quasar';
+import hljs from 'highlight.js/lib/core';
+import php from 'highlight.js/lib/languages/php';
+import 'highlight.js/styles/devibeans.min.css';
+import { CODE_EXAMPLES } from '../constants/code-examples';
 
 defineOptions({
   /**
@@ -29,61 +32,20 @@ const catalogStore = useCatalogStore();
 const activeTab = ref('tenant');
 
 /**
- * Code examples
+ * Code highlighting
  */
-const codeExamples = {
-  tenant: `<?php
-// Set the current tenant context
-setTenant(1);
+const codeRefs = ref<HTMLElement[]>([]);
 
-// Get the current tenant
-$tenant = getTenant();
-$tenantName = $tenant->name;
-$tenantDomain = $tenant->domain;
-
-// Access tenant configuration
-$appUrl = $tenant->config->appUrl;
-$mailFromAddress = $tenant->config->mailFromAddress;`,
-
-  controller: `<?php
-namespace App\\Http\\Controllers;
-
-use Modules\\Tenant\\Contexts\\TenantContext;
-
-class DashboardController extends Controller
-{
-    public function index(TenantContext $tenantContext)
-    {
-        $tenant = $tenantContext->get();
-
-        return view('dashboard', [
-            'tenant' => $tenant,
-            'theme' => $tenantContext->getConfigValue('theme', 'default'),
-        ]);
-    }
-}`,
-
-  model: `<?php
-namespace App\\Models;
-
-use Modules\\Tenant\\Traits\\TenantScopedModel;
-
-class Product extends Model
-{
-    use TenantScopedModel;
-
-    protected $fillable = [
-        'name', 'price', 'description'
-    ];
-
-    // All queries automatically scoped to current tenant
-    // $products = Product::all(); // Only returns current tenant's products
-}`
-};
+// Register languages once
+hljs.registerLanguage('php', php);
 
 /**
  * Lifecycle
  */
+onMounted(() => {
+  void hljs.highlightAll();
+});
+
 watch(
   () => sessionStore.isAuthenticated,
   (isAuthenticated) => {
@@ -91,6 +53,14 @@ watch(
       void catalogStore.catalogItemsFetch();
     }
   },
+);
+
+// Re-highlight when tab changes
+watch(
+  () => activeTab.value,
+  () => {
+    void hljs.highlightAll();
+  }
 );
 </script>
 
@@ -159,36 +129,22 @@ watch(
 
         <!-- Code Content -->
         <div class="tw:bg-white tw:dark:bg-gray-900 tw:p-4 tw:overflow-x-auto">
-          <pre
-            class="tw:text-sm tw:text-gray-800 tw:dark:text-gray-200 tw:font-mono"><code>{{ codeExamples[activeTab] }}</code></pre>
+          <div
+            v-for="(code, tab) in CODE_EXAMPLES"
+            :key="tab"
+            v-show="activeTab === tab"
+          >
+            <pre class="tw:text-sm tw:font-mono tw:rounded-md tw:bg-transparent tw:m-0">
+              <code
+                ref="codeRefs"
+                class="language-php tw:text-gray-800 tw:dark:text-gray-200"
+              >{{ code }}</code>
+            </pre>
+          </div>
         </div>
-      </div>
-
-      <!-- CTA Buttons -->
-      <div class="tw:flex tw:justify-center tw:mt-8 tw:space-x-4">
-        <q-btn
-          color="primary"
-          class="tw:px-6 tw:py-2"
-          size="lg"
-          :to="{ name: 'docs' }"
-        >
-          Get Started
-        </q-btn>
-        <q-btn
-          outline
-          color="primary"
-          class="tw:px-6 tw:py-2"
-          size="lg"
-          href="https://github.com/itsirv/quvel-kit"
-          target="_blank"
-        >
-          <q-icon
-            name="eva-github-outline"
-            class="tw:mr-2"
-          />
-          GitHub
-        </q-btn>
       </div>
     </div>
   </div>
 </template>
+
+<style lang="scss"></style>
