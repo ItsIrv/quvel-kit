@@ -22,7 +22,7 @@ export const CODE_EXAMPLES = {
 > $appName = $tenant->config->appName;
 = "QuVel Local"
 
-> $mailFromAddress = $tenant->config->mailFromAddress;
+> config('mail.from.address');
 = "support@quvel.app"
 
 // Tenant scoped services ready to use
@@ -126,16 +126,16 @@ export const useUserStore = defineStore('user', {
     user: null,
     isLoggedIn: false
   }),
-  
+
   actions: {
     async login(email, password) {
       // Access container in actions
       const { api } = useContainer();
-      
-      const response = await api.post('/login', { 
-        email, password 
+
+      const response = await api.post('/login', {
+        email, password
       });
-      
+
       this.user = response.data.user;
       this.isLoggedIn = true;
     }
