@@ -69,10 +69,10 @@ watch(
     <!-- Hero Content -->
     <div class="tw:container tw:mx-auto tw:px-4 tw:py-16 tw:relative tw:z-10">
       <div class="tw:flex tw:flex-col tw:items-center tw:justify-center tw:text-center tw:mb-12">
-        <h1 class="tw:text-4xl tw:md:text-5xl tw:lg:text-6xl tw:font-bold tw:mb-4">
+        <h1 class="tw:!text-4xl tw:md:!text-5xl tw:lg:!text-6xl tw:!font-bold tw:mb-4">
           <span class="hero-gradient-text">QuVel Kit</span>
         </h1>
-        <p class="tw:text-xl tw:md:text-2xl tw:text-gray-600 tw:dark:text-gray-300 tw:max-w-3xl">
+        <p class="tw:!text-xl tw:md:!text-2xl tw:!text-gray-600 tw:dark:!text-gray-300 tw:max-w-3xl">
           Laravel + Vue boilerplate with multi-tenancy, SSR, and Capacitor support
         </p>
       </div>
@@ -95,30 +95,30 @@ watch(
           <!-- Tabs -->
           <div class="tw:flex tw:space-x-1">
             <button
-              class="tw:px-3 tw:py-1 tw:text-sm tw:rounded-t-md tw:transition-colors"
+              class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
               :class="{
-                'tw:bg-white tw:dark:bg-gray-900 tw:text-blue-600 tw:dark:text-blue-400': activeTab === 'tenant',
-                'tw:text-gray-600 tw:dark:text-gray-400 hover:tw:bg-gray-200 hover:tw:dark:bg-gray-700': activeTab !== 'tenant'
+                'tw:bg-white tw:dark:bg-gray-900 tw:!text-blue-600 tw:dark:!text-blue-400': activeTab === 'tenant',
+                'tw:!text-gray-600 tw:dark:!text-gray-400 hover:tw:bg-gray-200 hover:tw:dark:bg-gray-700': activeTab !== 'tenant'
               }"
               @click="activeTab = 'tenant'"
             >
               tinker
             </button>
             <button
-              class="tw:px-3 tw:py-1 tw:text-sm tw:rounded-t-md tw:transition-colors"
+              class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
               :class="{
-                'tw:bg-white tw:dark:bg-gray-900 tw:text-blue-600 tw:dark:text-blue-400': activeTab === 'controller',
-                'tw:text-gray-600 tw:dark:text-gray-400 hover:tw:bg-gray-200 hover:tw:dark:bg-gray-700': activeTab !== 'controller'
+                'tw:bg-white tw:dark:bg-gray-900 tw:!text-blue-600 tw:dark:!text-blue-400': activeTab === 'controller',
+                'tw:!text-gray-600 tw:dark:!text-gray-400 hover:tw:bg-gray-200 hover:tw:dark:bg-gray-700': activeTab !== 'controller'
               }"
               @click="activeTab = 'controller'"
             >
               DashboardController.php
             </button>
             <button
-              class="tw:px-3 tw:py-1 tw:text-sm tw:rounded-t-md tw:transition-colors"
+              class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
               :class="{
-                'tw:bg-white tw:dark:bg-gray-900 tw:text-blue-600 tw:dark:text-blue-400': activeTab === 'model',
-                'tw:text-gray-600 tw:dark:text-gray-400 hover:tw:bg-gray-200 hover:tw:dark:bg-gray-700': activeTab !== 'model'
+                'tw:bg-white tw:dark:bg-gray-900 tw:!text-blue-600 tw:dark:!text-blue-400': activeTab === 'model',
+                'tw:!text-gray-600 tw:dark:!text-gray-400 hover:tw:bg-gray-200 hover:tw:dark:bg-gray-700': activeTab !== 'model'
               }"
               @click="activeTab = 'model'"
             >
@@ -134,10 +134,10 @@ watch(
             :key="tab"
             v-show="activeTab === tab"
           >
-            <pre class="tw:text-sm tw:font-mono tw:rounded-md tw:bg-transparent tw:m-0">
+            <pre class="tw:!text-sm tw:font-mono tw:rounded-md tw:!bg-transparent tw:!m-0">
               <code
                 ref="codeRefs"
-                class="language-php tw:text-gray-800 tw:dark:text-gray-200"
+                class="language-php tw:!text-gray-800 tw:dark:!text-gray-200"
               >{{ code }}</code>
             </pre>
           </div>

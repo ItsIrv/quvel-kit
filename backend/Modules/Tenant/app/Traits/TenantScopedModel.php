@@ -2,8 +2,11 @@
 
 namespace Modules\Tenant\Traits;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Tenant\Exceptions\TenantMismatchException;
+use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Scopes\TenantScope;
 
 /**
@@ -101,5 +104,16 @@ trait TenantScopedModel
         $modelPublicId  = $this->public_id ?? $this->getKey();
 
         return "tenant.{$tenantPublicId}.{$modelClass}.{$modelPublicId}";
+    }
+
+    /**
+     * @return BelongsTo<Tenant, User>
+     */
+    public function tenant(): BelongsTo
+    {
+        /**
+         * @var BelongsTo<Tenant, User>
+         */
+        return $this->belongsTo(Tenant::class);
     }
 }

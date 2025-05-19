@@ -70,15 +70,4 @@ class User extends Authenticatable implements MustVerifyEmail
             'password'          => 'hashed',
         ];
     }
-
-    /**
-     * @return BelongsTo<Tenant, User>
-     */
-    public function tenant(): BelongsTo
-    {
-        /**
-         * @var BelongsTo<Tenant, User>
-         */
-        return $this->belongsTo(Tenant::class);
-    }
 }

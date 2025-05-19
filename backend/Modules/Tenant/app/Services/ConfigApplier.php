@@ -5,6 +5,7 @@ namespace Modules\Tenant\Services;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Context;
+use Modules\Core\Services\FrontendService;
 use Modules\Tenant\Models\Tenant;
 use RuntimeException;
 
@@ -125,6 +126,8 @@ class ConfigApplier
         $appConfig->set('auth.disable_socialite', $config->disableSocialite);
         $appConfig->set('auth.verify_email_before_login', $config->verifyEmailBeforeLogin);
         $appConfig->set('core.recaptcha.google.secret', $config->recaptchaGoogleSecret);
+
+        app(FrontendService::class)->setUrl($config->frontendUrl);
 
         // Laravel Context
         Context::add('tenant_id', $tenant->public_id);

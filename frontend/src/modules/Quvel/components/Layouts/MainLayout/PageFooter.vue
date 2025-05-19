@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import LanguageSwitcher from 'src/modules/Core/components/Misc/LanguageSwitcher.vue';
-import ThemeSwitcher from 'src/modules/Core/components/Misc/ThemeSwitcher.vue';
 </script>
 
 <template>
@@ -17,7 +16,6 @@ import ThemeSwitcher from 'src/modules/Core/components/Misc/ThemeSwitcher.vue';
     </p>
 
     <div class="tw:flex tw:justify-center tw:gap-4">
-      <ThemeSwitcher />
       <LanguageSwitcher />
     </div>
   </footer>

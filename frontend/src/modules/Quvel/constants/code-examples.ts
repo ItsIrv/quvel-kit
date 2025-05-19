@@ -19,8 +19,11 @@ export const CODE_EXAMPLES = {
 }
 
 // Access tenant configuration
-$appUrl = $tenant->config->appUrl;
-$mailFromAddress = $tenant->config->mailFromAddress;
+> $appName = $tenant->config->appName;
+= "QuVel Local"
+
+> $mailFromAddress = $tenant->config->mailFromAddress;
+= "support@quvel.app"
 
 // Tenant scoped services ready to use
 > app(FrontendService::class)->redirect('welcome', ['to' => 'quvel'])->getTargetUrl();
