@@ -185,14 +185,4 @@ php artisan tenant:create
 php artisan tenant:list
 ```
 
-## Next Steps
-
-Now that you're familiar with the basics of the Laravel backend, you can explore more advanced topics:
-
-- [Module Development](./module-development.md) - Working with Laravel Modules
-- [API Development](./api-development.md) - Building RESTful APIs
-- [Authentication](./authentication.md) - User authentication and authorization
-
----
-
 [← Back to Backend Documentation](./README.md)

@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import QuvelKit from 'src/modules/Quvel/components/Common/QuvelKit.vue';
 import AuthMenu from 'src/modules/Quvel/components/Layouts/MainLayout/AuthMenu.vue';
 import MenuList from 'src/modules/Quvel/components/Layouts/MainLayout/MenuList.vue';
+import ThemeSwitcher from 'src/modules/Core/components/Misc/ThemeSwitcher.vue';
 
 /**
  * Emits
@@ -39,7 +40,7 @@ onUnmounted(() => {
 <template>
   <header>
     <nav :class="[
-      'LanderNav',
+      'LanderNav tw:max-w-screen-lg',
       isHidden
         ? 'tw:opacity-0 tw:-translate-y-10 tw:pointer-events-none'
         : 'tw:opacity-100 tw:translate-y-0 tw:pointer-events-auto'
@@ -58,6 +59,10 @@ onUnmounted(() => {
           @login-click="emits('login-click')"
           @open-left-drawer="emits('open-left-drawer')"
         />
+
+        <div class="tw:hidden tw:sm:!flex tw:gap-2">
+          <ThemeSwitcher />
+        </div>
 
         <div class="tw:flex tw:sm:!hidden">
           <q-btn

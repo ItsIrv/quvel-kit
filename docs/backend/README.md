@@ -25,7 +25,7 @@ QuVel Kit's backend is built with Laravel 12 and follows a modular architecture 
 ### Modules
 
 - [Module Development](./module-development.md) - Working with Laravel Modules
-- [Tenant Module](./tenant-module.md) - Multi-tenancy support
+- [Multi-Tenancy System](./tenant-module.md) - Multi-tenancy architecture and configuration
 - [Auth Module](./auth-module.md) - Authentication and authorization
 - [Core Module](./core-module.md) - Core functionality and utilities
 

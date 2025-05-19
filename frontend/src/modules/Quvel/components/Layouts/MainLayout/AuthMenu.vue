@@ -61,7 +61,7 @@ function onDropdownToggle() {
       <NotificationBell class="tw:pr-8 tw:hidden tw:sm:!flex" />
 
       <span
-        class="tw:mr-2 tw:text-xl tw:font-bold tw:hidden tw:sm:!flex tw:cursor-pointer"
+        class="tw:mr-2 tw:text-xl tw:font-bold tw:hidden tw:sm:!flex cursor-pointer"
         @click="onDropdownToggle"
       >
         {{ sessionStore.user?.name }}

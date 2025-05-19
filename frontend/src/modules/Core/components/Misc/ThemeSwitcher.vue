@@ -23,16 +23,13 @@ function toggleDarkMode(): void {
 
 <template>
   <ClientOnly>
-    <q-btn
-      dense
-      round
-      flat
-      @click="toggleDarkMode"
-    >
+    <div class="flex flex-center">
       <q-icon
+        :class="['cursor-pointer', 'text-grey-7']"
         :name="isDark ? 'eva-sun-outline' : 'eva-moon-outline'"
         size="24px"
+        @click="toggleDarkMode"
       />
-    </q-btn>
+    </div>
   </ClientOnly>
 </template>

@@ -35,7 +35,6 @@
 }
 
 .q-select {
-  @extend .MainGradient;
 }
 
 /**
@@ -354,4 +353,9 @@
 .slow-expand-leave-from {
   max-height: 80px;
   opacity: 1;
+}
+
+.hero-gradient-text {
+  @apply tw:text-transparent tw:bg-clip-text;
+  background-image: linear-gradient(135deg, #3b82f6, #f3552c);
 }

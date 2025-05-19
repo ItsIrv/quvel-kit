@@ -14,34 +14,34 @@ async function reloadCatalog() {
 </script>
 
 <template>
-  <section class="CatalogSection max-w-6xl mx-auto px-4 mt-[100px]">
+  <section class="CatalogSection tw:max-w-6xl tw:mx-auto tw:px-4 tw:mt-[100px]">
     <q-inner-loading :showing="catalogStore.catalogItems.isLoadingMore" />
 
     <div
       v-if="!catalogStore.catalogItems.hasLoaded && !catalogStore.catalogItems.isLoadingMore"
-      class="py-8 text-center"
+      class="tw:py-8 tw:text-center"
     >
-      <p class="text-lg text-gray-600">Unable to load catalog items. Please try again later.</p>
+      <p class="tw:text-lg tw:text-gray-600">Unable to load catalog items. Please try again later.</p>
       <q-btn
         color="primary"
-        class="mt-4"
+        class="tw:mt-4"
         @click="reloadCatalog"
       >Retry</q-btn>
     </div>
 
     <div
       v-else-if="catalogStore.catalogItems.hasLoaded && !catalogStore.hasCatalogItems && !catalogStore.catalogItems.isLoadingMore"
-      class="py-8 text-center"
+      class="tw:py-8 tw:text-center"
     >
-      <p class="text-lg text-gray-600">No catalog items found.</p>
+      <p class="tw:text-lg tw:text-gray-600">No catalog items found.</p>
     </div>
 
     <div
       v-else
-      class="py-8"
+      class="tw:py-8 tw:text-center"
     >
       <!-- Grid of Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="tw:grid tw:grid-cols-1 tw:sm:grid-cols-2 tw:lg:grid-cols-3 tw:gap-6">
         <template
           v-for="item in catalogStore.getCatalogItems"
           :key="item.id"
@@ -51,7 +51,7 @@ async function reloadCatalog() {
       </div>
 
       <!-- Pagination -->
-      <div class="mt-10 flex justify-center">
+      <div class="tw:mt-10 tw:flex tw:justify-center">
         <q-pagination
           v-if="catalogStore.hasCatalogItems"
           :model-value="catalogStore.catalogItems.meta?.current_page ?? 0"

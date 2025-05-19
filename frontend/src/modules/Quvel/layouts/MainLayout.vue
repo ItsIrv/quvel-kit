@@ -70,7 +70,7 @@ watch(
 
 <template>
   <q-layout class="MainLayout">
-    <div class="MainGradient min-h-screen tw:flex tw:flex-col">
+    <div class="MainGradient tw:min-h-screen tw:flex tw:flex-col">
       <!-- Header -->
       <PageHeader
         @login-click="onLoginClick"
@@ -79,7 +79,7 @@ watch(
       />
 
       <!-- Main content area -->
-      <div class="tw:flex-grow">
+      <div class="tw:flex-grow tw:mt-10">
         <router-view />
       </div>
 

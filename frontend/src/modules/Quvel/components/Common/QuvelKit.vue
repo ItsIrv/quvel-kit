@@ -17,9 +17,9 @@ defineProps({
     v-if="link"
     :href="config.get('appUrl')"
   >
-    <span class="QuvelKit text-2xl font-bold text-gray-900 dark:text-white">
+    <span class="QuvelKit tw:text-2xl tw:font-bold tw:text-gray-900 tw:dark:text-white">
       <!-- Tight spacing on purpose; prevents space in text.-->
-      <span class="text-blue-500">
+      <span class="tw:text-blue-500">
         {{ config.get('appName') }}
       </span>
 
@@ -28,27 +28,13 @@ defineProps({
   </a>
   <span
     v-else
-    class="QuvelKit text-2xl font-bold text-gray-900 dark:text-white"
+    class="QuvelKit tw:text-2xl tw:font-bold tw:text-gray-900 tw:dark:text-white"
   >
     <!-- Tight spacing on purpose; prevents space in text.-->
-    <span class="text-blue-500 mr-2">
+    <span class="tw:text-blue-500 tw:mr-2">
       {{ config.get('appName') }}
     </span>
 
     <slot></slot>
   </span>
 </template>
-
-<style scoped>
-@keyframes wave {
-
-  0%,
-  100% {
-    transform: translateY(3px);
-  }
-
-  50% {
-    transform: translateY(-3px);
-  }
-}
-</style>

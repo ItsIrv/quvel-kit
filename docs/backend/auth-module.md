@@ -1,205 +1,217 @@
-# Auth Module
+# Authentication
 
 ## Overview
 
-The Auth module provides a comprehensive authentication system for QuVel Kit, built on Laravel Sanctum with enhanced security features. This module handles user authentication, token management, OAuth integration via Socialite, and HMAC signature verification for secure client-server communication.
+The Auth module provides a comprehensive authentication system for QuVel Kit, integrating traditional email/password authentication with OAuth providers. Built on Laravel Sanctum for token-based authentication and Laravel Socialite for OAuth integration, it features secure token management, HMAC signature verification, and multi-tenancy support.
 
-## Key Components
+## Architecture
 
-### Service Providers
+### Service Registration
 
-The Auth module is bootstrapped through the main service provider:
+The Auth module uses **scoped services** to support multi-tenancy. All services are registered in the `AuthServiceProvider`:
 
-1. **AuthServiceProvider**: Registers all authentication services as **scoped** dependencies:
-   - HmacService
-   - ClientNonceService
-   - ServerTokenService
-   - UserAuthenticationService
-   - NonceSessionService
-   - SocialiteService
-   
-   > **Note**: All services are registered as **scoped** rather than singleton to support multi-tenancy. This ensures that services depending on tenant-specific configuration or other tenant-scoped services will be properly instantiated for each tenant context.
+```php
+public function register(): void
+{
+    $this->app->register(RouteServiceProvider::class);
+
+    // All services are scoped to support multi-tenancy
+    $this->app->scoped(HmacService::class);
+    $this->app->scoped(ClientNonceService::class);
+    $this->app->scoped(ServerTokenService::class);
+    $this->app->scoped(UserAuthenticationService::class);
+    $this->app->scoped(NonceSessionService::class);
+    $this->app->scoped(SocialiteService::class);
+}
+```
+
+> **Note**: Scoped services ensure proper instantiation for each tenant context, allowing services to depend on tenant-specific configuration.
 
 ### Core Services
 
-#### UserAuthenticationService
-
-Handles user authentication with email/password and OAuth providers:
-
-- Authenticates users with credentials
-- Manages OAuth authentication flow with provider-specific identifiers
-- Creates or retrieves user accounts
-- Verifies email status based on configuration
-
-#### OAuthCoordinator
-
-Orchestrates the OAuth authentication flow:
-
-- Creates and manages client nonces
-- Builds redirect responses for OAuth providers
-- Authenticates callbacks from OAuth providers
-- Handles both stateless and session-based authentication
-
-#### ServerTokenService
-
-Manages secure token generation and validation:
-
-- Creates signed tokens for authentication
-- Maps server tokens to client nonces
-- Validates token signatures
-- Handles token expiration with configurable TTL
-
-#### HmacService
-
-Provides HMAC signature verification for enhanced security:
-
-- Signs data with a shared secret
-- Verifies signatures to prevent tampering
-- Provides methods for signing and extracting values with HMAC
-
-#### ClientNonceService
-
-Manages client nonces for secure OAuth flows:
-
-- Creates unique client nonces
-- Tracks nonce state throughout the authentication flow
-- Associates user IDs with nonces
-- Handles nonce expiration
-
-#### NonceSessionService
-
-Manages nonce storage in the session:
-
-- Stores nonces with timestamps
-- Validates nonce expiration
-- Clears expired nonces
-
-#### SocialiteService
-
-Manages OAuth authentication with third-party providers:
-
-- Handles OAuth redirects with dynamic redirect URIs
-- Processes OAuth callbacks
-- Integrates with tenant context for multi-tenant applications
+| Service | Responsibility | Key Methods |
+|---------|---------------|-------------|
+| **UserAuthenticationService** | Handles user authentication | `attempt()`, `handleOAuthLogin()`, `logInWithId()` |
+| **OAuthCoordinator** | Orchestrates OAuth flow | `createClientNonce()`, `buildRedirectResponse()`, `authenticateCallback()` |
+| **HmacService** | Provides cryptographic security | `sign()`, `verify()`, `signWithHmac()`, `extractAndVerify()` |
+| **ClientNonceService** | Manages client-side nonces | `create()`, `getNonce()`, `assignUserToNonce()` |
+| **ServerTokenService** | Manages server-side tokens | `create()`, `getClientNonce()`, `forget()` |
+| **SocialiteService** | Interfaces with OAuth providers | `getRedirectResponse()`, `getProviderUser()` |
+| **NonceSessionService** | Manages session-based nonces | `setNonce()`, `getNonce()`, `isValid()` |
 
 ## Authentication Flows
 
-### Traditional Authentication Flows
+### Traditional Authentication
 
-1. User submits credentials (email/password)
-2. UserAuthenticationService validates credentials
-3. On success, the user is authenticated
-4. The session or token is used for subsequent requests
+```php
+// LoginAction example
+public function __invoke(LoginRequest $request): JsonResponse
+{
+    $data = $request->validated();
+    $user = $this->userFindService->findByEmail($data['email']);
+    
+    // Validate user exists and has password (not OAuth-only)
+    if (!$user || !$user->password || $user->provider_id) {
+        throw new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);
+    }
+    
+    // Attempt authentication
+    $success = $this->userAuthenticationService->attempt(
+        $data['email'], 
+        $data['password']
+    );
+    
+    if (!$success) {
+        throw new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);
+    }
+    
+    return $this->responseFactory->json([
+        'message' => AuthStatusEnum::LOGIN_SUCCESS->value,
+        'user' => new UserResource($user)
+    ], 201);
+}
+```
 
-### OAuth Authentication Flows
+### OAuth Authentication
 
-The module supports both stateless and session-based OAuth flows:
+The module supports both stateless (API/mobile) and session-based (web) OAuth flows.
 
 #### Session-Based Flow
 
-1. User initiates OAuth login
-2. SocialiteService redirects to the OAuth provider
-3. Provider redirects back with authorization code
-4. SocialiteService exchanges code for user information
-5. UserAuthenticationService creates or retrieves user account
-6. User is logged in via session
+1. User clicks "Login with Google"
+2. Browser is redirected to Google
+3. After authentication, Google redirects back with an authorization code
+4. Server exchanges code for user data and creates a session
 
-#### Stateless Flow
+```php
+// Simplified callback handling
+public function __invoke(CallbackRequest $request, string $provider)
+{
+    $state = $request->validated('state', '');
+    $result = $this->authCoordinator->authenticateCallback($provider, $state);
+    
+    // For session-based flow
+    if (!$result->isStateless()) {
+        return $this->frontendService->redirect('', [
+            'message' => $result->getStatus()->value
+        ]);
+    }
+    
+    // For stateless flow...
+}
+```
 
-1. Client creates a nonce via ClientNonceService
-2. Client requests OAuth redirect with the nonce
-3. Server creates a server token mapped to the client nonce
-4. User is redirected to OAuth provider with the server token
-5. Provider redirects back with the server token and authorization code
-6. Server validates the token and retrieves the original nonce
-7. UserAuthenticationService creates or retrieves user account
-8. Client nonce is associated with the user ID
-9. Client redeems the nonce to complete authentication
+#### Stateless Flow (API/Mobile)
 
-### HMAC Security Flows
+```php
+// Client creates a nonce
+$nonce = $authCoordinator->createClientNonce();
 
-The Auth module uses HMAC signatures to secure tokens and nonces:
+// Server creates a token mapped to the nonce
+$redirectResponse = $authCoordinator->buildRedirectResponse('google', $nonce);
 
-1. Server generates tokens/nonces with HmacService
-2. Values are signed with a shared secret
-3. Signed values are verified before processing
-4. Invalid signatures are rejected
+// After OAuth callback
+$result = $authCoordinator->authenticateCallback('google', $signedToken);
+$signedNonce = $result->getSignedNonce();
 
-## Routes
+// Client redeems the nonce
+$user = $authCoordinator->redeemClientNonce($signedNonce);
+```
 
-The Auth module provides the following routes:
+### HMAC Security
 
-### Traditional Authentication Routes
+HMAC signatures secure tokens and nonces throughout the authentication process:
 
-- `POST /auth/login`: User login with email/password
-- `POST /auth/register`: User registration
-- `POST /auth/logout`: User logout
-- `GET /auth/session`: Check session status
+```php
+// Signing data
+$signature = $hmacService->sign($value); // Returns HMAC signature
+$signedValue = $hmacService->signWithHmac($value); // Returns "value.signature"
 
-### Email Verification Routes
-
-- `POST /auth/email/verification-notification`: Request verification email
-- `GET /auth/email/verify/{id}/{hash}`: Verify email
-
-### Password Reset Routes
-
-- `POST /auth/forgot-password`: Request password reset
-- `GET /auth/password/{token}`: Password reset form
-
-### OAuth Authentication Routes
-
-- `GET /auth/provider/{provider}/redirect`: Redirect to OAuth provider
-- `GET /auth/provider/{provider}/callback`: Handle OAuth callback
-- `POST /auth/provider/{provider}/callback`: Handle OAuth callback (POST)
-- `POST /auth/provider/{provider}/create-nonce`: Create client nonce
-- `POST /auth/provider/{provider}/redeem-nonce`: Redeem client nonce
+// Verifying data
+$isValid = $hmacService->verify($value, $signature);
+$extractedValue = $hmacService->extractAndVerify($signedValue); // Returns value if valid
+```
 
 ## Configuration
 
-The Auth module is configured through `config/config.php`:
+The Auth module is configured through environment variables:
 
-```php
-return [
-    'name' => 'Auth',
-    
-    // Disable Socialite Authentication
-    'disable_socialite' => env('AUTH_DISABLE_SOCIALITE', false),
-    
-    // User must verify email before login
-    'verify_email_before_login' => env('AUTH_VERIFY_EMAIL_BEFORE_LOGIN', true),
-    
-    // Socialite Configuration
-    'socialite' => [
-        // Supported providers (comma-separated)
-        'providers' => explode(',', env('SOCIALITE_PROVIDERS', 'google')),
-        
-        // Nonce TTL in minutes
-        'nonce_ttl' => env('SOCIALITE_NONCE_TTL', 60),
-        
-        // Token TTL in minutes
-        'token_ttl' => env('SOCIALITE_TOKEN_TTL', 60),
-        
-        // HMAC Secret Key for signing
-        'hmac_secret' => env('HMAC_SECRET_KEY'),
-    ],
-];
+```dotenv
+# General Auth Settings
+AUTH_DISABLE_SOCIALITE=false
+AUTH_VERIFY_EMAIL_BEFORE_LOGIN=true
+
+# Socialite Configuration
+SOCIALITE_PROVIDERS=google,github,facebook
+SOCIALITE_NONCE_TTL=60
+SOCIALITE_TOKEN_TTL=60
+HMAC_SECRET_KEY=your-secure-key-here
+
+# Provider-specific settings (in services.php)
+GOOGLE_CLIENT_ID=your-client-id
+GOOGLE_CLIENT_SECRET=your-client-secret
 ```
 
-## Multi-Tenancy Integration
+## Routes
 
-The Auth module integrates with the multi-tenancy system:
+### Traditional Authentication
 
-- OAuth redirects include tenant context via the SocialiteService
-- Dynamic redirect URIs are generated based on tenant configuration
-- Authentication respects tenant boundaries
+- `POST /auth/login`: Authenticate with email/password
+- `POST /auth/register`: Create new account
+- `GET /auth/session`: Check authentication status
+- `POST /auth/logout`: End session
+
+### OAuth
+
+- `GET /auth/provider/{provider}/redirect`: Redirect to OAuth provider
+- `GET|POST /auth/provider/{provider}/callback`: Handle provider response
+- `POST /auth/provider/{provider}/create-nonce`: Create client nonce (stateless)
+- `POST /auth/provider/{provider}/redeem-nonce`: Exchange nonce for session (stateless)
+
+### Security Features
+
+- Rate limiting on all endpoints
+- CAPTCHA verification for registration and password reset
+- Email verification enforcement (configurable)
+- Secure token handling with HMAC signatures
+
+## Multi-Tenancy Support
+
+The Auth module is fully multi-tenant aware:
+
+- All services are registered as **scoped** instead of singleton
+- OAuth redirects include tenant context
+- SocialiteService generates tenant-specific redirect URIs
+- Configuration can be overridden per tenant
+
+## Capacitor Integration
+
+All authentication flows work seamlessly in Capacitor, including OAuth flows:
+
+- **WebSockets**: Real-time communication via Laravel Echo for stateful auth flows
+- **Tenant Context**: Authentication maintains tenant awareness across platforms
+- **Token Storage**: Secure storage mechanisms for each platform
+- **Deep Links**: Support for custom URL schemes for OAuth callbacks (in development)
+
+## Security Considerations
+
+- **Token Security**: All tokens are hashed and stored securely
+- **HMAC Signatures**: Prevents token tampering and replay attacks
+- **CSRF Protection**: Enabled for all web routes
+- **Rate Limiting**: Applied to all authentication endpoints
+- **Logging**: Failed login attempts are logged with IP and user agent information
 
 ## Testing
 
-The Auth module includes comprehensive tests:
+Run the comprehensive test suite:
 
 ```bash
-# Run Auth module tests
+# Run all Auth module tests
 php artisan test --group=auth
+
+# Run specific test groups
+php artisan test --group=auth-fortify
+php artisan test --group=auth-actions
 ```
 
 ---
