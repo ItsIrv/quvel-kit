@@ -6,7 +6,7 @@
     />
 
     <q-card-section>
-      <div class="text-h6">{{ item.name }}</div>
+      <div class="text-h6 tw-text-red-500">{{ item.name }}</div>
       <div
         v-if="item.user"
         class="text-subtitle2"

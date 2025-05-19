@@ -55,13 +55,13 @@ function onDropdownToggle() {
 <template>
   <div
     v-if="sessionStore.isAuthenticated"
-    class="relative"
+    class="tw:relative"
   >
-    <div class="row items-center">
-      <NotificationBell class="pr-8 hidden sm:!flex" />
+    <div class="tw:row tw:items-center">
+      <NotificationBell class="tw:pr-8 tw:hidden tw:sm:!flex" />
 
       <span
-        class="mr-2 text-xl font-bold hidden sm:!flex cursor-pointer"
+        class="tw:mr-2 tw:text-xl tw:font-bold tw:hidden tw:sm:!flex tw:cursor-pointer"
         @click="onDropdownToggle"
       >
         {{ sessionStore.user?.name }}
@@ -78,7 +78,7 @@ function onDropdownToggle() {
           :src="sessionStore.user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=44'
             "
           alt="User Avatar"
-          class="w-10 h-10 rounded-full border border-stone-400 dark:border-gray-600 shadow-sm"
+          class="tw:w-10 tw:h-10 tw:rounded-full tw:border tw:border-stone-400 tw:dark:border-gray-600 tw:shadow-sm"
         />
       </q-btn>
     </div>
@@ -90,16 +90,16 @@ function onDropdownToggle() {
         class="UserDropdown"
       >
         <!-- User Information -->
-        <p class="text-sm text-gray-900 dark:text-white font-semibold">
+        <p class="tw:text-sm tw:text-gray-900 tw:dark:text-white tw:font-semibold">
           {{ sessionStore.user?.name }}
         </p>
 
-        <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">{{ sessionStore.user?.email }}</p>
+        <p class="tw:text-xs tw:text-gray-600 tw:dark:text-gray-400 tw:mb-2">{{ sessionStore.user?.email }}</p>
 
         <!-- Logout Button -->
         <q-btn
           color="negative"
-          class="block !w-full"
+          class="tw:block tw:!w-full"
           flat
           :label="$t('auth.forms.logout.button')"
           :loading="logoutTask.isActive.value"
@@ -113,7 +113,7 @@ function onDropdownToggle() {
     <!-- Login Button -->
     <q-btn
       :ripple="false"
-      class="PrimaryButton hidden sm:!flex"
+      class="PrimaryButton tw:hidden tw:sm:!flex"
       unelevated
       @click="emits('login-click')"
     >

@@ -1,4 +1,12 @@
-@import 'tailwindcss';
+@import 'tailwindcss' prefix(tw);
+
+// @plugin "daisyui" {
+//   themes:
+//     light --default,
+//     dark --prefersdark,
+//     cupcake;
+//   prefix: 'du';
+// }
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -18,15 +26,15 @@
 
 // .q-menu {
 //   @extend .MainTransition;
-//   @apply p-2 rounded-xl shadow-xl border border-stone-200 dark:border-gray-700 bg-white dark:bg-gray-900;
+//   @apply tw:p-2 tw:rounded-xl tw:shadow-xl tw:border tw:border-stone-200 tw:dark:border-gray-700 tw:bg-white tw:dark:bg-gray-900;
 //   box-shadow: none;
 // }
 
 .q-item--active {
-  @apply text-orange-600;
+  @apply tw:text-orange-600;
 }
 
-.q-select__dialog {
+.q-select {
   @extend .MainGradient;
 }
 
@@ -35,7 +43,7 @@
  */
 
 .MainTransition {
-  @apply transition-all duration-300 ease-in-out;
+  @apply tw:transition-all tw:duration-300 tw:ease-in-out;
 }
 
 /* Light Mode Gradient */
@@ -122,12 +130,12 @@
 
 .GenericCard {
   @extend .GenericCardGradient, .GenericBorder, .BigGlow, .MainTransition;
-  @apply p-4 rounded-lg shadow-md;
+  @apply tw:p-4 tw:rounded-lg tw:shadow-sm;
 }
 
 /* Resources Section */
 .Resources {
-  @apply text-center mt-16;
+  @apply tw:text-center tw:mt-16;
 }
 
 .SmallGlow {
@@ -192,22 +200,22 @@
 /* Auth Dialog */
 .AuthDialog {
   @extend .DialogGradient, .GenericBorder, .MainTransition;
-  @apply p-6 w-96 rounded-xl shadow-xl;
+  @apply tw:p-6 tw:w-96 tw:rounded-xl tw:shadow-sm;
 }
 
 .UserDropdown {
   @extend .GenericBorder, .GenericCardGradient;
-  @apply absolute right-0 mt-2 w-48 rounded-lg p-4 rounded-b-lg z-10;
+  @apply tw:absolute tw:right-0 tw:mt-2 tw:w-48 tw:rounded-lg tw:p-4 tw:rounded-b-lg tw:z-10;
 
   border-radius: 0 0 0.5rem 0.5rem;
 }
 
 .GenericBorder {
-  @apply border-2 border-stone-100 dark:border-gray-700;
+  @apply tw:border-2 tw:border-stone-100 tw:dark:border-gray-700;
 }
 
 .Button {
-  @apply bg-transparent text-stone-700 dark:text-gray-300 px-4 py-1 rounded-lg;
+  @apply tw:bg-transparent tw:text-stone-700 tw:dark:text-gray-300 tw:px-4 tw:py-1 tw:rounded-lg;
 }
 
 .PrimaryButton {
@@ -215,15 +223,15 @@
 }
 
 .FeaturesGrid {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  @apply tw:grid tw:grid-cols-1 tw:md:grid-cols-2 tw:lg:grid-cols-3 tw:gap-6;
 
   & > div {
     & > h3 {
-      @apply text-gray-900 dark:text-white text-2xl;
+      @apply tw:text-gray-900 tw:dark:text-white tw:text-2xl;
     }
 
     & > p {
-      @apply text-gray-600 dark:text-gray-300 pt-5 text-lg;
+      @apply tw:text-gray-600 tw:dark:text-gray-300 tw:pt-5 tw:text-lg;
     }
   }
 }
@@ -234,7 +242,7 @@
   }
 
   p {
-    @apply text-gray-600 dark:text-gray-400 text-lg;
+    @apply tw:text-gray-600 tw:dark:text-gray-400 tw:text-lg;
   }
 }
 
@@ -243,21 +251,69 @@
     @extend .SmallGlow;
   }
   h4 {
-    @apply text-lg;
+    @apply tw:text-lg;
   }
 
   p {
-    @apply text-gray-600 dark:text-gray-400 text-base;
+    @apply tw:text-gray-600 tw:dark:text-gray-400 tw:text-base;
   }
 }
 
 .LanderNav {
   @extend .GenericBorder, .GenericCardGradient, .MainTransition;
-  @apply z-10 py-2 fixed top-6 flex items-center justify-between gap-6 px-8 rounded-full shadow-md w-[90%];
+  @apply tw:z-10 
+  tw:py-2 
+  tw:fixed 
+  tw:top-6 
+  tw:flex 
+  tw:items-center 
+  tw:justify-between 
+  tw:gap-6 
+  tw:px-8 
+  tw:rounded-xl 
+  tw:shadow-sm 
+  tw:w-[90%]
+  tw:mx-auto;
+
+  left: 50%;
+  transform: translateX(-50%);
 
   .NativeMobile & {
     top: env(safe-area-inset-top, 0px) !important;
+    @apply tw:w-full tw:rounded-none tw:border-0 tw:border-b;
   }
+}
+
+.LanderNavLogo {
+  @apply tw:flex tw:items-center tw:gap-2;
+}
+
+.LanderNavActions {
+  @apply tw:flex tw:items-center tw:gap-2;
+}
+
+.LanderNavLinks {
+  @apply tw:flex-1 tw:flex tw:justify-center tw:gap-4;
+
+  a {
+    @apply tw:px-3 tw:py-1 tw:rounded-md tw:text-gray-600 tw:dark:text-gray-300 tw:hover:text-gray-900 tw:dark:hover:text-white tw:hover:bg-gray-100 tw:dark:hover:bg-gray-800;
+  }
+}
+
+.LandingHero {
+  @apply tw:flex-grow tw:flex tw:flex-col tw:items-center tw:justify-center tw:text-center tw:px-4 tw:py-16;
+}
+
+.LandingTitle {
+  @apply tw:text-4xl tw:font-bold tw:text-gray-900 tw:dark:text-white tw:mb-4;
+}
+
+.LandingSubtitle {
+  @apply tw:text-xl tw:text-gray-600 tw:dark:text-gray-300 tw:mb-8 tw:max-w-2xl;
+}
+
+.LandingButtons {
+  @apply tw:flex tw:flex-col tw:sm:flex-row tw:gap-4 tw:justify-center;
 }
 
 .AccentGradient {

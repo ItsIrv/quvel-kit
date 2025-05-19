@@ -26,12 +26,11 @@ class AuthServiceProvider extends ModuleServiceProvider
     {
         $this->app->register(RouteServiceProvider::class);
 
-        $this->app->singleton(HmacService::class);
-        $this->app->singleton(ClientNonceService::class);
-        $this->app->singleton(ServerTokenService::class);
-        $this->app->singleton(UserAuthenticationService::class);
-        $this->app->singleton(NonceSessionService::class);
-
+        $this->app->scoped(HmacService::class);
+        $this->app->scoped(ClientNonceService::class);
+        $this->app->scoped(ServerTokenService::class);
+        $this->app->scoped(UserAuthenticationService::class);
+        $this->app->scoped(NonceSessionService::class);
         $this->app->scoped(SocialiteService::class);
     }
 }
