@@ -73,7 +73,7 @@ onUnmounted(() => {
           />
 
           <!-- Navigation Links - Desktop -->
-          <MenuList class="tw:hidden lg:tw:flex tw:gap-8 tw:ml-10 tw:font-medium" />
+          <MenuList class="tw:flex tw:gap-8 tw:ml-10 tw:font-medium" />
         </div>
 
         <!-- User Section -->

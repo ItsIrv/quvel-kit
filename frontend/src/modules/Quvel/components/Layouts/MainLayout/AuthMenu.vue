@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { QMenu, useQuasar } from 'quasar';
+import { useQuasar } from 'quasar';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import NotificationBell from 'src/modules/Notifications/components/NotificationBell.vue';
+import UserDropdownMenu from 'src/modules/Auth/components/UserDropdownMenu.vue';
 
 /**
  * Emits
@@ -18,9 +19,7 @@ const $q = useQuasar();
 /**
  * Refs
  */
-const menuRef = ref<QMenu | null>(null);
-
-
+const isMenuOpen = ref(false);
 
 /**
  * Opens the dropdown menu or left drawer based on platform.
@@ -28,7 +27,7 @@ const menuRef = ref<QMenu | null>(null);
 function onDropdownToggle() {
   // On mobile, emit instead
   if ($q.platform.is.desktop) {
-    menuRef.value?.toggle();
+    isMenuOpen.value = !isMenuOpen.value;
   } else {
     emits('open-left-drawer');
   }
@@ -54,6 +53,11 @@ function onDropdownToggle() {
           name="eva-chevron-down-outline"
           size="16px"
         />
+
+        <UserDropdownMenu
+          v-if="$q.platform.is.desktop"
+          v-model="isMenuOpen"
+        />
       </q-btn>
 
       <!-- Mobile User Avatar with Menu -->
@@ -61,6 +65,7 @@ function onDropdownToggle() {
         flat
         round
         dense
+        class="tw:sm:!hidden"
         @click="onDropdownToggle"
       >
         <img

@@ -1,38 +1,45 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
-import { QMenu } from 'quasar';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 
 /**
- * Props for the UserDropdownMenu component
+ * Props
  */
 interface Props {
   /**
-   * Reference to the menu element
+   * Whether the menu is open
    */
-  menuRef?: QMenu;
+  modelValue?: boolean;
 }
 
-const props = defineProps<Props>();
-
-/**
- * Local menu reference for SSR safety
- */
-const localMenuRef = ref(null);
-
-/**
- * Connect the local menu reference to the parent's menu reference
- */
-watch(() => localMenuRef.value, (newVal) => {
-  if (props.menuRef && newVal) {
-  }
-}, { immediate: true });
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: false,
+});
 
 /**
  * Emits
  */
-const emits = defineEmits(['logout']);
+const emits = defineEmits(['logout', 'update:modelValue']);
+
+/**
+ * State
+ */
+const isOpen = ref(false);
+
+/**
+ * Watch for changes to the model value
+ */
+watch(() => props.modelValue, (newVal) => {
+  isOpen.value = newVal;
+});
+
+/**
+ * Watch for changes to the isOpen value
+ */
+watch(() => isOpen.value, (newVal) => {
+  emits('update:modelValue', newVal);
+});
 
 /**
  * Services
@@ -58,12 +65,14 @@ const logoutTask = task.newTask({
 
 <template>
   <q-menu
-    ref="localMenuRef"
+    v-model="isOpen"
     anchor="bottom right"
     self="top right"
     class="UserDropdownMenu"
     transition-show="jump-down"
     transition-hide="jump-up"
+    persistent
+    :auto-close="false"
   >
     <q-card
       class="tw:border tw:border-gray-200 tw:dark:border-gray-700 tw:shadow-lg tw:rounded-lg tw:overflow-hidden tw:min-w-[240px]"
@@ -104,7 +113,7 @@ const logoutTask = task.newTask({
               size="18px"
             />
           </q-item-section>
-          <q-item-section>{{ $t('profile.title') }}</q-item-section>
+          <q-item-section>{{ $t('quvel.profile.title') }}</q-item-section>
         </q-item>
 
         <q-item
@@ -120,7 +129,7 @@ const logoutTask = task.newTask({
               size="18px"
             />
           </q-item-section>
-          <q-item-section>{{ $t('settings.title') }}</q-item-section>
+          <q-item-section>{{ $t('quvel.settings.title') }}</q-item-section>
         </q-item>
 
         <q-separator />

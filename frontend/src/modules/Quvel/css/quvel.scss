@@ -528,3 +528,20 @@
     );
   }
 }
+
+.social-icon-link {
+  @apply tw:relative tw:block;
+}
+
+.social-icon-wrapper {
+  @apply tw:flex tw:items-center tw:justify-center tw:w-10 tw:h-10 tw:rounded-full tw:bg-gray-100 tw:dark:bg-gray-800 tw:text-gray-600 tw:dark:text-gray-400 tw:transition-all tw:duration-300 tw:ease-in-out;
+
+  &:hover {
+    @apply tw:bg-blue-500/10 tw:text-blue-500 tw:scale-110 tw:shadow-md;
+    transform-origin: center;
+  }
+
+  &:active {
+    @apply tw:scale-95 tw:shadow-inner;
+  }
+}
