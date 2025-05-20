@@ -5,20 +5,6 @@ import { toggleTheme } from 'src/modules/Core/utils/themeUtil';
 import ClientOnly from 'src/modules/Core/components/Misc/ClientOnly.vue';
 
 /**
- * Props
- */
-interface Props {
-  /**
-   * Whether to use the minimal version of the component
-   */
-  minimal?: boolean;
-}
-
-withDefaults(defineProps<Props>(), {
-  minimal: false,
-});
-
-/**
  * ThemeSwitcher component for toggling dark mode.
  */
 
@@ -37,24 +23,7 @@ function toggleDarkMode(): void {
 
 <template>
   <ClientOnly>
-    <!-- Standard version -->
-    <div
-      v-if="!minimal"
-      class="tw:flex tw:flex-center ThemeSwitcher"
-    >
-      <q-icon
-        :class="['cursor-pointer', 'text-grey-5']"
-        :name="isDark ? 'eva-sun-outline' : 'eva-moon-outline'"
-        size="24px"
-        @click="toggleDarkMode"
-      />
-    </div>
-
-    <!-- Minimal version -->
-    <div
-      v-else
-      class="ThemeSwitcherMinimal"
-    >
+    <div class="ThemeSwitcherMinimal">
       <q-btn
         flat
         dense

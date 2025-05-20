@@ -85,14 +85,14 @@ onUnmounted(() => {
           />
 
           <!-- Theme & Language - Desktop -->
-          <div class="tw:hidden md:tw:flex tw:gap-3 tw:items-center">
-            <ThemeSwitcher minimal />
+          <div class="tw:hidden tw:md:flex tw:gap-3 tw:items-center">
+            <ThemeSwitcher />
             <div class="tw:h-4 tw:w-px tw:bg-gray-300 tw:dark:bg-gray-700 tw:opacity-50"></div>
-            <LanguageSwitcher minimal />
+            <LanguageSwitcher />
           </div>
 
           <!-- Mobile Menu Button -->
-          <div class="tw:flex lg:tw:hidden">
+          <div class="tw:flex tw:lg:hidden">
             <q-btn
               flat
               round

@@ -4,20 +4,6 @@ import { useContainer } from 'src/modules/Core/composables/useContainer';
 import ClientOnly from 'src/modules/Core/components/Misc/ClientOnly.vue';
 
 /**
- * Props
- */
-interface Props {
-  /**
-   * Whether to use the minimal version of the component
-   */
-  minimal?: boolean;
-}
-
-withDefaults(defineProps<Props>(), {
-  minimal: false,
-});
-
-/**
  * LanguageSwitcher component switcher for the i18n locale.
  */
 
@@ -70,23 +56,8 @@ const currentLocale = computed(() => {
 
 <template>
   <ClientOnly>
-    <!-- Standard version with q-select -->
-    <q-select
-      v-if="!minimal"
-      v-model="localeRef"
-      :options="localeOptions"
-      :label="$t('common.language')"
-      class="LanguageSwitcher"
-      borderless
-      emit-value
-      map-options
-    />
-
     <!-- Minimal version with flags -->
-    <div
-      v-else
-      class="LanguageSwitcherMinimal"
-    >
+    <div class="LanguageSwitcherMinimal">
       <q-btn
         flat
         dense
@@ -124,10 +95,6 @@ const currentLocale = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.LanguageSwitcher {
-  width: 80px;
-}
-
 .LanguageSwitcherMinimal {
   display: inline-block;
 }

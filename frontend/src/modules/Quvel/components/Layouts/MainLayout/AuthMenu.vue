@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { useQuasar } from 'quasar';
+import { QMenu, useQuasar } from 'quasar';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
-import { useContainer } from 'src/modules/Core/composables/useContainer';
-import BackInOutUp from 'src/modules/Core/components/Transitions/BackInOutUp.vue';
 import NotificationBell from 'src/modules/Notifications/components/NotificationBell.vue';
 
 /**
@@ -14,38 +12,23 @@ const emits = defineEmits(['login-click', 'open-left-drawer']);
 /**
  * Services
  */
-const { task, i18n } = useContainer();
 const sessionStore = useSessionStore();
 const $q = useQuasar();
 
 /**
  * Refs
  */
-const isDropdownOpen = ref(false);
+const menuRef = ref<QMenu | null>(null);
+
+
 
 /**
- * Logout Task
- *
- * Handles user logout and updates session state.
- */
-const logoutTask = task.newTask({
-  showNotification: {
-    success: () => i18n.t('auth.status.success.loggedOut'),
-  },
-  task: async () => {
-    await sessionStore.logout();
-
-    isDropdownOpen.value = false;
-  },
-});
-
-/**
- * Opens the dropdown menu.
+ * Opens the dropdown menu or left drawer based on platform.
  */
 function onDropdownToggle() {
   // On mobile, emit instead
   if ($q.platform.is.desktop) {
-    isDropdownOpen.value = !isDropdownOpen.value;
+    menuRef.value?.toggle();
   } else {
     emits('open-left-drawer');
   }
@@ -58,16 +41,22 @@ function onDropdownToggle() {
     class="tw:flex tw:items-center"
   >
     <div class="tw:relative tw:flex tw:items-center">
-      <NotificationBell class="tw:pr-8 tw:hidden tw:sm:!flex" />
+      <NotificationBell class="tw:pr-4 tw:hidden tw:sm:!flex" />
 
-      <span
-        class="tw:mr-2 tw:text-xl tw:font-bold tw:hidden tw:sm:!flex cursor-pointer"
+      <q-btn
+        flat
+        no-caps
+        class="tw:mr-1 tw:!hidden tw:sm:!flex tw:items-center tw:gap-2 tw:px-2 tw:py-1 tw:rounded-lg tw:hover:bg-gray-100 tw:dark:hover:bg-gray-800 tw:transition-colors"
         @click="onDropdownToggle"
       >
-        {{ sessionStore.user?.name }}
-      </span>
+        <span class="tw:text-sm tw:font-medium">{{ sessionStore.user?.name }}</span>
+        <q-icon
+          name="eva-chevron-down-outline"
+          size="16px"
+        />
+      </q-btn>
 
-      <!-- User Avatar -->
+      <!-- Mobile User Avatar with Menu -->
       <q-btn
         flat
         round
@@ -75,38 +64,12 @@ function onDropdownToggle() {
         @click="onDropdownToggle"
       >
         <img
-          :src="sessionStore.user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=44'
-            "
+          :src="sessionStore.user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=44'"
           alt="User Avatar"
           class="tw:w-10 tw:h-10 tw:rounded-full tw:border tw:border-stone-400 tw:dark:border-gray-600 tw:shadow-sm"
         />
       </q-btn>
     </div>
-
-    <!-- Dropdown Menu -->
-    <BackInOutUp>
-      <div
-        v-if="isDropdownOpen"
-        class="UserDropdown"
-      >
-        <!-- User Information -->
-        <p class="tw:text-sm tw:text-gray-900 tw:dark:text-white tw:font-semibold">
-          {{ sessionStore.user?.name }}
-        </p>
-
-        <p class="tw:text-xs tw:text-gray-600 tw:dark:text-gray-400 tw:mb-2">{{ sessionStore.user?.email }}</p>
-
-        <!-- Logout Button -->
-        <q-btn
-          color="negative"
-          class="tw:block tw:!w-full"
-          flat
-          :label="$t('auth.forms.logout.button')"
-          :loading="logoutTask.isActive.value"
-          @click="logoutTask.run()"
-        />
-      </div>
-    </BackInOutUp>
   </div>
 
   <template v-else>
