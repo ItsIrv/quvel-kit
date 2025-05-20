@@ -14,4 +14,10 @@ export default {
       store: 'Pinia Store',
     },
   },
+  profile: {
+    title: 'Profile',
+  },
+  settings: {
+    title: 'Settings',
+  },
 };

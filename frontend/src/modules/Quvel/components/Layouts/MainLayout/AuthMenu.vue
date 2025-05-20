@@ -76,7 +76,7 @@ function onDropdownToggle() {
     <!-- Login Button -->
     <q-btn
       :ripple="false"
-      class="PrimaryButton tw:hidden tw:sm:!flex"
+      class="PrimaryButton hidden tw:md:!flex"
       unelevated
       @click="emits('login-click')"
     >
