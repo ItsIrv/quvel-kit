@@ -72,10 +72,10 @@ watch(
     <div class="tw:container tw:mx-auto tw:px-4 tw:py-16 tw:relative tw:z-10">
       <div class="tw:flex tw:flex-col tw:items-center tw:justify-center tw:text-center tw:mb-12">
         <h1 class="tw:!text-4xl tw:md:!text-5xl tw:lg:!text-6xl tw:!font-bold tw:mb-4">
-          <span class="hero-gradient-text">QuVel Kit</span>
+          <span class="hero-gradient-text">{{ $t('quvel.landing.title') }}</span>
         </h1>
         <p class="tw:!text-xl tw:md:!text-2xl tw:!text-gray-600 tw:dark:!text-gray-300 tw:max-w-3xl">
-          Laravel + Vue boilerplate with multi-tenancy, SSR, and Capacitor support
+          {{ $t('quvel.landing.subtitle') }}
         </p>
       </div>
 
@@ -104,7 +104,7 @@ watch(
               }"
               @click="activeTab = 'tenant'"
             >
-              tinker
+              {{ $t('quvel.landing.tabs.tinker') }}
             </button>
             <button
               class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
@@ -114,7 +114,7 @@ watch(
               }"
               @click="activeTab = 'controller'"
             >
-              DashboardController.php
+              {{ $t('quvel.landing.tabs.dashboardController') }}
             </button>
             <button
               class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
@@ -124,7 +124,7 @@ watch(
               }"
               @click="activeTab = 'model'"
             >
-              Product.php
+              {{ $t('quvel.landing.tabs.product') }}
             </button>
             <button
               class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
@@ -134,7 +134,7 @@ watch(
               }"
               @click="activeTab = 'services'"
             >
-              TS Services
+              {{ $t('quvel.landing.tabs.services') }}
             </button>
             <button
               class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
@@ -144,7 +144,7 @@ watch(
               }"
               @click="activeTab = 'component'"
             >
-              Vue Component
+              {{ $t('quvel.landing.tabs.component') }}
             </button>
             <button
               class="tw:px-3 tw:py-1 tw:!text-sm tw:rounded-t-md tw:transition-colors"
@@ -154,7 +154,7 @@ watch(
               }"
               @click="activeTab = 'store'"
             >
-              Pinia Store
+              {{ $t('quvel.landing.tabs.store') }}
             </button>
           </div>
         </div>

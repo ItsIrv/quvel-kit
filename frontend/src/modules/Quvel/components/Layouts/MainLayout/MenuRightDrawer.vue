@@ -40,8 +40,8 @@ const inputValue = computed({
     overlay
     behavior="mobile"
   >
-    <div class="p-6 flex flex-col gap-4">
-      <div class="row gap-8 mx-auto">
+    <div class="tw:p-6 tw:flex tw:flex-col tw:gap-4">
+      <div class="tw:row tw:gap-8 tw:mx-auto">
         <ThemeSwitcher />
         <LanguageSwitcher />
       </div>
@@ -49,7 +49,8 @@ const inputValue = computed({
       <q-separator />
 
       <!-- Project Links -->
-      <ProjectLinks class="DrawerProjectLinks col space-y-6 text-gray-700 dark:text-gray-300 font-mono" />
+      <ProjectLinks
+        class="DrawerProjectLinks tw:col tw:space-y-6 tw:text-gray-700 tw:dark:text-gray-300 tw:font-mono" />
     </div>
   </q-drawer>
 </template>

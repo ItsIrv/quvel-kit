@@ -56,22 +56,22 @@ const logoutTask = task.newTask({
     overlay
     behavior="mobile"
   >
-    <div class="p-6 flex flex-col gap-6">
+    <div class="tw:p-6 tw:flex tw:flex-col tw:gap-6">
       <!-- User Info -->
-      <div class="flex items-center gap-4">
+      <div class="tw:flex tw:items-center tw:gap-4">
         <img
           :src="sessionStore.user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=44'
             "
           alt="User Avatar"
-          class="w-12 h-12 rounded-full border border-stone-400 dark:border-gray-600 shadow-sm"
+          class="tw:w-12 tw:h-12 tw:rounded-full tw:border tw:border-stone-400 tw:dark:border-gray-600 tw:shadow-sm"
         />
 
         <!-- User Name -->
-        <div class="flex flex-col">
-          <p class="text-lg font-semibold text-gray-900 dark:text-white">
+        <div class="tw:flex tw:flex-col">
+          <p class="tw:text-lg tw:font-semibold tw:text-gray-900 tw:dark:text-white">
             {{ sessionStore.user?.name }}
           </p>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
+          <p class="tw:text-sm tw:text-gray-600 tw:dark:text-gray-400">
             {{ sessionStore.user?.email }}
           </p>
         </div>
@@ -82,7 +82,7 @@ const logoutTask = task.newTask({
       <!-- Navigation Links -->
       <q-list
         bordered
-        class="rounded-lg"
+        class="tw:rounded-lg"
       >
         <q-item
           clickable
@@ -118,7 +118,7 @@ const logoutTask = task.newTask({
               color="negative"
             />
           </q-item-section>
-          <q-item-section class="text-negative">Logout</q-item-section>
+          <q-item-section class="tw:text-negative">Logout</q-item-section>
         </q-item>
       </q-list>
     </div>

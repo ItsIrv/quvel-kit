@@ -27,7 +27,7 @@ export const CODE_EXAMPLES = {
 
 // Tenant scoped services ready to use
 > app(FrontendService::class)->redirect('welcome', ['to' => 'quvel'])->getTargetUrl();
-= "https://api.quvel.127.0.0.1.nip.io/welcome?to=quvel"
+= "https://quvel.127.0.0.1.nip.io/welcome?to=quvel"
 `,
 
   controller: `<?php
@@ -37,6 +37,7 @@ use Modules\\Tenant\\Contexts\\TenantContext;
 
 class DashboardController extends Controller
 {
+    // TenantContext scoped per request
     public function index(TenantContext $tenantContext)
     {
         $tenant = $tenantContext->get();
@@ -55,6 +56,7 @@ use Modules\\Tenant\\Traits\\TenantScopedModel;
 
 class Product extends Model
 {
+    // Trait to scope model to current tenant
     use TenantScopedModel;
 
     protected $fillable = [
@@ -65,7 +67,8 @@ class Product extends Model
     // $products = Product::all(); // Only returns current tenant's products
 }`,
 
-  services: `// Core Services
+  services: `
+// Easily create frontend services with dependencies
 export class TestService extends Service implements RegisterService {
   private api!: ApiService;
 
@@ -124,39 +127,33 @@ const welcome = i18n.t('auth.welcome');
 log.info('User action', { userId: 123 });
 
 // Task management
-task.newTask({
+const fetchItems = task.newTask({
   shouldRun: () => config.get('tenantId') === 1,
   showNotification: {
     success: () => i18n.t('common.task.success'),
     error: () => i18n.t('common.task.error'),
   },
-  task: () => api.post('/auth/login'),
+  task: () => api.get('/items'),
   showLoading: true,
   always: () => {
     // Do something always
   },
-  successHandlers: () => {
+  successHandlers: (items: any[]) => {
     // Do something on success
+    items.value = items;
   },
-  errorHandlers: () => {
+  errorHandlers: (error: any) => {
     // Do something on error
+    console.error(error);
   },
-}).run();
+});
 
-const isLoading = ref(false);
 const items = ref([]);
-
-// Simple data fetching
-async function fetchItems() {
-  isLoading.value = true;
-  items.value = await api.get('/items');
-  isLoading.value = false;
-}
 </script>
 
 <template>
   <div>
-    <button @click="fetchItems">Load</button>
+    <button @click="fetchItems.run" :disabled="fetchItems.isActive">Load</button>
     <div v-for="item in items" :key="item.id">
       {{ item.name }}
     </div>

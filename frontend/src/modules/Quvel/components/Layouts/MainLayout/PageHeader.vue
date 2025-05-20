@@ -4,6 +4,7 @@ import QuvelKit from 'src/modules/Quvel/components/Common/QuvelKit.vue';
 import AuthMenu from 'src/modules/Quvel/components/Layouts/MainLayout/AuthMenu.vue';
 import MenuList from 'src/modules/Quvel/components/Layouts/MainLayout/MenuList.vue';
 import ThemeSwitcher from 'src/modules/Core/components/Misc/ThemeSwitcher.vue';
+import LanguageSwitcher from 'src/modules/Core/components/Misc/LanguageSwitcher.vue';
 
 /**
  * Emits
@@ -61,7 +62,8 @@ onUnmounted(() => {
         />
 
         <div class="tw:hidden tw:sm:!flex tw:gap-2">
-          <ThemeSwitcher />
+          <ThemeSwitcher minimal />
+          <LanguageSwitcher minimal />
         </div>
 
         <div class="tw:flex tw:sm:!hidden">

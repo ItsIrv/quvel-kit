@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import LanguageSwitcher from 'src/modules/Core/components/Misc/LanguageSwitcher.vue';
-</script>
-
 <template>
   <footer class="tw:mt-4 tw:py-6">
     <p class="tw:text-sm tw:text-center">
@@ -14,9 +10,5 @@ import LanguageSwitcher from 'src/modules/Core/components/Misc/LanguageSwitcher.
         Irving Gomez
       </a>
     </p>
-
-    <div class="tw:flex tw:justify-center tw:gap-4">
-      <LanguageSwitcher />
-    </div>
   </footer>
 </template>
