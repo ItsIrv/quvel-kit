@@ -74,8 +74,12 @@ watch(
         <h1 class="tw:!text-4xl tw:md:!text-5xl tw:lg:!text-6xl tw:!font-bold tw:mb-4">
           <span class="hero-gradient-text">{{ $t('quvel.landing.title') }}</span>
         </h1>
-        <p class="tw:!text-xl tw:md:!text-2xl tw:!text-gray-600 tw:dark:!text-gray-300 tw:max-w-3xl">
+        <p
+          class="tw:!text-xl tw:md:!text-2xl tw:!font-medium tw:mb-4 tw:text-gray-700 tw:dark:!text-gray-200 tw:max-w-4xl">
           {{ $t('quvel.landing.subtitle') }}
+        </p>
+        <p class="tw:!text-lg tw:text-gray-600 tw:dark:!text-gray-300 tw:max-w-2xl">
+          {{ $t('quvel.landing.description') }}
         </p>
       </div>
 

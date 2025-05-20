@@ -71,10 +71,18 @@ class Product extends Model
 // Easily create frontend services with dependencies
 export class TestService extends Service implements RegisterService {
   private api!: ApiService;
+  private task!: TaskService;
+  private i18n!: I18nService;
+  private config!: ConfigService;
+  private log!: LogService;
 
   // Register service with container
   register({ api, task, i18n, config, log }: ServiceContainer): void {
     this.api = api;
+    this.task = task;
+    this.i18n = i18n;
+    this.config = config;
+    this.log = log;
   }
 
   test(): Promise<void> {
