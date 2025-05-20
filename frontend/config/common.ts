@@ -12,7 +12,7 @@ export default defineConfig((ctx) => {
         path: 'pinia-hydrator',
       },
     ],
-    css: ['app.scss'],
+    css: ['app.scss', '../modules/Quvel/css/quvel.scss'],
     extras: ['eva-icons', 'roboto-font'],
     build: {
       target: {

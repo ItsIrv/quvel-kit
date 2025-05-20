@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 import ClientOnly from 'src/modules/Core/components/Misc/ClientOnly.vue';
 
@@ -13,7 +13,7 @@ interface Props {
   minimal?: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   minimal: false,
 });
 
@@ -92,9 +92,9 @@ const currentLocale = computed(() => {
         dense
         round
         class="tw:flex tw:items-center tw:justify-center tw:rounded-full tw:w-8 tw:h-8 tw:bg-gray-100 tw:dark:bg-gray-800 tw:border tw:border-gray-200 tw:dark:border-gray-700 tw:text-sm tw:focus:outline-none"
-        :title="currentLocale.label"
+        :title="currentLocale?.label"
       >
-        <span>{{ currentLocale.flag }}</span>
+        <span>{{ currentLocale?.flag }}</span>
 
         <q-menu
           anchor="bottom right"

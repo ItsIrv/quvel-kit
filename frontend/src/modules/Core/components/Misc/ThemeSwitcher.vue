@@ -14,7 +14,7 @@ interface Props {
   minimal?: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   minimal: false,
 });
 
@@ -38,7 +38,10 @@ function toggleDarkMode(): void {
 <template>
   <ClientOnly>
     <!-- Standard version -->
-    <div v-if="!minimal" class="tw:flex tw:flex-center ThemeSwitcher">
+    <div
+      v-if="!minimal"
+      class="tw:flex tw:flex-center ThemeSwitcher"
+    >
       <q-icon
         :class="['cursor-pointer', 'text-grey-5']"
         :name="isDark ? 'eva-sun-outline' : 'eva-moon-outline'"
@@ -46,9 +49,12 @@ function toggleDarkMode(): void {
         @click="toggleDarkMode"
       />
     </div>
-    
+
     <!-- Minimal version -->
-    <div v-else class="ThemeSwitcherMinimal">
+    <div
+      v-else
+      class="ThemeSwitcherMinimal"
+    >
       <q-btn
         flat
         dense

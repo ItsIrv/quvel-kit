@@ -33,7 +33,7 @@ export default {
     },
     password: {
       title: 'Restablecer contraseña',
-      resetButton: 'Enviar enlace de restablecimiento',
+      resetButton: 'Enviar enlace',
       resetDescription:
         'Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.',
       forgot: '¿Olvidaste tu contraseña?',

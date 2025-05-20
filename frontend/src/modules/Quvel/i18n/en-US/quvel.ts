@@ -4,7 +4,7 @@
 export default {
   landing: {
     title: 'QuVel Kit',
-    subtitle: 'Laravel + Quasar Vue boilerplate with multi-tenancy, SSR, and Capacitor support',
+    subtitle: 'Laravel + Quasar Vue + SSR + SPA + Capacitor + Multi-Tenant',
     tabs: {
       tinker: 'tinker',
       dashboardController: 'Controller',

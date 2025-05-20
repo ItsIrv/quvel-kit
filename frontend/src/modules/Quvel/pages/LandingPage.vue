@@ -8,6 +8,10 @@ import typescript from 'highlight.js/lib/languages/typescript';
 import 'highlight.js/styles/devibeans.min.css';
 import { CODE_EXAMPLES } from '../constants/code-examples';
 
+// Register languages once
+hljs.registerLanguage('php', php);
+hljs.registerLanguage('typescript', typescript);
+
 defineOptions({
   /**
    * Pre-fetch data for the landing page components.
@@ -36,10 +40,6 @@ const activeTab = ref('tenant');
  * Code highlighting
  */
 const codeRefs = ref<HTMLElement[]>([]);
-
-// Register languages once
-hljs.registerLanguage('php', php);
-hljs.registerLanguage('typescript', typescript);
 
 /**
  * Lifecycle
