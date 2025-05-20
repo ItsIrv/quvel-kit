@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import QuvelKit from 'src/modules/Quvel/components/Common/QuvelKit.vue';
 import AuthMenu from 'src/modules/Quvel/components/Layouts/MainLayout/AuthMenu.vue';
 import MenuList from 'src/modules/Quvel/components/Layouts/MainLayout/MenuList.vue';
@@ -12,25 +13,42 @@ import LanguageSwitcher from 'src/modules/Core/components/Misc/LanguageSwitcher.
 const emits = defineEmits(['login-click', 'open-right-drawer', 'open-left-drawer']);
 
 /**
- * Pixels to hide navigation bar on scroll
+ * Scroll threshold for header transformations
  */
-const NAV_HIDE_THRESHOLD = 50;
+const SCROLL_THRESHOLD = 50;
 
 /**
  * Refs
  */
-const isHidden = ref(false);
+const scrollY = ref(0);
+const isScrolled = ref(false);
+const route = useRoute();
 
 /**
- * Handles scroll event and updates isHidden state.
+ * Computed properties
+ */
+const isLandingPage = computed(() => {
+  return route.meta?.landerBackground === true;
+});
+
+/**
+ * Handles scroll event and updates header state
  */
 function handleScroll() {
-  const scrollY = window.scrollY;
-  isHidden.value = scrollY > NAV_HIDE_THRESHOLD;
+  // Use requestAnimationFrame for better performance
+  window.requestAnimationFrame(() => {
+    scrollY.value = window.scrollY;
+    isScrolled.value = scrollY.value > SCROLL_THRESHOLD;
+  });
 }
 
+/**
+ * Lifecycle hooks
+ */
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
+  // Initial scroll position check
+  handleScroll();
+  window.addEventListener('scroll', handleScroll, { passive: true });
 });
 
 onUnmounted(() => {
@@ -39,42 +57,51 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <header>
+  <header class="tw:w-full tw:fixed tw:top-0 tw:left-0 tw:z-50">
     <nav :class="[
-      'LanderNav tw:max-w-screen-lg',
-      isHidden
-        ? 'tw:opacity-0 tw:-translate-y-10 tw:pointer-events-none'
-        : 'tw:opacity-100 tw:translate-y-0 tw:pointer-events-auto'
+      'dynamic-header tw:w-full tw:transition-all tw:duration-300 tw:ease-in-out',
+      isScrolled ? 'scrolled' : '',
+      isLandingPage ? 'landing-header' : '',
+      'tw:py-3 tw:px-4 md:tw:px-8'
     ]">
-      <div class="tw:flex tw:items-center">
-        <QuvelKit :link="true" />
+      <div class="tw:container tw:mx-auto tw:flex tw:items-center tw:justify-between">
+        <!-- Logo Section -->
+        <div class="tw:flex tw:items-center">
+          <QuvelKit
+            :link="true"
+            class="tw:transition-all tw:duration-300"
+          />
 
-        <!-- Navigation Links -->
-        <MenuList
-          class="tw:hidden tw:sm:!flex tw:gap-10 tw:text-gray-700 tw:dark:text-gray-300 tw:font-mono tw:ml-10" />
-      </div>
-
-      <!-- User Section -->
-      <div class="tw:flex tw:items-center tw:gap-4">
-        <AuthMenu
-          @login-click="emits('login-click')"
-          @open-left-drawer="emits('open-left-drawer')"
-        />
-
-        <div class="tw:hidden tw:sm:!flex tw:gap-2">
-          <ThemeSwitcher minimal />
-          <LanguageSwitcher minimal />
+          <!-- Navigation Links - Desktop -->
+          <MenuList class="tw:hidden lg:tw:flex tw:gap-8 tw:ml-10 tw:font-medium" />
         </div>
 
-        <div class="tw:flex tw:sm:!hidden">
-          <q-btn
-            dense
-            flat
-            round
-            icon="eva-menu-outline"
-            class="tw:sm:hidden tw:text-gray-700 tw:dark:text-gray-300"
-            @click="emits('open-right-drawer')"
+        <!-- User Section -->
+        <div class="tw:flex tw:items-center tw:gap-4">
+          <!-- Auth Menu -->
+          <AuthMenu
+            @login-click="emits('login-click')"
+            @open-left-drawer="emits('open-left-drawer')"
           />
+
+          <!-- Theme & Language - Desktop -->
+          <div class="tw:hidden md:tw:flex tw:gap-3 tw:items-center">
+            <ThemeSwitcher minimal />
+            <div class="tw:h-4 tw:w-px tw:bg-gray-300 tw:dark:bg-gray-700 tw:opacity-50"></div>
+            <LanguageSwitcher minimal />
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <div class="tw:flex lg:tw:hidden">
+            <q-btn
+              flat
+              round
+              :ripple="false"
+              :icon="isScrolled ? 'eva-menu-outline' : 'eva-menu-2-outline'"
+              class="tw:text-current tw:transition-all tw:duration-300"
+              @click="emits('open-right-drawer')"
+            />
+          </div>
         </div>
       </div>
     </nav>
