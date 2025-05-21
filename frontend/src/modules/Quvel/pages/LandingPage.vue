@@ -69,7 +69,7 @@ watch(
 <template>
   <div class="LandingPage tw:flex-grow tw:relative tw:overflow-hidden">
     <!-- Hero Content -->
-    <div class="tw:container tw:mx-auto tw:px-4 tw:py-16 tw:relative tw:z-10">
+    <div class="tw:container tw:mx-auto tw:px-4 tw:relative tw:z-10">
       <div class="tw:flex tw:flex-col tw:items-center tw:justify-center tw:text-center tw:mb-12">
         <h1 class="tw:!text-4xl tw:md:!text-5xl tw:lg:!text-6xl tw:!font-bold tw:mb-4">
           <span class="hero-gradient-text">{{ $t('quvel.landing.title') }}</span>
@@ -164,7 +164,7 @@ watch(
         </div>
 
         <!-- Code Content -->
-        <div class="tw:bg-white tw:dark:bg-gray-900 tw:p-4 tw:overflow-x-auto">
+        <div class="tw:bg-white tw:dark:bg-gray-900 tw:px-4 tw:overflow-x-auto tw:max-h-[500px]">
           <div
             v-for="(code, tab) in CODE_EXAMPLES"
             :key="tab"

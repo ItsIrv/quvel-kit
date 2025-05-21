@@ -111,7 +111,7 @@ watch(
       />
 
       <!-- Main content area -->
-      <div class="tw:flex-grow tw:mt-10">
+      <div class="tw:flex-grow tw:mt-16">
         <router-view />
       </div>
 

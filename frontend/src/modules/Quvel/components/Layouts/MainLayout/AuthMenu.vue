@@ -24,13 +24,22 @@ const isMenuOpen = ref(false);
 /**
  * Opens the dropdown menu or left drawer based on platform.
  */
-function onDropdownToggle() {
+function onDropdownToggle(event: Event) {
   // On mobile, emit instead
   if ($q.platform.is.desktop) {
+    // Prevent event propagation to avoid immediate closing
+    event.stopPropagation();
     isMenuOpen.value = !isMenuOpen.value;
   } else {
     emits('open-left-drawer');
   }
+}
+
+/**
+ * Handle menu close
+ */
+function onMenuClose() {
+  isMenuOpen.value = false;
 }
 </script>
 
@@ -57,6 +66,7 @@ function onDropdownToggle() {
         <UserDropdownMenu
           v-if="$q.platform.is.desktop"
           v-model="isMenuOpen"
+          @close="onMenuClose"
         />
       </q-btn>
 

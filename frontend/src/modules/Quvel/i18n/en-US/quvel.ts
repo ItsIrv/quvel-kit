@@ -10,7 +10,7 @@ export default {
     tabs: {
       tinker: 'tinker',
       dashboardController: 'Controller',
-      product: 'Product',
+      product: 'Model',
       services: 'TS Service',
       component: 'Vue Component',
       store: 'Pinia Store',

@@ -27,7 +27,7 @@ export class TenantCacheService {
     this.cacheTtl = Number(process.env.SSR_TENANT_SSR_CACHE_TTL) || 60 * 5;
     this.axiosInstance = createAxios();
 
-    if (this.preloadMode) {
+    if (this.preloadMode && this.shouldUseCache()) {
       this.intervalId = setInterval(() => void this.loadAllTenants(), this.cacheTtl * 1000);
     }
   }

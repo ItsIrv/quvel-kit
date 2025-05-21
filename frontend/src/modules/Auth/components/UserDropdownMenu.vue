@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<Props>(), {
 /**
  * Emits
  */
-const emits = defineEmits(['logout', 'update:modelValue']);
+const emits = defineEmits(['logout', 'update:modelValue', 'close']);
 
 /**
  * State
@@ -73,12 +73,13 @@ const logoutTask = task.newTask({
     transition-hide="jump-up"
     persistent
     :auto-close="false"
+    no-parent-event
+    no-focus
+    @hide="emits('close')"
   >
-    <q-card
-      class="tw:border tw:border-gray-200 tw:dark:border-gray-700 tw:shadow-lg tw:rounded-lg tw:overflow-hidden tw:min-w-[240px]"
-    >
+    <div class="tw:overflow-hidden tw:min-w-[240px]">
       <!-- User Profile Header -->
-      <q-card-section class="tw:bg-gray-50 tw:dark:bg-gray-800 tw:py-3">
+      <q-card-section class="tw:bg-gray-50 tw:dark:bg-gray-800 tw:py-3 tw:rounded-t-lg">
         <div class="tw:flex tw:items-center tw:gap-3">
           <img
             :src="sessionStore.user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=44'"
@@ -149,17 +150,13 @@ const logoutTask = task.newTask({
               class="tw:text-red-600 tw:dark:text-red-400"
             />
           </q-item-section>
+
           <q-item-section>
-            <q-spinner
-              v-if="logoutTask.isActive.value"
-              color="red-6"
-              size="1em"
-            />
-            <span v-else>{{ $t('auth.forms.logout.button') }}</span>
+            <span>{{ $t('auth.forms.logout.button') }}</span>
           </q-item-section>
         </q-item>
       </q-list>
-    </q-card>
+    </div>
   </q-menu>
 </template>
 

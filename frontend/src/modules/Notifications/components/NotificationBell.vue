@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 
@@ -20,17 +20,41 @@ const fetchTask = task.newTask({
 
 const isDropdownOpen = ref(false);
 const bellAnimation = ref(false);
+const notificationRef = ref<HTMLElement | null>(null);
 
 const notifications = computed(() => notificationStore.items);
 const unreadCount = computed(() => notificationStore.unreadCount);
 
-function toggleDropdown() {
+function toggleDropdown(event: Event) {
+  // Prevent event propagation to avoid immediate closing
+  event.stopPropagation();
   isDropdownOpen.value = !isDropdownOpen.value;
 }
 
 function markAllAsRead() {
   void markAsReadTask.run();
 }
+
+function closeDropdown() {
+  isDropdownOpen.value = false;
+}
+
+// Handle clicks outside to close the dropdown
+function handleClickOutside() {
+  if (notificationRef.value) {
+    closeDropdown();
+  }
+}
+
+// Add and remove event listeners
+onMounted(() => {
+  void fetchTask.run();
+  document.addEventListener('click', handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 
 // Watch for new notifications to trigger animation
 watch(
@@ -47,71 +71,114 @@ watch(
   }
 );
 
-onMounted(() => {
-  void fetchTask.run();
-});
+
 </script>
 
 <template>
-  <div class="tw:relative">
-    <q-btn
-      block
-      flat
-      round
-      dense
-      icon="eva-bell-outline"
+  <div
+    ref="notificationRef"
+    class="tw:relative"
+  >
+    <button
+      class="ide-dropdown__action"
       :class="{ 'animate-bell': bellAnimation }"
-      :loading="fetchTask.isActive.value"
-      :disable="fetchTask.isActive.value"
+      :disabled="fetchTask.isActive.value"
       @click="toggleDropdown"
     >
-      <q-badge
-        v-if="unreadCount > 0"
-        color="red"
-        floating
-      >{{ unreadCount }}</q-badge>
-    </q-btn>
-
-    <div
-      v-if="isDropdownOpen"
-      class="DialogGradient GenericBorder MainTransition tw:absolute tw:right-0 tw:mt-10 tw:w-48 tw:rounded-lg tw:p-4 tw:rounded-b-lg tw:z-10"
-    >
-      <q-btn
-        v-if="unreadCount > 0"
-        :disable="markAsReadTask.isActive.value"
-        :loading="markAsReadTask.isActive.value"
-        flat
-        :label="$t('notifications.markAllAsRead')"
-        class="tw:!w-full tw:block text-blue-5"
-        @click="markAllAsRead"
+      <q-icon
+        name="eva-bell-outline"
+        size="20px"
       />
+      <span
+        v-if="unreadCount > 0"
+        class="ide-badge"
+      >{{ unreadCount }}</span>
+    </button>
 
-      <q-banner
-        v-else-if="notificationStore.items.length === 0"
-        inline-actions
-        class="bg-transparent"
-      >
-        {{ $t('notifications.noNotifications') }}
-      </q-banner>
-
-      <q-list>
-        <q-item
-          v-for="notification in notifications"
-          :key="notification.id"
+    <q-menu
+      v-model="isDropdownOpen"
+      anchor="bottom right"
+      self="top right"
+      class="UserDropdownMenu"
+      transition-show="jump-down"
+      transition-hide="jump-up"
+      persistent
+      :auto-close="false"
+      no-parent-event
+      no-focus
+    >
+      <div class="tw:overflow-hidden tw:min-w-[240px]">
+        <!-- Header Section -->
+        <div
+          class="tw:bg-gray-50 tw:dark:bg-gray-800 tw:py-3 tw:px-4 tw:rounded-t-lg tw:border-b tw:border-gray-200 tw:dark:border-gray-700"
         >
-          <q-item-section>
-            <q-item-label>{{ notification.message }}</q-item-label>
-            <q-item-label caption>{{ notification.created_at }}</q-item-label>
-            <q-item-label
-              :class="notification.read_at ? 'text-green-5' : 'text-red-5'"
-              caption
+          <div class="tw:flex tw:items-center tw:justify-between">
+            <h3 class="tw:!text-2xl tw:text-sm tw:font-medium tw:text-gray-900 tw:dark:text-white">
+              {{ $t('notifications.title') }}
+            </h3>
+            <span class="tw:text-xs tw:font-medium tw:text-gray-500 tw:dark:text-gray-400">
+              {{ notifications.length }} {{ $t('notifications.total') }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="tw:max-h-[300px] tw:overflow-y-auto">
+          <!-- Mark as Read Button -->
+          <div
+            v-if="unreadCount > 0"
+            class="tw:p-3 tw:border-b tw:border-gray-200 tw:dark:border-gray-700"
+          >
+            <q-btn
+              :disable="markAsReadTask.isActive.value"
+              :loading="markAsReadTask.isActive.value"
+              flat
+              size="sm"
+              :label="$t('notifications.markAllAsRead')"
+              class="tw:!w-full tw:block tw:text-blue-500 tw:dark:text-blue-400"
+              @click="markAllAsRead"
+            />
+          </div>
+
+          <!-- Empty State -->
+          <div
+            v-if="notifications.length === 0"
+            class="tw:p-4 tw:text-center tw:text-gray-500 tw:dark:text-gray-400"
+          >
+            <q-icon
+              name="eva-bell-off-outline"
+              size="24px"
+              class="tw:mb-2"
+            />
+            <p>{{ $t('notifications.noNotifications') }}</p>
+          </div>
+
+          <!-- Notification List -->
+          <div v-else>
+            <div
+              v-for="notification in notifications"
+              :key="notification.id"
+              class="tw:p-3 tw:border-b tw:border-gray-200 tw:dark:border-gray-700 hover:tw:bg-gray-50 tw:dark:hover:tw:bg-gray-800"
             >
-              {{ notification.read_at ? $t('notifications.read') : $t('notifications.unread') }}
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </div>
+              <div class="tw:flex tw:items-start tw:gap-3">
+                <div class="tw:flex-1">
+                  <p class="tw:text-sm tw:text-gray-700 tw:dark:text-gray-300">{{ notification.message }}</p>
+                  <div class="tw:flex tw:items-center tw:mt-1 tw:gap-2">
+                    <span class="tw:text-xs tw:text-gray-500 tw:dark:text-gray-400">{{ notification.created_at }}</span>
+                    <span
+                      :class="notification.read_at ? 'tw:bg-green-100 tw:text-green-800 tw:dark:bg-green-900/30 tw:dark:text-green-400' : 'tw:bg-red-100 tw:text-red-800 tw:dark:bg-red-900/30 tw:dark:text-red-400'"
+                      class="tw:text-xs tw:px-1.5 tw:py-0.5 tw:rounded-full"
+                    >
+                      {{ notification.read_at ? $t('notifications.read') : $t('notifications.unread') }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </q-menu>
   </div>
 </template>
 
