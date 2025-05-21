@@ -57,27 +57,23 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <header class="tw:w-full tw:fixed tw:top-0 tw:left-0 tw:z-50">
+  <header class="PageHeader">
     <nav :class="[
-      'dynamic-header tw:w-full tw:transition-all tw:duration-300 tw:ease-in-out',
-      isScrolled ? 'scrolled' : '',
-      isLandingPage ? 'landing-header' : '',
-      'tw:py-3 tw:px-4 md:tw:px-8'
+      'PageHeader-Nav',
+      isScrolled ? 'PageHeader-Nav--scrolled' : '',
+      isLandingPage ? 'PageHeader-Nav--landing' : ''
     ]">
-      <div class="tw:container tw:mx-auto tw:flex tw:items-center tw:justify-between">
+      <div class="PageHeader-Container">
         <!-- Logo Section -->
-        <div class="tw:flex tw:items-center">
-          <QuvelKit
-            :link="true"
-            class="tw:transition-all tw:duration-300"
-          />
+        <div class="PageHeader-LogoSection">
+          <QuvelKit :link="true" />
 
           <!-- Navigation Links - Desktop -->
-          <MenuList class="tw:flex tw:gap-8 tw:ml-10 tw:font-medium" />
+          <MenuList class="PageHeader-NavLinks" />
         </div>
 
         <!-- User Section -->
-        <div class="tw:flex tw:items-center tw:gap-4">
+        <div class="PageHeader-UserSection">
           <!-- Auth Menu -->
           <AuthMenu
             @login-click="emits('login-click')"
@@ -85,20 +81,20 @@ onUnmounted(() => {
           />
 
           <!-- Theme & Language - Desktop -->
-          <div class="tw:hidden tw:md:flex tw:gap-3 tw:items-center">
+          <div class="PageHeader-DesktopControls">
             <ThemeSwitcher />
-            <div class="tw:h-4 tw:w-px tw:bg-gray-300 tw:dark:bg-gray-700 tw:opacity-50"></div>
+            <div class="PageHeader-Divider"></div>
             <LanguageSwitcher />
           </div>
 
           <!-- Mobile Menu Button -->
-          <div class="tw:flex tw:lg:hidden">
+          <div class="PageHeader-MobileMenu">
             <q-btn
               flat
               round
               :ripple="false"
               :icon="isScrolled ? 'eva-menu-outline' : 'eva-menu-2-outline'"
-              class="tw:text-current tw:transition-all tw:duration-300"
+              class="PageHeader-MenuButton"
               @click="emits('open-right-drawer')"
             />
           </div>

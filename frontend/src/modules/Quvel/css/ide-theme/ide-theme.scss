@@ -4,55 +4,10 @@
 @import 'main-layout.scss';
 @import 'notification-bell.scss';
 @import 'landing-page.scss';
+@import 'auth-menu.scss';
+@import 'page-header.scss';
 
 /* Animations for the landing page background */
-@keyframes grid-pulse {
-  0% {
-    opacity: 0.3;
-    background-size: 40px 40px;
-  }
-  50% {
-    opacity: 0.7;
-    background-size: 42px 42px;
-  }
-  100% {
-    opacity: 0.5;
-    background-size: 38px 38px;
-  }
-}
-
-@keyframes blob-move-1 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  25% {
-    transform: translate(5%, 10%) scale(1.1);
-  }
-  50% {
-    transform: translate(10%, 5%) scale(0.9);
-  }
-  75% {
-    transform: translate(5%, 15%) scale(1.05);
-  }
-}
-
-@keyframes blob-move-2 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  25% {
-    transform: translate(-5%, -10%) scale(1.1);
-  }
-  50% {
-    transform: translate(-10%, -5%) scale(0.9);
-  }
-  75% {
-    transform: translate(-5%, -15%) scale(1.05);
-  }
-}
-
 @keyframes float {
   0%,
   100% {
@@ -66,49 +21,6 @@
   }
   75% {
     transform: translateY(-30px) translateX(-10px);
-  }
-}
-
-.dynamic-header {
-  @apply tw:transition-all tw:duration-300 tw:ease-in-out;
-
-  /* Default state */
-  @apply tw:bg-transparent;
-  backdrop-filter: blur(0);
-  -webkit-backdrop-filter: blur(0);
-  @apply tw:border-b tw:border-transparent;
-
-  /* Scrolled state */
-  &.scrolled {
-    @apply tw:bg-white/80 tw:dark:bg-gray-900/80;
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
-    @apply tw:border-b tw:border-gray-200/30 tw:dark:border-gray-800/30;
-    @apply tw:shadow-sm;
-  }
-
-  /* Landing page specific styles */
-  &.landing-header {
-    @apply tw:text-gray-800 tw:dark:text-white;
-
-    &:not(.scrolled) {
-      @apply tw:text-gray-800 tw:dark:text-white;
-      @apply tw:py-5;
-
-      .q-btn {
-        @apply tw:text-gray-800 tw:dark:text-white;
-      }
-    }
-  }
-
-  /* Mobile adjustments */
-  .NativeMobile & {
-    padding-top: max(env(safe-area-inset-top, 0px), 0.75rem);
-    @apply tw:border-0;
-
-    &.scrolled {
-      @apply tw:border-b;
-    }
   }
 }
 
@@ -199,8 +111,12 @@
   }
 }
 
-.Button {
+.GenericBorder {
   @apply tw:border-2 tw:border-stone-100 tw:dark:border-gray-700;
+}
+
+.Button {
+  @extend .GenericBorder;
   @apply tw:bg-transparent tw:text-stone-700 tw:dark:text-gray-300 tw:px-4 tw:py-1 tw:rounded-lg;
 }
 
@@ -259,35 +175,26 @@
   }
 }
 
-.AuthMenu {
-  @apply tw:flex tw:items-center;
+.hero-gradient-text {
+  @apply tw:text-transparent tw:bg-clip-text;
+  background-image: linear-gradient(135deg, #3b82f6, #f3552c);
+}
+/* Override highlight.js styles to respect Tailwind dark/light theme */
+.hljs {
+  /* Reset background to be transparent */
+  background: transparent !important;
+}
 
-  &-Inner {
-    @apply tw:relative tw:flex tw:items-center;
-  }
+.DialogGradient {
+  background:
+    radial-gradient(circle at top, #3b82f62e 15%, #0000 80%),
+    radial-gradient(circle at bottom, #f3552c1f 10%, #0000 80%),
+    linear-gradient(170deg, #f9fafb, #e6e7eb);
+}
 
-  &-Bell {
-    @apply tw:pr-4 tw:hidden tw:sm:!flex;
-  }
-
-  &-DropdownToggle {
-    @apply tw:mr-1 tw:!hidden tw:sm:!flex tw:items-center tw:gap-2 tw:px-2 tw:py-1 tw:rounded-lg tw:hover:bg-gray-100 tw:dark:hover:bg-gray-800 tw:transition-colors;
-
-    span {
-      @apply tw:text-sm tw:font-medium;
-    }
-  }
-
-  &-MobileToggle {
-    @apply tw:sm:!hidden;
-  }
-
-  &-Avatar {
-    @apply tw:w-10 tw:h-10 tw:rounded-full tw:border tw:border-stone-400 tw:dark:border-gray-600 tw:shadow-sm;
-  }
-
-  &-LoginButton {
-    @extend .PrimaryButton;
-    @apply tw:hidden tw:md:!flex;
-  }
+.dark .DialogGradient {
+  background:
+    radial-gradient(circle at 20% 30%, #6366f124 10%, #0000 50%),
+    radial-gradient(circle at 80% 70%, #fd6a2a1a 8%, #0000 50%),
+    linear-gradient(150deg, #202b3b, #12171e);
 }

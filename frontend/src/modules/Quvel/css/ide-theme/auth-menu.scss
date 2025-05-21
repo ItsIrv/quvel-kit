@@ -1,0 +1,32 @@
+.AuthMenu {
+  @apply tw:flex tw:items-center;
+
+  &-Inner {
+    @apply tw:relative tw:flex tw:items-center;
+  }
+
+  &-Bell {
+    @apply tw:pr-4 tw:hidden tw:sm:!flex;
+  }
+
+  &-DropdownToggle {
+    @apply tw:mr-1 tw:!hidden tw:sm:!flex tw:items-center tw:gap-2 tw:px-2 tw:py-1 tw:rounded-lg tw:hover:bg-gray-100 tw:dark:hover:bg-gray-800 tw:transition-colors;
+
+    span {
+      @apply tw:text-sm tw:font-medium;
+    }
+  }
+
+  &-MobileToggle {
+    @apply tw:!hidden;
+  }
+
+  &-Avatar {
+    @apply tw:w-10 tw:h-10 tw:rounded-full tw:border tw:border-stone-400 tw:dark:border-gray-600 tw:shadow-sm;
+  }
+
+  &-LoginButton {
+    @extend .PrimaryButton;
+    @apply tw:hidden tw:md:!flex;
+  }
+}

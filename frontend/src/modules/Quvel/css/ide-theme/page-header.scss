@@ -1,0 +1,67 @@
+/**
+ * PageHeader Component Styles
+ */
+.PageHeader {
+  @apply tw:w-full tw:fixed tw:top-0 tw:left-0 tw:z-50;
+
+  &-Nav {
+    @apply tw:w-full tw:transition-all tw:duration-300 tw:ease-in-out tw:py-3 tw:px-4 tw:md:px-8;
+
+    // Dynamic states
+    &--scrolled {
+      @apply tw:bg-white/80 tw:dark:bg-gray-900/80;
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      @apply tw:border-b tw:border-gray-200/30 tw:dark:border-gray-800/30;
+      @apply tw:shadow-sm;
+    }
+
+    &--landing {
+      @apply tw:text-gray-800 tw:dark:text-white;
+
+      &:not(.PageHeader-Nav--scrolled) {
+        @apply tw:text-gray-800 tw:dark:text-white tw:py-5;
+
+        .q-btn {
+          @apply tw:text-gray-800 tw:dark:text-white;
+        }
+      }
+    }
+  }
+
+  &-Container {
+    @apply tw:container tw:mx-auto tw:flex tw:items-center tw:justify-between;
+  }
+
+  &-LogoSection {
+    @apply tw:flex tw:items-center;
+
+    .QuvelKit {
+      @apply tw:transition-all tw:duration-300;
+    }
+  }
+
+  &-NavLinks {
+    @apply tw:hidden tw:md:!flex tw:gap-8 tw:ml-10 tw:font-medium;
+  }
+
+  &-UserSection {
+    @apply tw:flex tw:items-center tw:gap-4;
+  }
+
+  &-DesktopControls {
+    @apply tw:hidden tw:md:flex tw:gap-3 tw:items-center;
+  }
+
+  &-Divider {
+    @apply tw:h-4 tw:w-px tw:bg-gray-300 tw:dark:bg-gray-700 tw:opacity-50;
+  }
+
+  &-MobileMenu {
+    @apply tw:flex tw:lg:hidden;
+  }
+
+  &-MenuButton {
+    @apply tw:text-current tw:transition-all tw:duration-300;
+  }
+}

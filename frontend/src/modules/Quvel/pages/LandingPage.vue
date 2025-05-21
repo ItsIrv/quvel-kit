@@ -70,7 +70,7 @@ watch(
   <div class="LandingPage tw:flex-grow tw:relative tw:overflow-hidden">
     <!-- Hero Content -->
     <div class="tw:container tw:mx-auto tw:px-4 tw:relative tw:z-10">
-      <div class="tw:flex tw:flex-col tw:items-center tw:justify-center tw:text-center tw:mb-12">
+      <div class="tw:flex tw:flex-col tw:items-center tw:justify-center tw:text-center tw:mt-18 tw:mb-6">
         <h1 class="tw:!text-4xl tw:md:!text-5xl tw:lg:!text-6xl tw:!font-bold tw:mb-4">
           <span class="hero-gradient-text">{{ $t('quvel.landing.title') }}</span>
         </h1>
