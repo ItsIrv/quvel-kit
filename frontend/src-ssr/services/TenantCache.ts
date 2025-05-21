@@ -27,13 +27,12 @@ export class TenantCacheService {
     this.cacheTtl = Number(process.env.SSR_TENANT_SSR_CACHE_TTL) || 60 * 5;
     this.axiosInstance = createAxios();
 
-    if (this.preloadMode && this.shouldUseCache()) {
+    if (this.shouldUseCache()) {
       this.intervalId = setInterval(() => void this.loadAllTenants(), this.cacheTtl * 1000);
     }
   }
-
   private shouldUseCache(): boolean {
-    return process.env.NODE_ENV === 'production' && this.preloadMode;
+    return Boolean(process.env.SSR_ENABLE_CACHE) && this.preloadMode;
   }
 
   /**
