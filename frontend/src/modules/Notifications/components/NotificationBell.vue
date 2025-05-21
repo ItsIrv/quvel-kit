@@ -77,11 +77,11 @@ watch(
 <template>
   <div
     ref="notificationRef"
-    class="tw:relative"
+    class="NotificationBell"
   >
     <button
-      class="ide-dropdown__action"
-      :class="{ 'animate-bell': bellAnimation }"
+      class="NotificationBell-Button"
+      :class="{ 'NotificationBell-Button--animated': bellAnimation }"
       :disabled="fetchTask.isActive.value"
       @click="toggleDropdown"
     >
@@ -91,7 +91,7 @@ watch(
       />
       <span
         v-if="unreadCount > 0"
-        class="ide-badge"
+        class="NotificationBell-Badge"
       >{{ unreadCount }}</span>
     </button>
 
@@ -99,7 +99,7 @@ watch(
       v-model="isDropdownOpen"
       anchor="bottom right"
       self="top right"
-      class="UserDropdownMenu"
+      class="NotificationBell-Menu"
       transition-show="jump-down"
       transition-hide="jump-up"
       persistent
@@ -107,27 +107,25 @@ watch(
       no-parent-event
       no-focus
     >
-      <div class="tw:overflow-hidden tw:min-w-[240px]">
+      <div class="NotificationBell-Container">
         <!-- Header Section -->
-        <div
-          class="tw:bg-gray-50 tw:dark:bg-gray-800 tw:py-3 tw:px-4 tw:rounded-t-lg tw:border-b tw:border-gray-200 tw:dark:border-gray-700"
-        >
-          <div class="tw:flex tw:items-center tw:justify-between">
-            <h3 class="tw:!text-2xl tw:text-sm tw:font-medium tw:text-gray-900 tw:dark:text-white">
+        <div class="NotificationBell-Header">
+          <div class="NotificationBell-HeaderContent">
+            <h3 class="NotificationBell-Title">
               {{ $t('notifications.title') }}
             </h3>
-            <span class="tw:text-xs tw:font-medium tw:text-gray-500 tw:dark:text-gray-400">
+            <span class="NotificationBell-Count">
               {{ notifications.length }} {{ $t('notifications.total') }}
             </span>
           </div>
         </div>
 
         <!-- Content Section -->
-        <div class="tw:max-h-[300px] tw:overflow-y-auto">
+        <div class="NotificationBell-Content">
           <!-- Mark as Read Button -->
           <div
             v-if="unreadCount > 0"
-            class="tw:p-3 tw:border-b tw:border-gray-200 tw:dark:border-gray-700"
+            class="NotificationBell-MarkAllSection"
           >
             <q-btn
               :disable="markAsReadTask.isActive.value"
@@ -135,7 +133,7 @@ watch(
               flat
               size="sm"
               :label="$t('notifications.markAllAsRead')"
-              class="tw:!w-full tw:block tw:text-blue-500 tw:dark:text-blue-400"
+              class="NotificationBell-MarkAllButton"
               @click="markAllAsRead"
             />
           </div>
@@ -143,12 +141,12 @@ watch(
           <!-- Empty State -->
           <div
             v-if="notifications.length === 0"
-            class="tw:p-4 tw:text-center tw:text-gray-500 tw:dark:text-gray-400"
+            class="NotificationBell-EmptyState"
           >
             <q-icon
               name="eva-bell-off-outline"
               size="24px"
-              class="tw:mb-2"
+              class="NotificationBell-EmptyIcon"
             />
             <p>{{ $t('notifications.noNotifications') }}</p>
           </div>
@@ -158,16 +156,16 @@ watch(
             <div
               v-for="notification in notifications"
               :key="notification.id"
-              class="tw:p-3 tw:border-b tw:border-gray-200 tw:dark:border-gray-700 hover:tw:bg-gray-50 tw:dark:hover:tw:bg-gray-800"
+              class="NotificationBell-Item"
             >
-              <div class="tw:flex tw:items-start tw:gap-3">
-                <div class="tw:flex-1">
-                  <p class="tw:text-sm tw:text-gray-700 tw:dark:text-gray-300">{{ notification.message }}</p>
-                  <div class="tw:flex tw:items-center tw:mt-1 tw:gap-2">
-                    <span class="tw:text-xs tw:text-gray-500 tw:dark:text-gray-400">{{ notification.created_at }}</span>
+              <div class="NotificationBell-ItemContent">
+                <div class="NotificationBell-ItemBody">
+                  <p class="NotificationBell-Message">{{ notification.message }}</p>
+                  <div class="NotificationBell-ItemMeta">
+                    <span class="NotificationBell-Date">{{ notification.created_at }}</span>
                     <span
-                      :class="notification.read_at ? 'tw:bg-green-100 tw:text-green-800 tw:dark:bg-green-900/30 tw:dark:text-green-400' : 'tw:bg-red-100 tw:text-red-800 tw:dark:bg-red-900/30 tw:dark:text-red-400'"
-                      class="tw:text-xs tw:px-1.5 tw:py-0.5 tw:rounded-full"
+                      :class="notification.read_at ? 'NotificationBell-Status--read' : 'NotificationBell-Status--unread'"
+                      class="NotificationBell-Status"
                     >
                       {{ notification.read_at ? $t('notifications.read') : $t('notifications.unread') }}
                     </span>
@@ -182,31 +180,4 @@ watch(
   </div>
 </template>
 
-<style scoped>
-@keyframes bell-shake {
-
-  from,
-  to {
-    transform: translate3d(0, 0, 0);
-  }
-
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    transform: translate3d(-5px, 0, 0);
-  }
-
-  20%,
-  40%,
-  60%,
-  80% {
-    transform: translate3d(5px, 0, 0);
-  }
-}
-
-.animate-bell {
-  animation: bell-shake 0.5s ease-in-out;
-}
-</style>
+<style scoped></style>

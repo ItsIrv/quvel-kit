@@ -99,7 +99,7 @@ watch(
 
 <template>
   <q-layout class="MainLayout">
-    <div :class="[backgroundClass, 'tw:min-h-screen tw:flex tw:flex-col tw:relative tw:overflow-hidden']">
+    <div :class="[backgroundClass, 'MainLayout-Background']">
       <!-- Grid overlay and particles for custom backgrounds -->
       <LanderBackground v-if="haslanderBackground" />
 
@@ -111,7 +111,7 @@ watch(
       />
 
       <!-- Main content area -->
-      <div class="tw:flex-grow tw:mt-16">
+      <div class="MainLaout-Content">
         <router-view />
       </div>
 

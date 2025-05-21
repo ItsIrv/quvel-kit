@@ -1,0 +1,293 @@
+/**
+ * IDE Theme Component Styles
+ */
+@import 'main-layout.scss';
+@import 'notification-bell.scss';
+@import 'landing-page.scss';
+
+/* Animations for the landing page background */
+@keyframes grid-pulse {
+  0% {
+    opacity: 0.3;
+    background-size: 40px 40px;
+  }
+  50% {
+    opacity: 0.7;
+    background-size: 42px 42px;
+  }
+  100% {
+    opacity: 0.5;
+    background-size: 38px 38px;
+  }
+}
+
+@keyframes blob-move-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(5%, 10%) scale(1.1);
+  }
+  50% {
+    transform: translate(10%, 5%) scale(0.9);
+  }
+  75% {
+    transform: translate(5%, 15%) scale(1.05);
+  }
+}
+
+@keyframes blob-move-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(-5%, -10%) scale(1.1);
+  }
+  50% {
+    transform: translate(-10%, -5%) scale(0.9);
+  }
+  75% {
+    transform: translate(-5%, -15%) scale(1.05);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  50% {
+    transform: translateY(-10px) translateX(20px);
+  }
+  75% {
+    transform: translateY(-30px) translateX(-10px);
+  }
+}
+
+.dynamic-header {
+  @apply tw:transition-all tw:duration-300 tw:ease-in-out;
+
+  /* Default state */
+  @apply tw:bg-transparent;
+  backdrop-filter: blur(0);
+  -webkit-backdrop-filter: blur(0);
+  @apply tw:border-b tw:border-transparent;
+
+  /* Scrolled state */
+  &.scrolled {
+    @apply tw:bg-white/80 tw:dark:bg-gray-900/80;
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    @apply tw:border-b tw:border-gray-200/30 tw:dark:border-gray-800/30;
+    @apply tw:shadow-sm;
+  }
+
+  /* Landing page specific styles */
+  &.landing-header {
+    @apply tw:text-gray-800 tw:dark:text-white;
+
+    &:not(.scrolled) {
+      @apply tw:text-gray-800 tw:dark:text-white;
+      @apply tw:py-5;
+
+      .q-btn {
+        @apply tw:text-gray-800 tw:dark:text-white;
+      }
+    }
+  }
+
+  /* Mobile adjustments */
+  .NativeMobile & {
+    padding-top: max(env(safe-area-inset-top, 0px), 0.75rem);
+    @apply tw:border-0;
+
+    &.scrolled {
+      @apply tw:border-b;
+    }
+  }
+}
+
+// IDE-like dropdown menu
+.ide-dropdown {
+  @apply tw:border tw:border-gray-200 tw:dark:border-gray-700 tw:bg-white tw:dark:bg-gray-900 tw:shadow-lg tw:rounded-lg tw:overflow-hidden;
+
+  // Header section
+  &__header {
+    @apply tw:bg-gray-50 tw:dark:bg-gray-800 tw:py-3 tw:px-4 tw:rounded-t-lg tw:border-b tw:border-gray-200 tw:dark:border-gray-700;
+  }
+
+  // Content section
+  &__content {
+    @apply tw:bg-white tw:dark:bg-gray-900 tw:overflow-hidden;
+  }
+
+  // List items
+  &__item {
+    @apply tw:py-2 tw:px-4 tw:transition-colors tw:duration-200;
+
+    &:hover {
+      @apply tw:bg-gray-50 tw:dark:bg-gray-800;
+    }
+
+    &--active {
+      @apply tw:bg-blue-50 tw:dark:bg-blue-900/20;
+    }
+  }
+
+  // Action buttons
+  &__action {
+    @apply tw:flex tw:items-center tw:justify-center tw:w-8 tw:h-8 tw:rounded-full 
+           tw:bg-gray-100 tw:dark:bg-gray-800 tw:text-gray-600 tw:dark:text-gray-400 
+           tw:transition-all tw:duration-200 tw:ease-in-out;
+
+    &:hover {
+      @apply tw:bg-blue-500/10 tw:text-blue-500 tw:scale-105;
+    }
+
+    &:active {
+      @apply tw:scale-95;
+    }
+  }
+}
+
+// Shared menu styling for consistent dropdowns
+.app-dropdown-menu {
+  @apply tw:z-50;
+
+  // Animation
+  &-enter-active,
+  &-leave-active {
+    @apply tw:transition-all tw:duration-200 tw:ease-in-out;
+  }
+
+  &-enter-from,
+  &-leave-to {
+    @apply tw:opacity-0 tw:transform tw:scale-95 tw:translate-y-2;
+  }
+
+  &-enter-to,
+  &-leave-from {
+    @apply tw:opacity-100 tw:transform tw:scale-100 tw:translate-y-0;
+  }
+}
+
+// Badge styling
+.ide-badge {
+  @apply tw:flex tw:items-center tw:justify-center tw:min-w-5 tw:h-5 tw:text-xs tw:font-medium 
+         tw:rounded-full tw:bg-red-500 tw:text-white tw:absolute tw:-top-1 tw:-right-1;
+}
+
+.social-icon-link {
+  @apply tw:relative tw:block;
+}
+
+.social-icon-wrapper {
+  @apply tw:flex tw:items-center tw:justify-center tw:w-10 tw:h-10 tw:rounded-full tw:bg-gray-100 tw:dark:bg-gray-800 tw:text-gray-600 tw:dark:text-gray-400 tw:transition-all tw:duration-300 tw:ease-in-out;
+
+  &:hover {
+    @apply tw:bg-blue-500/10 tw:text-blue-500 tw:scale-110 tw:shadow-md;
+    transform-origin: center;
+  }
+
+  &:active {
+    @apply tw:scale-95 tw:shadow-inner;
+  }
+}
+
+.Button {
+  @apply tw:border-2 tw:border-stone-100 tw:dark:border-gray-700;
+  @apply tw:bg-transparent tw:text-stone-700 tw:dark:text-gray-300 tw:px-4 tw:py-1 tw:rounded-lg;
+}
+
+.PrimaryButton {
+  @extend .Button;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 105, 180, 0.15) 0%,
+    rgba(255, 165, 0, 0.2) 30%,
+    rgba(255, 69, 0, 0.25) 100%
+  );
+
+  .dark & {
+    background: linear-gradient(
+      135deg,
+      rgba(139, 92, 246, 0.15) 0%,
+      rgba(99, 102, 241, 0.2) 30%,
+      rgba(59, 130, 246, 0.25) 100%
+    );
+  }
+}
+
+.SmallGlow {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 85px;
+    height: 85px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(59, 130, 246, 0.25) 0%,
+      /* Quasar Blue */ rgba(255, 255, 255, 0) 70%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  /* Dark Mode Hover Fix */
+  .dark &::before {
+    background: radial-gradient(
+      circle,
+      rgba(243, 85, 44, 0.15) 0%,
+      /* Laravel Orange */ rgba(30, 30, 46, 0) 70%
+    );
+  }
+}
+
+.AuthMenu {
+  @apply tw:flex tw:items-center;
+
+  &-Inner {
+    @apply tw:relative tw:flex tw:items-center;
+  }
+
+  &-Bell {
+    @apply tw:pr-4 tw:hidden tw:sm:!flex;
+  }
+
+  &-DropdownToggle {
+    @apply tw:mr-1 tw:!hidden tw:sm:!flex tw:items-center tw:gap-2 tw:px-2 tw:py-1 tw:rounded-lg tw:hover:bg-gray-100 tw:dark:hover:bg-gray-800 tw:transition-colors;
+
+    span {
+      @apply tw:text-sm tw:font-medium;
+    }
+  }
+
+  &-MobileToggle {
+    @apply tw:sm:!hidden;
+  }
+
+  &-Avatar {
+    @apply tw:w-10 tw:h-10 tw:rounded-full tw:border tw:border-stone-400 tw:dark:border-gray-600 tw:shadow-sm;
+  }
+
+  &-LoginButton {
+    @extend .PrimaryButton;
+    @apply tw:hidden tw:md:!flex;
+  }
+}

@@ -46,18 +46,19 @@ function onMenuClose() {
 <template>
   <div
     v-if="sessionStore.isAuthenticated"
-    class="tw:flex tw:items-center"
+    class="AuthMenu"
   >
-    <div class="tw:relative tw:flex tw:items-center">
-      <NotificationBell class="tw:pr-4 tw:hidden tw:sm:!flex" />
+    <div class="AuthMenu-Inner">
+      <NotificationBell class="AuthMenu-Bell" />
 
       <q-btn
         flat
         no-caps
-        class="tw:mr-1 tw:!hidden tw:sm:!flex tw:items-center tw:gap-2 tw:px-2 tw:py-1 tw:rounded-lg tw:hover:bg-gray-100 tw:dark:hover:bg-gray-800 tw:transition-colors"
+        class="AuthMenu-DropdownToggle"
         @click="onDropdownToggle"
       >
-        <span class="tw:text-sm tw:font-medium">{{ sessionStore.user?.name }}</span>
+        <span>{{ sessionStore.user?.name }}</span>
+
         <q-icon
           name="eva-chevron-down-outline"
           size="16px"
@@ -75,13 +76,13 @@ function onMenuClose() {
         flat
         round
         dense
-        class="tw:sm:!hidden"
+        class="AuthMenu-MobileToggle"
         @click="onDropdownToggle"
       >
         <img
           :src="sessionStore.user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=44'"
           alt="User Avatar"
-          class="tw:w-10 tw:h-10 tw:rounded-full tw:border tw:border-stone-400 tw:dark:border-gray-600 tw:shadow-sm"
+          class="AuthMenu-Avatar"
         />
       </q-btn>
     </div>
@@ -91,7 +92,7 @@ function onMenuClose() {
     <!-- Login Button -->
     <q-btn
       :ripple="false"
-      class="PrimaryButton hidden tw:md:!flex"
+      class="AuthMenu-LoginButton"
       unelevated
       @click="emits('login-click')"
     >
