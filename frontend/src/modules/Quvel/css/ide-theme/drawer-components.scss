@@ -12,7 +12,7 @@
   }
 
   &-Header {
-    @apply tw:hidden tw:pb-4 tw:mb-2 tw:border-b tw:border-gray-200 tw:dark:border-gray-700;
+    @apply tw:pb-4 tw:mb-2 tw:border-b tw:border-gray-200 tw:dark:border-gray-700;
 
     &-Title {
       @apply tw:text-lg tw:font-medium tw:m-0;
@@ -27,6 +27,10 @@
 
   &-Controls {
     @apply tw:flex tw:items-center tw:justify-center tw:gap-6 tw:my-4;
+  }
+
+  &-Header {
+    @apply tw:!hidden;
   }
 
   &-Links {
@@ -81,11 +85,11 @@
 
   &-UserDetails {
     @apply tw:flex-1;
-    
+
     &-Name {
       @apply tw:text-lg tw:font-semibold tw:m-0 tw:text-gray-900 tw:dark:text-white;
     }
-    
+
     &-Email {
       @apply tw:text-sm tw:text-gray-500 tw:dark:text-gray-400 tw:m-0 tw:mt-0.5;
     }
@@ -93,7 +97,7 @@
 
   &-StatusBadge {
     @apply tw:flex tw:items-center tw:gap-1.5 tw:text-xs tw:font-medium tw:text-green-600 tw:dark:text-green-400 tw:mt-4;
-    
+
     &-Dot {
       @apply tw:w-2 tw:h-2 tw:rounded-full tw:bg-green-500;
     }
@@ -105,7 +109,7 @@
 
   &-Section {
     @apply tw:mb-4;
-    
+
     &-Title {
       @apply tw:text-xs tw:uppercase tw:tracking-wider tw:font-semibold tw:text-gray-500 tw:dark:text-gray-400 tw:px-5 tw:py-2;
     }
@@ -117,47 +121,47 @@
 
   &-MenuItem {
     @apply tw:flex tw:items-center tw:py-2 tw:px-5 tw:cursor-pointer tw:transition-colors tw:text-gray-700 tw:dark:text-gray-300 tw:border-l-2 tw:border-transparent;
-    
+
     &:hover {
       @apply tw:bg-gray-100 tw:dark:bg-gray-800 tw:border-l-2 tw:border-blue-500/50 tw:dark:border-blue-400/50;
     }
-    
+
     &--active {
       @apply tw:bg-blue-50 tw:dark:bg-blue-900/20 tw:border-l-2 tw:border-blue-500 tw:dark:border-blue-400 tw:text-blue-700 tw:dark:text-blue-300;
     }
-    
+
     &--danger {
       @apply tw:text-red-600 tw:dark:text-red-400;
-      
+
       &:hover {
         @apply tw:bg-red-50 tw:dark:bg-red-900/20 tw:border-l-2 tw:border-red-500 tw:dark:border-red-400;
       }
     }
-    
+
     &--disabled {
       @apply tw:opacity-60 tw:cursor-not-allowed;
-      
+
       &:hover {
         @apply tw:bg-transparent tw:dark:bg-transparent tw:border-transparent;
       }
     }
-    
+
     &-Icon {
       @apply tw:mr-3 tw:text-gray-500 tw:dark:text-gray-400;
     }
-    
+
     &-Text {
       @apply tw:flex-1 tw:font-medium;
     }
-    
+
     &-Spinner {
       @apply tw:ml-2;
     }
   }
-  
+
   &-Footer {
     @apply tw:p-4 tw:border-t tw:border-gray-200 tw:dark:border-gray-700 tw:mt-auto;
-    
+
     &-Version {
       @apply tw:text-xs tw:text-center tw:text-gray-500 tw:dark:text-gray-400;
     }
