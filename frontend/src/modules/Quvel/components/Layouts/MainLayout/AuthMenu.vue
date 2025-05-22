@@ -54,6 +54,7 @@ function onMenuClose() {
       <q-btn
         flat
         no-caps
+        dense
         class="AuthMenu-DropdownToggle"
         @click="onDropdownToggle"
       >
@@ -68,21 +69,6 @@ function onMenuClose() {
           v-if="$q.platform.is.desktop"
           v-model="isMenuOpen"
           @close="onMenuClose"
-        />
-      </q-btn>
-
-      <!-- Mobile User Avatar with Menu -->
-      <q-btn
-        flat
-        round
-        dense
-        class="AuthMenu-MobileToggle"
-        @click="onDropdownToggle"
-      >
-        <img
-          :src="sessionStore.user?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=44'"
-          alt="User Avatar"
-          class="AuthMenu-Avatar"
         />
       </q-btn>
     </div>

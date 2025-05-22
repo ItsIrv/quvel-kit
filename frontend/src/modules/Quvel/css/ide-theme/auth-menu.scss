@@ -10,7 +10,7 @@
   }
 
   &-DropdownToggle {
-    @apply tw:mr-1 tw:!hidden tw:sm:!flex tw:items-center tw:gap-2 tw:px-2 tw:py-1 tw:rounded-lg tw:hover:bg-gray-100 tw:dark:hover:bg-gray-800 tw:transition-colors;
+    @apply tw:mr-1 tw:!px-0 tw:lg:!px-2 tw:items-center tw:rounded-lg tw:hover:bg-gray-100 tw:dark:hover:bg-gray-800 tw:transition-colors;
 
     span {
       @apply tw:text-sm tw:font-medium;
@@ -18,7 +18,7 @@
   }
 
   &-MobileToggle {
-    @apply tw:!hidden;
+    @apply tw:!flex tw:md:!hidden;
   }
 
   &-Avatar {
