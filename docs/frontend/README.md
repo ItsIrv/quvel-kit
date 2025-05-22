@@ -42,15 +42,19 @@ frontend/
 
 - **[Service Container](./frontend-service-container.md)** - Dependency injection system
 - **[Configuration Service](./frontend-config-service.md)** - Application settings with tiered visibility
+- **[Environment Configs](./frontend-env-configs.md)** - Environment-specific configuration
 - **[Task Management](./frontend-task-management.md)** - Async operation orchestration
+- **[Logging](./frontend-logging.md)** - Application logging system
 
 ### State Management
 
 - **[State Management](./frontend-state-management.md)** - Pinia store patterns
 - **[Pagination](./frontend-pagination.md)** - Data pagination strategies
+- **[Notifications](./frontend-notifications.md)** - Notification system
 
 ### UI & Interaction
 
+- **[Composables](./frontend-composables.md)** - Reusable Vue composition functions
 - **[Validation](./frontend-validation.md)** - Form and data validation with Zod
 - **[Translations](./frontend-translations.md)** - Internationalization with Vue I18n
 - **[WebSockets](./frontend-websockets.md)** - Real-time communication

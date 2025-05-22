@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 
@@ -20,41 +20,17 @@ const fetchTask = task.newTask({
 
 const isDropdownOpen = ref(false);
 const bellAnimation = ref(false);
-const notificationRef = ref<HTMLElement | null>(null);
 
 const notifications = computed(() => notificationStore.items);
 const unreadCount = computed(() => notificationStore.unreadCount);
 
-function toggleDropdown(event: Event) {
-  // Prevent event propagation to avoid immediate closing
-  event.stopPropagation();
+function toggleDropdown() {
   isDropdownOpen.value = !isDropdownOpen.value;
 }
 
 function markAllAsRead() {
   void markAsReadTask.run();
 }
-
-function closeDropdown() {
-  isDropdownOpen.value = false;
-}
-
-// Handle clicks outside to close the dropdown
-function handleClickOutside() {
-  if (notificationRef.value) {
-    closeDropdown();
-  }
-}
-
-// Add and remove event listeners
-onMounted(() => {
-  void fetchTask.run();
-  document.addEventListener('click', handleClickOutside);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside);
-});
 
 // Watch for new notifications to trigger animation
 watch(
@@ -75,10 +51,7 @@ watch(
 </script>
 
 <template>
-  <div
-    ref="notificationRef"
-    class="NotificationBell"
-  >
+  <div class="NotificationBell">
     <button
       class="NotificationBell-Button"
       :class="{ 'NotificationBell-Button--animated': bellAnimation }"
