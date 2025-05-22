@@ -92,6 +92,7 @@ function onMenuClose() {
     <!-- Login Button -->
     <q-btn
       :ripple="false"
+      size="sm"
       class="AuthMenu-LoginButton"
       unelevated
       @click="emits('login-click')"

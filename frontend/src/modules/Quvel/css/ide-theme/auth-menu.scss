@@ -27,6 +27,5 @@
 
   &-LoginButton {
     @extend .PrimaryButton;
-    @apply tw:hidden tw:md:!flex;
   }
 }

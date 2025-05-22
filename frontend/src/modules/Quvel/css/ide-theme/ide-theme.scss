@@ -2,114 +2,10 @@
  * IDE Theme Component Styles
  */
 @import 'main-layout.scss';
-@import 'notification-bell.scss';
 @import 'landing-page.scss';
-@import 'auth-menu.scss';
 @import 'page-header.scss';
-
-/* Animations for the landing page background */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0) translateX(0);
-  }
-  25% {
-    transform: translateY(-20px) translateX(10px);
-  }
-  50% {
-    transform: translateY(-10px) translateX(20px);
-  }
-  75% {
-    transform: translateY(-30px) translateX(-10px);
-  }
-}
-
-// IDE-like dropdown menu
-.ide-dropdown {
-  @apply tw:border tw:border-gray-200 tw:dark:border-gray-700 tw:bg-white tw:dark:bg-gray-900 tw:shadow-lg tw:rounded-lg tw:overflow-hidden;
-
-  // Header section
-  &__header {
-    @apply tw:bg-gray-50 tw:dark:bg-gray-800 tw:py-3 tw:px-4 tw:rounded-t-lg tw:border-b tw:border-gray-200 tw:dark:border-gray-700;
-  }
-
-  // Content section
-  &__content {
-    @apply tw:bg-white tw:dark:bg-gray-900 tw:overflow-hidden;
-  }
-
-  // List items
-  &__item {
-    @apply tw:py-2 tw:px-4 tw:transition-colors tw:duration-200;
-
-    &:hover {
-      @apply tw:bg-gray-50 tw:dark:bg-gray-800;
-    }
-
-    &--active {
-      @apply tw:bg-blue-50 tw:dark:bg-blue-900/20;
-    }
-  }
-
-  // Action buttons
-  &__action {
-    @apply tw:flex tw:items-center tw:justify-center tw:w-8 tw:h-8 tw:rounded-full 
-           tw:bg-gray-100 tw:dark:bg-gray-800 tw:text-gray-600 tw:dark:text-gray-400 
-           tw:transition-all tw:duration-200 tw:ease-in-out;
-
-    &:hover {
-      @apply tw:bg-blue-500/10 tw:text-blue-500 tw:scale-105;
-    }
-
-    &:active {
-      @apply tw:scale-95;
-    }
-  }
-}
-
-// Shared menu styling for consistent dropdowns
-.app-dropdown-menu {
-  @apply tw:z-50;
-
-  // Animation
-  &-enter-active,
-  &-leave-active {
-    @apply tw:transition-all tw:duration-200 tw:ease-in-out;
-  }
-
-  &-enter-from,
-  &-leave-to {
-    @apply tw:opacity-0 tw:transform tw:scale-95 tw:translate-y-2;
-  }
-
-  &-enter-to,
-  &-leave-from {
-    @apply tw:opacity-100 tw:transform tw:scale-100 tw:translate-y-0;
-  }
-}
-
-// Badge styling
-.ide-badge {
-  @apply tw:flex tw:items-center tw:justify-center tw:min-w-5 tw:h-5 tw:text-xs tw:font-medium 
-         tw:rounded-full tw:bg-red-500 tw:text-white tw:absolute tw:-top-1 tw:-right-1;
-}
-
-.social-icon-link {
-  @apply tw:relative tw:block;
-}
-
-.social-icon-wrapper {
-  @apply tw:flex tw:items-center tw:justify-center tw:w-10 tw:h-10 tw:rounded-full tw:bg-gray-100 tw:dark:bg-gray-800 tw:text-gray-600 tw:dark:text-gray-400 tw:transition-all tw:duration-300 tw:ease-in-out;
-
-  &:hover {
-    @apply tw:bg-blue-500/10 tw:text-blue-500 tw:scale-110 tw:shadow-md;
-    transform-origin: center;
-  }
-
-  &:active {
-    @apply tw:scale-95 tw:shadow-inner;
-  }
-}
+@import 'auth-menu.scss';
+@import 'notification-bell.scss';
 
 .GenericBorder {
   @apply tw:border-2 tw:border-stone-100 tw:dark:border-gray-700;
@@ -173,16 +69,6 @@
       /* Laravel Orange */ rgba(30, 30, 46, 0) 70%
     );
   }
-}
-
-.hero-gradient-text {
-  @apply tw:text-transparent tw:bg-clip-text;
-  background-image: linear-gradient(135deg, #3b82f6, #f3552c);
-}
-/* Override highlight.js styles to respect Tailwind dark/light theme */
-.hljs {
-  /* Reset background to be transparent */
-  background: transparent !important;
 }
 
 .DialogGradient {
