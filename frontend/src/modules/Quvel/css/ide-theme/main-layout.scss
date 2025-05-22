@@ -95,7 +95,6 @@
     background-size: 40px 40px;
     z-index: -1;
     opacity: 0.7;
-    animation: grid-pulse 8s infinite alternate ease-in-out;
 
     .dark & {
       background-image:
@@ -104,80 +103,9 @@
       opacity: 0.5;
     }
   }
-
-  /* Floating particles */
-  .particles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: -1;
-
-    .particle {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: rgba(59, 130, 246, 0.5);
-      box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
-      animation: float 8s infinite ease-in-out;
-      filter: blur(0.5px);
-
-      /* Orange particles */
-      &:nth-child(2n) {
-        width: 14px;
-        height: 14px;
-        background-color: rgba(243, 85, 44, 0.5);
-        box-shadow: 0 0 20px rgba(243, 85, 44, 0.6);
-        animation-duration: 12s;
-      }
-
-      /* Purple particles */
-      &:nth-child(3n) {
-        width: 8px;
-        height: 8px;
-        background-color: rgba(99, 102, 241, 0.5);
-        box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
-        animation-duration: 10s;
-        animation-delay: 2s;
-      }
-
-      /* Adjust for dark theme */
-      .dark & {
-        background-color: rgba(99, 102, 241, 0.4);
-        box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
-
-        &:nth-child(2n) {
-          background-color: rgba(243, 85, 44, 0.4);
-          box-shadow: 0 0 20px rgba(243, 85, 44, 0.5);
-        }
-
-        &:nth-child(3n) {
-          background-color: rgba(129, 140, 248, 0.4);
-          box-shadow: 0 0 12px rgba(129, 140, 248, 0.5);
-        }
-      }
-    }
-  }
 }
 
 /* Animations for the landing page background */
-@keyframes grid-pulse {
-  0% {
-    opacity: 0.3;
-    background-size: 40px 40px;
-  }
-  50% {
-    opacity: 0.7;
-    background-size: 42px 42px;
-  }
-  100% {
-    opacity: 0.5;
-    background-size: 38px 38px;
-  }
-}
-
 @keyframes blob-move-1 {
   0%,
   100% {
@@ -207,21 +135,5 @@
   }
   75% {
     transform: translate(-5%, -15%) scale(1.05);
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0) translateX(0);
-  }
-  25% {
-    transform: translateY(-20px) translateX(10px);
-  }
-  50% {
-    transform: translateY(-10px) translateX(20px);
-  }
-  75% {
-    transform: translateY(-30px) translateX(-10px);
   }
 }
