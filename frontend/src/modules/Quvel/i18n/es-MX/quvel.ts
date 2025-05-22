@@ -15,6 +15,22 @@ export default {
       component: 'Componente Vue',
       store: 'Store Pinia',
     },
+    docs: 'Documentación',
+    github: 'GitHub',
+  },
+  lander: {
+    docs: 'Documentación',
+    docsDescription: 'Leer la documentación completa',
+    github: 'GitHub',
+    githubDescription: 'Ver el repositorio de código fuente',
+  },
+  common: {
+    menu: 'Menú',
+    account: 'Cuenta',
+    profile: 'Perfil',
+    settings: 'Configuraciones',
+    notifications: 'Notificaciones',
+    online: 'En línea',
   },
   profile: {
     title: 'Perfil',

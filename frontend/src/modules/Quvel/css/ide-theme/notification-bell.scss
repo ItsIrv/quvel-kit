@@ -5,7 +5,7 @@
   &-Button {
     @apply tw:flex tw:items-center tw:justify-center tw:w-8 tw:h-8 tw:rounded-full 
            tw:bg-gray-100 tw:dark:bg-gray-800 tw:text-gray-600 tw:dark:text-gray-400 
-           tw:transition-all tw:duration-200 tw:ease-in-out;
+           tw:transition-all tw:duration-200 tw:ease-in-out tw:cursor-pointer;
 
     &:hover {
       @apply tw:bg-blue-500/10 tw:text-blue-500 tw:scale-105;

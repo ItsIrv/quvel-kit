@@ -15,6 +15,22 @@ export default {
       component: 'Vue Component',
       store: 'Pinia Store',
     },
+    docs: 'Docs',
+    github: 'GitHub',
+  },
+  lander: {
+    docs: 'Documentation',
+    docsDescription: 'Read the full documentation',
+    github: 'GitHub',
+    githubDescription: 'View the source code repository',
+  },
+  common: {
+    account: 'Account',
+    profile: 'Profile',
+    settings: 'Settings',
+    notifications: 'Notifications',
+    online: 'Online',
+    menu: 'Menu',
   },
   profile: {
     title: 'Profile',

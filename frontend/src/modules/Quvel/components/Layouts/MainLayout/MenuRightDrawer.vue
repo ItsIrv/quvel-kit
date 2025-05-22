@@ -6,7 +6,6 @@
 import { computed } from 'vue';
 import LanguageSwitcher from 'src/modules/Core/components/Misc/LanguageSwitcher.vue';
 import ThemeSwitcher from 'src/modules/Core/components/Misc/ThemeSwitcher.vue';
-import ProjectLinks from 'src/modules/Quvel/components/Layouts/MainLayout/ProjectLinks.vue';
 
 /**
  * Props
@@ -35,24 +34,66 @@ const inputValue = computed({
 <template>
   <q-drawer
     v-model="inputValue"
-    class="MainGradient"
+    class="MenuRightDrawer DialogGradient"
     side="right"
     overlay
     behavior="mobile"
+    bordered
   >
-    <div class="tw:p-6 tw:flex tw:flex-col tw:gap-4">
-      <div class="tw:row tw:gap-8 tw:mx-auto">
+    <div class="MenuRightDrawer-Content">
+      <!-- Header with title -->
+      <div class="MenuRightDrawer-Header">
+        <h5 class="MenuRightDrawer-Header-Title">{{ $t('quvel.common.menu') }}</h5>
+      </div>
+
+      <!-- Theme & Language Controls -->
+      <div class="MenuRightDrawer-Controls">
         <ThemeSwitcher />
         <LanguageSwitcher />
       </div>
 
-      <q-separator />
+      <q-separator class="tw:my-4" />
 
-      <!-- Project Links -->
-      <ProjectLinks
-        class="DrawerProjectLinks tw:col tw:space-y-6 tw:text-gray-700 tw:dark:text-gray-300 tw:font-mono" />
+      <!-- Links Section -->
+      <div class="MenuRightDrawer-Links">
+        <!-- Documentation Link -->
+        <a
+          href="https://github.com/ItsIrv/quvel-kit/tree/main/docs"
+          class="MenuRightDrawer-Link"
+          @click="inputValue = false"
+        >
+          <q-icon
+            name="eva-book-outline"
+            size="sm"
+            class="MenuRightDrawer-LinkIcon"
+          />
+          <div class="MenuRightDrawer-LinkContent">
+            <h6 class="MenuRightDrawer-LinkContent-Title">{{ $t('quvel.lander.docs') }}</h6>
+            <p class="MenuRightDrawer-LinkContent-Description">{{ $t('quvel.lander.docsDescription') }}</p>
+          </div>
+        </a>
+
+        <!-- GitHub Link -->
+        <a
+          href="https://github.com/ItsIrv/quvel-kit"
+          class="MenuRightDrawer-Link"
+          @click="inputValue = false"
+        >
+          <q-icon
+            name="eva-github-outline"
+            size="sm"
+            class="MenuRightDrawer-LinkIcon"
+          />
+          <div class="MenuRightDrawer-LinkContent">
+            <h6 class="MenuRightDrawer-LinkContent-Title">{{ $t('quvel.lander.github') }}</h6>
+            <p class="MenuRightDrawer-LinkContent-Description">{{ $t('quvel.lander.githubDescription') }}</p>
+          </div>
+        </a>
+      </div>
     </div>
   </q-drawer>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+/* Styles moved to drawer-components.scss */
+</style>
