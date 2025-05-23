@@ -1,9 +1,0 @@
-.MainLayout {
-  &-Background {
-    @apply tw:min-h-screen tw:flex tw:flex-col tw:relative tw:overflow-hidden;
-  }
-
-  &-Content {
-    @apply tw:flex-grow tw:mt-16;
-  }
-}

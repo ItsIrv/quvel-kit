@@ -13,3 +13,10 @@
     </p>
   </div>
 </template>
+
+<style lang="scss">
+.hero-gradient-text {
+  @reference tw:text-transparent tw:bg-clip-text;
+  background-image: linear-gradient(135deg, #3b82f6, #f3552c);
+}
+</style>

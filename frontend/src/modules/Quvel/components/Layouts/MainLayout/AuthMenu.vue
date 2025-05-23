@@ -87,3 +87,63 @@ function onMenuClose() {
     </q-btn>
   </template>
 </template>
+
+<style lang="scss">
+@reference '../../../../../css/tailwind.scss';
+
+.AuthMenu {
+  @apply tw:flex tw:items-center;
+
+  &-Inner {
+    @apply tw:relative tw:flex tw:items-center;
+  }
+
+  &-Bell {
+    @apply tw:pr-4 tw:hidden tw:sm:flex;
+  }
+
+  &-DropdownToggle {
+    @apply tw:mr-1 tw:px-0 tw:lg:px-2 tw:items-center tw:rounded-lg tw:hover:bg-gray-100 tw:dark:hover:bg-gray-800 tw:transition-colors;
+
+    span {
+      @apply tw:text-sm tw:font-medium;
+    }
+  }
+
+  &-MobileToggle {
+    @apply tw:flex tw:md:hidden;
+  }
+
+  &-Avatar {
+    @apply tw:w-10 tw:h-10 tw:rounded-full tw:border tw:border-stone-400 tw:dark:border-gray-600 tw:shadow-sm;
+  }
+
+  &-LoginButton {
+    @extend .PrimaryButton;
+  }
+}
+
+.GenericBorder {
+  @apply tw:border-2 tw:border-stone-100 tw:dark:border-gray-700;
+}
+
+.Button {
+  @extend .GenericBorder;
+  @apply tw:bg-transparent tw:text-stone-700 tw:dark:text-gray-300 tw:px-4 tw:py-1 tw:rounded-lg;
+}
+
+.PrimaryButton {
+  @extend .Button;
+  background: linear-gradient(135deg,
+      rgba(255, 105, 180, 0.15) 0%,
+      rgba(255, 165, 0, 0.2) 30%,
+      rgba(255, 69, 0, 0.25) 100%);
+
+  .dark & {
+    background: linear-gradient(135deg,
+        rgba(139, 92, 246, 0.15) 0%,
+        rgba(99, 102, 241, 0.2) 30%,
+        rgba(59, 130, 246, 0.25) 100%);
+  }
+}
+</style>

@@ -1,14 +1,59 @@
 /**
- * Tailwind
- */
-@import './tailwind.scss';
-
-/**
  * Quasar Overrides
  */
 @import './overrides.scss';
 
 /**
- * IDE Theme for Quvel components
+ * IDE Theme Component Styles
  */
-@import './ide-theme/ide-theme.scss';
+@import 'drawer-components.scss';
+
+.SmallGlow {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 85px;
+    height: 85px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(59, 130, 246, 0.25) 0%,
+      /* Quasar Blue */ rgba(255, 255, 255, 0) 70%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  /* Dark Mode Hover Fix */
+  .dark &::before {
+    background: radial-gradient(
+      circle,
+      rgba(243, 85, 44, 0.15) 0%,
+      /* Laravel Orange */ rgba(30, 30, 46, 0) 70%
+    );
+  }
+}
+
+.DialogGradient {
+  background:
+    radial-gradient(circle at top, #3b82f62e 15%, #0000 80%),
+    radial-gradient(circle at bottom, #f3552c1f 10%, #0000 80%),
+    linear-gradient(170deg, #f9fafb, #e6e7eb);
+}
+
+.dark .DialogGradient {
+  background:
+    radial-gradient(circle at 20% 30%, #6366f124 10%, #0000 50%),
+    radial-gradient(circle at 80% 70%, #fd6a2a1a 8%, #0000 50%),
+    linear-gradient(150deg, #202b3b, #12171e);
+}

@@ -135,3 +135,17 @@ watch(
     />
   </q-layout>
 </template>
+
+<style lang="scss">
+@reference '../../../css/tailwind.scss';
+
+.MainLayout {
+  &-Background {
+    @apply tw:min-h-screen tw:flex tw:flex-col tw:relative tw:overflow-hidden;
+  }
+
+  &-Content {
+    @apply tw:flex-grow tw:mt-16;
+  }
+}
+</style>
