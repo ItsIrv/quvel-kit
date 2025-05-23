@@ -1,8 +1,19 @@
 /**
- * Code examples
+ * Code examples with metadata
  */
-export const CODE_EXAMPLES = {
-  tenant: `<?php
+export interface CodeExample {
+  key: string;
+  title: string;
+  language: 'php' | 'typescript';
+  code: string;
+}
+
+export const CODE_EXAMPLES: CodeExample[] = [
+  {
+    key: 'tenant',
+    title: 'quvel.landing.tabs.tinker',
+    language: 'php',
+    code: `<?php
 // Set the current tenant context
 > setTenant(1);
 = true
@@ -27,10 +38,13 @@ export const CODE_EXAMPLES = {
 
 // Tenant scoped services ready to use
 > app(FrontendService::class)->redirect('welcome', ['to' => 'quvel'])->getTargetUrl();
-= "https://quvel.127.0.0.1.nip.io/welcome?to=quvel"
-`,
-
-  controller: `<?php
+= "https://quvel.127.0.0.1.nip.io/welcome?to=quvel"`,
+  },
+  {
+    key: 'controller',
+    title: 'quvel.landing.tabs.dashboardController',
+    language: 'php',
+    code: `<?php
 namespace App\\Http\\Controllers;
 
 use Modules\\Tenant\\Contexts\\TenantContext;
@@ -48,8 +62,12 @@ class DashboardController extends Controller
         ]);
     }
 }`,
-
-  model: `<?php
+  },
+  {
+    key: 'model',
+    title: 'quvel.landing.tabs.product',
+    language: 'php',
+    code: `<?php
 namespace App\\Models;
 
 use Modules\\Tenant\\Traits\\TenantScopedModel;
@@ -66,9 +84,12 @@ class Product extends Model
     // All queries automatically scoped to current tenant
     // $products = Product::all(); // Only returns current tenant's products
 }`,
-
-  services: `
-// Easily create frontend services with dependencies
+  },
+  {
+    key: 'services',
+    title: 'quvel.landing.tabs.services',
+    language: 'typescript',
+    code: `// Easily create frontend services with dependencies
 export class TestService extends Service implements RegisterService {
   private api!: ApiService;
   private task!: TaskService;
@@ -109,10 +130,13 @@ export class TestService extends Service implements RegisterService {
       },
     }).run();
   }
-}
-`,
-
-  component: `<script setup lang="ts">
+}`,
+  },
+  {
+    key: 'component',
+    title: 'quvel.landing.tabs.component',
+    language: 'typescript',
+    code: `<script setup lang="ts">
 // Basic component with container
 import { ref } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
@@ -167,8 +191,12 @@ const items = ref([]);
     </div>
   </div>
 </template>`,
-
-  store: `// Pinia store using pagination and container
+  },
+  {
+    key: 'store',
+    title: 'quvel.landing.tabs.store',
+    language: 'typescript',
+    code: `// Pinia store using pagination and container
 import { defineStore } from 'pinia';
 
 interface CatalogState {
@@ -203,4 +231,5 @@ export const useCatalogStore = defineStore<'catalog', CatalogState, CatalogGette
     }),
   }
 );`,
-} as const;
+  },
+] as const;
