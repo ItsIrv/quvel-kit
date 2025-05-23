@@ -99,11 +99,11 @@ function onMenuClose() {
   }
 
   &-Bell {
-    @apply tw:pr-4 tw:hidden tw:sm:flex;
+    @apply tw:hidden tw:sm:flex tw:mr-3;
   }
 
   &-DropdownToggle {
-    @apply tw:mr-1 tw:px-0 tw:lg:px-2 tw:items-center tw:rounded-lg tw:hover:bg-gray-100 tw:dark:hover:bg-gray-800 tw:transition-colors;
+    @apply tw:items-center tw:px-2 tw:rounded-lg tw:hover:bg-gray-100 tw:dark:hover:bg-gray-800 tw:transition-colors;
 
     span {
       @apply tw:text-sm tw:font-medium;

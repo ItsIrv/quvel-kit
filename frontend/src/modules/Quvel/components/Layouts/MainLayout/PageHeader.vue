@@ -154,7 +154,7 @@ onUnmounted(() => {
   }
 
   &-UserSection {
-    @apply tw:flex tw:items-center tw:gap-4;
+    @apply tw:flex tw:items-center;
   }
 
   &-DesktopControls {

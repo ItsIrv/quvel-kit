@@ -62,10 +62,14 @@ watch(
         name="eva-bell-outline"
         size="20px"
       />
-      <span
-        v-if="unreadCount > 0"
+
+      <q-badge
         class="NotificationBell-Badge"
-      >{{ unreadCount }}</span>
+        color="red"
+        floating
+      >
+        {{ unreadCount }}
+      </q-badge>
     </button>
 
     <q-menu
@@ -164,11 +168,7 @@ watch(
     @apply tw:flex tw:items-center tw:justify-center tw:w-8 tw:h-8 tw:rounded-full tw:bg-gray-100 tw:dark:bg-gray-800 tw:text-gray-600 tw:dark:text-gray-400 tw:transition-all tw:duration-200 tw:ease-in-out tw:cursor-pointer;
 
     &:hover {
-      @apply tw:bg-blue-500/10 tw:text-blue-500 tw:scale-105;
-    }
-
-    &:active {
-      @apply tw:scale-95;
+      @apply tw:bg-blue-500/10 tw:text-blue-500;
     }
 
     &--animated {
@@ -200,9 +200,7 @@ watch(
     }
   }
 
-  &-Badge {
-    @apply tw:flex tw:items-center tw:justify-center tw:min-w-5 tw:h-5 tw:text-xs tw:font-medium tw:rounded-full tw:bg-red-500 tw:text-white tw:absolute tw:-top-1 tw:-right-1;
-  }
+  &-Badge {}
 
   &-Menu {
     @apply tw:z-50;
