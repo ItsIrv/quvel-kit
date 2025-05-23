@@ -3,7 +3,7 @@
     <li>
       <a
         href="https://github.com/ItsIrv/quvel-kit/tree/main/docs"
-        class="SmallGlow transition"
+        class="quvel-link"
       >
         {{ $t('quvel.landing.docs') }}
       </a>
@@ -12,7 +12,7 @@
     <li>
       <a
         href="https://github.com/ItsIrv/quvel-kit"
-        class="SmallGlow transition"
+        class="quvel-link"
       >
         {{ $t('quvel.landing.github') }}
       </a>
