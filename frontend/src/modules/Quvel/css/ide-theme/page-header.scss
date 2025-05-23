@@ -12,7 +12,6 @@
       @apply tw:bg-white/80 tw:dark:bg-gray-900/80;
       backdrop-filter: blur(12px) saturate(180%);
       -webkit-backdrop-filter: blur(12px) saturate(180%);
-      @apply tw:border-b tw:border-gray-200/30 tw:dark:border-gray-800/30;
       @apply tw:shadow-sm;
     }
 
