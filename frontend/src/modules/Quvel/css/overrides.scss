@@ -10,17 +10,12 @@
 
 /* Menu styling */
 .q-menu {
-  @apply tw:transition-all tw:duration-200 tw:ease-in-out;
   @apply tw:p-2 tw:rounded-lg tw:shadow-lg;
   @apply tw:border tw:border-gray-200 tw:dark:border-gray-700;
   @apply tw:bg-white tw:dark:bg-gray-800;
 
   /* Remove default Quasar shadow */
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-
-  /* Add subtle animation */
-  animation: q-menu-enter 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: top center;
 }
 
 /* Menu items */
@@ -52,17 +47,5 @@
 
   &.q-field--focused .q-field__control {
     @apply tw:border-blue-500 tw:dark:border-blue-400;
-  }
-}
-
-/* Menu animation */
-@keyframes q-menu-enter {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
