@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import QuvelKit from 'src/modules/Quvel/components/Common/QuvelKit.vue';
 import AuthMenu from 'src/modules/Quvel/components/Layouts/MainLayout/AuthMenu.vue';
 import MenuList from 'src/modules/Quvel/components/Layouts/MainLayout/MenuList.vue';
 import ThemeSwitcher from 'src/modules/Core/components/Misc/ThemeSwitcher.vue';
 import LanguageSwitcher from 'src/modules/Core/components/Misc/LanguageSwitcher.vue';
+import { useWindowEvent } from 'src/modules/Core/composables/useWindowEvent';
 
 /**
  * Emits
@@ -42,17 +43,10 @@ function handleScroll() {
   });
 }
 
-/**
- * Lifecycle hooks
- */
-onMounted(() => {
-  // Initial scroll position check
-  handleScroll();
-  window.addEventListener('scroll', handleScroll, { passive: true });
-});
+useWindowEvent('scroll', handleScroll, { passive: true });
 
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
+onMounted(() => {
+  handleScroll();
 });
 </script>
 
