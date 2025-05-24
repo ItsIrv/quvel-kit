@@ -39,7 +39,9 @@ onUnmounted(() => {
     <div
       class="tw:pt-4 tw:flex tw:flex-col tw:md:flex-row tw:items-center tw:justify-center tw:mb-4 tw:w-full tw:max-w-4xl"
     >
-      <span class="tw:text-2xl tw:w-full tw:md:w-1/2 tw:text-center tw:md:text-right tw:pr-0 tw:md:pr-4 tw:py-2">
+      <span
+        class="tw:text-2xl tw:w-full tw:-mt-1.5 tw:md:w-1/2 tw:text-center tw:md:text-right tw:pr-0 tw:md:pr-4 tw:py-2"
+      >
         {{ $t('quvel.landing.subtitle') }}
       </span>
 
