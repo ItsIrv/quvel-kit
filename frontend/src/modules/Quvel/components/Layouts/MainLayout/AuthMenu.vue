@@ -79,7 +79,7 @@ function onMenuClose() {
     <q-btn
       :ripple="false"
       :size="$q.screen.gt.sm ? 'md' : 'sm'"
-      class="AuthMenu-LoginButton"
+      class="AuthMenu-LoginButton PrimaryButton GenericBorder"
       unelevated
       @click="emits('login-click')"
     >
@@ -119,31 +119,8 @@ function onMenuClose() {
   }
 
   &-LoginButton {
-    @extend .PrimaryButton;
-  }
-}
+    @apply tw:mx-4;
 
-.GenericBorder {
-  @apply tw:border-2 tw:border-stone-100 tw:dark:border-gray-700;
-}
-
-.Button {
-  @extend .GenericBorder;
-  @apply tw:bg-transparent tw:text-stone-700 tw:dark:text-gray-300 tw:px-4 tw:py-1 tw:rounded-lg;
-}
-
-.PrimaryButton {
-  @extend .Button;
-  background: linear-gradient(135deg,
-      rgba(255, 105, 180, 0.15) 0%,
-      rgba(255, 165, 0, 0.2) 30%,
-      rgba(255, 69, 0, 0.25) 100%);
-
-  .dark & {
-    background: linear-gradient(135deg,
-        rgba(139, 92, 246, 0.15) 0%,
-        rgba(99, 102, 241, 0.2) 30%,
-        rgba(59, 130, 246, 0.25) 100%);
   }
 }
 </style>

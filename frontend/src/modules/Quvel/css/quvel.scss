@@ -57,3 +57,31 @@
     radial-gradient(circle at 80% 70%, #fd6a2a1a 8%, #0000 50%),
     linear-gradient(150deg, #202b3b, #12171e);
 }
+
+.GenericBorder {
+  @apply tw:border-2 tw:border-stone-100 tw:dark:border-gray-700;
+}
+
+.Button {
+  @extend .GenericBorder;
+  @apply tw:bg-transparent tw:text-stone-700 tw:dark:text-gray-300 tw:px-4 tw:py-1 tw:rounded-lg;
+}
+
+.PrimaryButton {
+  @extend .Button;
+  background: linear-gradient(
+    135deg,
+    rgba(240, 109, 174, 0.4) 0%,
+    rgba(255, 104, 23, 0.4) 30%,
+    rgba(234, 83, 1, 0.4) 100%
+  );
+
+  .dark & {
+    background: linear-gradient(
+      135deg,
+      rgba(139, 92, 246, 0.4) 0%,
+      rgba(99, 102, 241, 0.4) 30%,
+      rgba(59, 130, 246, 0.4) 100%
+    );
+  }
+}

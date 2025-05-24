@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch, onMounted, computed } from 'vue';
+import { ref, watch, onMounted, computed, nextTick } from 'vue';
 import hljs from 'highlight.js/lib/core';
 import php from 'highlight.js/lib/languages/php';
 import typescript from 'highlight.js/lib/languages/typescript';
@@ -14,11 +14,7 @@ hljs.registerLanguage('typescript', typescript);
  * State
  */
 const activeTabIndex = ref(0);
-
-/**
- * Code highlighting
- */
-const codeRefs = ref<HTMLElement[]>([]);
+const codeBlock = ref<HTMLElement | null>(null);
 
 /**
  * Computed
@@ -32,18 +28,28 @@ const setActiveTab = (index: number) => {
   activeTabIndex.value = index;
 };
 
+const highlightCodeBlock = async () => {
+  await nextTick();
+
+  if (codeBlock.value) {
+    codeBlock.value.removeAttribute('data-highlighted');
+
+    hljs.highlightElement(codeBlock.value);
+  }
+};
+
 /**
  * Lifecycle
  */
-onMounted(() => {
-  void hljs.highlightAll();
+onMounted(async () => {
+  await highlightCodeBlock();
 });
 
 // Re-highlight when tab changes
 watch(
   () => activeTabIndex.value,
-  () => {
-    void hljs.highlightAll();
+  async () => {
+    await highlightCodeBlock();
   }
 );
 </script>
@@ -84,7 +90,7 @@ watch(
     <div class="tw:bg-white tw:dark:bg-gray-900 tw:px-4 tw:overflow-x-auto tw:max-h-[500px]">
       <pre class="tw:!text-sm tw:font-mono tw:rounded-md tw:!bg-transparent tw:!m-0">
         <code
-          ref="codeRefs"
+          ref="codeBlock"
           :class="[
             `language-${activeExample?.language}`,
             'tw:!text-gray-800 tw:dark:!text-gray-200'
