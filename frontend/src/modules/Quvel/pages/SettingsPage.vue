@@ -2,6 +2,7 @@
 import { ref, computed, reactive } from 'vue';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
+import PageHeroBackground from '../components/Pages/Common/PageHeroBackground.vue';
 
 /**
  * Services
@@ -163,12 +164,10 @@ const updateSecuritySettingsTask = task.newTask({
 
 <template>
   <div class="SettingsPage">
-    <div class="SettingsHero">
-      <div class="SettingsHero-Content">
-        <h1>{{ $t('quvel.settings.title') }}</h1>
-        <p>{{ $t('quvel.settings.subtitle') }}</p>
-      </div>
-    </div>
+    <PageHeroBackground
+      :title="$t('quvel.settings.title')"
+      :subtitle="$t('quvel.settings.subtitle')"
+    />
 
     <div class="SettingsContent">
       <div class="SettingsLayout">
@@ -437,31 +436,6 @@ const updateSecuritySettingsTask = task.newTask({
 
 .SettingsPage {
   @apply tw:min-h-screen tw:pb-16;
-}
-
-/* Hero Section */
-.SettingsHero {
-  @apply tw:relative tw:py-12 tw:mb-8;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
-
-  &::before {
-    content: '';
-    @apply tw:absolute tw:inset-0 tw:z-0;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  }
-
-  &-Content {
-    @apply tw:container tw:mx-auto tw:px-6 tw:relative tw:z-10 tw:text-white;
-    max-width: 1200px;
-
-    h1 {
-      @apply tw:text-3xl tw:md:text-4xl tw:font-bold tw:mb-2;
-    }
-
-    p {
-      @apply tw:text-blue-100 tw:text-lg;
-    }
-  }
 }
 
 /* Settings Content */

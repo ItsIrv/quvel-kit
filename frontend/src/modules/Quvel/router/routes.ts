@@ -13,7 +13,6 @@ const routes: RouteRecordRaw[] = [
         name: 'landing',
         component: () => import('src/modules/Quvel/pages/LandingPage.vue'),
         meta: {
-          landerBackground: true,
           backgroundClass: 'LandingBackground',
         },
       },

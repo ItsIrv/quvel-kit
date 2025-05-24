@@ -41,7 +41,7 @@ export default {
   },
   profile: {
     title: 'Profile',
-    subtitle: 'Manage your account information and preferences',
+    subtitle: 'View your profile information',
     anonymous: 'Anonymous User',
     editProfile: 'Edit Profile',
     personalInfo: 'Personal Information',
