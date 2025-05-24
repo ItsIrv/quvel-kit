@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<Props>(), {
 /**
  * Emits
  */
-const emits = defineEmits(['logout', 'update:modelValue', 'close']);
+const emits = defineEmits(['update:modelValue', 'close']);
 
 /**
  * State
@@ -58,7 +58,7 @@ const logoutTask = task.newTask({
   },
   task: async () => {
     await sessionStore.logout();
-    emits('logout');
+    emits('close');
   },
 });
 </script>
@@ -141,7 +141,6 @@ const logoutTask = task.newTask({
           class="tw:py-2 tw:text-red-600 tw:dark:text-red-400"
           :disable="logoutTask.isActive.value"
           @click="logoutTask.run()"
-          v-close-popup
         >
           <q-item-section avatar>
             <q-icon
@@ -152,8 +151,10 @@ const logoutTask = task.newTask({
           </q-item-section>
 
           <q-item-section>
-            <span>{{ $t('auth.forms.logout.button') }}</span>
+            <q-spinner v-if="logoutTask.isActive.value" />
+            <span v-else>{{ $t('auth.forms.logout.button') }}</span>
           </q-item-section>
+
         </q-item>
       </q-list>
     </div>

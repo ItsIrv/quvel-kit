@@ -7,8 +7,8 @@ import ClientOnly from 'src/modules/Core/components/Misc/ClientOnly.vue';
 import PageHeader from 'src/modules/Quvel/components/Layouts/MainLayout/PageHeader.vue';
 import PageFooter from 'src/modules/Quvel/components/Layouts/MainLayout/PageFooter.vue';
 import LanderBackground from '../components/Pages/LandingPage/LanderBackground.vue';
+import AuthDialog from 'src/modules/Auth/components/Dialogs/AuthDialog.vue';
 
-const AuthDialog = defineAsyncComponent(() => import('src/modules/Auth/components/Dialogs/AuthDialog.vue'));
 const MenuRightDrawer = defineAsyncComponent(() => import('src/modules/Quvel/components/Layouts/MainLayout/MenuRightDrawer.vue'));
 const MenuLeftDrawer = defineAsyncComponent(() => import('src/modules/Quvel/components/Layouts/MainLayout/MenuLeftDrawer.vue'));
 
