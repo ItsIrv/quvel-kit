@@ -17,6 +17,15 @@ const routes: RouteRecordRaw[] = [
           backgroundClass: 'LandingBackground',
         },
       },
+      {
+        path: 'profile',
+        name: 'profile',
+        component: () => import('src/modules/Quvel/pages/ProfilePage.vue'),
+        meta: {
+          requiresAuth: true,
+          title: 'quvel.profile.title',
+        },
+      },
     ],
   },
 ];

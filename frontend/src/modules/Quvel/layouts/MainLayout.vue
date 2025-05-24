@@ -42,7 +42,14 @@ const backgroundClass = computed(() => {
   if (haslanderBackground.value) {
     return routeMeta.value?.backgroundClass || '';
   }
-  return 'MainGradient';
+  return 'StandardBackground';
+});
+
+/**
+ * Computed property to determine if the current page should have a contained layout
+ */
+const isContainedLayout = computed(() => {
+  return !haslanderBackground.value;
 });
 
 /**
@@ -111,8 +118,10 @@ watch(
       />
 
       <!-- Main content area -->
-      <div class="MainLaout-Content">
-        <router-view />
+      <div class="MainLayout-Content">
+        <div :class="{ 'MainLayout-Container': isContainedLayout }">
+          <router-view />
+        </div>
       </div>
 
       <!-- Footer -->
@@ -147,5 +156,18 @@ watch(
   &-Content {
     @apply tw:flex-grow tw:mt-16;
   }
+  
+  &-Container {
+    @apply tw:container tw:mx-auto tw:px-4 tw:py-8;
+    max-width: 1200px;
+  }
+}
+
+/* Background Styles */
+.StandardBackground {
+  @apply tw:bg-gray-50 tw:dark:bg-gray-900;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(63, 94, 251, 0.025) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(252, 70, 107, 0.025) 0%, transparent 50%);
 }
 </style>

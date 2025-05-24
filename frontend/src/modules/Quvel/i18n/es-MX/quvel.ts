@@ -4,9 +4,7 @@
 export default {
   landing: {
     title: 'QuVel Kit',
-    subtitle: 'Plantilla Laravel + Quasar Vue con soporte para multi-tenancy, SSR y Capacitor',
-    description:
-      'Construye aplicaciones modernas para muchos clientes y muchos dispositivos, con un solo repositorio.',
+    subtitle: 'Laravel & Quasar Vue con:',
     tabs: {
       tinker: 'tinker',
       dashboardController: 'Controlador',
@@ -34,6 +32,26 @@ export default {
   },
   profile: {
     title: 'Perfil',
+    subtitle: 'Información de la cuenta y preferencias',
+    anonymous: 'Usuario Anónimo',
+    editProfile: 'Editar Perfil',
+    personalInfo: 'Información Personal',
+    accountInfo: 'Información de la Cuenta',
+    recentActivity: 'Actividad Reciente',
+    noRecentActivity: 'No hay actividad reciente para mostrar',
+    name: 'Nombre',
+    email: 'Correo Electrónico',
+    role: 'Rol',
+    defaultRole: 'Usuario',
+    status: 'Estado',
+    active: 'Activo',
+    lastLogin: 'Último Login',
+    today: 'Hoy',
+    memberSince: 'Miembro desde',
+    joinDate: 'May 2025',
+    projects: 'Proyectos',
+    teams: 'Equipos',
+    contributions: 'Contribuciones',
   },
   settings: {
     title: 'Configuraciones',
