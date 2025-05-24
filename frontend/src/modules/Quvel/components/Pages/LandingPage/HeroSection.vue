@@ -45,7 +45,8 @@ onUnmounted(() => {
 
       <div class="tw:w-full tw:md:!w-1/2 tw:text-center tw:md:text-left">
         <transition
-          name="fade-pill"
+          enter-active-class="animated fadeIn"
+          leave-active-class="animated fadeOut"
           mode="out-in"
         >
           <span
@@ -65,14 +66,10 @@ onUnmounted(() => {
 <style lang="scss">
 @reference '../../../../../css/tailwind.scss';
 
-/* Fade Transition for the Pill */
-.fade-pill-enter-active,
-.fade-pill-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-pill-enter-from,
-.fade-pill-leave-to {
-  opacity: 0;
+/* Slide Transition for the Pill */
+.rotating-pill {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
 }
 </style>
