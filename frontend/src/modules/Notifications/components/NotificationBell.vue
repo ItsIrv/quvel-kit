@@ -64,6 +64,7 @@ watch(
       />
 
       <q-badge
+        v-if="unreadCount > 0"
         class="NotificationBell-Badge"
         color="red"
         floating
