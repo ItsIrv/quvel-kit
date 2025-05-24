@@ -27,6 +27,30 @@ const inputValue = computed({
 });
 
 /**
+ * Navigation Menu Items
+ */
+const navigationItems = [
+  {
+    to: '/profile',
+    routeName: 'profile',
+    icon: 'eva-person-outline',
+    labelKey: 'quvel.common.profile',
+  },
+  {
+    to: '/settings',
+    routeName: 'settings',
+    icon: 'eva-settings-outline',
+    labelKey: 'quvel.common.settings',
+  },
+  {
+    to: '/notifications',
+    routeName: 'notifications',
+    icon: 'eva-bell-outline',
+    labelKey: 'quvel.common.notifications',
+  },
+];
+
+/**
  * Services
  */
 const { task, i18n } = useContainer();
@@ -88,46 +112,29 @@ const logoutTask = task.newTask({
           <h6 class="MenuLeftDrawer-Section-Title">{{ $t('quvel.common.account') }}</h6>
 
           <div class="MenuLeftDrawer-MenuItems">
-            <!-- Profile Link -->
-            <div
-              class="MenuLeftDrawer-MenuItem MenuLeftDrawer-MenuItem--active"
-              @click="emits('update:modelValue', false)"
+            <!-- Navigation Menu Items Loop -->
+            <router-link
+              v-for="item in navigationItems"
+              :key="item.routeName"
+              :to="item.to"
+              custom
+              v-slot="{ navigate }"
             >
-              <q-icon
-                name="eva-person-outline"
-                size="sm"
-                class="MenuLeftDrawer-MenuItem-Icon"
-              />
-              <span class="MenuLeftDrawer-MenuItem-Text">{{ $t('quvel.common.profile') }}</span>
-            </div>
+              <div
+                class="MenuLeftDrawer-MenuItem"
+                :class="{ 'MenuLeftDrawer-MenuItem--active': $route.name === item.routeName }"
+                @click="navigate(); emits('update:modelValue', false)"
+              >
+                <q-icon
+                  :name="item.icon"
+                  size="sm"
+                  class="MenuLeftDrawer-MenuItem-Icon"
+                />
+                <span class="MenuLeftDrawer-MenuItem-Text">{{ $t(item.labelKey) }}</span>
+              </div>
+            </router-link>
 
-            <!-- Settings Link -->
-            <div
-              class="MenuLeftDrawer-MenuItem"
-              @click="emits('update:modelValue', false)"
-            >
-              <q-icon
-                name="eva-settings-outline"
-                size="sm"
-                class="MenuLeftDrawer-MenuItem-Icon"
-              />
-              <span class="MenuLeftDrawer-MenuItem-Text">{{ $t('quvel.common.settings') }}</span>
-            </div>
-
-            <!-- Notifications Link -->
-            <div
-              class="MenuLeftDrawer-MenuItem"
-              @click="emits('update:modelValue', false)"
-            >
-              <q-icon
-                name="eva-bell-outline"
-                size="sm"
-                class="MenuLeftDrawer-MenuItem-Icon"
-              />
-              <span class="MenuLeftDrawer-MenuItem-Text">{{ $t('quvel.common.notifications') }}</span>
-            </div>
-
-            <!-- Logout Link -->
+            <!-- Logout Link (separate) -->
             <div
               class="MenuLeftDrawer-MenuItem MenuLeftDrawer-MenuItem--danger"
               :class="{ 'MenuLeftDrawer-MenuItem--disabled': logoutTask.isActive.value }"
@@ -157,7 +164,3 @@ const logoutTask = task.newTask({
     </div>
   </q-drawer>
 </template>
-
-<style lang="scss">
-/* Styles moved to drawer-components.scss */
-</style>

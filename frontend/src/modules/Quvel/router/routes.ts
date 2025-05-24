@@ -26,6 +26,15 @@ const routes: RouteRecordRaw[] = [
           title: 'quvel.profile.title',
         },
       },
+      {
+        path: 'settings',
+        name: 'settings',
+        component: () => import('src/modules/Quvel/pages/SettingsPage.vue'),
+        meta: {
+          requiresAuth: true,
+          title: 'quvel.settings.title',
+        },
+      },
     ],
   },
 ];
