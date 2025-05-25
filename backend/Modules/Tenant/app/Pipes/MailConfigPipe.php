@@ -8,6 +8,7 @@ use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles mail configuration for tenants.
+ * Octane-safe: No static state needed.
  */
 class MailConfigPipe implements ConfigurationPipeInterface
 {
@@ -47,15 +48,12 @@ class MailConfigPipe implements ConfigurationPipeInterface
         }
 
         return $next([
-            'tenant' => $tenant,
-            'config' => $config,
+            'tenant'       => $tenant,
+            'config'       => $config,
             'tenantConfig' => $tenantConfig,
         ]);
     }
 
-    /**
-     * Get the configuration keys this pipe handles.
-     */
     public function handles(): array
     {
         return [
@@ -70,9 +68,6 @@ class MailConfigPipe implements ConfigurationPipeInterface
         ];
     }
 
-    /**
-     * Get the priority for this pipe.
-     */
     public function priority(): int
     {
         return 70;

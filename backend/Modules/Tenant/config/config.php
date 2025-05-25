@@ -60,7 +60,8 @@ return [
     'config_pipes' => [
         \Modules\Tenant\Pipes\CoreConfigPipe::class,
         \Modules\Tenant\Pipes\DatabaseConfigPipe::class,
-        \Modules\Tenant\Pipes\CacheSessionConfigPipe::class,
+        \Modules\Tenant\Pipes\CacheConfigPipe::class,
+        \Modules\Tenant\Pipes\SessionConfigPipe::class,
         \Modules\Tenant\Pipes\MailConfigPipe::class,
     ],
 
@@ -68,22 +69,22 @@ return [
      * Tenant tiers define the level of isolation for each tenant.
      * You can customize these based on your business needs.
      */
-    'tiers' => [
-        'basic' => [
+    'tiers'        => [
+        'basic'      => [
             'description' => 'Shared database, shared cache, shared resources',
-            'features' => ['row_isolation'],
+            'features'    => ['row_isolation'],
         ],
-        'standard' => [
+        'standard'   => [
             'description' => 'Shared database with dedicated cache',
-            'features' => ['row_isolation', 'dedicated_cache'],
+            'features'    => ['row_isolation', 'dedicated_cache'],
         ],
-        'premium' => [
+        'premium'    => [
             'description' => 'Dedicated database and cache',
-            'features' => ['database_isolation', 'dedicated_cache'],
+            'features'    => ['database_isolation', 'dedicated_cache'],
         ],
         'enterprise' => [
             'description' => 'Fully isolated infrastructure',
-            'features' => ['database_isolation', 'dedicated_cache', 'custom_domain', 'sla'],
+            'features'    => ['database_isolation', 'dedicated_cache', 'custom_domain', 'sla'],
         ],
     ],
 

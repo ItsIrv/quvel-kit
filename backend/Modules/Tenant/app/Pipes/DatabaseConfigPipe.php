@@ -3,32 +3,44 @@
 namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Database\DatabaseManager;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
 use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles database configuration for tenants.
- * Supports tiered isolation where some tenants may use shared databases.
+ * Octane-safe: Uses container for state storage instead of static properties.
  */
 class DatabaseConfigPipe implements ConfigurationPipeInterface
 {
+    private const ORIGINAL_CONFIG_KEY = 'tenant.original_db_config';
+
     /**
      * Apply database configuration.
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
+        // Store original database config if not already stored (Octane-safe)
+        if (!app()->has(self::ORIGINAL_CONFIG_KEY)) {
+            app()->instance(self::ORIGINAL_CONFIG_KEY, [
+                'default'     => $config->get('database.default'),
+                'connections' => $config->get('database.connections'),
+            ]);
+        }
+
         // Check if tenant has database overrides
         $hasDbOverride = isset($tenantConfig['db_connection']) ||
             isset($tenantConfig['db_host']) ||
             isset($tenantConfig['db_database']);
 
         if ($hasDbOverride) {
+            $dbManager  = app(DatabaseManager::class);
+            $connection = $tenantConfig['db_connection'] ?? 'mysql';
+
             // Apply database configuration
             if (isset($tenantConfig['db_connection'])) {
                 $config->set('database.default', $tenantConfig['db_connection']);
             }
-
-            $connection = $tenantConfig['db_connection'] ?? 'mysql';
 
             if (isset($tenantConfig['db_host'])) {
                 $config->set("database.connections.$connection.host", $tenantConfig['db_host']);
@@ -45,8 +57,19 @@ class DatabaseConfigPipe implements ConfigurationPipeInterface
             if (isset($tenantConfig['db_password'])) {
                 $config->set("database.connections.$connection.password", $tenantConfig['db_password']);
             }
+
+            // Purge the connection if it was previously established
+            if ($dbManager->getConnections() && array_key_exists($connection, $dbManager->getConnections())) {
+                $dbManager->purge($connection);
+            }
+
+            $dbManager->setDefaultConnection($connection);
+            $dbManager->reconnect($connection);
+
+            if (app()->environment(['local', 'development', 'testing'])) {
+                logger()->debug("[Tenant] Switched database connection to {$connection} for tenant {$tenant->name}");
+            }
         }
-        // If no database override, tenant uses shared database with row-level isolation
 
         return $next([
             'tenant'       => $tenant,
@@ -56,8 +79,38 @@ class DatabaseConfigPipe implements ConfigurationPipeInterface
     }
 
     /**
-     * Get the configuration keys this pipe handles.
+     * Reset database connection.
+     * Octane-safe: Uses container instance instead of static property.
      */
+    public static function resetResources(): void
+    {
+        if (app()->has(self::ORIGINAL_CONFIG_KEY)) {
+            try {
+                $originalConfig = app(self::ORIGINAL_CONFIG_KEY);
+
+                // Restore original configuration
+                config([
+                    'database.default'     => $originalConfig['default'],
+                    'database.connections' => $originalConfig['connections'],
+                ]);
+
+                $dbManager = app(DatabaseManager::class);
+                $dbManager->purge();
+                $dbManager->setDefaultConnection($originalConfig['default']);
+                $dbManager->reconnect($originalConfig['default']);
+
+                if (app()->environment(['local', 'development', 'testing'])) {
+                    logger()->debug("[Tenant] Reset database connection to original: " . $originalConfig['default']);
+                }
+
+                // Clean up the stored config
+                app()->forgetInstance(self::ORIGINAL_CONFIG_KEY);
+            } catch (\Exception $e) {
+                logger()->error("[Tenant] Failed to reset database connection: {$e->getMessage()}");
+            }
+        }
+    }
+
     public function handles(): array
     {
         return [
@@ -70,11 +123,8 @@ class DatabaseConfigPipe implements ConfigurationPipeInterface
         ];
     }
 
-    /**
-     * Get the priority for this pipe.
-     */
     public function priority(): int
     {
-        return 90; // Run after core config
+        return 90;
     }
 }
