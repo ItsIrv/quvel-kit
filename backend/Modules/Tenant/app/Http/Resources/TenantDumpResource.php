@@ -5,7 +5,6 @@ namespace Modules\Tenant\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
-use Modules\Tenant\Enums\TenantConfigVisibility;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\ValueObjects\TenantConfig;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
@@ -55,7 +54,7 @@ class TenantDumpResource extends JsonResource
         }
 
         // Apply config providers to enhance the configuration
-        $registry = app(TenantConfigProviderRegistry::class);
+        $registry       = app(TenantConfigProviderRegistry::class);
         $enhancedConfig = $registry->enhance($this->resource, $config);
 
         // Get protected config (public + protected visibility)

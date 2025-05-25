@@ -45,12 +45,12 @@ class AuthServiceProvider extends ModuleServiceProvider
         if (class_exists(\Modules\Tenant\Providers\TenantServiceProvider::class)) {
             $this->app->booted(function () {
                 \Modules\Tenant\Providers\TenantServiceProvider::registerConfigPipe(
-                    \Modules\Auth\Pipes\AuthConfigPipe::class
+                    \Modules\Auth\Pipes\AuthConfigPipe::class,
                 );
-                
+
                 // Also register the config provider for API responses
                 \Modules\Tenant\Providers\TenantServiceProvider::registerConfigProvider(
-                    AuthTenantConfigProvider::class
+                    AuthTenantConfigProvider::class,
                 );
             });
         }

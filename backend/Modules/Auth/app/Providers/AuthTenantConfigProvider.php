@@ -12,32 +12,32 @@ class AuthTenantConfigProvider implements TenantConfigProviderInterface
 {
     /**
      * Get Auth module configuration for the tenant.
-     * 
+     *
      * @param Tenant $tenant
      * @return array{config: array<string, mixed>, visibility: array<string, string>}
      */
     public function getConfig(Tenant $tenant): array
     {
         return [
-            'config' => [
+            'config'     => [
                 // Auth-specific configurations
-                'auth_providers' => config('auth.socialite.providers', []),
-                'password_min_length' => config('auth.password_min_length', 8),
-                'session_timeout' => config('auth.session_timeout', 120),
-                'two_factor_enabled' => config('auth.two_factor_enabled', false),
+                'socialiteProviders' => config('auth.socialite.providers', []),
+                'passwordMinLength'  => config('auth.password_min_length', 8),
+                'sessionCookie'      => config('session.cookie', 120),
+                'twoFactorEnabled'   => config('auth.two_factor_enabled', false),
             ],
             'visibility' => [
-                'auth_providers' => 'public',
-                'password_min_length' => 'public',
-                'session_timeout' => 'public',
-                'two_factor_enabled' => 'public',
+                'socialiteProviders' => 'public',
+                'passwordMinLength'  => 'public',
+                'sessionCookie'      => 'public',
+                'twoFactorEnabled'   => 'public',
             ],
         ];
     }
 
     /**
      * Get the priority for this provider.
-     * 
+     *
      * @return int
      */
     public function priority(): int

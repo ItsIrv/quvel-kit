@@ -26,7 +26,7 @@ class TenantConfigProviderRegistry
 
     /**
      * Register a configuration provider.
-     * 
+     *
      * @param TenantConfigProviderInterface|string $provider
      * @return static
      */
@@ -43,15 +43,15 @@ class TenantConfigProviderRegistry
 
     /**
      * Apply all registered providers to enhance the tenant configuration.
-     * 
+     *
      * @param Tenant $tenant
      * @param DynamicTenantConfig|null $config
      * @return DynamicTenantConfig
      */
     public function enhance(Tenant $tenant, DynamicTenantConfig|null $config = null): DynamicTenantConfig
     {
-        // Start with existing config or create new one
-        $enhancedConfig = $config ?? new DynamicTenantConfig();
+        // Configs are provided by providers, so we start with an empty config
+        $enhancedConfig = new DynamicTenantConfig();
 
         // Sort providers by priority (higher first)
         $sortedProviders = $this->providers->sortByDesc(
@@ -61,18 +61,18 @@ class TenantConfigProviderRegistry
         // Apply each provider
         foreach ($sortedProviders as $provider) {
             $providerData = $provider->getConfig($tenant);
-            
+
             // Add configuration values
             foreach ($providerData['config'] ?? [] as $key => $value) {
                 $enhancedConfig->set($key, $value);
             }
-            
+
             // Add visibility settings
             foreach ($providerData['visibility'] ?? [] as $key => $visibility) {
-                $visibilityEnum = is_string($visibility) 
+                $visibilityEnum = is_string($visibility)
                     ? TenantConfigVisibility::tryFrom($visibility) ?? TenantConfigVisibility::PRIVATE
                     : $visibility;
-                    
+
                 $enhancedConfig->setVisibility($key, $visibilityEnum);
             }
         }
@@ -82,7 +82,7 @@ class TenantConfigProviderRegistry
 
     /**
      * Get all registered providers.
-     * 
+     *
      * @return Collection<int, TenantConfigProviderInterface>
      */
     public function getProviders(): Collection

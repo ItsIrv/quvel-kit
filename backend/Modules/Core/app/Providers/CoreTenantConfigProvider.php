@@ -12,34 +12,44 @@ class CoreTenantConfigProvider implements TenantConfigProviderInterface
 {
     /**
      * Get Core module configuration for the tenant.
-     * 
+     *
      * @param Tenant $tenant
      * @return array{config: array<string, mixed>, visibility: array<string, string>}
      */
     public function getConfig(Tenant $tenant): array
     {
         return [
-            'config' => [
-                // Frontend service URLs and configuration
-                'frontend_service_url' => config('frontend.url'),
-                'frontend_internal_api_url' => config('frontend.internal_api_url'),
-                
-                // Any other Core module specific configs that need to be exposed
-                'api_version' => config('app.api_version', 'v1'),
-                'supported_locales' => config('app.supported_locales', ['en']),
+            'config'     => [
+                // Core configuration matching TypeScript interface
+                'apiUrl'                 => config('app.url') . '/api',
+                'appUrl'                 => config('frontend.url'),
+                'appName'                => config('app.name', 'Quvel Kit'),
+                'tenantId'               => $tenant->id,
+                'tenantName'             => $tenant->name,
+                'pusherAppKey'           => config('broadcasting.connections.pusher.key', ''),
+                'pusherAppCluster'       => config('broadcasting.connections.pusher.options.cluster', 'eu'),
+                'recaptchaGoogleSiteKey' => config('services.recaptcha.site_key', ''),
+
+                // Additional Core module specific configs
+                'internalApiUrl'         => config('frontend.internal_api_url'),
             ],
             'visibility' => [
-                'frontend_service_url' => 'protected',
-                'frontend_internal_api_url' => 'protected',
-                'api_version' => 'public',
-                'supported_locales' => 'public',
+                'apiUrl'                 => 'public',
+                'appUrl'                 => 'public',
+                'appName'                => 'public',
+                'tenantId'               => 'public',
+                'tenantName'             => 'public',
+                'pusherAppKey'           => 'public',
+                'pusherAppCluster'       => 'public',
+                'recaptchaGoogleSiteKey' => 'public',
+                'internalApiUrl'         => 'protected',
             ],
         ];
     }
 
     /**
      * Get the priority for this provider.
-     * 
+     *
      * @return int
      */
     public function priority(): int

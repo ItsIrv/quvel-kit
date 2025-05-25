@@ -42,7 +42,7 @@ class TenantServiceProvider extends ModuleServiceProvider
 
             return $pipeline;
         });
-        
+
         // Register the tenant config provider registry
         $this->app->singleton(TenantConfigProviderRegistry::class);
 

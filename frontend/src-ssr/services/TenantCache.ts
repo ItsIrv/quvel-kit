@@ -129,10 +129,7 @@ export class TenantCacheService {
 
       console.log(`[TenantCacheService] Preloaded ${this.tenantMap.size} tenants`);
     } catch (e) {
-      console.error(
-        '[TenantCacheService] Failed to preload tenants',
-        (e as AxiosError).config?.baseURL,
-      );
+      console.error('[TenantCacheService] Failed to preload tenants', e);
     }
   }
 
