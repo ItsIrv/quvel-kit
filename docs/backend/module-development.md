@@ -452,8 +452,9 @@ class BillingServiceProvider extends ModuleServiceProvider
 
 - [Laravel Modules Documentation](https://laravelmodules.com/docs/12/basic-usage/creating-a-module)
 - [Tenant Module Documentation](./tenant-module.md)
-- [Dynamic Configuration Guide](../Modules/Tenant/docs/dynamic-configuration.md)
-- [Configuration Providers Guide](../Modules/Tenant/docs/tenant-config-providers.md)
+- [Dynamic Configuration Guide](./dynamic-configuration.md)
+- [Configuration Providers Guide](./tenant-config-providers.md)
+- [Tenant Configuration Examples](./tenant-configuration-examples.md)
 
 ---
 
