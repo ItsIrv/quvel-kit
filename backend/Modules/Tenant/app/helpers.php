@@ -1,14 +1,14 @@
 <?php
 
 use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Enums\TenantConfigVisibility;
 use Modules\Tenant\Exceptions\TenantNotFoundException;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Services\ConfigApplier;
 use Modules\Tenant\Services\FindService;
-use Modules\Tenant\ValueObjects\DynamicTenantConfig;
-use Modules\Tenant\Enums\TenantConfigVisibility;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Foundation\Application;
+use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 
 if (!function_exists('setTenant')) {
     /**
@@ -73,11 +73,11 @@ if (!function_exists('getTenantConfig')) {
     function getTenantConfig(?string $key = null, mixed $default = null): mixed
     {
         $config = getTenant()->getEffectiveConfig();
-        
+
         if ($key === null) {
             return $config;
         }
-        
+
         return $config->get($key, $default);
     }
 }
@@ -97,16 +97,16 @@ if (!function_exists('setTenantConfig')) {
     {
         $tenant = getTenant();
         $config = $tenant->config ?? new DynamicTenantConfig();
-        
+
         $config->set($key, $value);
-        
+
         if ($visibility !== null) {
-            $visibilityEnum = is_string($visibility) 
-                ? TenantConfigVisibility::from($visibility) 
+            $visibilityEnum = is_string($visibility)
+                ? TenantConfigVisibility::from($visibility)
                 : $visibility;
             $config->setVisibility($key, $visibilityEnum);
         }
-        
+
         $tenant->config = $config;
     }
 }
@@ -136,5 +136,77 @@ if (!function_exists('createTenantConfig')) {
     function createTenantConfig(array $data = [], array $visibility = [], string $tier = 'basic'): DynamicTenantConfig
     {
         return new DynamicTenantConfig($data, $visibility, $tier);
+    }
+}
+
+if (!function_exists('tenantHasFeature')) {
+    /**
+     * Check if the current tenant has a specific feature.
+     *
+     * @param string $feature Feature name to check
+     * @return bool
+     */
+    function tenantHasFeature(string $feature): bool
+    {
+        return app(\Modules\Tenant\Services\TierService::class)->currentTenantHasFeature($feature);
+    }
+}
+
+if (!function_exists('tenantMeetsMinimumTier')) {
+    /**
+     * Check if the current tenant meets a minimum tier requirement.
+     *
+     * @param string $minimumTier Minimum tier required
+     * @return bool
+     */
+    function tenantMeetsMinimumTier(string $minimumTier): bool
+    {
+        try {
+            $tenant = getTenant();
+            return app(\Modules\Tenant\Services\TierService::class)->meetsMinimumTier($tenant, $minimumTier);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+}
+
+if (!function_exists('getTenantFeatures')) {
+    /**
+     * Get all features available for the current tenant's tier.
+     *
+     * @return array
+     */
+    function getTenantFeatures(): array
+    {
+        $tier = getTenantTier();
+        return app(\Modules\Tenant\Services\TierService::class)->getTierFeatures($tier);
+    }
+}
+
+if (!function_exists('getTenantLimits')) {
+    /**
+     * Get resource limits for the current tenant's tier.
+     *
+     * @return array
+     */
+    function getTenantLimits(): array
+    {
+        $tier = getTenantTier();
+        return app(\Modules\Tenant\Services\TierService::class)->getTierLimits($tier);
+    }
+}
+
+if (!function_exists('getTenantLimit')) {
+    /**
+     * Get a specific resource limit for the current tenant.
+     *
+     * @param string $limitKey The limit key (e.g., 'users', 'storage', 'api_calls_per_hour')
+     * @param mixed $default Default value if limit doesn't exist
+     * @return mixed
+     */
+    function getTenantLimit(string $limitKey, mixed $default = PHP_INT_MAX): mixed
+    {
+        $limits = getTenantLimits();
+        return $limits[$limitKey] ?? $default;
     }
 }

@@ -29,7 +29,20 @@ class CacheConfigPipe implements ConfigurationPipeInterface
             ]);
         }
 
-        // Cache configuration
+        // Check if tenant has dedicated cache feature (only if tiers are enabled)
+        if (config('tenant.enable_tiers', false) && !$tenant->hasFeature('dedicated_cache')) {
+            // Basic tier: use shared cache with tenant prefix only
+            $config->set('cache.prefix', "tenant_{$tenant->id}_");
+
+            // Pass to next pipe
+            return $next([
+                'tenant'       => $tenant,
+                'config'       => $config,
+                'tenantConfig' => $tenantConfig,
+            ]);
+        }
+
+        // Standard tier and above: can have dedicated cache configuration
         $hasCacheChanges = false;
 
         if (isset($tenantConfig['cache_store'])) {
@@ -37,7 +50,7 @@ class CacheConfigPipe implements ConfigurationPipeInterface
             $hasCacheChanges = true;
         }
 
-        // Always set a tenant-specific cache prefix if not overridden
+        // Always set a tenant-specific cache prefix
         if (isset($tenantConfig['cache_prefix'])) {
             $config->set('cache.prefix', $tenantConfig['cache_prefix']);
             $hasCacheChanges = true;

@@ -28,6 +28,16 @@ class DatabaseConfigPipe implements ConfigurationPipeInterface
             ]);
         }
 
+        // Check if tenant has database isolation feature (only if tiers are enabled)
+        if (config('tenant.enable_tiers', false) && !$tenant->hasFeature('database_isolation')) {
+            // Pass to next pipe without database changes for basic/standard tiers
+            return $next([
+                'tenant'       => $tenant,
+                'config'       => $config,
+                'tenantConfig' => $tenantConfig,
+            ]);
+        }
+
         // Check if tenant has database overrides
         $hasDbOverride = isset($tenantConfig['db_connection']) ||
             isset($tenantConfig['db_host']) ||

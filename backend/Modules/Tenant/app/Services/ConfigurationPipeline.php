@@ -70,7 +70,7 @@ class ConfigurationPipeline
     public function apply(Tenant $tenant, ConfigRepository $config): void
     {
         $tenantConfig = $tenant->getEffectiveConfig();
-        
+
         if (!$tenantConfig) {
             return;
         }

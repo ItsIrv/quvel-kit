@@ -14,6 +14,7 @@ use Modules\Tenant\Services\ConfigApplier;
 use Modules\Tenant\Services\ConfigurationPipeline;
 use Modules\Tenant\Services\TenantConfigProviderRegistry;
 use Modules\Tenant\Services\FindService;
+use Modules\Tenant\Services\TierService;
 use Illuminate\Log\Context\Repository;
 
 /**
@@ -32,6 +33,7 @@ class TenantServiceProvider extends ModuleServiceProvider
         $this->app->register(RouteServiceProvider::class);
 
         $this->app->singleton(FindService::class);
+        $this->app->singleton(TierService::class);
 
         // Register the configuration pipeline
         $this->app->singleton(ConfigurationPipeline::class, function ($app) {

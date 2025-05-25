@@ -62,9 +62,9 @@ Each pipe handles specific configuration domains and can be registered by any mo
 3. **ConfigurationPipeInterface**: Contract for creating configuration pipes
 4. **DynamicTenantConfigCast**: Handles database serialization
 
-#### Tenant Tiers
+#### Tenant Tiers (Optional)
 
-The system supports different isolation levels:
+The tier system is **disabled by default**. When enabled via `TENANT_ENABLE_TIERS=true`, it provides different isolation levels:
 
 | Tier | Database | Cache | Redis | Description |
 |------|----------|-------|-------|-------------|

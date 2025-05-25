@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Modules\Tenant\Casts\DynamicTenantConfigCast;
 use Modules\Tenant\Database\Factories\TenantFactory;
+use Modules\Tenant\Traits\HasTierFeatures;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 
 /**
@@ -33,6 +34,7 @@ class Tenant extends Model
 {
     /** @use HasFactory<TenantFactory> */
     use HasFactory;
+    use HasTierFeatures;
 
     /**
      * The attributes that are mass assignable.
