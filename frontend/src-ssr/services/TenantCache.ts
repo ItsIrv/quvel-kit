@@ -1,10 +1,5 @@
 import { AxiosError, AxiosInstance } from 'axios';
-import {
-  BackendConfig,
-  CachedTenantConfig,
-  Tenant,
-  TenantConfigProtected,
-} from '../types/tenant.types';
+import { CachedTenantConfig, Tenant, TenantConfigProtected } from '../types/tenant.types';
 import { createAxios } from '../utils/createAxios';
 
 /**
@@ -17,8 +12,8 @@ export class TenantCacheService {
   private readonly cacheTtl: number;
   private readonly intervalId: NodeJS.Timeout | null = null;
   private readonly domainCache = new Map<string, CachedTenantConfig>();
-  private readonly tenantMap = new Map<string, Tenant & { config: BackendConfig }>();
-  private readonly parentMap = new Map<string, Tenant & { config: BackendConfig }>();
+  private readonly tenantMap = new Map<string, Tenant>();
+  private readonly parentMap = new Map<string, Tenant>();
   private readonly axiosInstance: AxiosInstance;
 
   private constructor() {
@@ -76,7 +71,7 @@ export class TenantCacheService {
 
     try {
       const response = await this.axiosInstance.get<{
-        data: Tenant & { config: BackendConfig };
+        data: Tenant;
       }>(`${process.env.SSR_TENANT_SSR_API_URL}/tenant`, {
         headers: {
           'X-Tenant-Domain': domain,
@@ -111,7 +106,7 @@ export class TenantCacheService {
   public async loadAllTenants(): Promise<void> {
     try {
       const response = await this.axiosInstance.get<{
-        data: (Tenant & { config: BackendConfig })[];
+        data: Tenant[];
       }>(`${process.env.SSR_TENANT_SSR_API_URL}/tenant/cache`);
 
       this.tenantMap.clear();
@@ -137,12 +132,11 @@ export class TenantCacheService {
    * Normalizes the tenant configuration. The backend has a different structure for the config
    * than the frontend, so we need to transform it.
    */
-  private normalizeConfig(tenant: Tenant & { config: BackendConfig }): TenantConfigProtected {
+  private normalizeConfig(tenant: Tenant): TenantConfigProtected {
     const cfg = tenant.config;
+
     return {
       ...cfg,
-      apiUrl: cfg.appUrl,
-      appUrl: cfg.frontendUrl,
       tenantId: tenant.id,
       tenantName: tenant.name,
       __visibility: {
@@ -157,9 +151,7 @@ export class TenantCacheService {
   /**
    * Retrieves the parent tenant of the given tenant.
    */
-  private getParentTenant(
-    tenant: Tenant & { config: BackendConfig },
-  ): Tenant & { config: BackendConfig } {
+  private getParentTenant(tenant: Tenant): Tenant {
     if (tenant.parent_id) {
       const parent = this.parentMap.get(tenant.parent_id);
 

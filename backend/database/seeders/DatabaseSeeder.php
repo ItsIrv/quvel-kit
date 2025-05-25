@@ -34,12 +34,12 @@ class DatabaseSeeder extends Seeder
 
     protected function seedModule($module): void
     {
-        $name = $module->getName();
+        $name      = $module->getName();
         $className = "Modules\\$name\\Database\\Seeders\\{$name}DatabaseSeeder";
 
-        echo "Seeding module: {$name}\n";
-
         if (class_exists($className)) {
+            echo "Seeding module: {$name}\n";
+
             $this->call($className);
         }
     }

@@ -40,6 +40,10 @@ class CoreConfigPipe implements ConfigurationPipeInterface
                 'internal_api_url'     => $config->get('frontend.internal_api_url'),
                 'capacitor_scheme'     => $config->get('frontend.capacitor_scheme'),
                 'cors_allowed_origins' => $config->get('cors.allowed_origins'),
+                'pusher_app_key'       => $config->get('broadcasting.connections.pusher.key'),
+                'pusher_app_secret'    => $config->get('broadcasting.connections.pusher.secret'),
+                'pusher_app_id'        => $config->get('broadcasting.connections.pusher.app_id'),
+                'pusher_app_cluster'   => $config->get('broadcasting.connections.pusher.options.cluster'),
             ]);
         }
 
@@ -103,6 +107,20 @@ class CoreConfigPipe implements ConfigurationPipeInterface
                 $allowedOrigins[] = $tenantConfig['frontend_url'];
             }
             $config->set('cors.allowed_origins', $allowedOrigins);
+        }
+
+        // Pusher/Broadcasting configuration
+        if (isset($tenantConfig['pusher_app_key'])) {
+            $config->set('broadcasting.connections.pusher.key', $tenantConfig['pusher_app_key']);
+        }
+        if (isset($tenantConfig['pusher_app_secret'])) {
+            $config->set('broadcasting.connections.pusher.secret', $tenantConfig['pusher_app_secret']);
+        }
+        if (isset($tenantConfig['pusher_app_id'])) {
+            $config->set('broadcasting.connections.pusher.app_id', $tenantConfig['pusher_app_id']);
+        }
+        if (isset($tenantConfig['pusher_app_cluster'])) {
+            $config->set('broadcasting.connections.pusher.options.cluster', $tenantConfig['pusher_app_cluster']);
         }
 
         // Laravel Context
@@ -187,18 +205,22 @@ class CoreConfigPipe implements ConfigurationPipeInterface
 
                 // Restore original configuration
                 config([
-                    'app.name'                  => $originalConfig['app_name'],
-                    'app.env'                   => $originalConfig['app_env'],
-                    'app.key'                   => $originalConfig['app_key'],
-                    'app.debug'                 => $originalConfig['app_debug'],
-                    'app.url'                   => $originalConfig['app_url'],
-                    'app.timezone'              => $originalConfig['app_timezone'],
-                    'app.locale'                => $originalConfig['app_locale'],
-                    'app.fallback_locale'       => $originalConfig['app_fallback_locale'],
-                    'frontend.url'              => $originalConfig['frontend_url'],
-                    'frontend.internal_api_url' => $originalConfig['internal_api_url'],
-                    'frontend.capacitor_scheme' => $originalConfig['capacitor_scheme'],
-                    'cors.allowed_origins'      => $originalConfig['cors_allowed_origins'],
+                    'app.name'                                        => $originalConfig['app_name'],
+                    'app.env'                                         => $originalConfig['app_env'],
+                    'app.key'                                         => $originalConfig['app_key'],
+                    'app.debug'                                       => $originalConfig['app_debug'],
+                    'app.url'                                         => $originalConfig['app_url'],
+                    'app.timezone'                                    => $originalConfig['app_timezone'],
+                    'app.locale'                                      => $originalConfig['app_locale'],
+                    'app.fallback_locale'                             => $originalConfig['app_fallback_locale'],
+                    'frontend.url'                                    => $originalConfig['frontend_url'],
+                    'frontend.internal_api_url'                       => $originalConfig['internal_api_url'],
+                    'frontend.capacitor_scheme'                       => $originalConfig['capacitor_scheme'],
+                    'cors.allowed_origins'                            => $originalConfig['cors_allowed_origins'],
+                    'broadcasting.connections.pusher.key'             => $originalConfig['pusher_app_key'],
+                    'broadcasting.connections.pusher.secret'          => $originalConfig['pusher_app_secret'],
+                    'broadcasting.connections.pusher.app_id'          => $originalConfig['pusher_app_id'],
+                    'broadcasting.connections.pusher.options.cluster' => $originalConfig['pusher_app_cluster'],
                 ]);
 
                 $config   = app(ConfigRepository::class);
@@ -235,6 +257,10 @@ class CoreConfigPipe implements ConfigurationPipeInterface
             'frontend_url',
             'internal_api_url',
             'capacitor_scheme',
+            'pusher_app_key',
+            'pusher_app_secret',
+            'pusher_app_id',
+            'pusher_app_cluster',
         ];
     }
 

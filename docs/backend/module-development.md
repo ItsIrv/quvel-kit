@@ -325,6 +325,105 @@ This automatically:
 - Prevents cross-tenant operations
 - Configures tenant-aware broadcast channels
 
+### Registering Tenant-Aware Tables
+
+When your module has tables that need tenant isolation, register them in your service provider:
+
+```php
+public function boot(): void
+{
+    parent::boot();
+
+    // Register tenant-aware tables
+    if (class_exists(\Modules\Tenant\Providers\TenantServiceProvider::class)) {
+        \Modules\Tenant\Providers\TenantServiceProvider::registerTenantTable('your_models', [
+            'cascade_delete' => true,  // Delete records when tenant is deleted
+            'after' => 'id',           // Column after which tenant_id is added
+        ]);
+        
+        // Or register multiple tables at once
+        \Modules\Tenant\Providers\TenantServiceProvider::registerTenantTables([
+            'your_models' => [
+                'cascade_delete' => true,
+            ],
+            'your_other_models' => [
+                'cascade_delete' => false,
+                'drop_uniques' => [['email']],  // Drop unique constraint on email
+                'tenant_unique_constraints' => [['email']],  // Add tenant-scoped unique
+            ],
+        ]);
+    }
+}
+```
+
+The tenant migration will automatically:
+- Add `tenant_id` column to your tables
+- Create foreign key constraints
+- Add indexes for performance
+- Handle unique constraint conversions
+
+This approach keeps the Tenant module decoupled from your module's implementation details.
+
+### Registering Tenant Configuration Seeders
+
+Modules can register configuration that should be included when seeding new tenants:
+
+```php
+public function boot(): void
+{
+    parent::boot();
+
+    if (class_exists(\Modules\Tenant\Providers\TenantServiceProvider::class)) {
+        $this->app->booted(function () {
+            // Register config seeder for all tiers
+            \Modules\Tenant\Providers\TenantServiceProvider::registerConfigSeederForAllTiers(
+                function (string $tier, array $config) {
+                    // Return config to add for this tier
+                    return [
+                        'your_module_enabled' => true,
+                        'your_module_setting' => 'value',
+                    ];
+                },
+                50, // Priority (lower runs first)
+                function (string $tier, array $visibility) {
+                    // Return visibility settings
+                    return [
+                        'your_module_enabled' => \Modules\Tenant\Enums\TenantConfigVisibility::PUBLIC,
+                        'your_module_setting' => \Modules\Tenant\Enums\TenantConfigVisibility::PROTECTED,
+                    ];
+                }
+            );
+            
+            // Or register for specific tiers only
+            \Modules\Tenant\Providers\TenantServiceProvider::registerConfigSeederForTiers(
+                ['premium', 'enterprise'],
+                function (string $tier, array $config) {
+                    return [
+                        'your_module_premium_feature' => true,
+                    ];
+                }
+            );
+        });
+    }
+}
+```
+
+The seeder receives:
+- `$tier`: The tier being seeded ('basic', 'standard', 'premium', 'enterprise')
+- `$config`: Current config array (includes previously seeded values)
+
+You can use seed parameters passed from the factory by checking for `_seed_` prefixed keys:
+
+```php
+function (string $tier, array $config) {
+    return [
+        'module_name' => $config['_seed_module_name'] ?? 'Default Name',
+    ];
+}
+```
+
+This keeps the Tenant module's factory minimal while allowing modules to contribute their own configuration during seeding.
+
 ## Authentication Integration
 
 The `Auth` module provides authentication services that can be used in your modules:

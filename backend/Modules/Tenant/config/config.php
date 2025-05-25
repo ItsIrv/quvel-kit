@@ -102,6 +102,8 @@ return [
 
     /**
      * The tenant migration loops through each table and applies the tenant scope.
+     * Modules should register their tables using TenantServiceProvider::registerTenantTable()
+     * rather than adding them here.
      */
     'tables'       => [
         'users'         => [
@@ -132,20 +134,6 @@ return [
                 ['provider_id'],
                 ['email', 'provider_id'],
             ],
-        ],
-        /**
-         * Catalog items table
-         */
-        'catalog_items' => [
-            /**
-             * Column after which the tenant_id should be added
-             */
-            'after'          => 'id',
-
-            /**
-             * Whether tenant deletion cascades to this table
-             */
-            'cascade_delete' => true,
         ],
     ],
 

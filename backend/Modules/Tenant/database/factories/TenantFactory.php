@@ -16,9 +16,11 @@ class TenantFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->company,
-            'domain' => $this->faker->unique()->domainName,
+            'name'      => $this->faker->company,
+            'domain'    => $this->faker->unique()->domainName,
             'public_id' => Str::ulid()->toString(),
+            'parent_id' => null,
+            'config'    => [],
         ];
     }
 }

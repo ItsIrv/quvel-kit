@@ -18,20 +18,27 @@ class CoreTenantConfigProvider implements TenantConfigProviderInterface
      */
     public function getConfig(Tenant $tenant): array
     {
+        // Get tenant's effective config which includes seeded values
+        $tenantConfig = $tenant->getEffectiveConfig();
+
         return [
             'config'     => [
-                // Core configuration matching TypeScript interface
-                'apiUrl'                 => config('app.url') . '/api',
-                'appUrl'                 => config('frontend.url'),
-                'appName'                => config('app.name', 'Quvel Kit'),
+                // Core configuration - read from tenant config when available
+                'apiUrl'                 => $tenantConfig->get('app_url', config('app.url')) . '/api',
+                'appUrl'                 => $tenantConfig->get('frontend_url', config('frontend.url')),
+                'appName'                => $tenantConfig->get('app_name', config('app.name', 'Quvel Kit')),
                 'tenantId'               => $tenant->public_id,
                 'tenantName'             => $tenant->name,
-                'pusherAppKey'           => config('broadcasting.connections.pusher.key', ''),
-                'pusherAppCluster'       => config('broadcasting.connections.pusher.options.cluster', 'eu'),
-                'recaptchaGoogleSiteKey' => config('services.recaptcha.site_key', ''),
+
+                // Pusher config from tenant config
+                'pusherAppKey'           => $tenantConfig->get('pusher_app_key', ''),
+                'pusherAppCluster'       => $tenantConfig->get('pusher_app_cluster', 'mt1'),
+
+                // reCAPTCHA config from tenant config (only site key is public)
+                'recaptchaGoogleSiteKey' => $tenantConfig->get('recaptcha_site_key', ''),
 
                 // Additional Core module specific configs
-                'internalApiUrl'         => config('frontend.internal_api_url'),
+                'internalApiUrl'         => $tenantConfig->get('internal_api_url', config('frontend.internal_api_url')),
             ],
             'visibility' => [
                 'apiUrl'                 => 'public',

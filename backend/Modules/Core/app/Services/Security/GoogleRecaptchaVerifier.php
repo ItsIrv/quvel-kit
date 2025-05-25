@@ -8,19 +8,24 @@ use Modules\Core\Contracts\Security\CaptchaVerifierInterface;
 
 class GoogleRecaptchaVerifier implements CaptchaVerifierInterface
 {
-    private readonly string $secretKey;
-
     public function __construct(
         private readonly Request $request,
         private readonly HttpClient $http,
     ) {
-        $this->secretKey = config('core.recaptcha.google.secret');
     }
 
     public function verify(string $token, ?string $ip = null): bool
     {
+        // Get secret key from tenant config
+        $secretKey = getTenantConfig('recaptcha_secret_key');
+
+        // If no secret key is configured, validation fails
+        if (empty($secretKey)) {
+            return false;
+        }
+
         $response = $this->http->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret'   => $this->secretKey,
+            'secret'   => $secretKey,
             'response' => $token,
             'remoteip' => $ip ?? $this->request->ip(),
         ]);
