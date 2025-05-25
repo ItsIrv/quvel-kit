@@ -61,8 +61,14 @@ return [
         \Modules\Tenant\Pipes\CoreConfigPipe::class,
         \Modules\Tenant\Pipes\DatabaseConfigPipe::class,
         \Modules\Tenant\Pipes\CacheConfigPipe::class,
+        \Modules\Tenant\Pipes\RedisConfigPipe::class,
         \Modules\Tenant\Pipes\SessionConfigPipe::class,
         \Modules\Tenant\Pipes\MailConfigPipe::class,
+        \Modules\Tenant\Pipes\QueueConfigPipe::class,
+        \Modules\Tenant\Pipes\FilesystemConfigPipe::class,
+        \Modules\Tenant\Pipes\BroadcastingConfigPipe::class,
+        \Modules\Tenant\Pipes\LoggingConfigPipe::class,
+        \Modules\Tenant\Pipes\ServicesConfigPipe::class,
     ],
 
     /**
