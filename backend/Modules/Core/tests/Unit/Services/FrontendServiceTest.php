@@ -8,7 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Mockery;
-use Modules\Tenant\ValueObjects\TenantConfig;
+use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -20,7 +20,7 @@ class FrontendServiceTest extends TestCase
 {
     private FrontendService $frontendService;
 
-    private TenantConfig $mockConfig;
+    private DynamicTenantConfig $mockConfig;
 
     private Redirector $mockRedirector;
 
@@ -100,7 +100,7 @@ class FrontendServiceTest extends TestCase
         $mockRequest = Mockery::mock(Request::class);
         $mockRequest->shouldReceive('hasHeader')->with('X-Capacitor')->andReturn(true);
 
-        $config = TenantConfig::fromArray([
+        $config = new DynamicTenantConfig([
             ...$this->mockConfig->toArray(),
             'capacitor_scheme' => '_deep',
         ]);

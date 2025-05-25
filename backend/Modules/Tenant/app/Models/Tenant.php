@@ -11,7 +11,6 @@ use Illuminate\Support\Carbon;
 use Modules\Tenant\Casts\DynamicTenantConfigCast;
 use Modules\Tenant\Database\Factories\TenantFactory;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
-use Modules\Tenant\ValueObjects\TenantConfig;
 
 /**
  * Class Tenant
@@ -21,7 +20,7 @@ use Modules\Tenant\ValueObjects\TenantConfig;
  * @property string $name
  * @property string $domain
  * @property int|null $parent_id
- * @property DynamicTenantConfig|TenantConfig $config
+ * @property DynamicTenantConfig $config
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Tenant|null $parent
@@ -84,12 +83,12 @@ class Tenant extends Model
     /**
      * Get the effective tenant configuration.
      * Merges parent config with child config if both exist.
-     * 
-     * @return DynamicTenantConfig|TenantConfig|null
+     *
+     * @return DynamicTenantConfig|null
      */
-    public function getEffectiveConfig(): DynamicTenantConfig|TenantConfig|null
+    public function getEffectiveConfig(): DynamicTenantConfig|null
     {
-        $config = $this->config;
+        $config       = $this->config;
         $parentConfig = $this->parent?->config;
 
         if (!$config && !$parentConfig) {
@@ -104,31 +103,21 @@ class Tenant extends Model
             return $parentConfig;
         }
 
-        // If both exist and at least one is DynamicTenantConfig, merge them
-        if ($config instanceof DynamicTenantConfig || $parentConfig instanceof DynamicTenantConfig) {
-            // Convert to DynamicTenantConfig if needed
-            $childDynamic = $config instanceof DynamicTenantConfig 
-                ? $config 
-                : new DynamicTenantConfig($config->toArray());
-                
-            $parentDynamic = $parentConfig instanceof DynamicTenantConfig 
-                ? $parentConfig 
-                : new DynamicTenantConfig($parentConfig->toArray());
+        // Merge parent and child configs
+        // Convert both to DynamicTenantConfig if needed
+        $childDynamic  = $config;
+        $parentDynamic = $parentConfig;
 
-            // Parent config is base, child config overrides
-            $merged = clone $parentDynamic;
-            $merged->merge($childDynamic);
-            
-            // Child tier takes precedence (if set in config)
-            if ($childDynamic->getTier()) {
-                $merged->setTier($childDynamic->getTier());
-            }
-            
-            return $merged;
+        // Parent config is base, child config overrides
+        $merged = clone $parentDynamic;
+        $merged->merge($childDynamic);
+
+        // Child tier takes precedence (if set in config)
+        if ($childDynamic->getTier()) {
+            $merged->setTier($childDynamic->getTier());
         }
 
-        // Both are legacy TenantConfig, return child's config
-        return $config;
+        return $merged;
     }
 
     /**
