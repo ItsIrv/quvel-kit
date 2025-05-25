@@ -20,9 +20,15 @@ class CatalogServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
-        // Register catalog_items as a tenant-aware table
-        TenantServiceProvider::registerTenantTable('catalog_items', [
-            'cascade_delete' => true,
-        ]);
+        if (class_exists(TenantServiceProvider::class)) {
+            $this->app->booted(function (): void {
+                TenantServiceProvider::registerTenantTable(
+                    'catalog_items',
+                    [
+                        'cascade_delete' => true,
+                    ],
+                );
+            });
+        }
     }
 }

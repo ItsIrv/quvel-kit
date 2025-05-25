@@ -71,12 +71,10 @@ class TenantSeeder extends Seeder
                 apiDomain: $lanApiDomain,
                 appName: 'QuVel Enterprise',
                 overrides: [
-                    'capacitor_scheme'    => 'quvel',
-                    'mail_from_address'   => 'enterprise@quvel.app',
-                    'mail_from_name'      => 'QuVel Enterprise',
-                    'session_lifetime'    => 240, // 4 hours for enterprise
-                    'socialite_providers' => ['google', 'microsoft'],
-                    'internal_api_url'    => 'http://api-lan:8000', // For SSR
+                    '_seed_capacitor_scheme'    => 'quvel',
+                    '_seed_mail_from_address'   => 'enterprise@quvel.app',
+                    '_seed_mail_from_name'      => 'QuVel Enterprise',
+                    'internal_api_url'          => 'http://api-lan:8000', // For SSR
                 ],
             )->toArray(),
         );
