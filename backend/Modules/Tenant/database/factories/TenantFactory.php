@@ -23,4 +23,25 @@ class TenantFactory extends Factory
             'config'    => [],
         ];
     }
+
+    public function withDomain(string $domain): static
+    {
+        return $this->state([
+            'domain' => $domain,
+        ]);
+    }
+
+    public function withParent(Tenant $parent): static
+    {
+        return $this->state([
+            'parent_id' => $parent->id,
+        ]);
+    }
+
+    public function withConfig(array $config): static
+    {
+        return $this->state([
+            'config' => $config,
+        ]);
+    }
 }

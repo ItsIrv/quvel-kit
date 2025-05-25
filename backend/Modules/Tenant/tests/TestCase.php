@@ -39,13 +39,9 @@ abstract class TestCase extends BaseTestCase
      */
     protected function seedTenant(): void
     {
-        $this->seed(TenantSeeder::class);
-
-        $this->tenant = Tenant::where(
-            'domain',
-            '=',
-            config('quvel.default_api_domain'),
-        )->first();
+        $this->tenant = Tenant::factory()->create([
+            'domain' => config('quvel.default_api_domain'),
+        ]);
 
         // Set TenantContext for tests
         $this->tenantContext = new TenantContext();
