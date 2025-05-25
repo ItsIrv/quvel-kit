@@ -325,6 +325,45 @@ This automatically:
 - Prevents cross-tenant operations
 - Configures tenant-aware broadcast channels
 
+### Registering Tenant-Aware Tables
+
+When your module has tables that need tenant isolation, register them in your service provider:
+
+```php
+public function boot(): void
+{
+    parent::boot();
+
+    // Register tenant-aware tables
+    if (class_exists(\Modules\Tenant\Providers\TenantServiceProvider::class)) {
+        \Modules\Tenant\Providers\TenantServiceProvider::registerTenantTable('your_models', [
+            'cascade_delete' => true,  // Delete records when tenant is deleted
+            'after' => 'id',           // Column after which tenant_id is added
+        ]);
+        
+        // Or register multiple tables at once
+        \Modules\Tenant\Providers\TenantServiceProvider::registerTenantTables([
+            'your_models' => [
+                'cascade_delete' => true,
+            ],
+            'your_other_models' => [
+                'cascade_delete' => false,
+                'drop_uniques' => [['email']],  // Drop unique constraint on email
+                'tenant_unique_constraints' => [['email']],  // Add tenant-scoped unique
+            ],
+        ]);
+    }
+}
+```
+
+The tenant migration will automatically:
+- Add `tenant_id` column to your tables
+- Create foreign key constraints
+- Add indexes for performance
+- Handle unique constraint conversions
+
+This approach keeps the Tenant module decoupled from your module's implementation details.
+
 ## Authentication Integration
 
 The `Auth` module provides authentication services that can be used in your modules:

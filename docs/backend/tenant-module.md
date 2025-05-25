@@ -980,6 +980,52 @@ public function test_tenant_isolation()
 }
 ```
 
+### Helper Functions
+
+The Tenant module provides several helper functions for working with tenants:
+
+```php
+// Set tenant and apply configuration pipeline
+setTenant($tenantId);           // By ID
+setTenant('domain.com');        // By domain
+setTenant($tenantInstance);     // By instance
+
+// Set tenant context without applying configuration
+// Useful for seeders and tests where you don't want to change connections
+setTenantContext($tenantId);    // By ID
+setTenantContext('domain.com'); // By domain
+setTenantContext($tenant);      // By instance
+
+// Get current tenant
+$tenant = getTenant();
+
+// Get tenant configuration
+$config = getTenantConfig();                    // Get all config
+$value = getTenantConfig('app_name');           // Get specific value
+$value = getTenantConfig('missing', 'default'); // With default
+
+// Set tenant configuration (in memory only)
+setTenantConfig('key', 'value');
+setTenantConfig('key', 'value', 'public');      // With visibility
+
+// Create configuration for new tenants
+$config = createTenantConfig([
+    'app_name' => 'My App',
+    'cache_prefix' => 'myapp',
+], [
+    'app_name' => 'public',
+    'cache_prefix' => 'private',
+], 'premium');
+
+// Tier-related helpers (when tiers are enabled)
+$tier = getTenantTier();                        // Get current tier
+$hasFeature = tenantHasFeature('custom_domain');
+$meetsTier = tenantMeetsMinimumTier('premium');
+$features = getTenantFeatures();
+$limits = getTenantLimits();
+$userLimit = getTenantLimit('users', 5);       // With default
+```
+
 ## Security Considerations
 
 The Tenant module implements several security measures:

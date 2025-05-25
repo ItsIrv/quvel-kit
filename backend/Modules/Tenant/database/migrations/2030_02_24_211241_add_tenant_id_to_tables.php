@@ -3,14 +3,18 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Modules\Tenant\Services\TenantTableRegistry;
 
-return new class () extends Migration {
+return new class () extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        foreach (config('tenant.tables', []) as $tableName => $settings) {
+        $tables = app(TenantTableRegistry::class)->getTables();
+
+        foreach ($tables as $tableName => $settings) {
             Schema::table($tableName, static function (Blueprint $table) use ($settings): void {
                 $tenantIdColumn = $table->foreignId('tenant_id')
                     ->after($settings['after'] ?? 'id')
@@ -39,7 +43,9 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        foreach (config('tenant.tables', []) as $tableName => $settings) {
+        $tables = app(TenantTableRegistry::class)->getTables();
+
+        foreach ($tables as $tableName => $settings) {
             Schema::table($tableName, static function (Blueprint $table) use ($settings): void {
                 $table->dropConstrainedForeignId('tenant_id');
 

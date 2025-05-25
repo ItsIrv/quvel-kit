@@ -49,6 +49,42 @@ if (!function_exists('setTenant')) {
     }
 }
 
+if (!function_exists('setTenantContext')) {
+    /**
+     * Set the current tenant context without applying configuration.
+     * Useful for seeders and tests where you need to switch tenants
+     * without changing database connections or other configurations.
+     *
+     * The variant can be a:
+     *  - int: Tenant ID
+     *  - string: Tenant domain
+     *  - Tenant: Tenant instance
+     *
+     * @param int|string|Tenant $variant
+     * @throws TenantNotFoundException
+     * @return bool
+     */
+    function setTenantContext(mixed $variant): bool
+    {
+        $app    = app(Application::class);
+        $tenant = null;
+
+        if (is_int($variant)) {
+            $tenant = $app->make(FindService::class)->findById($variant);
+        } elseif (is_string($variant)) {
+            $tenant = $app->make(FindService::class)->findTenantByDomain($variant);
+        } elseif ($variant instanceof Tenant) {
+            $tenant = $variant;
+        } else {
+            throw new TenantNotFoundException('Tenant not found.');
+        }
+
+        $app->make(TenantContext::class)->set($tenant);
+
+        return true;
+    }
+}
+
 if (!function_exists('getTenant')) {
     /**
      * Get the current tenant context.

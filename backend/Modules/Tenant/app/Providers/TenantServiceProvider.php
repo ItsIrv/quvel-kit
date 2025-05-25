@@ -15,6 +15,7 @@ use Modules\Tenant\Services\ConfigurationPipeline;
 use Modules\Tenant\Services\TenantConfigProviderRegistry;
 use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\TierService;
+use Modules\Tenant\Services\TenantTableRegistry;
 use Illuminate\Log\Context\Repository;
 
 /**
@@ -34,6 +35,17 @@ class TenantServiceProvider extends ModuleServiceProvider
 
         $this->app->singleton(FindService::class);
         $this->app->singleton(TierService::class);
+
+        // Register the tenant table registry
+        $this->app->singleton(TenantTableRegistry::class, function ($app) {
+            $registry = new TenantTableRegistry();
+
+            // Load tables from config first
+            $configTables = config('tenant.tables', []);
+            $registry->registerTables($configTables);
+
+            return $registry;
+        });
 
         // Register the configuration pipeline
         $this->app->singleton(ConfigurationPipeline::class, function ($app) {
@@ -63,6 +75,8 @@ class TenantServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        $this->registerTenantTables(config('tenant.tables', []));
 
         Context::dehydrating(function (Repository $context): void {
             $context->addHidden('tenant', app(TenantContext::class)->get());
@@ -100,5 +114,30 @@ class TenantServiceProvider extends ModuleServiceProvider
     public static function registerConfigProvider(string|TenantConfigProviderInterface $provider): void
     {
         app(TenantConfigProviderRegistry::class)->register($provider);
+    }
+
+    /**
+     * Register a tenant-aware table.
+     * This method allows other modules to register tables that need tenant isolation.
+     *
+     * @param string $tableName
+     * @param array $config Optional configuration for the table
+     * @return void
+     */
+    public static function registerTenantTable(string $tableName, array $config = []): void
+    {
+        app(TenantTableRegistry::class)->registerTable($tableName, $config);
+    }
+
+    /**
+     * Register multiple tenant-aware tables.
+     * This method allows other modules to register multiple tables at once.
+     *
+     * @param array $tables Array of table names or table => config pairs
+     * @return void
+     */
+    public static function registerTenantTables(array $tables): void
+    {
+        app(TenantTableRegistry::class)->registerTables($tables);
     }
 }

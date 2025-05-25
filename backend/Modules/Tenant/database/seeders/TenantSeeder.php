@@ -116,7 +116,7 @@ class TenantSeeder extends Seeder
         );
 
         // Set tenant context to enterprise
-        setTenant($enterpriseTenant->id);
+        setTenantContext($enterpriseTenant->id);
 
         // Create test users for different tenants
         $this->createTenantUser($basicTenant, 'basic@quvel.app', 'Basic User');
@@ -125,7 +125,7 @@ class TenantSeeder extends Seeder
         $this->createTenantUser($enterpriseTenant, 'enterprise@quvel.app', 'Enterprise User');
 
         // Set tenant context back to premium for the rest of the seeders
-        setTenant($premiumTenant->id);
+        setTenantContext($premiumTenant->id);
     }
 
     /**
@@ -165,7 +165,7 @@ class TenantSeeder extends Seeder
     {
         // Set tenant context to create user in correct tenant
         $currentTenant = getTenant();
-        setTenant($tenant->id);
+        setTenantContext($tenant->id);
 
         User::updateOrCreate(
             ['email' => $email],
@@ -179,6 +179,6 @@ class TenantSeeder extends Seeder
         );
 
         // Restore previous tenant context
-        setTenant($currentTenant->id);
+        setTenantContext($currentTenant->id);
     }
 }
