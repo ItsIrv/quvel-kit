@@ -56,7 +56,8 @@ class DynamicTenantConfigFactory
         string $mailFromAddress = 'support@quvel.app',
         ?string $cachePrefix = null,
     ): DynamicTenantConfig {
-        $tenantId = uniqid('tenant_');
+        // Generate shorter tenant ID (8 chars)
+        $tenantId = substr(uniqid(), -8);
 
         $baseConfig = [
             // Minimal tenant identification
@@ -98,7 +99,8 @@ class DynamicTenantConfigFactory
         ?string $dbPassword = null,
         ?string $capacitorScheme = null,
     ): DynamicTenantConfig {
-        $tenantId = uniqid('tenant_');
+        // Generate shorter tenant ID (8 chars)
+        $tenantId = substr(uniqid(), -8);
 
         $baseConfig = [
             // Minimal tenant identification
@@ -146,7 +148,8 @@ class DynamicTenantConfigFactory
         string $appName = 'QuVel',
         array $overrides = [],
     ): DynamicTenantConfig {
-        $tenantId = uniqid('tenant_');
+        // Generate shorter tenant ID (8 chars)
+        $tenantId = substr(uniqid(), -8);
 
         // Extract seed parameters from overrides
         $seedParams = [];

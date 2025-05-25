@@ -30,15 +30,8 @@ return [
     'recaptcha' => [
         /**
          * The captcha verifier to use.
+         * The verifier will read tenant-specific keys from tenant configuration.
          */
         'provider' => GoogleRecaptchaVerifier::class,
-
-        /**
-         * Google recaptcha configuration.
-         */
-        'google'   => [
-            'secret'  => env('RECAPTCHA_GOOGLE_SECRET'),
-            'siteKey' => env('RECAPTCHA_GOOGLE_SITE_KEY'),
-        ],
     ],
 ];

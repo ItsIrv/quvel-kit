@@ -87,8 +87,15 @@ class AuthServiceProvider extends ModuleServiceProvider
 
                 // Generate unique session cookie for standard+ tiers
                 if (in_array($tier, ['standard', 'premium', 'enterprise']) && isset($config['cache_prefix'])) {
-                    $prefix                       = str_replace('_', '', $config['cache_prefix']);
-                    $authConfig['session_cookie'] = "{$prefix}session";
+                    // Extract just the unique ID part from cache_prefix (e.g., "tenant_68337c1aad007_" -> "68337c1aad007")
+                    if (preg_match('/tenant_([a-z0-9]+)_?/i', $config['cache_prefix'], $matches)) {
+                        $tenantId = $matches[1];
+                        // Create a shorter, cleaner session cookie name
+                        $authConfig['session_cookie'] = "quvel_{$tenantId}";
+                    } else {
+                        // Fallback to a simple unique session name
+                        $authConfig['session_cookie'] = 'quvel_' . substr(md5($config['cache_prefix']), 0, 8);
+                    }
                 }
 
                 return $authConfig;
@@ -103,33 +110,5 @@ class AuthServiceProvider extends ModuleServiceProvider
                 ];
             }
         );
-
-        // Add recaptcha config if available
-        if (env('RECAPTCHA_GOOGLE_SITE_KEY')) {
-            TenantServiceProvider::registerConfigSeederForAllTiers(
-                fn () => [
-                    'recaptcha_google_site_key' => env('RECAPTCHA_GOOGLE_SITE_KEY'),
-                ],
-                30,
-                fn () => [
-                    'recaptcha_google_site_key' => TenantConfigVisibility::PUBLIC ,
-                ]
-            );
-        }
-
-        // Add pusher config if available
-        if (env('PUSHER_APP_KEY')) {
-            TenantServiceProvider::registerConfigSeederForAllTiers(
-                fn () => [
-                    'pusher_app_key'     => env('PUSHER_APP_KEY'),
-                    'pusher_app_cluster' => env('PUSHER_APP_CLUSTER', 'mt1'),
-                ],
-                30,
-                fn () => [
-                    'pusher_app_key'     => TenantConfigVisibility::PUBLIC ,
-                    'pusher_app_cluster' => TenantConfigVisibility::PUBLIC ,
-                ]
-            );
-        }
     }
 }

@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Log\Context\Repository;
 use Illuminate\Support\Facades\Context;
+use Modules\Tenant\Enums\TenantConfigVisibility;
+use Modules\Tenant\Providers\TenantServiceProvider;
 
 use function app;
 use function config;
@@ -72,9 +74,10 @@ class CoreServiceProvider extends ModuleServiceProvider
         });
 
         // Register Core tenant config provider if Tenant module exists
-        if (class_exists(\Modules\Tenant\Providers\TenantServiceProvider::class)) {
+        if (class_exists(TenantServiceProvider::class)) {
             $this->app->booted(function () {
-                \Modules\Tenant\Providers\TenantServiceProvider::registerConfigProvider(
+                // Register configuration provider
+                TenantServiceProvider::registerConfigProvider(
                     CoreTenantConfigProvider::class,
                 );
 
@@ -90,8 +93,8 @@ class CoreServiceProvider extends ModuleServiceProvider
     private function registerCoreConfigSeeders(): void
     {
         // Add core config to all tiers
-        \Modules\Tenant\Providers\TenantServiceProvider::registerConfigSeederForAllTiers(
-            function (string $tier, array $config) {
+        TenantServiceProvider::registerConfigSeederForAllTiers(
+            function (string $tier, array $config): array {
                 // Extract domain info from existing config
                 $domain      = $config['domain'] ?? 'example.com';
                 $apiUrl      = "https://$domain";
@@ -135,18 +138,70 @@ class CoreServiceProvider extends ModuleServiceProvider
                 return $coreConfig;
             },
             10, // Run very early (priority 10)
-            function (string $tier, array $visibility) {
-                // Set visibility for core config
-                return [
-                    'app_name'          => \Modules\Tenant\Enums\TenantConfigVisibility::PUBLIC ,
-                    'app_url'           => \Modules\Tenant\Enums\TenantConfigVisibility::PUBLIC ,
-                    'frontend_url'      => \Modules\Tenant\Enums\TenantConfigVisibility::PROTECTED ,
-                    'mail_from_name'    => \Modules\Tenant\Enums\TenantConfigVisibility::PRIVATE ,
-                    'mail_from_address' => \Modules\Tenant\Enums\TenantConfigVisibility::PRIVATE ,
-                    'capacitor_scheme'  => \Modules\Tenant\Enums\TenantConfigVisibility::PROTECTED ,
-                    'internal_api_url'  => \Modules\Tenant\Enums\TenantConfigVisibility::PROTECTED ,
-                ];
-            }
+            fn (string $tier, array $visibility): array => [
+                'app_name'          => TenantConfigVisibility::PUBLIC ,
+                'app_url'           => TenantConfigVisibility::PUBLIC ,
+                'frontend_url'      => TenantConfigVisibility::PROTECTED ,
+                'mail_from_name'    => TenantConfigVisibility::PRIVATE ,
+                'mail_from_address' => TenantConfigVisibility::PRIVATE ,
+                'capacitor_scheme'  => TenantConfigVisibility::PROTECTED ,
+                'internal_api_url'  => TenantConfigVisibility::PROTECTED ,
+            ]
+        );
+
+        // Add reCAPTCHA config for tenants
+        // Each tenant should have their own keys for proper isolation
+        TenantServiceProvider::registerConfigSeederForAllTiers(
+            function (string $tier, array $config): array {
+                $recaptchaConfig = [];
+
+                // Use seed parameters or environment variables
+                if (isset($config['_seed_recaptcha_site_key'])) {
+                    $recaptchaConfig['recaptcha_site_key']   = $config['_seed_recaptcha_site_key'];
+                    $recaptchaConfig['recaptcha_secret_key'] = $config['_seed_recaptcha_secret_key'] ?? '';
+                } elseif (env('RECAPTCHA_GOOGLE_SITE_KEY')) {
+                    // Fallback to env for development
+                    $recaptchaConfig['recaptcha_site_key']   = env('RECAPTCHA_GOOGLE_SITE_KEY');
+                    $recaptchaConfig['recaptcha_secret_key'] = env('RECAPTCHA_GOOGLE_SECRET', '');
+                }
+
+                return $recaptchaConfig;
+            },
+            15, // After core config
+            fn (string $tier, array $visibility): array => [
+                'recaptcha_site_key'   => TenantConfigVisibility::PUBLIC ,
+                'recaptcha_secret_key' => TenantConfigVisibility::PRIVATE ,
+            ]
+        );
+
+        // Add Pusher config for tenants
+        TenantServiceProvider::registerConfigSeederForAllTiers(
+            function (string $tier, array $config): array {
+                $pusherConfig = [];
+
+                // Use seed parameters or environment variables
+                if (isset($config['_seed_pusher_app_key'])) {
+                    $pusherConfig['pusher_app_key']     = $config['_seed_pusher_app_key'];
+                    $pusherConfig['pusher_app_secret']  = $config['_seed_pusher_app_secret'] ?? '';
+                    $pusherConfig['pusher_app_id']      = $config['_seed_pusher_app_id'] ?? '';
+                    $pusherConfig['pusher_app_cluster'] = $config['_seed_pusher_app_cluster'] ?? 'mt1';
+                } elseif (env('PUSHER_APP_KEY')) {
+                    // Fallback to env for development
+                    $pusherConfig['pusher_app_key']     = env('PUSHER_APP_KEY');
+                    $pusherConfig['pusher_app_secret']  = env('PUSHER_APP_SECRET', '');
+                    $pusherConfig['pusher_app_id']      = env('PUSHER_APP_ID', '');
+                    $pusherConfig['pusher_app_cluster'] = env('PUSHER_APP_CLUSTER', 'mt1');
+                }
+
+                return $pusherConfig;
+            },
+            15, // After core config
+            fn (string $tier, array $visibility): array => [
+                'pusher_app_key'     => TenantConfigVisibility::PUBLIC ,
+                'pusher_app_secret'  => TenantConfigVisibility::PRIVATE ,
+                'pusher_app_id'      => TenantConfigVisibility::PRIVATE ,
+                'pusher_app_cluster' => TenantConfigVisibility::PUBLIC ,
+            ]
         );
     }
 }
