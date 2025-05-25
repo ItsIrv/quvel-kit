@@ -53,6 +53,42 @@ return [
     ],
 
     /**
+     * Configuration pipeline pipes.
+     * These are applied in order of priority (higher priority runs first).
+     * Modules can register their own pipes in their service providers.
+     */
+    'config_pipes' => [
+        \Modules\Tenant\Pipes\CoreConfigPipe::class,
+        \Modules\Tenant\Pipes\DatabaseConfigPipe::class,
+        \Modules\Tenant\Pipes\CacheConfigPipe::class,
+        \Modules\Tenant\Pipes\SessionConfigPipe::class,
+        \Modules\Tenant\Pipes\MailConfigPipe::class,
+    ],
+
+    /**
+     * Tenant tiers define the level of isolation for each tenant.
+     * You can customize these based on your business needs.
+     */
+    'tiers'        => [
+        'basic'      => [
+            'description' => 'Shared database, shared cache, shared resources',
+            'features'    => ['row_isolation'],
+        ],
+        'standard'   => [
+            'description' => 'Shared database with dedicated cache',
+            'features'    => ['row_isolation', 'dedicated_cache'],
+        ],
+        'premium'    => [
+            'description' => 'Dedicated database and cache',
+            'features'    => ['database_isolation', 'dedicated_cache'],
+        ],
+        'enterprise' => [
+            'description' => 'Fully isolated infrastructure',
+            'features'    => ['database_isolation', 'dedicated_cache', 'custom_domain', 'sla'],
+        ],
+    ],
+
+    /**
      * The tenant migration loops through each table and applies the tenant scope.
      */
     'tables'       => [

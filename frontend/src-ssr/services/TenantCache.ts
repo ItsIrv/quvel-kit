@@ -129,7 +129,7 @@ export class TenantCacheService {
 
       console.log(`[TenantCacheService] Preloaded ${this.tenantMap.size} tenants`);
     } catch (e) {
-      console.error('[TenantCacheService] Failed to preload tenants', (e as Error).message);
+      console.error('[TenantCacheService] Failed to preload tenants', e);
     }
   }
 

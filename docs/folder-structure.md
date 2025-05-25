@@ -27,12 +27,44 @@ QuVel Kit uses a structured layout for clarity and maintainability. This documen
 - Authentication and business logic
 - Modular architecture with Laravel Modules
 
+#### Module Structure
+```
+backend/Modules/{ModuleName}/
+├── app/                  # Module application code
+│   ├── Actions/          # Business logic actions
+│   ├── Contracts/        # Interfaces
+│   ├── Http/             # Controllers, middleware, requests
+│   ├── Models/           # Eloquent models
+│   ├── Pipes/            # Configuration pipes (for tenant config)
+│   ├── Providers/        # Service providers & config providers
+│   └── Services/         # Service classes
+├── config/               # Module configuration
+├── database/             # Migrations, factories, seeders
+├── docs/                 # Module-specific documentation
+├── lang/                 # Translations
+├── routes/               # Route definitions
+└── tests/                # Module tests
+```
+
 ### Frontend (`frontend/`)
 
 - Quasar 2 SSR application with Vue 3
 - TypeScript components and pages
 - Pinia state management
 - Service-based architecture
+
+#### Module Structure
+```
+frontend/src/modules/{ModuleName}/
+├── components/          # Vue components
+├── composables/         # Vue composables
+├── models/              # TypeScript models/interfaces
+├── pages/               # Page components
+├── services/            # Module services
+├── stores/              # Pinia stores
+├── types/               # TypeScript type definitions
+└── validators/          # Zod validators
+```
 
 ### Docker (`docker/`)
 

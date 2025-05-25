@@ -21,7 +21,7 @@
 - **Laravel Modules** - Modular backend architecture
 - **Laravel Sanctum** - Authentication system
 - **Laravel Socialite** - OAuth integration
-- **Multi-tenancy** - Built-in tenant isolation
+- **Multi-tenancy** - Built-in tenant isolation with dynamic configuration
 
 ### Frontend
 
@@ -48,7 +48,9 @@
 - **SSR with SPA Fallback** - Optimal performance and SEO
 - **Multi-platform** - Web, mobile (iOS/Android), and desktop (Electron)
 - **RBAC** - Role-based access control
+- **Dynamic Tenant Configuration** - Flexible per-tenant settings with inheritance
 - **Configuration Visibility System** - Tiered config security (PRIVATE, PROTECTED, PUBLIC)
+- **Configuration Pipeline** - Modular configuration processing with custom pipes
 
 ### Developer Experience
 

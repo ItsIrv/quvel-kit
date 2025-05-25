@@ -6,9 +6,13 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Support\Facades\Context;
 use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Contracts\TenantConfigProviderInterface;
 use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Services\RequestPrivacy;
 use Modules\Tenant\Services\ConfigApplier;
+use Modules\Tenant\Services\ConfigurationPipeline;
+use Modules\Tenant\Services\TenantConfigProviderRegistry;
 use Modules\Tenant\Services\FindService;
 use Illuminate\Log\Context\Repository;
 
@@ -28,6 +32,20 @@ class TenantServiceProvider extends ModuleServiceProvider
         $this->app->register(RouteServiceProvider::class);
 
         $this->app->singleton(FindService::class);
+
+        // Register the configuration pipeline
+        $this->app->singleton(ConfigurationPipeline::class, function ($app) {
+            $pipeline = new ConfigurationPipeline();
+
+            // Register pipes from config
+            $pipes = config('tenant.config_pipes', []);
+            $pipeline->registerMany($pipes);
+
+            return $pipeline;
+        });
+
+        // Register the tenant config provider registry
+        $this->app->singleton(TenantConfigProviderRegistry::class);
 
         $this->app->scoped(TenantContext::class);
         $this->app->scoped(RequestPrivacy::class);
@@ -56,5 +74,29 @@ class TenantServiceProvider extends ModuleServiceProvider
                 );
             }
         });
+    }
+
+    /**
+     * Register a configuration pipe.
+     * This method allows other modules to register their own configuration pipes.
+     *
+     * @param string|ConfigurationPipeInterface $pipe
+     * @return void
+     */
+    public static function registerConfigPipe(string|ConfigurationPipeInterface $pipe): void
+    {
+        app(ConfigurationPipeline::class)->register($pipe);
+    }
+
+    /**
+     * Register a tenant config provider.
+     * This method allows other modules to add configuration to tenant API responses.
+     *
+     * @param string|TenantConfigProviderInterface $provider
+     * @return void
+     */
+    public static function registerConfigProvider(string|TenantConfigProviderInterface $provider): void
+    {
+        app(TenantConfigProviderRegistry::class)->register($provider);
     }
 }

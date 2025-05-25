@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use Modules\Tenant\Casts\TenantConfigCast;
+use Modules\Tenant\Casts\DynamicTenantConfigCast;
 use Modules\Tenant\Database\Factories\TenantFactory;
-use Modules\Tenant\ValueObjects\TenantConfig;
+use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 
 /**
  * Class Tenant
@@ -20,7 +20,7 @@ use Modules\Tenant\ValueObjects\TenantConfig;
  * @property string $name
  * @property string $domain
  * @property int|null $parent_id
- * @property TenantConfig $config
+ * @property DynamicTenantConfig $config
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Tenant|null $parent
@@ -47,7 +47,7 @@ class Tenant extends Model
      * @var array<string, class-string>
      */
     protected $casts = [
-        'config' => TenantConfigCast::class,
+        'config' => DynamicTenantConfigCast::class,
     ];
 
     /**
@@ -82,11 +82,42 @@ class Tenant extends Model
 
     /**
      * Get the effective tenant configuration.
-     * Always returns the parent's config if available.
+     * Merges parent config with child config if both exist.
+     *
+     * @return DynamicTenantConfig|null
      */
-    public function getEffectiveConfig(): ?TenantConfig
+    public function getEffectiveConfig(): DynamicTenantConfig|null
     {
-        return $this->parent->config ?? $this->config;
+        $config       = $this->config;
+        $parentConfig = $this->parent?->config;
+
+        if (!$config && !$parentConfig) {
+            return null;
+        }
+
+        if (!$parentConfig) {
+            return $config;
+        }
+
+        if (!$config) {
+            return $parentConfig;
+        }
+
+        // Merge parent and child configs
+        // Convert both to DynamicTenantConfig if needed
+        $childDynamic  = $config;
+        $parentDynamic = $parentConfig;
+
+        // Parent config is base, child config overrides
+        $merged = clone $parentDynamic;
+        $merged->merge($childDynamic);
+
+        // Child tier takes precedence (if set in config)
+        if ($childDynamic->getTier()) {
+            $merged->setTier($childDynamic->getTier());
+        }
+
+        return $merged;
     }
 
     /**

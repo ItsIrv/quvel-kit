@@ -91,11 +91,77 @@ For detailed information about all available scripts, see the [Utility Scripts](
 
 ## Multi-Tenant Development
 
-QuVel Kit supports multi-tenant applications. To test with a second tenant:
+QuVel Kit supports multi-tenant applications with dynamic configuration. To test with a second tenant:
 
 ```bash
 # Access second tenant
 https://second-tenant.quvel.127.0.0.1.nip.io
+```
+
+### Dynamic Tenant Configuration
+
+The new dynamic configuration system allows flexible tenant-specific settings:
+
+```php
+// Example: Configure a tenant with custom settings
+use Modules\Tenant\ValueObjects\DynamicTenantConfig;
+use Modules\Tenant\Enums\TenantConfigVisibility;
+
+$tenant = Tenant::find(1);
+$config = new DynamicTenantConfig(
+    [
+        'app_name' => 'Custom App Name',
+        'mail_from_address' => 'support@customapp.com',
+        'socialite_providers' => ['google', 'microsoft'],
+        'custom_feature_enabled' => true,
+    ],
+    [
+        'app_name' => TenantConfigVisibility::PUBLIC,
+        'socialite_providers' => TenantConfigVisibility::PUBLIC,
+        'custom_feature_enabled' => TenantConfigVisibility::PUBLIC,
+    ],
+    'standard' // Tenant tier
+);
+
+$tenant->config = $config;
+$tenant->save();
+```
+
+### Tenant Tiers
+
+QuVel Kit supports different tenant isolation levels:
+
+| Tier | Database | Cache | Redis | Use Case |
+|------|----------|-------|-------|----------|
+| **Basic** | Shared | Shared | Shared | Small tenants, cost-effective |
+| **Standard** | Shared | Dedicated | Dedicated | Medium tenants, better performance |
+| **Premium** | Dedicated | Dedicated | Dedicated | Large tenants, full isolation |
+| **Enterprise** | Dedicated | Dedicated | Dedicated | Custom infrastructure needs |
+
+### Module Configuration Integration
+
+Modules can provide tenant-specific configuration:
+
+```php
+// In your module's service provider
+public function boot(): void
+{
+    parent::boot();
+    
+    if (class_exists(\Modules\Tenant\Providers\TenantServiceProvider::class)) {
+        $this->app->booted(function () {
+            // Register configuration pipe for runtime config
+            \Modules\Tenant\Providers\TenantServiceProvider::registerConfigPipe(
+                \Modules\YourModule\Pipes\YourModuleConfigPipe::class
+            );
+            
+            // Register config provider for frontend exposure
+            \Modules\Tenant\Providers\TenantServiceProvider::registerConfigProvider(
+                \Modules\YourModule\Providers\YourModuleTenantConfigProvider::class
+            );
+        });
+    }
+}
 ```
 
 ## Next Steps

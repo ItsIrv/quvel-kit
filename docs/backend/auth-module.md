@@ -23,6 +23,25 @@ public function register(): void
     $this->app->scoped(NonceSessionService::class);
     $this->app->scoped(SocialiteService::class);
 }
+
+public function boot(): void
+{
+    parent::boot();
+
+    // Register configuration pipe for tenant-specific auth settings
+    if (class_exists(\Modules\Tenant\Providers\TenantServiceProvider::class)) {
+        $this->app->booted(function () {
+            \Modules\Tenant\Providers\TenantServiceProvider::registerConfigPipe(
+                \Modules\Auth\Pipes\AuthConfigPipe::class
+            );
+            
+            // Register tenant configuration provider
+            \Modules\Tenant\Providers\TenantServiceProvider::registerConfigProvider(
+                \Modules\Auth\Providers\AuthTenantConfigProvider::class
+            );
+        });
+    }
+}
 ```
 
 > **Note**: Scoped services ensure proper instantiation for each tenant context, allowing services to depend on tenant-specific configuration.
@@ -134,7 +153,7 @@ $extractedValue = $hmacService->extractAndVerify($signedValue); // Returns value
 
 ## Configuration
 
-The Auth module is configured through environment variables:
+The Auth module is configured through environment variables and can be overridden per tenant:
 
 ```dotenv
 # General Auth Settings
@@ -151,6 +170,56 @@ HMAC_SECRET_KEY=your-secure-key-here
 GOOGLE_CLIENT_ID=your-client-id
 GOOGLE_CLIENT_SECRET=your-client-secret
 ```
+
+### Tenant-Specific Configuration
+
+The Auth module supports tenant-specific configuration through the `AuthConfigPipe`:
+
+```php
+// Example: Configure OAuth providers per tenant
+$tenant->config->set('socialite_providers', ['google', 'microsoft']);
+$tenant->config->set('auth_verify_email', false);
+$tenant->config->set('oauth_providers', [
+    'google' => [
+        'client_id' => 'tenant-specific-client-id',
+        'client_secret' => 'tenant-specific-secret',
+    ],
+]);
+$tenant->save();
+```
+
+### AuthConfigPipe
+
+The `AuthConfigPipe` processes tenant-specific authentication settings:
+
+- **Priority**: 50 (runs after core configuration pipes)
+- **Handles**: `socialite_providers`, `auth_verify_email`, `oauth_providers`
+- **Purpose**: Allows tenants to have custom OAuth configurations
+
+### AuthTenantConfigProvider
+
+The `AuthTenantConfigProvider` exposes authentication configuration to the frontend:
+
+```php
+class AuthTenantConfigProvider implements TenantConfigProviderInterface
+{
+    public function getConfig(Tenant $tenant): array
+    {
+        return [
+            'config' => [
+                'auth_providers' => $this->getEnabledProviders($tenant),
+                'auth_verify_email' => config('auth.verify_email_before_login'),
+            ],
+            'visibility' => [
+                'auth_providers' => 'public',      // Available in browser
+                'auth_verify_email' => 'public',   // Available in browser
+            ],
+        ];
+    }
+}
+```
+
+This allows the frontend to dynamically show/hide OAuth provider buttons based on tenant configuration.
 
 ## Routes
 
@@ -182,7 +251,28 @@ The Auth module is fully multi-tenant aware:
 - All services are registered as **scoped** instead of singleton
 - OAuth redirects include tenant context
 - SocialiteService generates tenant-specific redirect URIs
-- Configuration can be overridden per tenant
+- Configuration can be overridden per tenant via `AuthConfigPipe`
+- Frontend receives tenant-specific auth settings via `AuthTenantConfigProvider`
+
+### Example: Tenant-Specific OAuth
+
+```php
+// Premium tenant with custom OAuth
+$premiumTenant->config->set('oauth_providers', [
+    'google' => [
+        'client_id' => 'premium-google-client',
+        'client_secret' => 'premium-google-secret',
+    ],
+    'microsoft' => [
+        'client_id' => 'premium-ms-client',
+        'client_secret' => 'premium-ms-secret',
+    ],
+]);
+$premiumTenant->config->set('socialite_providers', ['google', 'microsoft']);
+
+// Basic tenant with limited OAuth
+$basicTenant->config->set('socialite_providers', ['google']);
+```
 
 ## Capacitor Integration
 
