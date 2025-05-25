@@ -4,7 +4,6 @@ namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Redis\Factory as RedisFactory;
-use Illuminate\Support\Facades\Redis;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
 use Modules\Tenant\Models\Tenant;
 
@@ -19,6 +18,15 @@ class RedisConfigPipe implements ConfigurationPipeInterface
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
+        // Skip Redis configuration if Redis is not available
+        if (!$this->isRedisAvailable()) {
+            return $next([
+                'tenant'       => $tenant,
+                'config'       => $config,
+                'tenantConfig' => $tenantConfig,
+            ]);
+        }
+
         // Redis configuration
         $hasRedisChanges = false;
 
@@ -65,12 +73,35 @@ class RedisConfigPipe implements ConfigurationPipeInterface
         ]);
     }
 
+    /**
+     * Check if Redis is available in the application.
+     */
+    protected function isRedisAvailable(): bool
+    {
+        return app()->bound(RedisFactory::class) &&
+            extension_loaded('redis') &&
+            class_exists(\Illuminate\Support\Facades\Redis::class);
+    }
+
     protected function refreshRedisConnections(): void
     {
         try {
-            if (app()->bound(RedisFactory::class)) {
-                Redis::flushConnections();
+            if (!$this->isRedisAvailable()) {
+                return;
             }
+
+            // Rebind the Redis factory to force new connections with updated config
+            app()->extend(RedisFactory::class, function ($redisFactory, $app) {
+                return new \Illuminate\Redis\RedisManager(
+                    $app,
+                    $app['config']['database.redis.client'] ?? 'phpredis',
+                    $app['config']['database.redis'] ?? []
+                );
+            });
+
+            // Clear the resolved instance
+            app()->forgetInstance(RedisFactory::class);
+            app()->forgetInstance('redis');
 
             if (app()->environment(['local', 'development', 'testing'])) {
                 logger()->debug("[Tenant] Refreshed Redis connections with new configuration");
@@ -87,9 +118,24 @@ class RedisConfigPipe implements ConfigurationPipeInterface
     public static function resetResources(): void
     {
         try {
-            if (app()->bound(RedisFactory::class)) {
-                Redis::flushConnections();
+            $instance = new static();
+
+            if (!$instance->isRedisAvailable()) {
+                return;
             }
+
+            // Rebind Redis factory with current config
+            app()->extend(RedisFactory::class, function ($redisFactory, $app) {
+                return new \Illuminate\Redis\RedisManager(
+                    $app,
+                    $app['config']['database.redis.client'] ?? 'phpredis',
+                    $app['config']['database.redis'] ?? []
+                );
+            });
+
+            // Clear the resolved instances
+            app()->forgetInstance(RedisFactory::class);
+            app()->forgetInstance('redis');
 
             if (app()->environment(['local', 'development', 'testing'])) {
                 logger()->debug("[Tenant] Reset Redis connections with current configuration");
