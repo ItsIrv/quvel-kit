@@ -8,6 +8,8 @@ use Illuminate\Support\Carbon;
 use Modules\Tenant\Enums\TenantConfigVisibility;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\ValueObjects\TenantConfig;
+use Modules\Tenant\ValueObjects\DynamicTenantConfig;
+use Modules\Tenant\Services\TenantConfigProviderRegistry;
 
 /**
  * Tenant resource.
@@ -17,7 +19,7 @@ use Modules\Tenant\ValueObjects\TenantConfig;
  * @property string $name
  * @property string $domain
  * @property Tenant|null $parent
- * @property TenantConfig|null $config
+ * @property DynamicTenantConfig|TenantConfig|null $config
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -42,24 +44,32 @@ class TenantDumpResource extends JsonResource
     }
     private function getFilteredConfig(): array
     {
-        if (!$this->config instanceof TenantConfig) {
-            return [];
+        $config = $this->config;
+
+        // Convert to DynamicTenantConfig if needed
+        if ($config instanceof TenantConfig) {
+            $config = new DynamicTenantConfig(
+                $config->toArray(),
+                $config->visibility ?? []
+            );
         }
 
-        $visibility = $this->config->visibility;
+        // Apply config providers to enhance the configuration
+        $registry = app(TenantConfigProviderRegistry::class);
+        $enhancedConfig = $registry->enhance($this->resource, $config);
 
-        // Filter config based on visibility rules
-        $filteredConfig = [];
+        // Get protected config (public + protected visibility)
+        $protectedConfig = $enhancedConfig->getProtectedConfig();
 
-        foreach ($visibility as $key => $value) {
-            if ($value === TenantConfigVisibility::PUBLIC || $value === TenantConfigVisibility::PROTECTED) {
-                $filteredConfig[$key] = $this->config->{$key} ?? null;
-            }
+        // Build visibility array
+        $visibility = [];
+        foreach ($protectedConfig as $key => $value) {
+            $visibility[$key] = $enhancedConfig->getVisibility($key)->value;
         }
 
-        // Manually include __visibility
-        $filteredConfig['__visibility'] = $visibility;
+        // Add __visibility key for frontend compatibility
+        $protectedConfig['__visibility'] = $visibility;
 
-        return $filteredConfig;
+        return $protectedConfig;
     }
 }

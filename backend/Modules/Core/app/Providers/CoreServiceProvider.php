@@ -70,5 +70,14 @@ class CoreServiceProvider extends ModuleServiceProvider
                 config(['app.locale' => $context->getHidden('locale')]);
             }
         });
+
+        // Register Core tenant config provider if Tenant module exists
+        if (class_exists(\Modules\Tenant\Providers\TenantServiceProvider::class)) {
+            $this->app->booted(function () {
+                \Modules\Tenant\Providers\TenantServiceProvider::registerConfigProvider(
+                    CoreTenantConfigProvider::class
+                );
+            });
+        }
     }
 }

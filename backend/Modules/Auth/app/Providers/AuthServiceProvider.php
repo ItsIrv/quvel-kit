@@ -33,4 +33,26 @@ class AuthServiceProvider extends ModuleServiceProvider
         $this->app->scoped(NonceSessionService::class);
         $this->app->scoped(SocialiteService::class);
     }
+
+    /**
+     * Boot the service provider.
+     */
+    public function boot(): void
+    {
+        parent::boot();
+
+        // Register the Auth configuration pipe with the tenant system
+        if (class_exists(\Modules\Tenant\Providers\TenantServiceProvider::class)) {
+            $this->app->booted(function () {
+                \Modules\Tenant\Providers\TenantServiceProvider::registerConfigPipe(
+                    \Modules\Auth\Pipes\AuthConfigPipe::class
+                );
+                
+                // Also register the config provider for API responses
+                \Modules\Tenant\Providers\TenantServiceProvider::registerConfigProvider(
+                    AuthTenantConfigProvider::class
+                );
+            });
+        }
+    }
 }
