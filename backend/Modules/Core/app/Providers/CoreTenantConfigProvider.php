@@ -24,7 +24,7 @@ class CoreTenantConfigProvider implements TenantConfigProviderInterface
                 'apiUrl'                 => config('app.url') . '/api',
                 'appUrl'                 => config('frontend.url'),
                 'appName'                => config('app.name', 'Quvel Kit'),
-                'tenantId'               => $tenant->id,
+                'tenantId'               => $tenant->public_id,
                 'tenantName'             => $tenant->name,
                 'pusherAppKey'           => config('broadcasting.connections.pusher.key', ''),
                 'pusherAppCluster'       => config('broadcasting.connections.pusher.options.cluster', 'eu'),

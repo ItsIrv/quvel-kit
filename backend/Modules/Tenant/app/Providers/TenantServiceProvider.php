@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Context;
 use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Contracts\TenantConfigProviderInterface;
 use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Services\RequestPrivacy;
 use Modules\Tenant\Services\ConfigApplier;
@@ -91,10 +92,10 @@ class TenantServiceProvider extends ModuleServiceProvider
      * Register a tenant config provider.
      * This method allows other modules to add configuration to tenant API responses.
      *
-     * @param string|\Modules\Tenant\Contracts\TenantConfigProviderInterface $provider
+     * @param string|TenantConfigProviderInterface $provider
      * @return void
      */
-    public static function registerConfigProvider(string|\Modules\Tenant\Contracts\TenantConfigProviderInterface $provider): void
+    public static function registerConfigProvider(string|TenantConfigProviderInterface $provider): void
     {
         app(TenantConfigProviderRegistry::class)->register($provider);
     }
