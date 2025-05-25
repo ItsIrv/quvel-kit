@@ -134,7 +134,7 @@ export class TenantCacheService {
    */
   private normalizeConfig(tenant: Tenant): TenantConfigProtected {
     const cfg = tenant.config;
-    console.log(cfg);
+
     return {
       ...cfg,
       tenantId: tenant.id,
