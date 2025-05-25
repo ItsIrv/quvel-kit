@@ -24,7 +24,7 @@ class CoreTenantConfigProvider implements TenantConfigProviderInterface
         return [
             'config'     => [
                 // Core configuration - read from tenant config when available
-                'apiUrl'                 => $tenantConfig->get('app_url', config('app.url')) . '/api',
+                'apiUrl'                 => $tenantConfig->get('app_url', config('app.url')),
                 'appUrl'                 => $tenantConfig->get('frontend_url', config('frontend.url')),
                 'appName'                => $tenantConfig->get('app_name', config('app.name', 'Quvel Kit')),
                 'tenantId'               => $tenant->public_id,
