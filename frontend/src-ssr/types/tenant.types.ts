@@ -8,7 +8,7 @@ export interface Tenant {
   name: string;
   domain: string;
   parent_id: string | null;
-  config: BackendConfig;
+  config: TenantConfigProtected;
   created_at: string;
   updated_at: string;
 }
@@ -32,13 +32,6 @@ export type TenantConfigVisibility = 'public' | 'protected';
 export type TenantConfigVisibilityRecords = Partial<
   Record<Exclude<keyof TenantConfigProtected, '__visibility'>, TenantConfigVisibility>
 >;
-
-/**
- * The backend configuration (processed config used in app).
- */
-export interface BackendConfig extends Omit<TenantConfigProtected, 'apiUrl'> {
-  frontendUrl: string;
-}
 
 /**
  * The cached tenant configuration.
