@@ -1,5 +1,4 @@
 {
-    "$schema": "https://getcomposer.org/schema.json",
     "version": "v0.1.3-beta",
     "name": "itsirv/quvel-kit",
     "description": "QuVel Kit: A Laravel & Quasar hybrid starter kit.",
@@ -16,17 +15,21 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.",
-        "laravel/framework": "^11.31",
+        "php": "^8.3",
+        "laravel/framework": "^12.0",
+        "laravel/octane": "^2.9",
         "laravel/sanctum": "^4.0",
+        "laravel/socialite": "^5.18",
         "laravel/tinker": "^2.9",
-        "nwidart/laravel-modules": "^11.1"
+        "nwidart/laravel-modules": "^12.0.1",
+        "pusher/pusher-php-server": "^7.2"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.5",
         "brianium/paratest": "^7.8",
         "fakerphp/faker": "^1.23",
         "friendsofphp/php-cs-fixer": "^3.69",
+        "larastan/larastan": "^3.0",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
@@ -34,19 +37,20 @@
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
         "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^11.0.1"
+        "phpunit/phpunit": "^11.0.1",
+        "roave/security-advisories": "dev-latest"
     },
     "autoload": {
         "psr-4": {
             "App\\": "app/",
-            "Modules\\": "Modules/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Modules\\": "Modules/"
         }
     },
     "scripts": {
@@ -66,6 +70,11 @@
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
+        ],
+        "install-hooks": [
+            "cp -f ../.github/hooks/pre-commit ../.git/hooks/pre-commit",
+            "chmod +x ../.git/hooks/pre-commit",
+            "echo 'Git hooks installed successfully.'"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",

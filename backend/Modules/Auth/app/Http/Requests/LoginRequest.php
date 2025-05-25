@@ -1,26 +1,16 @@
 <?php
 
-namespace Modules\Auth\app\Http\Requests;
+namespace Modules\Auth\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Modules\Auth\app\Rules\EmailRule;
-use Modules\Auth\app\Rules\PasswordRule;
+use Modules\Auth\Rules\EmailRule;
+use Modules\Auth\Rules\PasswordRule;
 
 /**
  * Request DTO for login.
  */
 class LoginRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized.
-     *
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     /**
      * Get the validation rules.
      *

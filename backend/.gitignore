@@ -30,3 +30,4 @@ yarn-error.log
 storage/debug
 coverage.xml
 stubs
+storage/logs

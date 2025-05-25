@@ -46,14 +46,10 @@ services:
         '-c',
         'composer install --dev && php artisan serve --host=0.0.0.0 --port=8000',
       ] # Run Laravel API server after installing dependencies
-    labels:
-      - 'traefik.enable=true' # Enable Traefik proxy for this service
-      - 'traefik.http.routers.api.rule=Host(`api.quvel.127.0.0.1.nip.io`)' # Route requests matching this domain to the API
-      - 'traefik.http.routers.api.entrypoints=websecure' # Enforce HTTPS for API
-      - 'traefik.http.routers.api.tls=true' # Enable TLS for this route
-      - 'traefik.http.services.api.loadbalancer.server.port=8000' # Route traffic to Laravel on port 8000
     networks:
-      - quvel-network
+      quvel-network:
+        aliases:
+          - api-lan
 
   # Laravel Assets Builder
   asset-builder:
@@ -91,8 +87,10 @@ services:
     working_dir: /frontend
     volumes:
       - ../frontend:/frontend # Sync frontend files
-      - /frontend/node_modules
       - '${PWD}/docker/certs:/certs' # Mount local certificates folder into the container
+      - /frontend/node_modules
+      - /frontend/.cache
+      - /frontend/.quasar
     command: ['/bin/sh', '-c', 'yarn install && yarn test:unit:ui'] # Only run Vitest UI here
     labels:
       - 'traefik.enable=true'

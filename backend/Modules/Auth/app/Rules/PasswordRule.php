@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Auth\app\Rules;
+namespace Modules\Auth\Rules;
 
 use Illuminate\Validation\Rules\Password;
 
@@ -11,8 +11,6 @@ class PasswordRule extends Password
 {
     /**
      * Default password validation rules.
-     *
-     * @return PasswordRule
      */
     public static function default(): PasswordRule
     {

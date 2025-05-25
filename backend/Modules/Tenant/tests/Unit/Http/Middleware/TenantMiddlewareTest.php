@@ -2,55 +2,100 @@
 
 namespace Modules\Tenant\Tests\Unit\Http\Middleware;
 
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Request;
+use Mockery;
 use Mockery\MockInterface;
-use Modules\Tenant\App\Contexts\TenantContext;
-use Modules\Tenant\App\Http\Middleware\TenantMiddleware;
-use Modules\Tenant\App\Services\TenantResolverService;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Contracts\TenantResolver;
+use Modules\Tenant\Http\Middleware\TenantMiddleware;
+use Modules\Tenant\Models\Tenant;
+use Modules\Tenant\Services\ConfigApplier;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
 #[CoversClass(TenantMiddleware::class)]
 #[Group('tenant-module')]
 #[Group('tenant-middleware')]
-class TenantMiddlewareTest extends TestCase
+final class TenantMiddlewareTest extends TestCase
 {
-    private TenantResolverService|MockInterface $tenantResolver;
+    /**
+     * @var TenantResolver|MockInterface
+     */
+    protected TenantResolver $tenantResolver;
+
+    /**
+     * @var TenantContext|MockInterface
+     */
+    protected TenantContext $tenantContext;
+
+    /**
+     * @var ConfigApplier|MockInterface
+     */
+    protected ConfigApplier $configApplier;
+
+    /**
+     * @var ConfigRepository|MockInterface
+     */
+    protected ConfigRepository $config;
+
+    /**
+     * @var Request|MockInterface
+     */
+    protected Request $request;
+
+    /**
+     * @var TenantMiddleware
+     */
     private TenantMiddleware $middleware;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->tenantResolver    = $this->mock(TenantResolverService::class);
-        $this->tenantContextMock = $this->mock(TenantContext::class);
-        $this->middleware        = new TenantMiddleware(
+        $this->tenantResolver = Mockery::mock(TenantResolver::class);
+        $this->tenantContext  = Mockery::mock(TenantContext::class);
+        $this->configApplier  = Mockery::mock(ConfigApplier::class);
+        $this->config         = Mockery::mock(ConfigRepository::class);
+        $this->request        = Mockery::mock(Request::class);
+
+        $this->middleware = new TenantMiddleware(
             $this->tenantResolver,
-            $this->tenantContextMock,
+            $this->tenantContext,
+            $this->configApplier,
+            $this->config,
         );
     }
 
-    /**
-     * Test that the middleware sets the tenant in the context and allows the request to proceed.
-     */
+    #[TestDox('It should resolve tenant, set context, apply config, and proceed with request')]
     public function testHandleSetsTenantInContextAndProceeds(): void
     {
-        $request = $this->mock(Request::class);
+        // Arrange
+        $tenant           = Mockery::mock(Tenant::class);
+        $expectedResponse = 'response';
 
         $this->tenantResolver->shouldReceive('resolveTenant')
             ->once()
-            ->with($request)
-            ->andReturn($this->tenant);
+            ->andReturn($tenant);
 
-        $this->tenantContextMock->shouldReceive('set')
+        $this->tenantContext->shouldReceive('set')
             ->once()
-            ->with($this->tenant);
+            ->with($tenant);
 
-        $next = fn ($req) => 'next-called';
+        $this->configApplier->shouldReceive('apply')
+            ->once()
+            ->with($tenant, $this->config);
 
-        $result = $this->middleware->handle($request, $next);
+        $next = function ($passedRequest) use ($expectedResponse) {
+            return $expectedResponse;
+        };
 
-        $this->assertEquals('next-called', $result);
+        // Act
+        $result = $this->middleware->handle($this->request, $next);
+
+        // Assert
+        $this->assertSame($expectedResponse, $result);
     }
 }

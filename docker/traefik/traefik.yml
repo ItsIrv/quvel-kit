@@ -28,11 +28,9 @@ tls:
         keyFile: '/certs/selfsigned.key'
 
 providers:
-  docker:
-    exposedByDefault: false
-
   file:
     directory: /traefik
+#    directory: ./dynamic
     watch: true
 
 serversTransports:

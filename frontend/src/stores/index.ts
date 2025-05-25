@@ -1,20 +1,17 @@
 import { defineStore } from '#q-app/wrappers';
 import { createPinia } from 'pinia';
-import { piniaPlugin } from './piniaPlugin';
+import { serviceContainerPlugin } from 'src/modules/Core/stores/plugins/serviceContainer';
 
-/*
- * If not building with SSR mode, you can
- * directly export the Store instantiation;
+/**
+ * Pinia store factory.
  *
- * The function below can be async too; either use
- * async/await or return a Promise which resolves
- * with the Store instance.
+ * @param ssrContext - SSR context for Pinia.
+ * @returns Pinia instance with service container plugin.
  */
 export default defineStore(({ ssrContext }) => {
   const pinia = createPinia();
 
-  // You can add Pinia plugins here
-  pinia.use((context) => piniaPlugin(context, ssrContext));
+  pinia.use((context) => serviceContainerPlugin(context, ssrContext));
 
   return pinia;
 });

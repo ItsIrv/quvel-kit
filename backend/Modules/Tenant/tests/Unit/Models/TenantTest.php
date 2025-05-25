@@ -2,8 +2,11 @@
 
 namespace Modules\Tenant\Tests\Unit\Models;
 
-use Modules\Tenant\App\Models\Tenant;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Tenant\Database\Factories\TenantFactory;
+use Modules\Tenant\Models\Tenant;
+use Modules\Tenant\ValueObjects\TenantConfig;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -11,7 +14,6 @@ use Tests\TestCase;
 #[CoversClass(Tenant::class)]
 #[Group('tenant-module')]
 #[Group('tenant-models')]
-
 class TenantTest extends TestCase
 {
     /**
@@ -22,7 +24,7 @@ class TenantTest extends TestCase
         $tenant = new Tenant();
 
         $this->assertEquals(
-            ['name', 'domain'],
+            ['name', 'domain', 'parent_id', 'config'],
             $tenant->getFillable(),
         );
     }
@@ -38,5 +40,134 @@ class TenantTest extends TestCase
             TenantFactory::class,
             $factory,
         );
+    }
+
+    /**
+     * Test that the parent relationship returns a BelongsTo instance.
+     */
+    public function testParentRelationship(): void
+    {
+        $tenant = new Tenant();
+
+        $this->assertInstanceOf(BelongsTo::class, $tenant->parent());
+    }
+
+    /**
+     * Test that the children relationship returns a HasMany instance.
+     */
+    public function testChildrenRelationship(): void
+    {
+        $tenant = new Tenant();
+
+        $this->assertInstanceOf(HasMany::class, $tenant->children());
+    }
+
+    /**
+     * Test that the users relationship returns a HasMany instance.
+     */
+    public function testUsersRelationship(): void
+    {
+        $tenant = new Tenant();
+
+        $this->assertInstanceOf(HasMany::class, $tenant->users());
+    }
+
+    /**
+     * Test that a tenant can be created.
+     */
+    public function testCreatingTenant(): void
+    {
+        $tenant = Tenant::factory()->create([
+            'name'   => 'Example Tenant',
+            'domain' => 'example.com',
+        ]);
+
+        $this->assertDatabaseHas('tenants', [
+            'id'     => $tenant->id,
+            'name'   => 'Example Tenant',
+            'domain' => 'example.com',
+        ]);
+
+        $this->assertInstanceOf(Tenant::class, $tenant);
+    }
+
+    /**
+     * Test that `getEffectiveConfig()` correctly falls back to the parent's config.
+     */
+    public function testGetEffectiveConfigInheritsParentConfig(): void
+    {
+        // Create a parent tenant with a config
+        $parentTenant = Tenant::factory()->create([
+            'config' => $this->createTenantConfig(),
+        ]);
+
+        // Create a child tenant that does not have its own config
+        $childTenant = Tenant::factory()->create([
+            'parent_id' => $parentTenant->id,
+            'config'    => null, // No direct config
+        ]);
+
+        // Ensure the child's effective config is inherited from the parent
+        $this->assertInstanceOf(
+            TenantConfig::class,
+            $childTenant->getEffectiveConfig(),
+        );
+
+        $this->assertEquals(
+            'https://api.example.com',
+            $childTenant->getEffectiveConfig()->appUrl,
+        );
+
+        $this->assertEquals(
+            'Example App',
+            $childTenant->getEffectiveConfig()->appName,
+        );
+    }
+
+    /**
+     * Test that `getEffectiveConfig()` returns its own config when no parent exists.
+     */
+    public function testGetEffectiveConfigReturnsOwnConfig(): void
+    {
+        $tenant = Tenant::factory()->create([
+            'config' => $this->createTenantConfig(),
+        ]);
+
+        $this->assertInstanceOf(
+            TenantConfig::class,
+            $tenant->getEffectiveConfig(),
+        );
+
+        $this->assertEquals(
+            'Example App',
+            $tenant->getEffectiveConfig()->appName,
+        );
+    }
+
+    /**
+     * Test that `getEffectiveConfig()` returns `null` if no parent or self-config exists.
+     */
+    public function testGetEffectiveConfigReturnsNull(): void
+    {
+        $tenant = Tenant::factory()->create([
+            'config'    => null,
+            'parent_id' => null,
+        ]);
+
+        $this->assertNull($tenant->getEffectiveConfig());
+    }
+
+    /**
+     * Test that the `config` attribute is properly cast to `TenantConfig`.
+     */
+    public function testConfigCastsToTenantConfig(): void
+    {
+        $tenant = Tenant::factory()->create([
+            'config' => $this->createTenantConfig(),
+        ]);
+
+        $this->assertInstanceOf(TenantConfig::class, $tenant->config);
+        $this->assertEquals('https://api.example.com', $tenant->config->appUrl);
+        $this->assertEquals('Example App', $tenant->config->appName);
     }
 }

@@ -2,14 +2,14 @@
 
 namespace Modules\Tenant\Tests\Feature\Actions;
 
-use Exception;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
-use Modules\Tenant\Enums\TenantError;
+use Modules\Tenant\Actions\TenantDump;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
-#[CoversClass(\Modules\Tenant\Actions\TenantDump::class)]
+#[CoversClass(TenantDump::class)]
 #[Group('tenant-module')]
 #[Group('tenant-actions')]
 class TenantDumpFeatureTest extends TestCase
@@ -36,17 +36,13 @@ class TenantDumpFeatureTest extends TestCase
     /**
      * Test retrieving the tenant fails when tenant is incorrect or does not exist.
      */
-    public function testTenantDumpThrowsExceptionWithoutTenat(): void
+    public function testTenantDumpThrowsExceptionWithoutTenant(): void
     {
         // Simulate incorrect tenant by deleting all.
         DB::table('tenants')->delete();
 
         $this->withoutExceptionHandling();
-        $this->expectException(Exception::class);
-
-        $this->withoutExceptionHandling();
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage(TenantError::NOT_FOUND->value);
+        $this->expectException(HttpResponseException::class);
 
         $this->getJson(
             route('tenant'),

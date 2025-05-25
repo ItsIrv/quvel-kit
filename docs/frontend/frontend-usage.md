@@ -1,4 +1,4 @@
-# Frontend Usage
+# Environment Setup & Usage
 
 ## Overview
 
@@ -6,20 +6,52 @@ QuVel Kit's frontend is built with **Quasar SSR**, offering a robust environment
 
 ---
 
-## Running Quasar Commands
+## Quick Start
 
-To interact with the Quasar container, open a terminal and execute:
+To get started with the frontend:
 
 ```bash
 docker exec -it quvel-frontend sh
 ```
 
-Inside the container, you can use the Quasar CLI:
+Inside the container, you can run:
 
 ```bash
-yarn build:ssr  # Build the production frontend
-quasar dev      # Start Quasar in development mode
-exit            # Exit the container
+yarn dev        # Start development mode
+yarn build:ssr  # Build for production
+quasar          # Access Quasar CLI
+exit            # Exit container
+```
+
+### Running Quasar on Local Machine
+
+QuVel Kit supports running the frontend alongside your Docker environment.  
+
+To start using the frontend, on your local machine, simply execute commands as normal in your terminal, but add `LOCAL=1` before the command. This lets the Quasar configuration helpers to set the appropriate environment variables.
+I have set up some shortcuts for you.
+
+```bash
+yarn dev-local        # SPA Mode
+yarn dev-local:ssr    # SSR Mode
+yarn dev:ios # Always runs in local
+yarn dev:electron # Always runs in local
+```
+
+- By default, running locally starts at **`second-tenant`**.  
+- The **local instance** can be accessed at:
+
+```bash
+https://quvel.127.0.0.1.nip.io:3000/ # Main Quvel
+https://second-tenant.quvel.127.0.0.1.nip.io/ # Second Tenant
+https://second-tenant.quvel.127.0.0.1.nip.io:3001 # Capacitor
+```
+
+- Please note the port `3000` at the end of URLs. Due to the nip.io domain routing system, domains on your local machine can be anything, ie <https://not-quvel.127.0.0.1.nip.io:3000>. This just routes you to 127.0.0.1:3000 under the hood.
+
+- To avoid having two frontend instances up, **manually stop** the container `quvel-frontend`.This can be configured in **`configs/ssr.ts`** and **`configs/spa.ts`**.
+
+```bash
+docker stop quvel-frontend
 ```
 
 ---
@@ -105,3 +137,7 @@ To build the frontend for production:
 ```bash
 yarn build:ssr  # Builds the Quasar SSR version
 ```
+
+---
+
+[← Back to Frontend Docs](./README.md)

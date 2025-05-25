@@ -19,11 +19,25 @@ return [
 
     'allowed_methods'          => ['GET', 'POST', 'PUT', 'PATCH', 'OPTIONS'],
 
-    'allowed_origins'          => ['https://quvel.127.0.0.1.nip.io'],
+    'allowed_origins'          => [
+        // Quasar on Docker
+        'https://quvel.127.0.0.1.nip.io',
+        'https://quvel.127.0.0.1.nip.io:3000',
+        'https://quvel.192.168.86.21.nip.io', // REPLACE_WITH_LOCAL_IP
+        // LAN Network
+        'https://cap-tenant.quvel.192.168.86.21.nip.io', // REPLACE_WITH_LOCAL_IP
+    ],
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers'          => ['Content-Type', 'X-Requested-With', 'Authorization', 'X-XSRF-TOKEN'],
+    'allowed_headers'          => [
+        'Content-Type',
+        'X-Requested-With',
+        'Authorization',
+        'X-XSRF-TOKEN',
+        'X-Tenant-ID',
+        'X-Trace-ID',
+    ],
 
     'exposed_headers'          => [],
 

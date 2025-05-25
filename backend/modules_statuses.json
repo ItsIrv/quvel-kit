@@ -1,4 +1,9 @@
 {
     "Auth": true,
-    "Tenant": true
+    "Tenant": true,
+    "Migration": true,
+    "Catalog": true,
+    "Notifications": true,
+    "Blog": true,
+    "Core": true
 }

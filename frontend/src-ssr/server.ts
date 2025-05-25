@@ -10,7 +10,6 @@
  * anything you import here (except for express and compression).
  */
 import express from 'express';
-// import compression from 'compression'
 import {
   defineSsrCreate,
   defineSsrListen,
@@ -18,13 +17,8 @@ import {
   defineSsrServeStaticContent,
   defineSsrRenderPreloadTag,
 } from '#q-app/wrappers';
-
-/**
- * TODO: Investigate why SSL builds crashes the Fastify server.
- * From the logs it had to do something with setting the certs.
- * Quasar is calling Express-specific methods for
- * setting up SSL on SSR.
- */
+import { TenantCacheService } from './services/TenantCache';
+import { configureExpress } from './utils/configureExpress';
 
 /**
  * Create your webserver and return its instance.
@@ -33,18 +27,25 @@ import {
  *
  * Can be async: defineSsrCreate(async ({ ... }) => { ... })
  */
-export const create = defineSsrCreate((/* { ... } */) => {
+export const create = defineSsrCreate(async (/* { ... } */) => {
+  // Fetch Tenants before accepting requests
+  await TenantCacheService.getInstance();
+
   const app = express();
 
-  // attackers can use this header to detect apps running Express
-  // and then launch specifically-targeted attacks
-  app.disable('x-powered-by');
-
-  // place here any middlewares that
-  // absolutely need to run before anything else
-  if (process.env.PROD ?? '') {
-    // app.use(compression());
-  }
+  configureExpress(app, {
+    enableCompression: process.env.NODE_ENV === 'production',
+    enableCors: true,
+    rateLimit:
+      process.env.NODE_ENV === 'production'
+        ? {
+            windowMs: 60_000,
+            max: 100,
+          }
+        : undefined,
+    trustProxy: true,
+    strictGetOnly: true,
+  });
 
   return app;
 });
@@ -76,7 +77,7 @@ export const listen = defineSsrListen(({ app, devHttpsApp, port }) => {
  * Should you need the result of the "listen()" call above,
  * you can use the "listenResult" param.
  *
- * Can be async: defineSsrClose(async ({ listenResult }) => { ... }))
+ * Can be async: defineSsrClose(async ({ listenResult }) => { ... })
  */
 export const close = defineSsrClose(({ listenResult }) => {
   return listenResult.close();
@@ -127,31 +128,31 @@ const pngRE = /\.png$/;
  * (if any) for preloading indicated file
  */
 export const renderPreloadTag = defineSsrRenderPreloadTag((file /* , { ssrContext } */): string => {
-  if (jsRE.test(file) === true) {
+  if (jsRE.test(file)) {
     return `<link rel="modulepreload" href="${file}" crossorigin>`;
   }
 
-  if (cssRE.test(file) === true) {
+  if (cssRE.test(file)) {
     return `<link rel="stylesheet" href="${file}" crossorigin>`;
   }
 
-  if (woffRE.test(file) === true) {
+  if (woffRE.test(file)) {
     return `<link rel="preload" href="${file}" as="font" type="font/woff" crossorigin>`;
   }
 
-  if (woff2RE.test(file) === true) {
+  if (woff2RE.test(file)) {
     return `<link rel="preload" href="${file}" as="font" type="font/woff2" crossorigin>`;
   }
 
-  if (gifRE.test(file) === true) {
+  if (gifRE.test(file)) {
     return `<link rel="preload" href="${file}" as="image" type="image/gif" crossorigin>`;
   }
 
-  if (jpgRE.test(file) === true) {
+  if (jpgRE.test(file)) {
     return `<link rel="preload" href="${file}" as="image" type="image/jpeg" crossorigin>`;
   }
 
-  if (pngRE.test(file) === true) {
+  if (pngRE.test(file)) {
     return `<link rel="preload" href="${file}" as="image" type="image/png" crossorigin>`;
   }
 

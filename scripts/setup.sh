@@ -23,25 +23,8 @@ if ! command -v npm &> /dev/null; then
   exit 1
 fi
 
-# Install mkcert using npm globally if not already installed
-if ! command -v mkcert &> /dev/null; then
-  echo "📦 Installing mkcert via npm..."
-  npm install -g mkcert
-fi
-
-# Ensure mkcert local CA is set up (run only if needed)
-if [ ! -f "$(mkcert -CAROOT)/rootCA.pem" ]; then
-  mkcert -install
-fi
-
-cp "$(mkcert -CAROOT)/rootCA.pem" docker/certs/ca.pem
-
-# Generate SSL certificates using mkcert
-mkdir -p "$(dirname "$0")/../docker/certs"
-if [ ! -f docker/certs/selfsigned.crt ] || [ ! -f docker/certs/selfsigned.key ] || [ ! -f docker/certs/ca.pem ]; then
-  echo "🔐 Generating mkcert SSL certificates..."
-  mkcert -cert-file docker/certs/selfsigned.crt -key-file docker/certs/selfsigned.key quvel.127.0.0.1.nip.io api.quvel.127.0.0.1.nip.io coverage-api.quvel.127.0.0.1.nip.io coverage.quvel.127.0.0.1.nip.io
-fi
+# Run the SSL setup script
+./scripts/ssl.sh
 
 # Define the correct Docker Compose file path
 DOCKER_COMPOSE_FILE="docker/docker-compose.yml"
@@ -95,7 +78,7 @@ fi
 
 # Run Laravel migrations
 echo "📌 Running Laravel migrations..."
-docker exec -it quvel-app php artisan migrate --force --seed
+docker exec -it quvel-app php artisan migrate:fresh --force --seed
 
 # Run storage linking
 echo "🔗 Linking storage..."

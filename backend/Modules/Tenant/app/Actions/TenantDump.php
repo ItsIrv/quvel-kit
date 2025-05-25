@@ -2,12 +2,9 @@
 
 namespace Modules\Tenant\Actions;
 
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Log;
-use Modules\Tenant\app\Contexts\TenantContext;
-use Modules\Tenant\Transformers\TenantDumpTransformer;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Exceptions\TenantNotFoundException;
+use Modules\Tenant\Http\Resources\TenantDumpResource;
 
 /**
  * Action to dump the current tenant.
@@ -17,12 +14,11 @@ class TenantDump
     /**
      * Execute the action.
      *
-     * @param TenantContext $tenantContext
-     * @return TenantDumpTransformer
+     * @throws TenantNotFoundException
      */
-    public function __invoke(TenantContext $tenantContext): TenantDumpTransformer
+    public function __invoke(TenantContext $tenantContext): TenantDumpResource
     {
-        return new TenantDumpTransformer(
+        return new TenantDumpResource(
             $tenantContext->get(),
         );
     }

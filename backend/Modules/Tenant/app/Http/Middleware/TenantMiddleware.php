@@ -1,43 +1,40 @@
 <?php
 
-namespace Modules\Tenant\app\Http\Middleware;
+namespace Modules\Tenant\Http\Middleware;
 
 use Closure;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Request;
-use Modules\Tenant\app\Contexts\TenantContext;
-use Modules\Tenant\app\Services\TenantResolverService;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Contracts\TenantResolver;
+use Modules\Tenant\Services\ConfigApplier;
 
 /**
- * Middleware to resolve the tenant based on the domain.
+ * Middleware to resolve the current tenant from the request.
  */
 class TenantMiddleware
 {
     /**
      * Create a new TenantMiddleware instance.
-     *
-     * @param \Modules\Tenant\app\Services\TenantResolverService $tenantResolver
-     * @param \Modules\Tenant\app\Contexts\TenantContext $tenantContext
      */
     public function __construct(
-        protected TenantResolverService $tenantResolver,
-        protected TenantContext $tenantContext,
+        private readonly TenantResolver $tenantResolver,
+        private readonly TenantContext $tenantContext,
+        private readonly ConfigApplier $configApplier,
+        private readonly ConfigRepository $config,
     ) {
     }
 
     /**
      * Handle an incoming request.
-     *
-     * @param Request $request
-     * @param Closure $next
-     * @return mixed
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        $this->tenantContext->set(
-            $this->tenantResolver->resolveTenant(
-                $request,
-            ),
-        );
+        $tenant = $this->tenantResolver->resolveTenant();
+
+        $this->tenantContext->set($tenant);
+
+        $this->configApplier->apply($tenant, $this->config);
 
         return $next($request);
     }

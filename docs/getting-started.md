@@ -1,77 +1,109 @@
-# Getting Started
+# Getting Started with QuVel Kit
 
 ## Prerequisites
 
-Before setting up QuVel Kit, ensure you have the following installed:
+### Required Software
 
-- **Docker & Docker Compose** – Required for running the entire stack.
-- **Node.js & Yarn** – Needed for frontend development and mkcert SSL setup.
-- **mkcert** – Used to generate self-signed SSL certificates for local development.
+| Software | Version | Purpose |
+|----------|---------|--------|
+| Docker | 20.10+ | Container platform |
+| Docker Compose | 2.0+ | Multi-container orchestration |
+| Node.js | 18.0+ | JavaScript runtime |
+| Yarn | 1.22+ | Package management |
+| mkcert | Latest | SSL certificate generation |
 
-### **Verify Installation**
+### Platform-Specific Requirements
 
-Run the following commands to confirm everything is installed:
+#### Mobile Development
+
+- **iOS**: Xcode 12.0+, iOS Simulator 12.0+
+- **Android**: Android Studio with latest SDK tools
+
+#### Desktop Development
+
+- **Electron**: Node.js 18.0+
+
+### Verification
+
+Verify your environment with these commands:
 
 ```bash
-docker -v       # Check Docker version
-docker-compose -v  # Check Docker Compose version
-node -v         # Check Node.js version
-yarn -v         # Check Yarn version
-mkcert -install # Ensure mkcert is configured
+# Check Docker installation
+docker -v
+docker-compose -v
+
+# Check Node.js and Yarn
+node -v
+yarn -v
+
+# Install mkcert certificates in your system trust store
+mkcert -install
 ```
 
----
+## Installation
 
-## Setting Up the Project
-
-### **1. Clone the Repository**
+### 1. Clone Repository
 
 ```bash
 git clone https://github.com/ItsIrv/quvel-kit.git
 cd quvel-kit
 ```
 
-### **2. Run Setup Script**
+### 2. Run Setup Script
 
-The setup script will:
+Get your local IP address first, the setup script will need it. This will be your second tenant's domain.
 
-- Install dependencies  
-- Generate self-signed SSL certificates  
-- Start Docker services  
+The setup script automates the following tasks:
 
-Run:
+- Generates SSL certificates
+- Creates Docker networks
+- Builds Docker images
+- Installs dependencies
+- Starts all services
 
 ```bash
 ./scripts/setup.sh
 ```
 
-### **3. Access the Services**
+### 3. Access Your Application
 
-Once the setup is complete, the following services will be available:
+Once setup completes, access the application at these URLs:
 
-| Service            | URL |
-|--------------------|--------------------------------|
-| **Frontend**       | [https://quvel.127.0.0.1.nip.io](https://quvel.127.0.0.1.nip.io) |
-| **API (Backend)**  | [https://api.quvel.127.0.0.1.nip.io](https://api.quvel.127.0.0.1.nip.io) |
-| **Traefik Dashboard** | [http://localhost:8080](http://localhost:8080) |
-
----
+| Service | URL | Description |
+|---------|-----|-------------|
+| Frontend | [https://quvel.127.0.0.1.nip.io](https://quvel.127.0.0.1.nip.io) | Quasar SSR application |
+| API | [https://api.quvel.127.0.0.1.nip.io](https://api.quvel.127.0.0.1.nip.io) | Laravel API |
+| API Telescope | [https://api.quvel.127.0.0.1.nip.io/telescope](https://api.quvel.127.0.0.1.nip.io/telescope) | Laravel debugging |
+| Coverage | [https://coverage-api.quvel.127.0.0.1.nip.io](https://coverage-api.quvel.127.0.0.1.nip.io) | Test coverage reports |
+| Traefik | [http://localhost:8080](http://localhost:8080) | Reverse proxy dashboard |
 
 ## Common Commands
 
-| Action              | Command |
-|---------------------|---------|
-| **Start Services**  | `./scripts/start.sh` |
-| **Stop Services**   | `./scripts/stop.sh` |
-| **Restart Services** | `./scripts/restart.sh` |
-| **View Logs**       | `./scripts/logs.sh` |
-| **Reset Everything** | `./scripts/reset.sh` |
+| Action | Command | Description |
+|--------|---------|-------------|
+| Start | `./scripts/start.sh` | Start all services |
+| Stop | `./scripts/stop.sh` | Stop all services |
+| Restart | `./scripts/restart.sh` | Restart all services |
+| Logs | `./scripts/log.sh` | View service logs |
+| Reset | `./scripts/reset.sh` | Reset entire environment |
 
----
+For detailed information about all available scripts, see the [Utility Scripts](./scripts.md) documentation.
+
+## Multi-Tenant Development
+
+QuVel Kit supports multi-tenant applications. To test with a second tenant:
+
+```bash
+# Access second tenant
+https://second-tenant.quvel.127.0.0.1.nip.io
+```
 
 ## Next Steps
 
-- **[Folder Structure](./folder-structure.md)** – Understand the project layout.
-- **[Frontend Usage](./frontend/frontend-usage.md)** – Running Quasar SSR and the Vue frontend.
-- **[Backend Usage](./backend-usage.md)** – Working with Laravel, database migrations, and debugging.
-- **[Service Container](./frontend/frontend-service-container.md)** – Managing services like API, validation, tasks, and translations.
+- [Frontend Documentation](./frontend/README.md)
+- [Backend Documentation](./backend/README.md)
+- [Traefik Documentation](./traefik-structure.md)
+
+---
+
+[← Back to Docs](./README.md)

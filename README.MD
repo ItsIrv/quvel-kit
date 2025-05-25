@@ -1,84 +1,97 @@
 # QuVel Kit
 
-## Introduction
+![Backend CI](https://github.com/ItsIrv/quvel-kit/actions/workflows/backend-ci.yml/badge.svg)
+[![codecov](https://codecov.io/gh/ItsIrv/quvel-kit/branch/main/graph/badge.svg)](https://codecov.io/gh/ItsIrv/quvel-kit)
+![License](https://img.shields.io/github/license/ItsIrv/quvel-kit)
+![PHP](https://img.shields.io/badge/PHP-8.3-purple)
+![Laravel](https://img.shields.io/badge/Laravel-12-red)
+![Vue](https://img.shields.io/badge/Vue-3.x-42b883)
+![Quasar](https://img.shields.io/badge/Quasar-2.x-blue)
 
-**QuVel Kit** is a **Quasar + Laravel Starter Kit** designed for building modern hybrid applications with **SSR, SPA fallback, mobile, and desktop builds**. It provides a modular, scalable foundation for full-stack development, offering robust authentication, state management, and dependency injection via a **Service Container**.
+## Overview
 
-## Features
+**QuVel Kit** is a **Laravel 12 + Vue 3 + Quasar 2 + Express** framework designed for building full-stack applications that can target many platforms, and many customers with a single repository. The frontend is modular, fully isomorphic SSR with SPA fallback, mobile/desktop builds, and full type safety with TypeScript. The backend is a well-tested Laravel application also using a modular structure featuring key modules for multi-tenancy, authentication, and communication with the frontend application.
 
-### **Core Features**
+## Technology Stack
 
-- **Quasar + Laravel full-stack integration**
-- **Hybrid SSR + SPA setup** with seamless switching
-- **Capacitor support** for `iOS` & `Android` builds
-- **Electron** desktop build support
-- **Traefik-based Docker environments** for `production` and `development`
-- **Fully modular Laravel backend using `nWidart/laravel-modules`**
-- **Service Container for managing frontend dependency injection**
-- **Authentication system** with OAuth (`Google`, `Apple`)
-- **RBAC (Role-Based Access Control) with multi-tenancy support**
-- **Comprehensive testing suite** with `Vitest` (frontend) & `PHPUnit` (backend)
-- **Automated test coverage reports**
-- **Detailed documentation** with `.md` files and **DocBlocks**
+### Backend
 
-### **Authentication & User Management**
+- **Laravel 12** - Latest version with modular architecture
+- **PHP 8.3+** - Modern PHP features
+- **Laravel Modules** - Modular backend architecture
+- **Laravel Sanctum** - Authentication system
+- **Laravel Socialite** - OAuth integration
+- **Multi-tenancy** - Built-in tenant isolation
 
-- **Login Methods**:
-  - Email/Username + Password
-  - OAuth Providers (`Google`, `Apple`)
-- **OAuth Flow** with deep link support for **mobile compatibility**
-- **Session-based authentication** (tokens coming soon)
-- **Multi-tenancy support using a `tenant_id` system**
-- **Role-Based Access Control (RBAC) from the start**
-- **Account Management**:
-  - Sign-up & Login (Email/Username or OAuth)
-  - Password reset & Email verification
-  - Profile updates (name, password, avatar)
+### Frontend
 
-### **Frontend Service Container**
+- **Vue 3** - Component-based UI framework
+- **TypeScript** - Type-safe development
+- **Quasar 2** - UI framework with SSR capabilities
+- **Pinia** - State management
+- **Tailwind CSS** - Utility-first styling
+- **Zod** - Schema validation
+- **Laravel Echo & Pusher** - Real-time communication
 
-- **API Service** (`container.api`) – Manages Axios HTTP requests with session authentication
-- **Task Service** (`container.task`) – Encapsulates async operations with built-in loading, error handling, and success notifications
-- **Validation Service** (`container.validation`) – Zod-based validation with support for Vue components and translations
-- **i18n Service** (`container.i18n`) – Fully localized interface with SSR-safe translations
-- **Dynamic Service Loading** – Register and retrieve custom services at runtime
+### DevOps
 
-### **Backend Architecture**
+- **Docker** - Containerized development and deployment
+- **Traefik** - Request routing and SSL termination
+- **GitHub Actions** - CI/CD integration
+- **Vitest & PHPUnit** - Comprehensive testing
 
-- **Multi-tenancy with a `tenant_id` column in all relevant tables**
-- **Modular architecture using `nWidart/laravel-modules`**
-- **RBAC built-in with roles and permissions**
-- **Session-based authentication (Sanctum coming later)**
-- **Socialite-based OAuth login system with secure nonce validation**
-- **Middleware for enforcing tenant-based access**
+## Key Features
+
+### Architecture
+
+- **Service Container** - Dependency injection for frontend services
+- **SSR with SPA Fallback** - Optimal performance and SEO
+- **Multi-platform** - Web, mobile (iOS/Android), and desktop (Electron)
+- **RBAC** - Role-based access control
+- **Configuration Visibility System** - Tiered config security (PRIVATE, PROTECTED, PUBLIC)
+
+### Developer Experience
+
+- **Hot Module Replacement** - Fast development workflow
+- **TypeScript Throughout** - Full type safety
+- **Comprehensive Documentation** - Detailed guides and API references
+- **Pre-built Components** - Form fields, validation, authentication flows
 
 ## Documentation
 
-For a full guide on **project setup, commands, and troubleshooting**, check the [Documentation](docs/README.md).
+For detailed documentation, see the following resources:
 
-## Setup & Installation
+- [Main Documentation](docs/README.md) - Setup and architecture
+- [Frontend Documentation](docs/frontend/README.md) - Vue, Quasar, and TypeScript
+- [Backend Documentation](docs/backend/README.md) - Laravel and API
 
-Refer to the [Getting Started Guide](docs/getting-started.md) for detailed instructions on installation and setup.
+## Quick Start
 
-## Development & Debugging
+```bash
+# Clone the repository
+git clone https://github.com/your-username/quvel-kit.git
+cd quvel-kit
 
-Refer to the [Frontend Usage Guide](docs/frontend/frontend-usage.md) and [Backend Usage Guide](docs/backend-usage.md) for development workflows.
+# Get your local IP address (needed for multi-tenant setup)
+ifconfig | grep "inet " | grep -v 127.0.0.1
 
-## Roadmap
+# Run the setup script (will prompt for your local IP)
+./scripts/setup.sh
+```
 
-### **Short-Term Goals**
+Once setup completes, access the application at these URLs:
 
-- Complete OAuth & RBAC integration
-- Expand testing coverage
-- Improve module-based backend architecture
+| Service | URL | Description |
+|---------|-----|-------------|
+| Frontend | [https://quvel.127.0.0.1.nip.io](https://quvel.127.0.0.1.nip.io) | Quasar SSR application |
+| API | [https://api.quvel.127.0.0.1.nip.io](https://api.quvel.127.0.0.1.nip.io) | Laravel API |
+| API Telescope | [https://api.quvel.127.0.0.1.nip.io/telescope](https://api.quvel.127.0.0.1.nip.io/telescope) | Laravel debugging |
+| Second Tenant | [https://second-tenant.quvel.127.0.0.1.nip.io](https://second-tenant.quvel.127.0.0.1.nip.io) | Multi-tenant testing |
 
-### **Long-Term Goals**
+## License
 
-- Add token-based authentication
-- Extend WebSockets for real-time features
-- Push & background Notifications.
-- Offline mode.
+QuVel Kit is open-source software licensed under the MIT license.
 
 ---
 
-QuVel Kit provides a **fully modular** foundation for Laravel & Quasar applications, ensuring best practices, multi-tenancy support, and an **enterprise-ready stack** from day one.
+Built by [Irving Gomez](https://irv.codes).

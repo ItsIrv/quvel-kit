@@ -1,18 +1,16 @@
 {
-    "name": "nwidart/tenant",
-    "description": "",
+    "name": "itsirv/tenant",
+    "description": "Handles multi-tenancy for QuVel Kit. Provides a global middleware to set the tenant per request based on the domain.",
     "authors": [
         {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
+            "name": "Irving Gomez",
+            "email": "gomirv.work@gmail.com"
         }
     ],
     "extra": {
         "laravel": {
             "providers": [],
-            "aliases": {
-
-            }
+            "aliases": {}
         }
     },
     "autoload": {
@@ -20,7 +18,10 @@
             "Modules\\Tenant\\": "app/",
             "Modules\\Tenant\\Database\\Factories\\": "database/factories/",
             "Modules\\Tenant\\Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

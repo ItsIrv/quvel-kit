@@ -1,0 +1,68 @@
+/**
+ * Spanish translations for Quvel module
+ */
+export default {
+  landing: {
+    title: 'QuVel Kit',
+    subtitle: 'Laravel + Quasar Vue',
+    features: {
+      ssr: 'SSR + Respaldo SPA',
+      capacitor: 'Compilaciones Nativas Capacitor',
+      modular: 'Arquitectura Modular',
+      typescript: 'TypeScript Estricto',
+      pinia: 'Gestión de Estado Pinia',
+      tailwind: 'Estilos Tailwind CSS',
+      websockets: 'WebSockets en Tiempo Real',
+    },
+    tabs: {
+      tinker: 'tinker',
+      dashboardController: 'Controlador',
+      product: 'Modelo',
+      services: 'Servicios TS',
+      component: 'Componente Vue',
+      store: 'Store Pinia',
+    },
+    docs: 'Documentación',
+    github: 'GitHub',
+  },
+  lander: {
+    docs: 'Documentación',
+    docsDescription: 'Leer la documentación completa',
+    github: 'GitHub',
+    githubDescription: 'Ver el repositorio de código fuente',
+  },
+  common: {
+    menu: 'Menú',
+    account: 'Cuenta',
+    profile: 'Perfil',
+    settings: 'Configuraciones',
+    notifications: 'Notificaciones',
+    online: 'En línea',
+  },
+  profile: {
+    title: 'Perfil',
+    subtitle: 'Información de la cuenta y preferencias',
+    anonymous: 'Usuario Anónimo',
+    editProfile: 'Editar Perfil',
+    personalInfo: 'Información Personal',
+    accountInfo: 'Información de la Cuenta',
+    recentActivity: 'Actividad Reciente',
+    noRecentActivity: 'No hay actividad reciente para mostrar',
+    name: 'Nombre',
+    email: 'Correo Electrónico',
+    role: 'Rol',
+    defaultRole: 'Usuario',
+    status: 'Estado',
+    active: 'Activo',
+    lastLogin: 'Último Login',
+    today: 'Hoy',
+    memberSince: 'Miembro desde',
+    joinDate: 'May 2025',
+    projects: 'Proyectos',
+    teams: 'Equipos',
+    contributions: 'Contribuciones',
+  },
+  settings: {
+    title: 'Configuraciones',
+  },
+};

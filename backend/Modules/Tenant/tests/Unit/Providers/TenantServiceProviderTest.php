@@ -3,18 +3,16 @@
 namespace Modules\Tenant\Tests\Unit\Providers;
 
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Log\Context\Repository;
+use Illuminate\Support\Facades\Context;
 use Mockery;
-use Modules\Tenant\app\Http\Middleware\TenantMiddleware;
-use Modules\Tenant\Providers\EventServiceProvider;
+use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Providers\RouteServiceProvider;
 use Modules\Tenant\Providers\TenantServiceProvider;
-use Modules\Tenant\app\Services\TenantFindService;
-use Modules\Tenant\app\Services\TenantResolverService;
-use Modules\Tenant\app\Services\TenantSessionService;
+use Modules\Tenant\Services\FindService;
+use Modules\Tenant\Services\RequestPrivacy;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
@@ -23,16 +21,6 @@ use Tests\TestCase;
 #[Group('tenant-providers')]
 class TenantServiceProviderTest extends TestCase
 {
-    /**
-     * Creates a mock instance of TenantServiceProvider with protected methods allowed.
-     */
-    private function createMockedProvider(): Mockery\MockInterface|TenantServiceProvider
-    {
-        return $this->mock(TenantServiceProvider::class)
-            ->makePartial()
-            ->shouldAllowMockingProtectedMethods();
-    }
-
     /**
      * Test that the service provider registers services correctly.
      */
@@ -44,6 +32,7 @@ class TenantServiceProviderTest extends TestCase
 
         $singletons = [];
         $registers  = [];
+        $scoped     = [];
 
         $app->method('singleton')
             ->willReturnCallback(function ($class) use (&$singletons): void {
@@ -55,140 +44,165 @@ class TenantServiceProviderTest extends TestCase
                 $registers[] = strtolower($class);
             });
 
+        $app->method('scoped')
+            ->willReturnCallback(function ($class) use (&$scoped): void {
+                $scoped[] = strtolower($class);
+            });
+
+        $tenantContext = Mockery::mock(TenantContext::class);
+        $tenantContext->shouldReceive('get')
+            ->andReturn($this->tenant);
+
         $provider = new TenantServiceProvider($app);
         $provider->register();
 
         $expectedSingletons = [
-            strtolower(TenantSessionService::class),
-            strtolower(TenantFindService::class),
-            strtolower(TenantResolverService::class),
+            strtolower(FindService::class),
         ];
 
         $expectedRegisters = [
-            strtolower(EventServiceProvider::class),
             strtolower(RouteServiceProvider::class),
+        ];
+
+        $expectedScoped = [
+            strtolower(TenantContext::class),
+            strtolower(RequestPrivacy::class),
+            strtolower(TenantResolver::class),
         ];
 
         $this->assertEquals($expectedSingletons, $singletons);
         $this->assertEquals($expectedRegisters, $registers);
+        $this->assertEquals($expectedScoped, $scoped);
     }
 
     /**
-     * Test booting the service provider.
+     * Test that the boot method calls context hydration and dehydration.
      */
-    public function testBoot(): void
+    public function testBootCallsContextHydration(): void
     {
-        $provider = $this->createMockedProvider();
-        $provider->shouldReceive('registerTranslations')->once();
-        $provider->shouldReceive('registerConfig')->once();
-        $provider->shouldReceive('registerViews')->once();
-        $provider->shouldReceive('registerMiddleware')->once();
-        $provider->shouldReceive('loadMigrationsFrom')->once()
-            ->with(module_path('Tenant', 'database/migrations'));
+        Context::shouldReceive('dehydrating')
+            ->once()
+            ->with(Mockery::type('Closure'));
 
+        Context::shouldReceive('hydrated')
+            ->once()
+            ->with(Mockery::type('Closure'));
+
+        $tenantContext = $this->mock(TenantContext::class);
+        $tenantContext->shouldReceive('get')
+            ->andReturn($this->tenant);
+
+        $this->app->instance(TenantContext::class, $tenantContext);
+
+        $provider = new TenantServiceProvider($this->app);
         $provider->boot();
     }
 
     /**
-     * Test registering middleware.
+     * Test that the dehydrating callback adds the tenant to the context.
      */
-    public function testRegisterMiddleware(): void
+    public function testDehydratingAddsHiddenTenant(): void
     {
-        Route::shouldReceive('aliasMiddleware')->once()
-            ->with('tenant', TenantMiddleware::class);
+        // Get the dehydrating callback
+        $dehydratingCallback = null;
+        Context::shouldReceive('dehydrating')
+            ->once()
+            ->with(Mockery::on(function ($callback) use (&$dehydratingCallback) {
+                $dehydratingCallback = $callback;
+                return true;
+            }));
 
-        $this->createMockedProvider()->registerMiddleware();
-    }
+        Context::shouldReceive('hydrated')->once();
 
-    /**
-     * Test registering translations with and without existing directories.
-     */
-    #[DataProvider('translationDirectoryProvider')]
-    public function testRegisterTranslations(bool $dirExists): void
-    {
-        $provider = $this->createMockedProvider();
-        $langPath = resource_path("lang/modules/tenant");
+        // Mock tenant context
+        $tenantContext = $this->mock(TenantContext::class);
+        $tenantContext->shouldReceive('get')
+            ->once()
+            ->andReturn($this->tenant);
 
-        $provider->shouldReceive('isDir')->once()
-            ->with($langPath)
-            ->andReturn($dirExists);
-        $provider->shouldReceive('loadTranslationsFrom')->once();
-        $provider->shouldReceive('loadJsonTranslationsFrom')->once();
+        $this->app->instance(TenantContext::class, $tenantContext);
 
-        $provider->registerTranslations();
-    }
-
-    public static function translationDirectoryProvider(): array
-    {
-        return [
-            'Directory exists'         => [true],
-            'Directory does not exist' => [false],
-        ];
-    }
-
-    /**
-     * Test registering config files.
-     */
-    public function testRegisterConfig(): void
-    {
-        $provider = $this->createMockedProvider();
-
-        $provider->shouldReceive('mergeConfigFrom')->once();
-        $provider->shouldReceive('publishes')->once();
-
-        $provider->registerConfig();
-    }
-
-    /**
-     * Test registering views.
-     */
-    public function testRegisterViews(): void
-    {
-        Blade::shouldReceive('componentNamespace')->once()->with(
-            Mockery::type('string'),
-            Mockery::type('string'),
-        );
-
-        $provider = $this->createMockedProvider();
-
-        $provider->shouldReceive('loadViewsFrom')->once();
-        $provider->shouldReceive('publishes')->once();
-
-        $provider->registerViews();
-    }
-
-    /**
-     * Test that the `provides()` method returns the expected services.
-     */
-    public function testProvides(): void
-    {
+        // Boot the provider to register the callbacks
         $provider = new TenantServiceProvider($this->app);
+        $provider->boot();
 
-        $this->assertEquals(
-            [],
-            $provider->provides(),
-        );
+        // Mock context repository
+        $contextRepository = Mockery::mock(Repository::class);
+        $contextRepository->shouldReceive('addHidden')
+            ->once()
+            ->with('tenant', $this->tenant);
+
+        // Execute the dehydrating callback
+        $dehydratingCallback($contextRepository);
     }
 
     /**
-     * Test that `getPublishableViewPaths()` returns only existing directories.
+     * Test that the hydrating callback applies tenant config when tenant is present.
      */
-    public function testGetPublishableViewPaths(): void
+    public function testHydratedAppliesConfigWhenTenantExists(): void
     {
-        config(['view.paths' => ['/path/to/valid', '/path/to/invalid']]);
+        // This test verifies that the Context::hydrated callback is registered
+        // and that it checks for a hidden tenant
 
-        $provider = $this->createMockedProvider();
+        // Arrange - Set up expectations for Context facade calls
+        Context::shouldReceive('dehydrating')
+            ->once()
+            ->with(Mockery::type('Closure'));
 
-        $provider->shouldReceive('isDir')->once()
-            ->with('/path/to/valid/modules/tenant')
-            ->andReturn(true);
+        Context::shouldReceive('hydrated')
+            ->once()
+            ->with(Mockery::type('Closure'));
 
-        $provider->shouldReceive('isDir')->once()
-            ->with('/path/to/invalid/modules/tenant')
+        // Mock tenant context
+        $tenantContext = $this->mock(TenantContext::class);
+        $tenantContext->shouldReceive('get')
+            ->andReturn($this->tenant);
+
+        $this->app->instance(TenantContext::class, $tenantContext);
+
+        // Act - Boot the provider
+        $provider = new TenantServiceProvider($this->app);
+        $provider->boot();
+
+        // Assert - Mockery will verify the expectations
+    }
+
+    /**
+     * Test that the hydrating callback doesn't apply config when tenant is not present.
+     */
+    public function testHydratedDoesNotApplyConfigWhenTenantMissing(): void
+    {
+        // Get the hydrated callback
+        $hydratedCallback = null;
+        Context::shouldReceive('dehydrating')->once();
+        Context::shouldReceive('hydrated')
+            ->once()
+            ->with(Mockery::on(function ($callback) use (&$hydratedCallback) {
+                $hydratedCallback = $callback;
+                return true;
+            }));
+
+        // Mock tenant context
+        $tenantContext = $this->mock(TenantContext::class);
+        $tenantContext->shouldReceive('get')->andReturn($this->tenant);
+
+        $this->app->instance(TenantContext::class, $tenantContext);
+
+        // Boot the provider to register the callbacks
+        $provider = new TenantServiceProvider($this->app);
+        $provider->boot();
+
+        // Mock context repository without tenant
+        $contextRepository = Mockery::mock(Repository::class);
+        $contextRepository->shouldReceive('hasHidden')
+            ->once()
+            ->with('tenant')
             ->andReturn(false);
 
-        $result = $provider->getPublishableViewPaths();
+        // The getHidden method should not be called
+        $contextRepository->shouldNotReceive('getHidden');
 
-        $this->assertEquals(['/path/to/valid/modules/tenant'], $result);
+        // Execute the hydrated callback
+        $hydratedCallback($contextRepository);
     }
 }

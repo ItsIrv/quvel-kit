@@ -3,8 +3,7 @@
 namespace Modules\Tenant\Tests\Unit\Actions;
 
 use Modules\Tenant\Actions\TenantDump;
-use Modules\Tenant\app\Contexts\TenantContext;
-use Modules\Tenant\Transformers\TenantDumpTransformer;
+use Modules\Tenant\Contexts\TenantContext;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -30,7 +29,6 @@ class TenantDumpTest extends TestCase
 
         $result = $action->__invoke($tenantContext);
 
-        $this->assertInstanceOf(TenantDumpTransformer::class, $result);
         $this->assertEquals($this->tenant, $result->resource);
     }
 }

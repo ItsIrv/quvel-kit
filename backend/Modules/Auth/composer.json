@@ -1,18 +1,21 @@
 {
-    "name": "nwidart/auth",
-    "description": "",
+    "name": "itsirv/auth",
+    "description": "Handles authentication for QuVel Kit. Includes login, logout, session dumping, registration and social login.",
     "authors": [
         {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
+            "name": "Irving Gomez",
+            "email": "gomirv.work@gmail.com"
         }
     ],
+    "require": {
+        "laravel/fortify": "^1.25"
+    },
     "extra": {
         "laravel": {
-            "providers": [],
-            "aliases": {
-
-            }
+            "providers": [
+                "Modules\\Auth\\Providers\\FortifyServiceProvider"
+            ],
+            "aliases": {}
         }
     },
     "autoload": {

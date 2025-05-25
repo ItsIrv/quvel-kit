@@ -2,8 +2,9 @@
 
 namespace Modules\Tenant\Tests\Unit\Exceptions;
 
-use Modules\Tenant\App\Exceptions\TenantNotFoundException;
+use Exception;
 use Modules\Tenant\Enums\TenantError;
+use Modules\Tenant\Exceptions\TenantNotFoundException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -32,7 +33,7 @@ class TenantNotFoundExceptionTest extends TestCase
     public function testExceptionWithCustomMessage(): void
     {
         $customMessage = 'Custom tenant not found message';
-        $exception     = new TenantNotFoundException($customMessage);
+        $exception = new TenantNotFoundException($customMessage);
 
         $this->assertEquals($customMessage, $exception->getMessage());
     }
@@ -52,7 +53,7 @@ class TenantNotFoundExceptionTest extends TestCase
      */
     public function testExceptionWithPrevious(): void
     {
-        $previous  = new \Exception('Previous exception');
+        $previous = new Exception('Previous exception');
         $exception = new TenantNotFoundException('Error', 0, $previous);
 
         $this->assertSame($previous, $exception->getPrevious());

@@ -1,0 +1,95 @@
+export default {
+  forms: {
+    common: {
+      email: 'Correo electrónico',
+      name: 'Nombre',
+      password: 'Contraseña',
+      passwordConfirm: 'Confirmar contraseña',
+    },
+    login: {
+      title: 'Iniciar sesión',
+      button: 'Entrar',
+      loggedInAs: 'Conectado como {name}',
+      goTo: 'Ir a',
+      welcomePage: 'Página de bienvenida',
+      link: '¿Ya tienes una cuenta?',
+    },
+    logout: {
+      button: 'Cerrar sesión',
+    },
+    oauth: {
+      providers: {
+        apple: 'Apple',
+        google: 'Google',
+      },
+      link: '¿Prefieres correo/contraseña?',
+      logInWith: 'Iniciar sesión con {provider}',
+      title: 'Iniciar sesión con proveedor',
+    },
+    signup: {
+      button: 'Registrarse',
+      link: '¿Necesitas una cuenta?',
+      title: 'Crear cuenta',
+    },
+    password: {
+      title: 'Restablecer contraseña',
+      resetButton: 'Enviar enlace',
+      resetDescription:
+        'Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.',
+      forgot: '¿Olvidaste tu contraseña?',
+      newPassword: 'Nueva contraseña',
+      confirmNewPassword: 'Confirmar nueva contraseña',
+      changeButton: 'Cambiar contraseña',
+    },
+    passwordReset: {
+      tokenDescription: 'Ingresa tu correo y nueva contraseña para restablecer tu cuenta.',
+      tokenButton: 'Restablecer contraseña',
+      title: 'Restablecer contraseña',
+      token: 'Token',
+    },
+    mfa: {
+      title: 'Autenticación de dos factores',
+      code: 'Código de autenticación',
+      verifyButton: 'Verificar',
+      description: 'Ingresa el código de verificación de tu app de autenticación.',
+      backupCode: 'Usar código de respaldo',
+      backupCodeDescription: 'Ingresa uno de tus códigos de respaldo.',
+    },
+  },
+  status: {
+    errors: {
+      activeFlowExists: 'Ya hay un flujo activo.',
+      captcha: 'No pudimos verificar que eres humano. Inténtalo de nuevo.',
+      captcha_not_loaded:
+        'La verificación humana no está cargada. Recarga la página e inténtalo de nuevo.',
+      captcha_invalid: 'La verificación humana falló. Inténtalo de nuevo.',
+      emailAlreadyInUse: 'Este correo ya está en uso.',
+      emailTaken: 'Este correo ya está en uso.',
+      invalidConfig: 'Configuración inválida.',
+      invalidCredentials: 'Correo o contraseña inválidos.',
+      invalidNonce: 'Nonce inválido.',
+      invalidProvider: 'Proveedor inválido.',
+      invalidToken: 'Token inválido.',
+      invalidUser: 'Usuario inválido.',
+      login: 'No se pudo iniciar sesión, intenta más tarde.',
+      mismatch: 'Las contraseñas no coinciden.',
+      providerIdTaken: 'Este ID de proveedor ya está en uso.',
+      userNotFound: 'Usuario no encontrado.',
+    },
+    warnings: {
+      emailNotVerified: 'Esta cuenta no ha sido verificada.',
+    },
+    success: {
+      clientTokenGranted: 'Autenticación exitosa. Intercambia el nonce por una sesión.',
+      loggedIn: 'Sesión iniciada correctamente.',
+      loggedOut: 'Sesión cerrada correctamente.',
+      signedUp: 'Registro completado.',
+      userCreated: 'Usuario creado exitosamente.',
+      checkYourEmail: 'Revisa tu correo electrónico para verificar tu cuenta.',
+      passwordResetSent: 'Enlace de restablecimiento de contraseña enviado.',
+      passwordReset: 'Tu contraseña se ha restablecido correctamente.',
+      emailVerified: 'Tu correo ha sido verificado exitosamente.',
+      emailVerificationNotice: 'Te hemos enviado un enlace de verificación.',
+    },
+  },
+};

@@ -2,8 +2,9 @@
 
 namespace Modules\Tenant\Tests\Unit\Exceptions;
 
-use Modules\Tenant\App\Exceptions\TenantMismatchException;
+use Exception;
 use Modules\Tenant\Enums\TenantError;
+use Modules\Tenant\Exceptions\TenantMismatchException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -32,7 +33,7 @@ class TenantMismatchExceptionTest extends TestCase
     public function testExceptionWithCustomMessage(): void
     {
         $customMessage = 'Custom tenant not found message';
-        $exception     = new TenantMismatchException($customMessage);
+        $exception = new TenantMismatchException($customMessage);
 
         $this->assertEquals($customMessage, $exception->getMessage());
     }
@@ -52,7 +53,7 @@ class TenantMismatchExceptionTest extends TestCase
      */
     public function testExceptionWithPrevious(): void
     {
-        $previous  = new \Exception('Previous exception');
+        $previous = new Exception('Previous exception');
         $exception = new TenantMismatchException('Error', 0, $previous);
 
         $this->assertSame($previous, $exception->getPrevious());

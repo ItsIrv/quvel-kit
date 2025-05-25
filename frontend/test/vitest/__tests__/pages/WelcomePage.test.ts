@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import WelcomePage from '@/pages/WelcomePage.vue';
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest';
 import { createI18n } from 'vue-i18n';
-import welcome from 'src/i18n/en-US/welcome';
+import welcome from 'src/modules/Core/i18n/en-US/welcome';
 
 // Install Quasar testing plugin
 installQuasarPlugin();
