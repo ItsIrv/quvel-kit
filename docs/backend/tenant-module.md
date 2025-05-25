@@ -4,6 +4,15 @@
 
 QuVel Kit provides a powerful multi-tenancy system that allows a single application instance to serve multiple isolated tenants. The system implements domain-based tenant resolution, tenant context management, and a dynamic tenant-specific configuration system with support for parent-child tenant relationships.
 
+### Key Features
+
+- **Dynamic Configuration System**: Flexible key-value configuration with no hard-coded properties
+- **Configuration Pipeline**: Modular architecture allowing modules to register configuration processors
+- **Tenant Tiers**: Support for different isolation levels (Basic, Standard, Premium, Enterprise)
+- **Configuration Providers**: Modules can dynamically add configuration to tenant API responses
+- **Inheritance**: Child tenants automatically inherit parent configurations
+- **Visibility Control**: Three-tier security model (PUBLIC, PROTECTED, PRIVATE)
+
 ## Architecture
 
 ### Core Components
@@ -15,22 +24,54 @@ QuVel Kit provides a powerful multi-tenancy system that allows a single applicat
 | `HostResolver` | Domain resolver | Default implementation that maps domains to tenants |
 | `FindService` | Tenant lookup service | Provides methods to find tenants by various criteria |
 | `ConfigApplier` | Configuration service | Applies tenant-specific configuration to the application |
-| `TenantConfig` | Value object | Encapsulates all configurable settings for a tenant |
-| `TenantConfigCast` | Eloquent cast | Handles conversion between JSON and `TenantConfig` objects |
-| `TenantConfigFactory` | Factory service | Creates `TenantConfig` instances with sensible defaults |
+| `DynamicTenantConfig` | Value object | Flexible key-value configuration storage with visibility control |
+| `DynamicTenantConfigCast` | Eloquent cast | Handles conversion between JSON and `DynamicTenantConfig` objects |
+| `ConfigurationPipeline` | Pipeline manager | Orchestrates configuration pipes for processing tenant configs |
+| `TenantConfigProviderRegistry` | Provider registry | Manages modules that provide additional tenant configuration |
 
-## Tenant Configuration System
+## Dynamic Tenant Configuration System
 
 ### Overview
 
-The tenant configuration system allows you to override virtually any Laravel configuration value on a per-tenant basis. This enables different clients to have their own settings while running on the same application instance.
+The tenant configuration system uses a flexible, dynamic approach that allows you to override virtually any Laravel configuration value on a per-tenant basis. Unlike traditional static configuration, this system enables:
 
-Key capabilities include:
-
-- **Dynamic Configuration**: Store tenant-specific configuration in the database
+- **Dynamic Properties**: No hard-coded configuration fields - add any key-value pairs as needed
+- **Module Extensibility**: Modules can register their own configuration processors via pipes
+- **Configuration Pipeline**: Chain of processors that apply tenant-specific settings
+- **Tiered Isolation**: Different levels of resource isolation based on tenant tier
 - **Runtime Overrides**: Override Laravel's configuration values at runtime
-- **Inheritance**: Child tenants can inherit configuration from parent tenants
-- **Visibility Control**: Configuration values have different visibility levels
+- **Inheritance**: Child tenants automatically inherit parent configurations
+- **Visibility Control**: Three-tier security model for configuration exposure
+
+### Configuration Architecture
+
+#### Configuration Pipeline
+
+The system uses a pipeline pattern where configuration flows through registered processors:
+
+```
+Tenant → ConfigurationPipeline → [CorePipe, DatabasePipe, CachePipe, ...] → Laravel Config
+```
+
+Each pipe handles specific configuration domains and can be registered by any module.
+
+#### Core Components
+
+1. **DynamicTenantConfig**: Flexible value object that stores configuration as key-value pairs
+2. **ConfigurationPipeline**: Manages and executes configuration pipes
+3. **ConfigurationPipeInterface**: Contract for creating configuration pipes
+4. **DynamicTenantConfigCast**: Handles database serialization
+
+#### Tenant Tiers (Optional)
+
+The tier system is **disabled by default**. When enabled via `TENANT_ENABLE_TIERS=true`, it provides different isolation levels:
+
+| Tier | Database | Cache | Redis | Description |
+|------|----------|-------|-------|-------------|
+| **Basic** | Shared | Shared | Shared | Row-level isolation only |
+| **Standard** | Shared | Dedicated | Dedicated | Row-level isolation with dedicated cache |
+| **Premium** | Dedicated | Dedicated | Dedicated | Full database and cache isolation |
+| **Enterprise** | Dedicated | Dedicated | Dedicated | Full isolation with custom infrastructure |
 
 ### Configuration Visibility
 
@@ -38,9 +79,57 @@ Configuration values have different visibility levels defined in the `TenantConf
 
 | Level | Description | Access |
 |-------|-------------|--------|
-| `PUBLIC` | Exposed to the browser | Available via `window.TENANT_CONFIG` |
-| `PROTECTED` | Exposed to SSR server | Available in `src-ssr/services/TenantCache.ts` |
+| `PUBLIC` | Exposed to the browser | Available via `window.__TENANT_CONFIG__` |
+| `PROTECTED` | Exposed to SSR server | Available in SSR context but not browser |
 | `PRIVATE` | Backend only | Never exposed outside the backend |
+
+### Working with Dynamic Configuration
+
+```php
+use Modules\Tenant\ValueObjects\DynamicTenantConfig;
+use Modules\Tenant\Enums\TenantConfigVisibility;
+
+// Create configuration for a basic tier tenant
+$config = new DynamicTenantConfig([
+    'app_name' => 'My App',
+    'mail_from_address' => 'support@myapp.com',
+    'mail_from_name' => 'My App Support',
+]);
+
+// Set visibility levels
+$config->setVisibility('app_name', TenantConfigVisibility::PUBLIC);
+$config->setVisibility('mail_from_address', TenantConfigVisibility::PROTECTED);
+
+// Set tier
+$config->setTier('basic');
+
+// Save to tenant
+$tenant->config = $config;
+$tenant->save();
+```
+
+### Configuration Inheritance
+
+Child tenants automatically inherit parent configuration:
+
+```php
+$parent = Tenant::find(1);
+$parent->config = new DynamicTenantConfig([
+    'app_name' => 'Parent App',
+    'mail_from_address' => 'parent@example.com',
+]);
+
+$child = Tenant::find(2);
+$child->parent_id = $parent->id;
+$child->config = new DynamicTenantConfig([
+    'app_name' => 'Child App', // Overrides parent
+    // mail_from_address inherited from parent
+]);
+
+$effectiveConfig = $child->getEffectiveConfig();
+// app_name = 'Child App' (overridden)
+// mail_from_address = 'parent@example.com' (inherited)
+```
 
 ### Environment Variables
 
@@ -53,6 +142,129 @@ Configuration values have different visibility levels defined in the `TenantConf
 | `TENANT_PRIVACY_TRUSTED_INTERNAL_IPS` | Allowed IPs for internal endpoints | `127.0.0.1,::1` |
 | `TENANT_PRIVACY_DISABLE_KEY_CHECK` | Disable API key verification (dev only) | `false` |
 | `TENANT_PRIVACY_DISABLE_IP_CHECK` | Disable IP verification (dev only) | `false` |
+
+## Configuration Providers
+
+### Overview
+
+Configuration Providers allow modules to dynamically add configuration to tenant API responses without modifying the core tenant structure. This enables modules to expose their settings to the frontend.
+
+### How It Works
+
+When a tenant resource is requested through the API, the system:
+
+1. Loads the tenant's stored configuration
+2. Applies all registered configuration providers
+3. Merges the configurations respecting visibility rules
+4. Returns the enhanced configuration in the response
+
+### Creating a Configuration Provider
+
+```php
+namespace Modules\YourModule\Providers;
+
+use Modules\Tenant\Contracts\TenantConfigProviderInterface;
+use Modules\Tenant\Models\Tenant;
+
+class YourModuleTenantConfigProvider implements TenantConfigProviderInterface
+{
+    public function getConfig(Tenant $tenant): array
+    {
+        return [
+            'config' => [
+                // Your module's configuration
+                'your_module_api_url' => config('your_module.api_url'),
+                'your_module_features' => $this->getEnabledFeatures($tenant),
+            ],
+            'visibility' => [
+                // Define visibility for each config key
+                'your_module_api_url' => 'public',
+                'your_module_features' => 'public',
+            ],
+        ];
+    }
+
+    public function priority(): int
+    {
+        return 50; // Higher priority runs first
+    }
+    
+    private function getEnabledFeatures(Tenant $tenant): array
+    {
+        // Logic to determine features based on tenant tier
+        $tier = $tenant->config->get('tier', 'basic');
+        
+        return match($tier) {
+            'premium', 'enterprise' => ['basic', 'advanced', 'premium'],
+            'standard' => ['basic', 'advanced'],
+            default => ['basic'],
+        };
+    }
+}
+```
+
+### Registering Configuration Providers
+
+```php
+public function boot(): void
+{
+    parent::boot();
+
+    // Register tenant config provider
+    if (class_exists(\Modules\Tenant\Providers\TenantServiceProvider::class)) {
+        $this->app->booted(function () {
+            \Modules\Tenant\Providers\TenantServiceProvider::registerConfigProvider(
+                YourModuleTenantConfigProvider::class
+            );
+        });
+    }
+}
+```
+
+### Best Practices
+
+1. **Use Appropriate Visibility**: Only expose what's needed at each level
+2. **Namespace Your Keys**: Prefix with module name to avoid conflicts
+3. **Document Your Configuration**: Comment what each config value does
+4. **Consider Performance**: Don't add expensive computations in providers
+5. **Handle Missing Config**: Use defaults when config values might not exist
+
+### Advanced Usage
+
+#### Conditional Configuration
+
+You can provide different configuration based on tenant properties:
+
+```php
+public function getConfig(Tenant $tenant): array
+{
+    $config = [
+        'base_feature' => true,
+    ];
+    
+    // Add premium features for premium tenants
+    if ($tenant->config->get('tier') === 'premium') {
+        $config['premium_feature'] = true;
+        $config['premium_limit'] = 1000;
+    }
+    
+    return [
+        'config' => $config,
+        'visibility' => [
+            'base_feature' => 'public',
+            'premium_feature' => 'public',
+            'premium_limit' => 'public',
+        ],
+    ];
+}
+```
+
+### Built-in Configuration Providers
+
+| Provider | Module | Provides |
+|----------|--------|----------|
+| `CoreTenantConfigProvider` | Core | Frontend URLs, API version, supported locales |
+| `AuthTenantConfigProvider` | Auth | OAuth providers, authentication settings |
 
 ### Tenant Table Configuration
 
@@ -161,19 +373,53 @@ public function show()
 }
 ```
 
-### Working with Tenant Configuration
+### Working with Dynamic Configuration
+
+#### Setting Configuration
+
+```php
+use Modules\Tenant\ValueObjects\DynamicTenantConfig;
+use Modules\Tenant\Enums\TenantConfigVisibility;
+
+// Create configuration for a tenant
+$config = new DynamicTenantConfig(
+    // Configuration data
+    [
+        'app_name' => 'My Application',
+        'mail_from_address' => 'support@app.com',
+        'custom_setting' => 'value',
+    ],
+    // Visibility settings
+    [
+        'app_name' => TenantConfigVisibility::PUBLIC,
+        'mail_from_address' => TenantConfigVisibility::PROTECTED,
+        'custom_setting' => TenantConfigVisibility::PRIVATE,
+    ],
+    // Tenant tier
+    'standard'
+);
+
+$tenant->config = $config;
+$tenant->save();
+```
 
 #### Accessing Configuration
-
-You can access a tenant's configuration through the `config` property on the `Tenant` model:
 
 ```php
 $tenant = Tenant::find(1);
 $config = $tenant->config;
 
-// Access specific configuration values
-$appName = $config->appName;
-$mailFromAddress = $config->mailFromAddress;
+// Access using get method
+$appName = $config->get('app_name');
+$mailFrom = $config->get('mail_from_address', 'default@app.com'); // with default
+
+// Or use property access (backward compatible)
+$appName = $config->app_name;
+
+// Check if configuration exists
+if ($config->has('custom_setting')) {
+    $value = $config->get('custom_setting');
+}
 ```
 
 #### Getting Effective Configuration
@@ -197,107 +443,110 @@ TenantServiceProvider::applyTenantConfig($tenant);
 setTenant($tenantId);
 ```
 
-#### Setting Configuration Values
+#### Modifying Configuration
 
 ```php
-// Set configuration values
-$tenant->config = new TenantConfig([
-    'appName' => 'Custom App Name',
-    'mailFromAddress' => 'support@example.com',
-    'mailFromName' => 'Support Team',
-]);
+// Get existing config
+$config = $tenant->config;
+
+// Add or update values
+$config->set('new_setting', 'value');
+$config->set('nested.setting', ['key' => 'value']);
+
+// Set visibility for new values
+$config->setVisibility('new_setting', TenantConfigVisibility::PUBLIC);
+
+// Remove a configuration
+$config->forget('old_setting');
+
+// Save changes
+$tenant->config = $config;
 $tenant->save();
 ```
 
-### Configuration Structure
+## Configuration Pipes
 
-The `TenantConfig` value object includes the following configurable sections:
+### Creating a Configuration Pipe
 
-#### App Settings
-
-```php
-$config = new TenantConfig([
-    'appName' => 'My Application',        // Application name
-    'appEnv' => 'production',            // Environment (local, production, etc.)
-    'appDebug' => false,                 // Debug mode
-    'appUrl' => 'https://example.com',   // Application URL
-    'appTimezone' => 'UTC',              // Application timezone
-]);
-```
-
-#### Frontend Settings
+Modules can register configuration pipes to process tenant settings:
 
 ```php
-$config = new TenantConfig([
-    'frontendUrl' => 'https://example.com',      // Frontend URL
-    'capacitorScheme' => 'myapp',               // Capacitor deep link scheme
-    'internalApiUrl' => 'https://api.internal', // Internal API URL for SSR
-]);
+namespace Modules\YourModule\Pipes;
+
+use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Modules\Tenant\Models\Tenant;
+
+class YourModuleConfigPipe implements ConfigurationPipeInterface
+{
+    public function handle(
+        Tenant $tenant, 
+        ConfigRepository $config, 
+        array $tenantConfig, 
+        callable $next
+    ): mixed {
+        // Apply your module's configuration
+        if (isset($tenantConfig['your_module_enabled'])) {
+            $config->set('your_module.enabled', $tenantConfig['your_module_enabled']);
+        }
+        
+        // Pass to next pipe
+        return $next([
+            'tenant' => $tenant,
+            'config' => $config,
+            'tenantConfig' => $tenantConfig,
+        ]);
+    }
+
+    public function handles(): array
+    {
+        // List of configuration keys this pipe handles
+        return [
+            'your_module_enabled',
+            'your_module_api_key',
+        ];
+    }
+
+    public function priority(): int
+    {
+        return 50; // Higher priority runs first
+    }
+}
 ```
 
-#### Database Settings
+### Registering Configuration Pipes
+
+In your module's service provider:
 
 ```php
-$config = new TenantConfig([
-    'dbConnection' => 'mysql',
-    'dbHost' => 'db.example.com',
-    'dbPort' => 3306,
-    'dbDatabase' => 'tenant_db',
-    'dbUsername' => 'tenant_user',
-    'dbPassword' => 'secure_password',
-]);
+public function boot(): void
+{
+    parent::boot();
+
+    // Register configuration pipe
+    if (class_exists(\Modules\Tenant\Providers\TenantServiceProvider::class)) {
+        $this->app->booted(function () {
+            \Modules\Tenant\Providers\TenantServiceProvider::registerConfigPipe(
+                \Modules\YourModule\Pipes\YourModuleConfigPipe::class
+            );
+        });
+    }
+}
 ```
 
-#### Mail Settings
+### Built-in Configuration Pipes
 
-```php
-$config = new TenantConfig([
-    'mailMailer' => 'smtp',
-    'mailHost' => 'smtp.example.com',
-    'mailPort' => 587,
-    'mailUsername' => 'user@example.com',
-    'mailPassword' => 'mail_password',
-    'mailFromAddress' => 'no-reply@example.com',
-    'mailFromName' => 'Example App',
-]);
-```
+QuVel Kit includes several built-in pipes:
 
-#### Cache & Session
-
-```php
-$config = new TenantConfig([
-    'cacheStore' => 'redis',
-    'cachePrefix' => 'tenant1',
-    'sessionDriver' => 'redis',
-    'sessionLifetime' => 120,
-    'sessionDomain' => '.example.com',
-]);
-```
-
-#### AWS Settings
-
-```php
-$config = new TenantConfig([
-    'awsAccessKeyId' => 'your-access-key',
-    'awsSecretAccessKey' => 'your-secret-key',
-    'awsDefaultRegion' => 'us-west-2',
-    'awsBucket' => 'tenant-bucket',
-]);
-```
-
-#### OAuth Settings
-
-```php
-$config = new TenantConfig([
-    'oauthProviders' => [
-        'google' => [
-            'clientId' => 'google-client-id',
-            'clientSecret' => 'google-client-secret',
-            'redirectUrl' => 'https://example.com/auth/callback/google',
-        ],
-    ],
-]);
-```
+| Pipe | Priority | Handles | Description |
+|------|----------|---------|-------------|
+| `CoreConfigPipe` | 100 | App settings, timezone, locale | Core application configuration |
+| `DatabaseConfigPipe` | 90 | Database connection settings | Tenant-specific database (Premium+ tiers) |
+| `CacheConfigPipe` | 80 | Cache store, prefix | Tenant-specific cache configuration |
+| `RedisConfigPipe` | 75 | Redis connection settings | Tenant-specific Redis (Standard+ tiers) |
+| `MailConfigPipe` | 70 | Mail driver, SMTP settings | Tenant-specific mail configuration |
+| `SessionConfigPipe` | 60 | Session driver, lifetime | Tenant-specific session settings |
+| `AuthConfigPipe` | 50 | OAuth providers, auth settings | Authentication configuration |
 
 ## Tenant-Aware Models
 
@@ -579,27 +828,45 @@ $tenant = Tenant::factory()->create([
 ]);
 ```
 
-#### TenantConfigFactory
+#### DynamicTenantConfigFactory
 
-The `TenantConfigFactory` creates tenant configuration with sensible defaults based on your local environment variables:
+The `DynamicTenantConfigFactory` creates tenant configuration based on tier:
 
 ```php
-// Create a tenant with configuration
-$config = TenantConfigFactory::create(
-    apiDomain: 'api.tenant1.example.com',
+// Create basic tier configuration (minimal)
+$config = DynamicTenantConfigFactory::createBasicTier(
     appName: 'My Application',
-    appEnv: 'local',
     mailFromName: 'Support Team',
-    mailFromAddress: 'support@example.com',
-    capacitorScheme: 'myapp',  // For mobile deep linking
+    mailFromAddress: 'support@example.com'
 );
+
+// Create standard tier configuration
+$config = DynamicTenantConfigFactory::createStandardTier(
+    appName: 'My Application',
+    cachePrefix: 'tenant_123',
+    redisDatabase: 1
+);
+
+// Create premium tier configuration
+$config = DynamicTenantConfigFactory::createPremiumTier(
+    appName: 'My Application',
+    dbDatabase: 'tenant_123_db',
+    dbUsername: 'tenant_123_user',
+    dbPassword: 'secure_password'
+);
+
+// Or create from environment with custom settings
+$config = DynamicTenantConfigFactory::createFromEnv('premium', [
+    'custom_api_key' => 'abc123',
+    'feature_flags' => ['new_ui', 'advanced_search'],
+]);
 
 $tenant = Tenant::factory()->create([
     'config' => $config,
 ]);
 ```
 
-The factory automatically sets up visibility levels for configuration properties, ensuring sensitive data is only exposed to appropriate contexts.
+The factory automatically sets appropriate visibility levels and only includes configuration relevant to each tier.
 
 #### TenantSeeder
 

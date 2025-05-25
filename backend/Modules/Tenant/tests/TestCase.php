@@ -10,7 +10,7 @@ use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\database\seeders\TenantSeeder;
 use Modules\Tenant\Enums\TenantConfigVisibility;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\ValueObjects\TenantConfig;
+use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 
 /**
  * Provides methods to seed the tenant and set the tenant context for the application.
@@ -58,51 +58,52 @@ abstract class TestCase extends BaseTestCase
         $this->tenantContextMock = $this->mock(TenantContext::class);
     }
 
-    protected function createTenantConfig(): TenantConfig
+    protected function createTenantConfig(): DynamicTenantConfig
     {
-        return new TenantConfig(
-            appUrl: 'https://api.example.com',
-            frontendUrl: 'https://app.example.com',
-            internalApiUrl: 'https://internal-api.example.com',
-            appDebug: true,
-            appTimezone: 'UTC',
-            appKey: 'base64:example',
-            appName: 'Example App',
-            appEnv: 'testing',
-            appLocale: 'en',
-            appFallbackLocale: 'en',
-            logChannel: 'stack',
-            logLevel: 'debug',
-            dbConnection: 'mysql',
-            dbHost: '127.0.0.1',
-            dbPort: 3306,
-            dbDatabase: 'quvel',
-            dbUsername: 'root',
-            dbPassword: '',
-            sessionDriver: 'file',
-            sessionLifetime: 120,
-            sessionEncrypt: false,
-            sessionPath: '/',
-            sessionDomain: '',
-            cacheStore: 'file',
-            cachePrefix: '',
-            redisClient: 'phpredis',
-            redisHost: '127.0.0.1',
-            redisPassword: null,
-            redisPort: 6379,
-            mailMailer: 'smtp',
-            mailScheme: null,
-            mailHost: 'mailhog',
-            mailPort: 1025,
-            mailUsername: null,
-            mailPassword: null,
-            mailFromAddress: 'no-reply@example.com',
-            mailFromName: 'Example',
-            capacitorScheme: null,
-            visibility: [
-                'app_url'  => TenantConfigVisibility::PUBLIC ,
-                'app_name' => TenantConfigVisibility::PUBLIC ,
-            ],
-        );
+        $config = new DynamicTenantConfig([
+            'app_url'             => 'https://api.example.com',
+            'frontend_url'        => 'https://app.example.com',
+            'internal_api_url'    => 'https://internal-api.example.com',
+            'app_debug'           => true,
+            'app_timezone'        => 'UTC',
+            'app_key'             => 'base64:example',
+            'app_name'            => 'Example App',
+            'app_env'             => 'testing',
+            'app_locale'          => 'en',
+            'app_fallback_locale' => 'en',
+            'log_channel'         => 'stack',
+            'log_level'           => 'debug',
+            'db_connection'       => 'mysql',
+            'db_host'             => '127.0.0.1',
+            'db_port'             => 3306,
+            'db_database'         => 'quvel',
+            'db_username'         => 'root',
+            'db_password'         => '',
+            'session_driver'      => 'file',
+            'session_lifetime'    => 120,
+            'session_encrypt'     => false,
+            'session_path'        => '/',
+            'session_domain'      => '',
+            'cache_store'         => 'file',
+            'cache_prefix'        => '',
+            'redis_client'        => 'phpredis',
+            'redis_host'          => '127.0.0.1',
+            'redis_password'      => null,
+            'redis_port'          => 6379,
+            'mail_mailer'         => 'smtp',
+            'mail_scheme'         => null,
+            'mail_host'           => 'mailhog',
+            'mail_port'           => 1025,
+            'mail_username'       => null,
+            'mail_password'       => null,
+            'mail_from_address'   => 'no-reply@example.com',
+            'mail_from_name'      => 'Example',
+            'capacitor_scheme'    => null,
+        ]);
+
+        $config->setVisibility('app_url', TenantConfigVisibility::PUBLIC);
+        $config->setVisibility('app_name', TenantConfigVisibility::PUBLIC);
+
+        return $config;
     }
 }
