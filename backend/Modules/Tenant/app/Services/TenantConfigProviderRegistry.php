@@ -15,28 +15,27 @@ use Modules\Tenant\Enums\TenantConfigVisibility;
 class TenantConfigProviderRegistry
 {
     /**
-     * @var Collection<int, TenantConfigProviderInterface>
+     * @var Collection<int, string> Collection of provider class names
      */
-    protected Collection $providers;
+    protected Collection $providerClasses;
 
     public function __construct()
     {
-        $this->providers = collect();
+        $this->providerClasses = collect();
     }
 
     /**
-     * Register a configuration provider.
+     * Register a configuration provider class.
      *
      * @param TenantConfigProviderInterface|string $provider
      * @return static
      */
     public function register(TenantConfigProviderInterface|string $provider): static
     {
-        if (is_string($provider)) {
-            $provider = app($provider);
-        }
+        // Always store the class name, not an instance
+        $providerClass = is_string($provider) ? $provider : get_class($provider);
 
-        $this->providers->push($provider);
+        $this->providerClasses->push($providerClass);
 
         return $this;
     }
@@ -50,25 +49,35 @@ class TenantConfigProviderRegistry
      */
     public function enhance(Tenant $tenant, DynamicTenantConfig|null $config = null): DynamicTenantConfig
     {
-        // Configs are provided by providers, so we start with an empty config
+        // Start with existing config or empty
         $enhancedConfig = new DynamicTenantConfig();
 
-        // Sort providers by priority (higher first)
-        $sortedProviders = $this->providers->sortByDesc(
-            fn (TenantConfigProviderInterface $provider) => $provider->priority()
-        );
+        // Create provider instances and collect with priorities
+        $providers = $this->providerClasses->map(function (string $providerClass) {
+            /** @var TenantConfigProviderInterface $provider */
+            $provider = app($providerClass);
+            return [
+                'provider' => $provider,
+                'priority' => $provider->priority(),
+            ];
+        });
+
+        // Sort by priority (higher first)
+        $sortedProviders = $providers->sortByDesc('priority');
 
         // Apply each provider
-        foreach ($sortedProviders as $provider) {
-            $providerData = $provider->getConfig($tenant);
+        foreach ($sortedProviders as $providerData) {
+            /** @var TenantConfigProviderInterface $provider */
+            $provider   = $providerData['provider'];
+            $configData = $provider->getConfig($tenant);
 
             // Add configuration values
-            foreach ($providerData['config'] ?? [] as $key => $value) {
+            foreach ($configData['config'] ?? [] as $key => $value) {
                 $enhancedConfig->set($key, $value);
             }
 
             // Add visibility settings
-            foreach ($providerData['visibility'] ?? [] as $key => $visibility) {
+            foreach ($configData['visibility'] ?? [] as $key => $visibility) {
                 $visibilityEnum = is_string($visibility)
                     ? TenantConfigVisibility::tryFrom($visibility) ?? TenantConfigVisibility::PRIVATE
                     : $visibility;
@@ -81,12 +90,12 @@ class TenantConfigProviderRegistry
     }
 
     /**
-     * Get all registered providers.
+     * Get all registered provider classes.
      *
-     * @return Collection<int, TenantConfigProviderInterface>
+     * @return Collection<int, string>
      */
-    public function getProviders(): Collection
+    public function getProviderClasses(): Collection
     {
-        return $this->providers;
+        return $this->providerClasses;
     }
 }
