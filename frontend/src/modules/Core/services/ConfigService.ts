@@ -6,16 +6,10 @@ import { Service } from './Service';
 export class ConfigService extends Service implements SsrAwareService {
   private config!: TenantConfig;
 
-  constructor() {
-    super();
-    console.log('ConfigService constructor');
-  }
-
   /**
    * Boot method called with SSR context after service construction.
    */
   boot(ssrServiceOptions?: SsrServiceOptions): void {
-    console.log('ConfigService boot');
     this.config = createConfig(ssrServiceOptions);
   }
 
@@ -27,7 +21,7 @@ export class ConfigService extends Service implements SsrAwareService {
   }
 
   public get<K extends keyof TenantConfig>(key: K): TenantConfig[K] {
-    return this.config[key];
+    return this.config?.[key] ?? null;
   }
 
   /**

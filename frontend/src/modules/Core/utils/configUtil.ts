@@ -3,8 +3,6 @@ import type { TenantConfig } from 'src/modules/Core/types/tenant.types';
 import { SessionName } from 'src/modules/Auth/models/Session';
 
 export function createConfig(ssrServiceOptions?: SsrServiceOptions): TenantConfig {
-  console.log('ssrServiceOptions');
-
   // Check if running in browser and `window.__TENANT_CONFIG__` is available
   const config = ssrServiceOptions?.req?.tenantConfig ??
     (window as unknown as { __TENANT_CONFIG__: TenantConfig }).__TENANT_CONFIG__ ?? {

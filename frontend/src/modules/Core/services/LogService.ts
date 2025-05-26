@@ -10,11 +10,6 @@ import { Service } from './Service';
 export class LogService extends Service implements SsrAwareService {
   private logger!: LoggerInterface;
 
-  constructor() {
-    super();
-    // Logger will be created in boot()
-  }
-
   boot(ssrServiceOptions?: SsrServiceOptions): void {
     this.logger = createLogger(ssrServiceOptions);
   }
