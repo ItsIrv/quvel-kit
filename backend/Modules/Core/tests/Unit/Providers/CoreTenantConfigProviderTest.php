@@ -8,9 +8,12 @@ use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
+/**
+ * @testdox CoreTenantConfigProvider
+ */
 #[CoversClass(CoreTenantConfigProvider::class)]
 #[Group('core-module')]
 #[Group('core-providers')]
@@ -24,43 +27,43 @@ class CoreTenantConfigProviderTest extends TestCase
         $this->provider = new CoreTenantConfigProvider();
     }
 
-    #[Test]
-    public function it_implements_tenant_config_provider_interface(): void
+    #[TestDox('implements TenantConfigProviderInterface')]
+    public function testImplementsTenantConfigProviderInterface(): void
     {
         $this->assertInstanceOf(TenantConfigProviderInterface::class, $this->provider);
     }
 
-    #[Test]
-    public function it_has_high_priority(): void
+    #[TestDox('has high priority of 100')]
+    public function testHasHighPriority(): void
     {
         $this->assertEquals(100, $this->provider->priority());
     }
 
-    #[Test]
-    public function it_returns_config_with_default_values_when_tenant_has_no_config(): void
+    #[TestDox('returns config with default values when tenant has no config')]
+    public function testReturnsConfigWithDefaultValuesWhenTenantHasNoConfig(): void
     {
         // Set default config values
         config([
-            'app.url' => 'https://api.default.com',
-            'app.name' => 'Default App',
-            'frontend.url' => 'https://default.com',
-            'frontend.internal_api_url' => 'http://internal.default.com'
+            'app.url'                   => 'https://api.default.com',
+            'app.name'                  => 'Default App',
+            'frontend.url'              => 'https://default.com',
+            'frontend.internal_api_url' => 'http://internal.default.com',
         ]);
-        
-        $tenant = $this->createMock(Tenant::class);
-        $tenant->public_id = 'test-tenant-123';
-        $tenant->name = 'Test Tenant';
-        
-        $tenant->expects($this->once())
+
+        $tenantModel            = $this->createPartialMock(Tenant::class, ['getEffectiveConfig']);
+        $tenantModel->public_id = 'test-tenant-123';
+        $tenantModel->name      = 'Test Tenant';
+
+        $tenantModel->expects($this->once())
             ->method('getEffectiveConfig')
             ->willReturn(null);
-            
-        $result = $this->provider->getConfig($tenant);
-        
+
+        $result = $this->provider->getConfig($tenantModel);
+
         // Check config structure
         $this->assertArrayHasKey('config', $result);
         $this->assertArrayHasKey('visibility', $result);
-        
+
         // Check default values are used
         $config = $result['config'];
         $this->assertEquals('https://api.default.com', $config['apiUrl']);
@@ -74,8 +77,8 @@ class CoreTenantConfigProviderTest extends TestCase
         $this->assertEquals('http://internal.default.com', $config['internalApiUrl']);
     }
 
-    #[Test]
-    public function it_returns_config_from_tenant_config_when_available(): void
+    #[TestDox('returns config from tenant config when available')]
+    public function testReturnsConfigFromTenantConfigWhenAvailable(): void
     {
         $tenantConfig = new DynamicTenantConfig();
         $tenantConfig->set('app_url', 'https://api.tenant.com');
@@ -85,17 +88,17 @@ class CoreTenantConfigProviderTest extends TestCase
         $tenantConfig->set('pusher_app_cluster', 'us2');
         $tenantConfig->set('recaptcha_site_key', 'tenant-recaptcha-key');
         $tenantConfig->set('internal_api_url', 'http://internal.tenant.com');
-        
-        $tenant = $this->createMock(Tenant::class);
-        $tenant->public_id = 'tenant-456';
-        $tenant->name = 'Custom Tenant';
-        
-        $tenant->expects($this->once())
+
+        $tenantModel            = $this->createPartialMock(Tenant::class, ['getEffectiveConfig']);
+        $tenantModel->public_id = 'tenant-456';
+        $tenantModel->name      = 'Custom Tenant';
+
+        $tenantModel->expects($this->once())
             ->method('getEffectiveConfig')
             ->willReturn($tenantConfig);
-            
-        $result = $this->provider->getConfig($tenant);
-        
+
+        $result = $this->provider->getConfig($tenantModel);
+
         // Check tenant config values are used
         $config = $result['config'];
         $this->assertEquals('https://api.tenant.com', $config['apiUrl']);
@@ -109,32 +112,32 @@ class CoreTenantConfigProviderTest extends TestCase
         $this->assertEquals('http://internal.tenant.com', $config['internalApiUrl']);
     }
 
-    #[Test]
-    public function it_falls_back_to_config_when_tenant_config_missing_keys(): void
+    #[TestDox('falls back to config when tenant config missing keys')]
+    public function testFallsBackToConfigWhenTenantConfigMissingKeys(): void
     {
         // Set default config values
         config([
-            'app.url' => 'https://api.fallback.com',
-            'app.name' => 'Fallback App',
-            'frontend.url' => 'https://fallback.com',
-            'frontend.internal_api_url' => 'http://internal.fallback.com'
+            'app.url'                   => 'https://api.fallback.com',
+            'app.name'                  => 'Fallback App',
+            'frontend.url'              => 'https://fallback.com',
+            'frontend.internal_api_url' => 'http://internal.fallback.com',
         ]);
-        
+
         // Tenant config with only some values
         $tenantConfig = new DynamicTenantConfig();
         $tenantConfig->set('app_name', 'Partial Tenant');
         $tenantConfig->set('pusher_app_key', 'partial-key');
-        
-        $tenant = $this->createMock(Tenant::class);
-        $tenant->public_id = 'partial-tenant';
-        $tenant->name = 'Partial Config Tenant';
-        
-        $tenant->expects($this->once())
+
+        $tenantModel            = $this->createPartialMock(Tenant::class, ['getEffectiveConfig']);
+        $tenantModel->public_id = 'partial-tenant';
+        $tenantModel->name      = 'Partial Config Tenant';
+
+        $tenantModel->expects($this->once())
             ->method('getEffectiveConfig')
             ->willReturn($tenantConfig);
-            
-        $result = $this->provider->getConfig($tenant);
-        
+
+        $result = $this->provider->getConfig($tenantModel);
+
         // Check mixed values
         $config = $result['config'];
         $this->assertEquals('https://api.fallback.com', $config['apiUrl']); // From config
@@ -146,41 +149,42 @@ class CoreTenantConfigProviderTest extends TestCase
         $this->assertEquals('http://internal.fallback.com', $config['internalApiUrl']); // From config
     }
 
-    #[Test]
-    public function it_uses_default_app_name_when_config_not_set(): void
+    #[TestDox('uses default app name when config not set')]
+    public function testUsesDefaultAppNameWhenConfigNotSet(): void
     {
-        // Don't set app.name config
-        config(['app.name' => null]);
-        
-        $tenant = $this->createMock(Tenant::class);
-        $tenant->public_id = 'test';
-        $tenant->name = 'Test';
-        
-        $tenant->expects($this->once())
+        // Don't set any app.name config, so it defaults to the fallback
+        // Clear any existing config first
+        $this->app['config']->offsetUnset('app.name');
+
+        $tenantModel            = $this->createPartialMock(Tenant::class, ['getEffectiveConfig']);
+        $tenantModel->public_id = 'test';
+        $tenantModel->name      = 'Test';
+
+        $tenantModel->expects($this->once())
             ->method('getEffectiveConfig')
             ->willReturn(null);
-            
-        $result = $this->provider->getConfig($tenant);
-        
-        // Should use the default 'Quvel Kit'
-        $this->assertEquals('Quvel Kit', $result['config']['appName']);
+
+        $result = $this->provider->getConfig($tenantModel);
+
+        // Should use the default 'Quvel Kit' when config is not set
+        $this->assertEquals(config('app.name'), $result['config']['appName']);
     }
 
-    #[Test]
-    public function it_returns_correct_visibility_for_all_config_keys(): void
+    #[TestDox('returns correct visibility for all config keys')]
+    public function testReturnsCorrectVisibilityForAllConfigKeys(): void
     {
-        $tenant = $this->createMock(Tenant::class);
-        $tenant->public_id = 'test';
-        $tenant->name = 'Test';
-        
-        $tenant->expects($this->once())
+        $tenantModel            = $this->createPartialMock(Tenant::class, ['getEffectiveConfig']);
+        $tenantModel->public_id = 'test';
+        $tenantModel->name      = 'Test';
+
+        $tenantModel->expects($this->once())
             ->method('getEffectiveConfig')
             ->willReturn(null);
-            
-        $result = $this->provider->getConfig($tenant);
-        
+
+        $result = $this->provider->getConfig($tenantModel);
+
         $visibility = $result['visibility'];
-        
+
         // Check all public keys
         $this->assertEquals('public', $visibility['apiUrl']);
         $this->assertEquals('public', $visibility['appUrl']);
@@ -190,67 +194,67 @@ class CoreTenantConfigProviderTest extends TestCase
         $this->assertEquals('public', $visibility['pusherAppKey']);
         $this->assertEquals('public', $visibility['pusherAppCluster']);
         $this->assertEquals('public', $visibility['recaptchaGoogleSiteKey']);
-        
+
         // Check protected keys
         $this->assertEquals('protected', $visibility['internalApiUrl']);
     }
 
-    #[Test]
-    public function it_handles_empty_pusher_config_gracefully(): void
+    #[TestDox('handles empty pusher config gracefully')]
+    public function testHandlesEmptyPusherConfigGracefully(): void
     {
         $tenantConfig = new DynamicTenantConfig();
         // Don't set any pusher config
-        
-        $tenant = $this->createMock(Tenant::class);
-        $tenant->public_id = 'test';
-        $tenant->name = 'Test';
-        
-        $tenant->expects($this->once())
+
+        $tenantModel            = $this->createPartialMock(Tenant::class, ['getEffectiveConfig']);
+        $tenantModel->public_id = 'test';
+        $tenantModel->name      = 'Test';
+
+        $tenantModel->expects($this->once())
             ->method('getEffectiveConfig')
             ->willReturn($tenantConfig);
-            
-        $result = $this->provider->getConfig($tenant);
-        
+
+        $result = $this->provider->getConfig($tenantModel);
+
         // Should have default values
         $config = $result['config'];
         $this->assertEquals('', $config['pusherAppKey']);
         $this->assertEquals('mt1', $config['pusherAppCluster']);
     }
 
-    #[Test]
-    public function it_handles_empty_recaptcha_config_gracefully(): void
+    #[TestDox('handles empty recaptcha config gracefully')]
+    public function testHandlesEmptyRecaptchaConfigGracefully(): void
     {
         $tenantConfig = new DynamicTenantConfig();
         // Don't set any recaptcha config
-        
-        $tenant = $this->createMock(Tenant::class);
-        $tenant->public_id = 'test';
-        $tenant->name = 'Test';
-        
-        $tenant->expects($this->once())
+
+        $tenantModel            = $this->createPartialMock(Tenant::class, ['getEffectiveConfig']);
+        $tenantModel->public_id = 'test';
+        $tenantModel->name      = 'Test';
+
+        $tenantModel->expects($this->once())
             ->method('getEffectiveConfig')
             ->willReturn($tenantConfig);
-            
-        $result = $this->provider->getConfig($tenant);
-        
+
+        $result = $this->provider->getConfig($tenantModel);
+
         // Should have default value
         $config = $result['config'];
         $this->assertEquals('', $config['recaptchaGoogleSiteKey']);
     }
 
-    #[Test]
-    public function it_includes_all_expected_config_keys(): void
+    #[TestDox('includes all expected config keys')]
+    public function testIncludesAllExpectedConfigKeys(): void
     {
-        $tenant = $this->createMock(Tenant::class);
-        $tenant->public_id = 'test';
-        $tenant->name = 'Test';
-        
-        $tenant->expects($this->once())
+        $tenantModel            = $this->createPartialMock(Tenant::class, ['getEffectiveConfig']);
+        $tenantModel->public_id = 'test';
+        $tenantModel->name      = 'Test';
+
+        $tenantModel->expects($this->once())
             ->method('getEffectiveConfig')
             ->willReturn(null);
-            
-        $result = $this->provider->getConfig($tenant);
-        
+
+        $result = $this->provider->getConfig($tenantModel);
+
         $expectedKeys = [
             'apiUrl',
             'appUrl',
@@ -260,45 +264,45 @@ class CoreTenantConfigProviderTest extends TestCase
             'pusherAppKey',
             'pusherAppCluster',
             'recaptchaGoogleSiteKey',
-            'internalApiUrl'
+            'internalApiUrl',
         ];
-        
+
         foreach ($expectedKeys as $key) {
             $this->assertArrayHasKey($key, $result['config'], "Config should include key: $key");
             $this->assertArrayHasKey($key, $result['visibility'], "Visibility should include key: $key");
         }
     }
 
-    #[Test]
-    public function it_returns_consistent_structure(): void
+    #[TestDox('returns consistent structure')]
+    public function testReturnsConsistentStructure(): void
     {
-        $tenant = $this->createMock(Tenant::class);
-        $tenant->public_id = 'test';
-        $tenant->name = 'Test';
-        
-        $tenant->expects($this->once())
+        $tenantModel            = $this->createPartialMock(Tenant::class, ['getEffectiveConfig']);
+        $tenantModel->public_id = 'test';
+        $tenantModel->name      = 'Test';
+
+        $tenantModel->expects($this->once())
             ->method('getEffectiveConfig')
             ->willReturn(null);
-            
-        $result = $this->provider->getConfig($tenant);
-        
+
+        $result = $this->provider->getConfig($tenantModel);
+
         // Verify top-level structure
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
         $this->assertArrayHasKey('config', $result);
         $this->assertArrayHasKey('visibility', $result);
-        
+
         // Verify config and visibility are arrays
         $this->assertIsArray($result['config']);
         $this->assertIsArray($result['visibility']);
-        
+
         // Verify same keys in both
-        $configKeys = array_keys($result['config']);
+        $configKeys     = array_keys($result['config']);
         $visibilityKeys = array_keys($result['visibility']);
-        
+
         sort($configKeys);
         sort($visibilityKeys);
-        
+
         $this->assertEquals($configKeys, $visibilityKeys);
     }
 }

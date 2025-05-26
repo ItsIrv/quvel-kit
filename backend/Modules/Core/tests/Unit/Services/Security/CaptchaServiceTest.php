@@ -5,11 +5,17 @@ namespace Modules\Core\Tests\Unit\Services\Security;
 use Modules\Core\Contracts\Security\CaptchaVerifierInterface;
 use Modules\Core\Services\Security\CaptchaService;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
+/**
+ * @testdox CaptchaService
+ */
 #[CoversClass(CaptchaService::class)]
+#[Group('core-module')]
+#[Group('core-services')]
 class CaptchaServiceTest extends TestCase
 {
     private CaptchaVerifierInterface&MockObject $verifier;
@@ -23,8 +29,8 @@ class CaptchaServiceTest extends TestCase
         $this->service = new CaptchaService($this->verifier);
     }
 
-    #[Test]
-    public function it_verifies_token_successfully(): void
+    #[TestDox('verifies token successfully')]
+    public function testVerifiesTokenSuccessfully(): void
     {
         $token = 'valid-token';
         $ip = '192.168.1.1';
@@ -39,8 +45,8 @@ class CaptchaServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    #[Test]
-    public function it_verifies_token_with_null_ip(): void
+    #[TestDox('verifies token with null IP')]
+    public function testVerifiesTokenWithNullIp(): void
     {
         $token = 'valid-token';
         
@@ -54,8 +60,8 @@ class CaptchaServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    #[Test]
-    public function it_returns_false_when_verification_fails(): void
+    #[TestDox('returns false when verification fails')]
+    public function testReturnsFalseWhenVerificationFails(): void
     {
         $token = 'invalid-token';
         $ip = '192.168.1.1';
@@ -70,8 +76,8 @@ class CaptchaServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
-    #[Test]
-    public function it_delegates_to_verifier_implementation(): void
+    #[TestDox('delegates to verifier implementation')]
+    public function testDelegatesToVerifierImplementation(): void
     {
         $token = 'test-token';
         $ip = '10.0.0.1';
@@ -88,8 +94,8 @@ class CaptchaServiceTest extends TestCase
         $this->service->verify($token, $ip);
     }
 
-    #[Test]
-    public function it_works_with_different_verifier_implementations(): void
+    #[TestDox('works with different verifier implementations')]
+    public function testWorksWithDifferentVerifierImplementations(): void
     {
         // Create a custom verifier implementation
         $customVerifier = new class implements CaptchaVerifierInterface {
