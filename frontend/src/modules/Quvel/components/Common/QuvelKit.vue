@@ -17,7 +17,7 @@ defineProps({
     v-if="link"
     to="/"
   >
-    <span class="QuvelKit tw:text-2xl tw:font-bold tw:text-gray-900 tw:dark:text-white">
+    <span class="QuvelKit quvel-link tw:font-bold tw:text-gray-900 tw:dark:text-white">
       <!-- Tight spacing on purpose; prevents space in text.-->
       <span class="tw:text-blue-500">
         {{ config.get('appName') }}
@@ -28,7 +28,7 @@ defineProps({
   </router-link>
   <span
     v-else
-    class="QuvelKit tw:text-2xl tw:font-bold tw:text-gray-900 tw:dark:text-white"
+    class="QuvelKit quvel-link tw:font-bold tw:text-gray-900 tw:dark:text-white"
   >
     <!-- Tight spacing on purpose; prevents space in text.-->
     <span class="tw:text-blue-500 tw:mr-2">

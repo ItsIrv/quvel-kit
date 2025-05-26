@@ -6,13 +6,10 @@ export default {
     title: 'QuVel Kit',
     subtitle: 'Laravel + Quasar Vue',
     features: {
+      multiTenant: 'Multi-Tenancy',
       ssr: 'SSR + SPA Fallback',
       capacitor: 'Capacitor Native Builds',
-      modular: 'Modular Architecture',
       typescript: 'Strict TypeScript',
-      pinia: 'Pinia State Management',
-      tailwind: 'Tailwind CSS Styling',
-      websockets: 'Real-time WebSockets',
     },
     tabs: {
       tinker: 'tinker',
