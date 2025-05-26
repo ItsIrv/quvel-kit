@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Tenant\Database\Factories\TenantFactory;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\ValueObjects\TenantConfig;
+use Modules\Tenant\ValueObjects\DynamicTenantConfig;
+use Modules\Tenant\database\factories\DynamicTenantConfigFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -97,8 +98,13 @@ class TenantTest extends TestCase
     public function testGetEffectiveConfigInheritsParentConfig(): void
     {
         // Create a parent tenant with a config
+        $parentConfig = DynamicTenantConfigFactory::createStandardTier(
+            domain: 'api.example.com',
+            appName: 'Example App'
+        );
+        
         $parentTenant = Tenant::factory()->create([
-            'config' => $this->createTenantConfig(),
+            'config' => $parentConfig,
         ]);
 
         // Create a child tenant that does not have its own config
@@ -109,18 +115,18 @@ class TenantTest extends TestCase
 
         // Ensure the child's effective config is inherited from the parent
         $this->assertInstanceOf(
-            TenantConfig::class,
+            DynamicTenantConfig::class,
             $childTenant->getEffectiveConfig(),
         );
 
         $this->assertEquals(
-            'https://api.example.com',
-            $childTenant->getEffectiveConfig()->appUrl,
+            'api.example.com',
+            $childTenant->getEffectiveConfig()->get('domain'),
         );
 
         $this->assertEquals(
-            'Example App',
-            $childTenant->getEffectiveConfig()->appName,
+            'standard',
+            $childTenant->getEffectiveConfig()->get('tier'),
         );
     }
 
@@ -129,18 +135,23 @@ class TenantTest extends TestCase
      */
     public function testGetEffectiveConfigReturnsOwnConfig(): void
     {
+        $config = DynamicTenantConfigFactory::createStandardTier(
+            domain: 'api.example.com',
+            appName: 'Example App'
+        );
+        
         $tenant = Tenant::factory()->create([
-            'config' => $this->createTenantConfig(),
+            'config' => $config,
         ]);
 
         $this->assertInstanceOf(
-            TenantConfig::class,
+            DynamicTenantConfig::class,
             $tenant->getEffectiveConfig(),
         );
 
         $this->assertEquals(
-            'Example App',
-            $tenant->getEffectiveConfig()->appName,
+            'standard',
+            $tenant->getEffectiveConfig()->get('tier'),
         );
     }
 
@@ -158,16 +169,21 @@ class TenantTest extends TestCase
     }
 
     /**
-     * Test that the `config` attribute is properly cast to `TenantConfig`.
+     * Test that the `config` attribute is properly cast to `DynamicTenantConfig`.
      */
     public function testConfigCastsToTenantConfig(): void
     {
+        $config = DynamicTenantConfigFactory::createStandardTier(
+            domain: 'api.example.com',
+            appName: 'Example App'
+        );
+        
         $tenant = Tenant::factory()->create([
-            'config' => $this->createTenantConfig(),
+            'config' => $config,
         ]);
 
-        $this->assertInstanceOf(TenantConfig::class, $tenant->config);
-        $this->assertEquals('https://api.example.com', $tenant->config->appUrl);
-        $this->assertEquals('Example App', $tenant->config->appName);
+        $this->assertInstanceOf(DynamicTenantConfig::class, $tenant->config);
+        $this->assertEquals('api.example.com', $tenant->config->get('domain'));
+        $this->assertEquals('standard', $tenant->config->get('tier'));
     }
 }

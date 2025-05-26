@@ -10,7 +10,7 @@ use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Http\Middleware\TenantMiddleware;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\Services\ConfigApplier;
+use Modules\Tenant\Services\ConfigurationPipeline;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -32,9 +32,9 @@ final class TenantMiddlewareTest extends TestCase
     protected TenantContext $tenantContext;
 
     /**
-     * @var ConfigApplier|MockInterface
+     * @var ConfigurationPipeline|MockInterface
      */
-    protected ConfigApplier $configApplier;
+    protected ConfigurationPipeline $configPipeline;
 
     /**
      * @var ConfigRepository|MockInterface
@@ -57,14 +57,14 @@ final class TenantMiddlewareTest extends TestCase
 
         $this->tenantResolver = Mockery::mock(TenantResolver::class);
         $this->tenantContext  = Mockery::mock(TenantContext::class);
-        $this->configApplier  = Mockery::mock(ConfigApplier::class);
+        $this->configPipeline = Mockery::mock(ConfigurationPipeline::class);
         $this->config         = Mockery::mock(ConfigRepository::class);
         $this->request        = Mockery::mock(Request::class);
 
         $this->middleware = new TenantMiddleware(
             $this->tenantResolver,
             $this->tenantContext,
-            $this->configApplier,
+            $this->configPipeline,
             $this->config,
         );
     }
@@ -84,7 +84,7 @@ final class TenantMiddlewareTest extends TestCase
             ->once()
             ->with($tenant);
 
-        $this->configApplier->shouldReceive('apply')
+        $this->configPipeline->shouldReceive('apply')
             ->once()
             ->with($tenant, $this->config);
 

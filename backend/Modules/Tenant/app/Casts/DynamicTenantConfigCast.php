@@ -4,6 +4,7 @@ namespace Modules\Tenant\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use JsonException;
+use Modules\Tenant\Enums\TenantConfigVisibility;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 
 /**
@@ -30,6 +31,18 @@ class DynamicTenantConfigCast implements CastsAttributes
             return DynamicTenantConfig::fromArray($data);
         }
 
+        // Check if it has __visibility key (legacy format)
+        if (isset($data['__visibility'])) {
+            $visibility = [];
+            foreach ($data['__visibility'] as $key => $vis) {
+                $visibility[$key] = is_string($vis) 
+                    ? TenantConfigVisibility::tryFrom($vis) ?? TenantConfigVisibility::PRIVATE
+                    : $vis;
+            }
+            unset($data['__visibility']);
+            return new DynamicTenantConfig($data, $visibility);
+        }
+        
         // Assume it's a direct config array
         return new DynamicTenantConfig($data);
     }

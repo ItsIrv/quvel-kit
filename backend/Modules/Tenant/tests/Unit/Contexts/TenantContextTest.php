@@ -5,7 +5,8 @@ namespace Modules\Tenant\Tests\Unit\Contexts;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Exceptions\TenantNotFoundException;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\ValueObjects\TenantConfig;
+use Modules\Tenant\ValueObjects\DynamicTenantConfig;
+use Modules\Tenant\database\factories\DynamicTenantConfigFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -44,15 +45,20 @@ class TenantContextTest extends TestCase
      */
     public function testGetConfig(): void
     {
+        $config = DynamicTenantConfigFactory::createStandardTier(
+            domain: 'api.example.com',
+            appName: 'Example App'
+        );
+        
         $tenant = Tenant::factory()->make([
-            'config' => $this->createTenantConfig(),
+            'config' => $config,
         ]);
 
         $context = new TenantContext();
         $context->set($tenant);
 
-        $this->assertInstanceOf(TenantConfig::class, $context->getConfig());
-        $this->assertEquals('https://api.example.com', $context->getConfig()->appUrl);
+        $this->assertInstanceOf(DynamicTenantConfig::class, $context->getConfig());
+        $this->assertEquals('api.example.com', $context->getConfig()->get('domain'));
     }
 
     /**
@@ -60,21 +66,26 @@ class TenantContextTest extends TestCase
      */
     public function testGetConfigValue(): void
     {
+        $config = DynamicTenantConfigFactory::createStandardTier(
+            domain: 'api.example.com',
+            appName: 'Example App'
+        );
+        
         $tenant = Tenant::factory()->make([
-            'config' => $this->createTenantConfig(),
+            'config' => $config,
         ]);
 
         $context = new TenantContext();
         $context->set($tenant);
 
         $this->assertEquals(
-            'https://api.example.com',
-            $context->getConfigValue('appUrl'),
+            'api.example.com',
+            $context->getConfigValue('domain'),
         );
 
         $this->assertEquals(
-            'testing',
-            $context->getConfigValue('appEnv'),
+            'standard',
+            $context->getConfigValue('tier'),
         );
     }
 
@@ -83,8 +94,13 @@ class TenantContextTest extends TestCase
      */
     public function testGetConfigValueReturnsDefaultWhenMissing(): void
     {
+        $config = DynamicTenantConfigFactory::createStandardTier(
+            domain: 'api.example.com',
+            appName: 'Example App'
+        );
+        
         $tenant = Tenant::factory()->make([
-            'config' => $this->createTenantConfig(),
+            'config' => $config,
         ]);
 
         $context = new TenantContext();

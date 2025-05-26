@@ -38,6 +38,10 @@ if (!function_exists('setTenant')) {
             throw new TenantNotFoundException('Tenant not found.');
         }
 
+        if (!$tenant) {
+            throw new TenantNotFoundException('Tenant not found');
+        }
+
         $app->make(TenantContext::class)->set($tenant);
 
         ConfigApplier::apply(
@@ -77,6 +81,10 @@ if (!function_exists('setTenantContext')) {
             $tenant = $variant;
         } else {
             throw new TenantNotFoundException('Tenant not found.');
+        }
+
+        if (!$tenant) {
+            throw new TenantNotFoundException('Tenant not found');
         }
 
         $app->make(TenantContext::class)->set($tenant);
