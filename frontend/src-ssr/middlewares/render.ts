@@ -62,7 +62,7 @@ export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
       };
 
       // Attach trace info to the request for use in SSR
-      req.__TRACE__ = traceInfo;
+      req.traceInfo = traceInfo;
 
       // Filter non-public fields before injecting into window
       const publicTenantConfig = filterTenantConfig(tenantConfig);

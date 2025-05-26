@@ -26,6 +26,10 @@ import { I18nService } from './I18nService';
 export class TaskService extends Service implements RegisterService {
   private i18n!: I18nService;
 
+  constructor() {
+    super();
+  }
+
   /**
    * Common error handlers.
    */
@@ -36,8 +40,8 @@ export class TaskService extends Service implements RegisterService {
   /**
    * Injects the service container dependencies.
    */
-  register({ i18n }: ServiceContainer): void {
-    this.i18n = i18n;
+  register(container: ServiceContainer): void {
+    this.i18n = container.i18n;
   }
 
   /**

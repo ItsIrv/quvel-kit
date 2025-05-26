@@ -3,7 +3,7 @@ import { ConsoleLogger } from '../services/Logger/ConsoleLogger';
 import { NullLogger } from '../services/Logger/NullLogger';
 import { LoggerType } from '../models/Logging/LoggerType';
 import { LogLevel } from '../models/Logging/LogLevel';
-import { QSsrContext } from '@quasar/app-vite';
+import { SsrServiceOptions } from 'src/modules/Core/types/service.types';
 
 /**
  * Creates a logger instance based on configuration
@@ -13,10 +13,10 @@ import { QSsrContext } from '@quasar/app-vite';
  * @returns The appropriate logger implementation
  */
 export function createLogger(
-  ssrContext?: QSsrContext | null,
+  ssrContext?: SsrServiceOptions,
   type: string = process.env.VITE_LOGGER || LoggerType.NULL,
 ): LoggerInterface {
-  const traceInfo = ssrContext?.req?.__TRACE__ ??
+  const traceInfo = ssrContext?.req?.traceInfo ??
     (window as { __TRACE__?: TraceInfo }).__TRACE__ ?? {
       id: '',
       timestamp: new Date().toISOString(),

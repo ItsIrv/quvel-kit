@@ -1,15 +1,23 @@
-import type { Service } from './Service';
+import type { SsrAwareService, SsrServiceOptions } from '../types/service.types';
 import { LoggerInterface } from 'src/modules/Core/types/logging.types';
+import { createLogger } from '../utils/loggingUtil';
+import { Service } from './Service';
 
 /**
  * Service for application logging and tracing
  * Provides standardized logging capabilities and trace context management
  */
-export class LogService implements Service {
-  /**
-   * Creates a new LogService instance
-   */
-  constructor(private readonly logger: LoggerInterface) {}
+export class LogService extends Service implements SsrAwareService {
+  private logger!: LoggerInterface;
+
+  constructor() {
+    super();
+    // Logger will be created in boot()
+  }
+
+  boot(ssrServiceOptions?: SsrServiceOptions): void {
+    this.logger = createLogger(ssrServiceOptions);
+  }
 
   /**
    * Gets the current logger instance

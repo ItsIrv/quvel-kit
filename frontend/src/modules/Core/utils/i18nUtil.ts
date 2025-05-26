@@ -3,7 +3,7 @@
  * Recommended to use the  `container.i18n` service instead.
  */
 import { Cookies } from 'quasar';
-import type { QSsrContext } from '@quasar/app-vite';
+import type { SsrServiceOptions } from 'src/modules/Core/types/service.types';
 import type { I18nType, MessageLanguages } from 'src/modules/Core/types/i18n.types';
 import { createI18n as createI18nInstance } from 'vue-i18n';
 import messages from 'src/i18n';
@@ -20,7 +20,7 @@ const SUPPORTED_LOCALES: MessageLanguages[] = ['en-US', 'es-MX'];
  * Retrieves the stored locale from cookies (server) or localStorage (client).
  * Falls back to the default locale if no valid locale is found.
  */
-export function getStoredLocale(ssrContext?: QSsrContext | null): MessageLanguages {
+export function getStoredLocale(ssrContext?: SsrServiceOptions | null): MessageLanguages {
   let locale: string;
 
   if (ssrContext) {
@@ -60,7 +60,7 @@ export function isValidLocale(locale: string): locale is MessageLanguages {
  * @param ssrContext - The server-side rendering context.
  * @returns An instance of the I18n service.
  */
-export function createI18n(ssrContext?: QSsrContext | null): I18nType {
+export function createI18n(ssrContext?: SsrServiceOptions | null): I18nType {
   const locale = getStoredLocale(ssrContext);
 
   return createI18nInstance({

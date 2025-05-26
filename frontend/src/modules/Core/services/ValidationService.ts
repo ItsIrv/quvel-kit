@@ -10,11 +10,15 @@ import { Service } from './Service';
 export class ValidationService extends Service implements RegisterService {
   private i18n!: I18nService;
 
+  constructor() {
+    super();
+  }
+
   /**
    * Injects the container dependencies.
    */
-  register({ i18n }: ServiceContainer): void {
-    this.i18n = i18n;
+  register(container: ServiceContainer): void {
+    this.i18n = container.i18n;
   }
 
   /**
