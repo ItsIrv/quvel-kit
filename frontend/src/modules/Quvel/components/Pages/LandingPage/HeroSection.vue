@@ -2,13 +2,10 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 
 const rotatingFeatures = ref([
+  'quvel.landing.features.multiTenant',
   'quvel.landing.features.ssr',
   'quvel.landing.features.capacitor',
-  'quvel.landing.features.modular',
   'quvel.landing.features.typescript',
-  'quvel.landing.features.pinia',
-  'quvel.landing.features.tailwind',
-  'quvel.landing.features.websockets',
 ]);
 
 const currentFeatureIndex = ref(0);

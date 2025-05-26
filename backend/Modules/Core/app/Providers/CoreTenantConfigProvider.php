@@ -24,21 +24,21 @@ class CoreTenantConfigProvider implements TenantConfigProviderInterface
         return [
             'config'     => [
                 // Core configuration - read from tenant config when available
-                'apiUrl'                 => $tenantConfig->get('app_url', config('app.url')),
-                'appUrl'                 => $tenantConfig->get('frontend_url', config('frontend.url')),
-                'appName'                => $tenantConfig->get('app_name', config('app.name', 'Quvel Kit')),
+                'apiUrl'                 => $tenantConfig?->get('app_url', config('app.url')) ?? config('app.url'),
+                'appUrl'                 => $tenantConfig?->get('frontend_url', config('frontend.url')) ?? config('frontend.url'),
+                'appName'                => $tenantConfig?->get('app_name', config('app.name', 'Quvel Kit')) ?? config('app.name', 'Quvel Kit'),
                 'tenantId'               => $tenant->public_id,
                 'tenantName'             => $tenant->name,
 
                 // Pusher config from tenant config
-                'pusherAppKey'           => $tenantConfig->get('pusher_app_key', ''),
-                'pusherAppCluster'       => $tenantConfig->get('pusher_app_cluster', 'mt1'),
+                'pusherAppKey'           => $tenantConfig?->get('pusher_app_key', '') ?? '',
+                'pusherAppCluster'       => $tenantConfig?->get('pusher_app_cluster', 'mt1') ?? 'mt1',
 
                 // reCAPTCHA config from tenant config (only site key is public)
-                'recaptchaGoogleSiteKey' => $tenantConfig->get('recaptcha_site_key', ''),
+                'recaptchaGoogleSiteKey' => $tenantConfig?->get('recaptcha_site_key', '') ?? '',
 
                 // Additional Core module specific configs
-                'internalApiUrl'         => $tenantConfig->get('internal_api_url', config('frontend.internal_api_url')),
+                'internalApiUrl'         => $tenantConfig?->get('internal_api_url', config('frontend.internal_api_url')) ?? config('frontend.internal_api_url'),
             ],
             'visibility' => [
                 'apiUrl'                 => 'public',

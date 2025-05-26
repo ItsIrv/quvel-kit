@@ -20,8 +20,10 @@ class ServicesConfigPipe implements ConfigurationPipeInterface
         // Configure Stripe payment gateway
         if (isset($tenantConfig['stripe_key'])) {
             $config->set('services.stripe.key', $tenantConfig['stripe_key']);
-            $config->set('services.stripe.secret', $tenantConfig['stripe_secret']);
-            
+            if (isset($tenantConfig['stripe_secret'])) {
+                $config->set('services.stripe.secret', $tenantConfig['stripe_secret']);
+            }
+
             if (isset($tenantConfig['stripe_webhook_secret'])) {
                 $config->set('services.stripe.webhook_secret', $tenantConfig['stripe_webhook_secret']);
             }
@@ -30,15 +32,21 @@ class ServicesConfigPipe implements ConfigurationPipeInterface
         // Configure PayPal
         if (isset($tenantConfig['paypal_client_id'])) {
             $config->set('services.paypal.client_id', $tenantConfig['paypal_client_id']);
-            $config->set('services.paypal.secret', $tenantConfig['paypal_secret']);
+            if (isset($tenantConfig['paypal_secret'])) {
+                $config->set('services.paypal.secret', $tenantConfig['paypal_secret']);
+            }
             $config->set('services.paypal.mode', $tenantConfig['paypal_mode'] ?? 'sandbox');
         }
 
         // Configure Twilio for SMS
         if (isset($tenantConfig['twilio_sid'])) {
             $config->set('services.twilio.sid', $tenantConfig['twilio_sid']);
-            $config->set('services.twilio.token', $tenantConfig['twilio_token']);
-            $config->set('services.twilio.from', $tenantConfig['twilio_from']);
+            if (isset($tenantConfig['twilio_token'])) {
+                $config->set('services.twilio.token', $tenantConfig['twilio_token']);
+            }
+            if (isset($tenantConfig['twilio_from'])) {
+                $config->set('services.twilio.from', $tenantConfig['twilio_from']);
+            }
         }
 
         // Configure SendGrid
@@ -49,7 +57,9 @@ class ServicesConfigPipe implements ConfigurationPipeInterface
         // Configure Mailgun
         if (isset($tenantConfig['mailgun_domain'])) {
             $config->set('services.mailgun.domain', $tenantConfig['mailgun_domain']);
-            $config->set('services.mailgun.secret', $tenantConfig['mailgun_secret']);
+            if (isset($tenantConfig['mailgun_secret'])) {
+                $config->set('services.mailgun.secret', $tenantConfig['mailgun_secret']);
+            }
             $config->set('services.mailgun.endpoint', $tenantConfig['mailgun_endpoint'] ?? 'api.mailgun.net');
         }
 
@@ -61,14 +71,18 @@ class ServicesConfigPipe implements ConfigurationPipeInterface
         // Configure AWS SES
         if (isset($tenantConfig['ses_key'])) {
             $config->set('services.ses.key', $tenantConfig['ses_key']);
-            $config->set('services.ses.secret', $tenantConfig['ses_secret']);
+            if (isset($tenantConfig['ses_secret'])) {
+                $config->set('services.ses.secret', $tenantConfig['ses_secret']);
+            }
             $config->set('services.ses.region', $tenantConfig['ses_region'] ?? 'us-east-1');
         }
 
         // Configure Algolia search
         if (isset($tenantConfig['algolia_app_id'])) {
             $config->set('services.algolia.app_id', $tenantConfig['algolia_app_id']);
-            $config->set('services.algolia.secret', $tenantConfig['algolia_secret']);
+            if (isset($tenantConfig['algolia_secret'])) {
+                $config->set('services.algolia.secret', $tenantConfig['algolia_secret']);
+            }
         }
 
         // Configure Google Analytics
@@ -95,7 +109,7 @@ class ServicesConfigPipe implements ConfigurationPipeInterface
         if (isset($tenantConfig['custom_api_endpoints'])) {
             foreach ($tenantConfig['custom_api_endpoints'] as $service => $endpoint) {
                 $config->set('services.custom.' . $service . '.endpoint', $endpoint);
-                
+
                 // Check for API keys
                 $apiKeyConfig = 'custom_api_keys.' . $service;
                 if (isset($tenantConfig[$apiKeyConfig])) {
@@ -106,8 +120,8 @@ class ServicesConfigPipe implements ConfigurationPipeInterface
 
         // Pass to next pipe
         return $next([
-            'tenant' => $tenant,
-            'config' => $config,
+            'tenant'       => $tenant,
+            'config'       => $config,
             'tenantConfig' => $tenantConfig,
         ]);
     }
