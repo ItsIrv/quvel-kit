@@ -1,8 +1,7 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { Cookies } from 'quasar';
-import type { QSsrContext } from '@quasar/app-vite';
 import { SessionName } from 'src/modules/Auth/models/Session';
-import { TenantConfig } from 'src/modules/Core/types/tenant.types';
+import { SsrServiceOptions } from '../types/service.types';
 
 /**
  * Creates an Axios instance with the given configuration.
@@ -30,16 +29,15 @@ export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance
  * with the SSR internal request system.
  *
  * @param ssrContext
- * @param configOverrides - Optional overrides for API configuration.
  * @returns An Axios instance.
  */
-export function createApi(
-  ssrContext?: QSsrContext | null,
-  configOverrides?: TenantConfig & { internalApiUrl?: string },
-): AxiosInstance {
+export function createApi(ssrContext?: SsrServiceOptions | null): AxiosInstance {
   // In order: Internal API URL, Public API URL, Vite API URL
   const baseURL =
-    configOverrides?.internalApiUrl ?? configOverrides?.apiUrl ?? process.env.VITE_API_URL ?? '';
+    ssrContext?.req?.tenantConfig?.internalApiUrl ??
+    ssrContext?.req?.tenantConfig?.apiUrl ??
+    process.env.VITE_API_URL ??
+    '';
 
   const axiosConfig: AxiosRequestConfig = {
     baseURL,
@@ -54,7 +52,7 @@ export function createApi(
 
   if (ssrContext) {
     const cookies = Cookies.parseSSR(ssrContext);
-    const sessionCookie = configOverrides?.sessionCookie ?? SessionName;
+    const sessionCookie = ssrContext.req?.tenantConfig?.sessionCookie ?? SessionName;
     const sessionToken = cookies.get(sessionCookie);
 
     // Attach session cookie (for authentication)
@@ -65,7 +63,7 @@ export function createApi(
       api.defaults.headers.Cookie = `${sessionCookie}=${sessionToken}`;
     }
 
-    api.defaults.headers['X-Tenant-Domain'] = configOverrides?.apiUrl ?? '';
+    api.defaults.headers['X-Tenant-Domain'] = ssrContext.req?.tenantConfig?.apiUrl ?? '';
     api.defaults.headers['X-SSR-Key'] = process.env.SSR_API_KEY ?? '';
   } else {
     // TODO: On browser, add interceptors for XSRF expired/missing

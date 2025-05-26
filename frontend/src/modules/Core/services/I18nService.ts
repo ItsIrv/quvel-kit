@@ -1,6 +1,6 @@
-import { RegisterService } from './../types/service.types';
+import { RegisterService, SsrAwareService, SsrServiceOptions } from './../types/service.types';
 import type { I18nType } from 'src/modules/Core/types/i18n.types';
-import { isValidLocale, storeLocale } from 'src/modules/Core/utils/i18nUtil';
+import { isValidLocale, storeLocale, createI18n } from 'src/modules/Core/utils/i18nUtil';
 import { Service } from './Service';
 import { ServiceContainer } from './ServiceContainer';
 import { ApiService } from './ApiService';
@@ -8,21 +8,28 @@ import { ApiService } from './ApiService';
 /**
  * I18n Service for managing localization.
  */
-export class I18nService extends Service implements RegisterService {
-  private readonly i18n: I18nType;
+export class I18nService extends Service implements SsrAwareService, RegisterService {
+  private i18n!: I18nType;
   private api!: ApiService;
 
-  constructor(i18nInstance: I18nType) {
-    super();
-
-    this.i18n = i18nInstance;
+  /**
+   * Boot method to initialize with SSR context if available.
+   */
+  boot(ssrServiceOptions?: SsrServiceOptions): void {
+    // Create i18n instance with proper SSR context
+    this.i18n = createI18n(ssrServiceOptions);
   }
 
   /**
    * Registers the service.
    */
-  register({ api }: ServiceContainer): void {
-    this.api = api;
+  register(container: ServiceContainer): void {
+    this.api = container.api;
+
+    // If i18n not initialized yet (no SSR context), boot now
+    if (!this.i18n) {
+      this.boot();
+    }
 
     this.setApiLocaleHeader();
   }

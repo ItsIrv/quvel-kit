@@ -1,102 +1,174 @@
-import type { RegisterService } from 'src/modules/Core/types/service.types';
-import type { ApiService } from 'src/modules/Core/services/ApiService';
-import type { I18nService } from 'src/modules/Core/services/I18nService';
-import type { ValidationService } from 'src/modules/Core/services/ValidationService';
-import type { TaskService } from './TaskService';
+import type { RegisterService, SsrAwareService } from 'src/modules/Core/types/service.types';
 import type { Service } from './Service';
-import { ConfigService } from './ConfigService';
-import { WebSocketService } from './WebSocketService';
-import { LogService } from './LogService';
+import type { SsrServiceOptions } from 'src/modules/Core/types/service.types';
+import type { ConfigService } from './ConfigService';
+import type { LogService } from './LogService';
+import type { ApiService } from './ApiService';
+import type { I18nService } from './I18nService';
+import type { ValidationService } from './ValidationService';
+import type { TaskService } from './TaskService';
+import type { WebSocketService } from './WebSocketService';
+import type { ServiceClass, ServiceInstance } from 'src/modules/Core/types/service.types';
 
 /**
  * The service container manages core services and allows dynamic service registration.
  */
 export class ServiceContainer {
+  private readonly services: Map<string, ServiceInstance> = new Map();
+
   constructor(
-    readonly config: ConfigService,
-    readonly log: LogService,
-    readonly api: ApiService,
-    readonly i18n: I18nService,
-    readonly validation: ValidationService,
-    readonly task: TaskService,
-    readonly ws: WebSocketService,
-    private readonly services: Map<string, unknown> = new Map(),
+    private readonly ssrServiceOptions?: SsrServiceOptions,
+    serviceClasses: Map<string, ServiceClass> = new Map(),
   ) {
+    this.initializeServices(serviceClasses);
+    this.bootServices();
     this.registerServices();
+  }
+
+  /**
+   * Initialize services from their classes without any context.
+   */
+  private initializeServices(serviceClasses: Map<string, ServiceClass>): void {
+    for (const [name, ServiceClass] of serviceClasses) {
+      const instance = new ServiceClass();
+      this.services.set(name, instance);
+    }
+  }
+
+  /**
+   * Boot SSR-aware services with the SSR context.
+   */
+  private bootServices(): void {
+    if (!this.ssrServiceOptions) return;
+
+    for (const [name, service] of this.services) {
+      if (this.hasBoot(service)) {
+        try {
+          service.boot(this.ssrServiceOptions);
+        } catch (error) {
+          console.error(`Failed to boot service ${name}:`, error);
+          throw new Error(
+            `Service boot failed for ${name}: ${error instanceof Error ? error.message : String(error)}`,
+          );
+        }
+      }
+    }
   }
 
   /**
    * Registers all core and dynamic services.
    */
   private registerServices(): void {
-    for (const [name, service] of Object.entries({
-      ...this,
-      ...Object.fromEntries(this.services),
-    })) {
-      this.registerService(name, service as RegisterService);
+    // After all services are instantiated, call register on those that support it
+    for (const [name, service] of this.services) {
+      if (this.isRegisterable(service)) {
+        try {
+          service.register(this);
+        } catch (error) {
+          console.error(`Failed to register service ${name}:`, error);
+          throw new Error(
+            `Service registration failed for ${name}: ${error instanceof Error ? error.message : String(error)}`,
+          );
+        }
+      }
     }
   }
 
   /**
-   * Retrieves or lazily creates a service.
+   * Retrieves a service by its class.
    *
-   * @param def - A class constructor (auto-name) or factory function (must be bootable).
+   * @param ServiceClass - The service class constructor.
    */
-  get<T extends Service>(def: new () => T): T;
-  get<T extends Service>(def: () => T): T;
-  get<T extends Service>(def: (() => T) | (new () => T)): T {
-    const name = typeof def === 'function' && 'prototype' in def ? def.name : null;
+  get<T extends Service>(ServiceClass: ServiceClass<T>): T {
+    const name = ServiceClass.name;
 
-    if (name && this.services.has(name)) {
+    if (this.services.has(name)) {
       return this.services.get(name) as T;
     }
 
-    const instance: T = name ? new (def as new () => T)() : (def as () => T)();
+    // Lazy initialization
+    const instance = new ServiceClass() as ServiceInstance;
+    this.services.set(name, instance);
 
-    const serviceName = name ?? (instance.constructor as new () => T).name;
-
-    this.services.set(serviceName, instance);
-
-    if (this.isRegisterable(instance)) {
-      instance.register(this);
+    // Boot if has boot method
+    if (this.hasBoot(instance)) {
+      try {
+        instance.boot(this.ssrServiceOptions);
+      } catch (error) {
+        console.error(`Failed to boot service ${name}:`, error);
+        throw new Error(
+          `Service boot failed for ${name}: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
     }
 
-    return instance;
+    // Register if supported
+    if (this.isRegisterable(instance)) {
+      try {
+        instance.register(this);
+      } catch (error) {
+        console.error(`Failed to register service ${name}:`, error);
+        throw new Error(
+          `Service registration failed for ${name}: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
+    }
+
+    return instance as T;
   }
 
   /**
-   * Adds a new service instance by class or factory.
+   * Get a service by name.
    */
-  addService<T extends Service>(
-    def: new () => T | (() => T),
-    service: T,
-    overwrite = false,
-  ): boolean {
-    const name =
-      typeof def === 'function' && 'prototype' in def
-        ? (def as new () => T).name
-        : (service.constructor as new () => T).name;
+  getByName<T extends Service>(name: string): T | undefined {
+    return this.services.get(name) as T | undefined;
+  }
+
+  /**
+   * Adds a new service by class.
+   */
+  addService<T extends Service>(ServiceClass: ServiceClass<T>, overwrite = false): boolean {
+    const name = ServiceClass.name;
 
     if (this.services.has(name) && !overwrite) {
       return false;
     }
 
-    this.services.set(name, service);
+    const instance = new ServiceClass() as ServiceInstance;
+    this.services.set(name, instance);
 
-    if (this.isRegisterable(service)) {
-      service.register(this);
+    // Boot if has boot method call it regardless of context because it may be used in non-SSR context
+    if (this.hasBoot(instance)) {
+      try {
+        instance.boot(this.ssrServiceOptions);
+      } catch (error) {
+        console.error(`Failed to boot service ${name}:`, error);
+        throw new Error(
+          `Service boot failed for ${name}: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
+    }
+
+    // Register if supported
+    if (this.isRegisterable(instance)) {
+      try {
+        instance.register(this);
+      } catch (error) {
+        console.error(`Failed to register service ${name}:`, error);
+        throw new Error(
+          `Service registration failed for ${name}: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
     }
 
     return true;
   }
 
   /**
-   * Checks if a service exists by class or factory definition.
+   * Checks if a service exists by class.
    */
-  hasService<T extends Service>(def: new () => T | (() => T)): boolean {
-    const name = typeof def === 'function' && 'prototype' in def ? (def as new () => T).name : null;
-
-    return name ? this.services.has(name) : false;
+  hasService<T extends Service>(ServiceClass: ServiceClass<T>): boolean {
+    return this.services.has(ServiceClass.name);
   }
 
   /**
@@ -114,12 +186,15 @@ export class ServiceContainer {
   }
 
   /**
-   * Registers a service only if it hasn't been registered.
+   * Type guard to check if a service has a boot method (SSR-aware).
    */
-  private registerService(name: string, service: Service): void {
-    if (this.isRegisterable(service)) {
-      service.register(this);
-    }
+  private hasBoot(service: unknown): service is SsrAwareService {
+    return (
+      typeof service === 'object' &&
+      service !== null &&
+      'boot' in service &&
+      typeof (service as SsrAwareService).boot === 'function'
+    );
   }
 
   /**
@@ -134,5 +209,34 @@ export class ServiceContainer {
    */
   private isRegisterable(service: unknown): service is RegisterService {
     return typeof service === 'object' && service !== null && 'register' in service;
+  }
+
+  // Convenience getters for core services
+  get config(): ConfigService {
+    return this.getByName<ConfigService>('ConfigService')!;
+  }
+
+  get log(): LogService {
+    return this.getByName<LogService>('LogService')!;
+  }
+
+  get api(): ApiService {
+    return this.getByName<ApiService>('ApiService')!;
+  }
+
+  get i18n(): I18nService {
+    return this.getByName<I18nService>('I18nService')!;
+  }
+
+  get validation(): ValidationService {
+    return this.getByName<ValidationService>('ValidationService')!;
+  }
+
+  get task(): TaskService {
+    return this.getByName<TaskService>('TaskService')!;
+  }
+
+  get ws(): WebSocketService {
+    return this.getByName<WebSocketService>('WebSocketService')!;
   }
 }

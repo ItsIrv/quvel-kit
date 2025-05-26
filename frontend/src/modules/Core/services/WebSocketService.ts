@@ -1,8 +1,9 @@
 import Pusher, { Channel } from 'pusher-js';
 import Echo from 'laravel-echo';
-import { RegisterService } from 'src/modules/Core/types/service.types';
+import { RegisterService, SsrAwareService } from 'src/modules/Core/types/service.types';
 import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
 import { ApiService } from 'src/modules/Core/services/ApiService';
+import { createWebsocketConfig } from 'src/modules/Core/utils/websocketUtil';
 import {
   EncryptedChannelType,
   PresenceChannelType,
@@ -10,33 +11,46 @@ import {
   PublicChannelType,
   SubscribeOptions,
 } from '../types/websocket.types';
+import { Service } from './Service';
 
 /**
  * Service responsible for handling WebSocket connections.
  */
-export class WebSocketService implements RegisterService {
+export class WebSocketService extends Service implements SsrAwareService, RegisterService {
   #echo: Echo<'pusher'> | null = null;
   private api!: ApiService;
   private connectionPromise: Promise<void> | null = null;
   private isConnected = false;
-  private readonly apiKey: string;
-  private readonly cluster: string;
+  private apiKey!: string;
+  private cluster!: string;
   private readonly isSsr: boolean = typeof window === 'undefined';
 
-  constructor({ apiKey, cluster }: { apiKey: string; cluster: string }) {
-    this.apiKey = apiKey;
-    this.cluster = cluster;
+  /**
+   * Boot method to initialize with config.
+   */
+  boot(): void {
+    // WebSocket config will be initialized in register when we have access to container
+    // For now, just set up Pusher global if needed
     if (!this.isSsr && !(window as unknown as { Pusher: typeof Pusher }).Pusher) {
       (window as unknown as { Pusher: typeof Pusher }).Pusher = Pusher;
     }
+
+    const wsConfig = createWebsocketConfig();
+    this.apiKey = wsConfig.apiKey;
+    this.cluster = wsConfig.cluster;
   }
 
   get echo() {
     return this.#echo;
   }
 
-  public register({ api }: ServiceContainer): void {
-    this.api = api;
+  public register(container: ServiceContainer): void {
+    this.api = container.api;
+
+    // If not initialized yet (no SSR context), boot now
+    if (!this.apiKey) {
+      this.boot();
+    }
   }
 
   public connect(): Promise<void> {

@@ -26,28 +26,31 @@ interface InternalAxiosRequestConfig extends BaseInternalAxiosRequestConfig {
   };
 }
 import { Service } from './Service';
-import type { RegisterService } from '../types/service.types';
+import type { RegisterService, SsrServiceOptions, SsrAwareService } from '../types/service.types';
 import { ServiceContainer } from './ServiceContainer';
 import { LogService } from './LogService';
+import { createApi } from '../utils/axiosUtil';
 
 /**
  * API Service Wrapper for Axios.
  */
-export class ApiService extends Service implements RegisterService {
-  private readonly api: AxiosInstance;
+export class ApiService extends Service implements SsrAwareService, RegisterService {
+  private api!: AxiosInstance;
   private log!: LogService;
   private abortControllers: Map<string, AbortController> = new Map();
   private requestCounter = 0;
+  private container?: ServiceContainer;
 
-  constructor(apiInstance: AxiosInstance) {
-    super();
-
-    this.api = apiInstance;
+  /**
+   * Boot method to initialize with SSR context if available.
+   */
+  boot(ssrServiceOptions?: SsrServiceOptions): void {
+    // Create API instance with SSR context if available
+    this.api = createApi(ssrServiceOptions);
 
     // Add request interceptor to track timing
     this.api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
       config.metadata = { startTime: Date.now() };
-
       return config;
     });
   }
@@ -62,8 +65,15 @@ export class ApiService extends Service implements RegisterService {
   /**
    * Registers the service.
    */
-  register({ log }: ServiceContainer): void {
-    this.log = log;
+  register(container: ServiceContainer): void {
+    this.container = container;
+    this.log = container.log;
+
+    // If API not initialized yet (no SSR context), boot now with config
+    if (!this.api) {
+      this.boot();
+    }
+
     this.setupInterceptors();
   }
 
