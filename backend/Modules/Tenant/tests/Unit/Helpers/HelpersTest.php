@@ -68,6 +68,7 @@ final class HelpersTest extends TestCase
         // Mock the ConfigRepository to avoid actual config changes
         $configRepositoryMock = $this->mock(ConfigRepository::class);
         // Set up expectations for all config settings that will be applied
+        $configRepositoryMock->shouldReceive('get')->withAnyArgs()->andReturn('test-value')->zeroOrMoreTimes();
         $configRepositoryMock->shouldReceive('set')->withAnyArgs()->zeroOrMoreTimes();
         $this->app->instance(ConfigRepository::class, $configRepositoryMock);
 

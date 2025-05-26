@@ -10,8 +10,13 @@ use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Providers\RouteServiceProvider;
 use Modules\Tenant\Providers\TenantServiceProvider;
+use Modules\Tenant\Services\ConfigurationPipeline;
 use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\RequestPrivacy;
+use Modules\Tenant\Services\TenantConfigProviderRegistry;
+use Modules\Tenant\Services\TenantConfigSeederRegistry;
+use Modules\Tenant\Services\TenantTableRegistry;
+use Modules\Tenant\Services\TierService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -58,6 +63,11 @@ class TenantServiceProviderTest extends TestCase
 
         $expectedSingletons = [
             strtolower(FindService::class),
+            strtolower(TierService::class),
+            strtolower(TenantTableRegistry::class),
+            strtolower(ConfigurationPipeline::class),
+            strtolower(TenantConfigProviderRegistry::class),
+            strtolower(TenantConfigSeederRegistry::class),
         ];
 
         $expectedRegisters = [

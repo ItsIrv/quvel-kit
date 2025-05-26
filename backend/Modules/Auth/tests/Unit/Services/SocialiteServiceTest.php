@@ -10,7 +10,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Services\SocialiteService;
-use Modules\Tenant\database\factories\TenantConfigFactory;
+use Modules\Tenant\database\factories\DynamicTenantConfigFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -28,10 +28,8 @@ class SocialiteServiceTest extends TestCase
     {
         parent::setUp();
 
-        $tenantConfig = TenantConfigFactory::create(
-            apiDomain: 'api.quvel.app',
-            internalApiDomain: 'internal-api.quvel.app',
-            toArray: false
+        $tenantConfig = DynamicTenantConfigFactory::createStandardTier(
+            domain: 'api.quvel.app'
         );
 
         // Mock dependencies

@@ -7,7 +7,6 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Mockery\MockInterface;
 use Modules\Tenant\Contexts\TenantContext;
-use Modules\Tenant\database\seeders\TenantSeeder;
 use Modules\Tenant\Enums\TenantConfigVisibility;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;

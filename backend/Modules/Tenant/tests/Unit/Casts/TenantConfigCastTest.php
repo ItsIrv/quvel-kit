@@ -3,27 +3,27 @@
 namespace Modules\Tenant\Tests\Unit\Casts;
 
 use JsonException;
-use Modules\Tenant\Casts\TenantConfigCast;
+use Modules\Tenant\Casts\DynamicTenantConfigCast;
 use Modules\Tenant\Enums\TenantConfigVisibility;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\ValueObjects\TenantConfig;
+use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
-#[CoversClass(TenantConfigCast::class)]
+#[CoversClass(DynamicTenantConfigCast::class)]
 #[Group('tenant-module')]
 #[Group('tenant-casts')]
 class TenantConfigCastTest extends TestCase
 {
     /**
-     * Test that TenantConfigCast returns null when value is empty.
+     * Test that DynamicTenantConfigCast returns null when value is empty.
      *
      * @throws JsonException
      */
     public function testGetReturnsNullWhenValueIsEmpty(): void
     {
-        $cast  = new TenantConfigCast();
+        $cast  = new DynamicTenantConfigCast();
         $model = new Tenant();
 
         $result = $cast->get($model, 'config', null, []);
@@ -34,13 +34,13 @@ class TenantConfigCastTest extends TestCase
     }
 
     /**
-     * Test that TenantConfigCast correctly casts JSON string to TenantConfig object.
+     * Test that DynamicTenantConfigCast correctly casts JSON string to DynamicTenantConfig object.
      *
      * @throws JsonException
      */
     public function testGetCastsJsonToTenantConfig(): void
     {
-        $cast       = new TenantConfigCast();
+        $cast       = new DynamicTenantConfigCast();
         $model      = new Tenant();
         $configData = [
             'app_url'           => 'https://api.example.com',
@@ -61,35 +61,36 @@ class TenantConfigCastTest extends TestCase
         $jsonValue = json_encode($configData, JSON_THROW_ON_ERROR);
         $result    = $cast->get($model, 'config', $jsonValue, []);
 
-        $this->assertInstanceOf(TenantConfig::class, $result);
-        $this->assertEquals('https://api.example.com', $result->appUrl);
-        $this->assertEquals('https://app.example.com', $result->frontendUrl);
-        $this->assertEquals('Example App', $result->appName);
-        $this->assertEquals('testing', $result->appEnv);
-        $this->assertEquals('https://internal-api.example.com', $result->internalApiUrl);
-        $this->assertTrue($result->appDebug);
-        $this->assertEquals('Example', $result->mailFromName);
-        $this->assertEquals('no-reply@example.com', $result->mailFromAddress);
-        $this->assertCount(2, $result->visibility);
+        $this->assertInstanceOf(DynamicTenantConfig::class, $result);
+        $this->assertEquals('https://api.example.com', $result->get('app_url'));
+        $this->assertEquals('https://app.example.com', $result->get('frontend_url'));
+        $this->assertEquals('Example App', $result->get('app_name'));
+        $this->assertEquals('testing', $result->get('app_env'));
+        $this->assertEquals('https://internal-api.example.com', $result->get('internal_api_url'));
+        $this->assertTrue($result->get('app_debug'));
+        $this->assertEquals('Example', $result->get('mail_from_name'));
+        $this->assertEquals('no-reply@example.com', $result->get('mail_from_address'));
+        
+        // Check visibility
         $this->assertEquals(
             TenantConfigVisibility::PUBLIC,
-            $result->visibility['app_url'],
+            $result->getVisibility('app_url'),
         );
         $this->assertEquals(
             TenantConfigVisibility::PUBLIC,
-            $result->visibility['app_name'],
+            $result->getVisibility('app_name'),
         );
-        $this->assertNull($result->capacitorScheme);
+        $this->assertNull($result->get('capacitor_scheme'));
     }
 
     /**
-     * Test that TenantConfigCast returns null when set value is null.
+     * Test that DynamicTenantConfigCast returns null when set value is null.
      *
      * @throws JsonException
      */
     public function testSetReturnsNullWhenValueIsNull(): void
     {
-        $cast  = new TenantConfigCast();
+        $cast  = new DynamicTenantConfigCast();
         $model = new Tenant();
 
         $result = $cast->set($model, 'config', null, []);
@@ -97,55 +98,69 @@ class TenantConfigCastTest extends TestCase
     }
 
     /**
-     * Test that TenantConfigCast correctly casts TenantConfig object to JSON string.
+     * Test that DynamicTenantConfigCast correctly casts DynamicTenantConfig object to JSON string.
      *
      * @throws JsonException
      */
     public function testSetCastsTenantConfigToJson(): void
     {
-        $cast  = new TenantConfigCast();
+        $cast  = new DynamicTenantConfigCast();
         $model = new Tenant();
 
-        $config = $this->createTenantConfig();
+        $config = new DynamicTenantConfig([
+            'app_url' => 'https://api.example.com',
+            'frontend_url' => 'https://app.example.com',
+            'app_name' => 'Example App',
+            'app_env' => 'testing',
+            'internal_api_url' => 'https://internal-api.example.com',
+            'app_debug' => true,
+            'mail_from_name' => 'Example',
+            'mail_from_address' => 'no-reply@example.com',
+        ], [
+            'app_url' => TenantConfigVisibility::PUBLIC,
+            'app_name' => TenantConfigVisibility::PUBLIC,
+        ]);
 
         $result = $cast->set($model, 'config', $config, []);
 
         $this->assertIsString($result);
 
         $decodedResult = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
-        $this->assertEquals('https://api.example.com', $decodedResult['app_url']);
-        $this->assertEquals('https://app.example.com', $decodedResult['frontend_url']);
-        $this->assertEquals('Example App', $decodedResult['app_name']);
-        $this->assertEquals('testing', $decodedResult['app_env']);
-        $this->assertEquals('https://internal-api.example.com', $decodedResult['internal_api_url']);
-        $this->assertTrue($decodedResult['app_debug']);
-        $this->assertEquals('Example', $decodedResult['mail_from_name']);
-        $this->assertEquals('no-reply@example.com', $decodedResult['mail_from_address']);
-        $this->assertCount(2, $decodedResult['__visibility']);
-        $this->assertEquals(TenantConfigVisibility::PUBLIC ->value, $decodedResult['__visibility']['app_url']);
-        $this->assertEquals(TenantConfigVisibility::PUBLIC ->value, $decodedResult['__visibility']['app_name']);
+        $this->assertEquals('https://api.example.com', $decodedResult['config']['app_url']);
+        $this->assertEquals('https://app.example.com', $decodedResult['config']['frontend_url']);
+        $this->assertEquals('Example App', $decodedResult['config']['app_name']);
+        $this->assertEquals('testing', $decodedResult['config']['app_env']);
+        $this->assertEquals('https://internal-api.example.com', $decodedResult['config']['internal_api_url']);
+        $this->assertTrue($decodedResult['config']['app_debug']);
+        $this->assertEquals('Example', $decodedResult['config']['mail_from_name']);
+        $this->assertEquals('no-reply@example.com', $decodedResult['config']['mail_from_address']);
+        $this->assertCount(2, $decodedResult['visibility']);
+        $this->assertEquals(TenantConfigVisibility::PUBLIC ->value, $decodedResult['visibility']['app_url']);
+        $this->assertEquals(TenantConfigVisibility::PUBLIC ->value, $decodedResult['visibility']['app_name']);
     }
 
     /**
-     * Test that TenantConfigCast correctly casts array to JSON string.
+     * Test that DynamicTenantConfigCast correctly casts array to JSON string.
      *
      * @throws JsonException
      */
     public function testSetCastsArrayToJson(): void
     {
-        $cast  = new TenantConfigCast();
+        $cast  = new DynamicTenantConfigCast();
         $model = new Tenant();
 
         $configArray = [
-            'frontend_url'      => 'https://app.example.com',
-            'app_url'           => 'https://api.example.com',
-            'app_name'          => 'Example App',
-            'app_env'           => 'testing',
-            'internal_api_url'  => 'https://internal-api.example.com',
-            'app_debug'         => true,
-            'mail_from_name'    => 'Example',
-            'mail_from_address' => 'no-reply@example.com',
-            '__visibility'      => [
+            'config' => [
+                'frontend_url'      => 'https://app.example.com',
+                'app_url'           => 'https://api.example.com',
+                'app_name'          => 'Example App',
+                'app_env'           => 'testing',
+                'internal_api_url'  => 'https://internal-api.example.com',
+                'app_debug'         => true,
+                'mail_from_name'    => 'Example',
+                'mail_from_address' => 'no-reply@example.com',
+            ],
+            'visibility' => [
                 'app_url'  => TenantConfigVisibility::PUBLIC ->value,
                 'app_name' => TenantConfigVisibility::PUBLIC ->value,
             ],
@@ -156,14 +171,14 @@ class TenantConfigCastTest extends TestCase
         $this->assertIsString($result);
 
         $decodedResult = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
-        $this->assertEquals('https://api.example.com', $decodedResult['app_url']);
-        $this->assertEquals('https://app.example.com', $decodedResult['frontend_url']);
-        $this->assertEquals('Example App', $decodedResult['app_name']);
-        $this->assertEquals('testing', $decodedResult['app_env']);
-        $this->assertEquals('https://internal-api.example.com', $decodedResult['internal_api_url']);
-        $this->assertTrue($decodedResult['app_debug']);
-        $this->assertEquals('Example', $decodedResult['mail_from_name']);
-        $this->assertEquals('no-reply@example.com', $decodedResult['mail_from_address']);
-        $this->assertCount(2, $decodedResult['__visibility']);
+        $this->assertEquals('https://api.example.com', $decodedResult['config']['app_url']);
+        $this->assertEquals('https://app.example.com', $decodedResult['config']['frontend_url']);
+        $this->assertEquals('Example App', $decodedResult['config']['app_name']);
+        $this->assertEquals('testing', $decodedResult['config']['app_env']);
+        $this->assertEquals('https://internal-api.example.com', $decodedResult['config']['internal_api_url']);
+        $this->assertTrue($decodedResult['config']['app_debug']);
+        $this->assertEquals('Example', $decodedResult['config']['mail_from_name']);
+        $this->assertEquals('no-reply@example.com', $decodedResult['config']['mail_from_address']);
+        $this->assertCount(2, $decodedResult['visibility']);
     }
 }

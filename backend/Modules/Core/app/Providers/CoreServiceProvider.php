@@ -59,6 +59,7 @@ class CoreServiceProvider extends ModuleServiceProvider
 
         $this->app['request']->server->set('HTTPS', 'on');
         $this->app['router']->pushMiddlewareToGroup('web', SetRequestLocale::class);
+        $this->app['router']->pushMiddlewareToGroup('api', SetRequestLocale::class);
 
         $this->app['router']->pushMiddlewareToGroup('web', SetTraceId::class);
         $this->app['router']->pushMiddlewareToGroup('api', SetTraceId::class);
