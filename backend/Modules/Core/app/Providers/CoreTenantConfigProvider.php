@@ -25,8 +25,14 @@ class CoreTenantConfigProvider implements TenantConfigProviderInterface
             'config'     => [
                 // Core configuration - read from tenant config when available
                 'apiUrl'                 => $tenantConfig?->get('app_url', config('app.url')) ?? config('app.url'),
-                'appUrl'                 => $tenantConfig?->get('frontend_url', config('frontend.url')) ?? config('frontend.url'),
-                'appName'                => $tenantConfig?->get('app_name', config('app.name', 'Quvel Kit')) ?? config('app.name', 'Quvel Kit'),
+                'appUrl'                 => $tenantConfig?->get(
+                    'frontend_url',
+                    config('frontend.url'),
+                ) ?? config('frontend.url'),
+                'appName'                => $tenantConfig?->get(
+                    'app_name',
+                    config('app.name', 'Quvel Kit'),
+                ) ?? config('app.name', 'Quvel Kit'),
                 'tenantId'               => $tenant->public_id,
                 'tenantName'             => $tenant->name,
 
@@ -38,7 +44,10 @@ class CoreTenantConfigProvider implements TenantConfigProviderInterface
                 'recaptchaGoogleSiteKey' => $tenantConfig?->get('recaptcha_site_key', '') ?? '',
 
                 // Additional Core module specific configs
-                'internalApiUrl'         => $tenantConfig?->get('internal_api_url', config('frontend.internal_api_url')) ?? config('frontend.internal_api_url'),
+                'internalApiUrl'         => $tenantConfig?->get(
+                    'internal_api_url',
+                    config('frontend.internal_api_url'),
+                ) ?? config('frontend.internal_api_url'),
             ],
             'visibility' => [
                 'apiUrl'                 => 'public',
