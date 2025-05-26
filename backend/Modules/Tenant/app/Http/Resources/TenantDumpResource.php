@@ -18,7 +18,7 @@ use Modules\Tenant\Services\TenantConfigProviderRegistry;
  * @property string $name
  * @property string $domain
  * @property Tenant|null $parent
- * @property DynamicTenantConfig|TenantConfig|null $config
+ * @property DynamicTenantConfig|null $config
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -44,14 +44,6 @@ class TenantDumpResource extends JsonResource
     private function getFilteredConfig(): array
     {
         $config = $this->config;
-
-        // Convert to DynamicTenantConfig if needed
-        if ($config instanceof TenantConfig) {
-            $config = new DynamicTenantConfig(
-                $config->toArray(),
-                $config->visibility ?? []
-            );
-        }
 
         // Apply config providers to enhance the configuration
         $registry       = app(TenantConfigProviderRegistry::class);

@@ -2,6 +2,7 @@ import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { Cookies } from 'quasar';
 import { SessionName } from 'src/modules/Auth/models/Session';
 import { SsrServiceOptions } from '../types/service.types';
+import { TenantConfig } from 'src/modules/Core/types/tenant.types';
 
 /**
  * Creates an Axios instance with the given configuration.
@@ -28,14 +29,14 @@ export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance
  * Creates an Axios with support for making requests to the API
  * with the SSR internal request system.
  *
- * @param ssrContext
+ * @param ssrServiceOptions
  * @returns An Axios instance.
  */
-export function createApi(ssrContext?: SsrServiceOptions | null): AxiosInstance {
+export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosInstance {
   // In order: Internal API URL, Public API URL, Vite API URL
   const baseURL =
-    ssrContext?.req?.tenantConfig?.internalApiUrl ??
-    ssrContext?.req?.tenantConfig?.apiUrl ??
+    ssrServiceOptions?.req?.tenantConfig?.internalApiUrl ??
+    (window as unknown as { __TENANT_CONFIG__: TenantConfig }).__TENANT_CONFIG__?.apiUrl ??
     process.env.VITE_API_URL ??
     '';
 
@@ -50,9 +51,9 @@ export function createApi(ssrContext?: SsrServiceOptions | null): AxiosInstance 
 
   const api = createAxios(axiosConfig);
 
-  if (ssrContext) {
-    const cookies = Cookies.parseSSR(ssrContext);
-    const sessionCookie = ssrContext.req?.tenantConfig?.sessionCookie ?? SessionName;
+  if (ssrServiceOptions) {
+    const cookies = Cookies.parseSSR(ssrServiceOptions);
+    const sessionCookie = ssrServiceOptions.req?.tenantConfig?.sessionCookie ?? SessionName;
     const sessionToken = cookies.get(sessionCookie);
 
     // Attach session cookie (for authentication)
@@ -63,7 +64,7 @@ export function createApi(ssrContext?: SsrServiceOptions | null): AxiosInstance 
       api.defaults.headers.Cookie = `${sessionCookie}=${sessionToken}`;
     }
 
-    api.defaults.headers['X-Tenant-Domain'] = ssrContext.req?.tenantConfig?.apiUrl ?? '';
+    api.defaults.headers['X-Tenant-Domain'] = ssrServiceOptions.req?.tenantConfig?.apiUrl ?? '';
     api.defaults.headers['X-SSR-Key'] = process.env.SSR_API_KEY ?? '';
   } else {
     // TODO: On browser, add interceptors for XSRF expired/missing

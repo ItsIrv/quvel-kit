@@ -39,7 +39,13 @@ export class ApiService extends Service implements SsrAwareService, RegisterServ
   private log!: LogService;
   private abortControllers: Map<string, AbortController> = new Map();
   private requestCounter = 0;
-  private container?: ServiceContainer;
+
+  /**
+   * Retrieves the internal Axios instance.
+   */
+  get instance(): AxiosInstance {
+    return this.api;
+  }
 
   /**
    * Boot method to initialize with SSR context if available.
@@ -56,23 +62,10 @@ export class ApiService extends Service implements SsrAwareService, RegisterServ
   }
 
   /**
-   * Retrieves the internal Axios instance.
-   */
-  get instance(): AxiosInstance {
-    return this.api;
-  }
-
-  /**
    * Registers the service.
    */
   register(container: ServiceContainer): void {
-    this.container = container;
     this.log = container.log;
-
-    // If API not initialized yet (no SSR context), boot now with config
-    if (!this.api) {
-      this.boot();
-    }
 
     this.setupInterceptors();
   }

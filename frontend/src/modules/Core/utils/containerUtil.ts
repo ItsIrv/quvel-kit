@@ -1,11 +1,8 @@
 import type { QSsrContext } from '@quasar/app-vite';
-import { TaskService } from 'src/modules/Core/services/TaskService';
 import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
-import { ValidationService } from 'src/modules/Core/services/ValidationService';
 import { ApiService } from 'src/modules/Core/services/ApiService';
 import { I18nService } from 'src/modules/Core/services/I18nService';
 import { ConfigService } from 'src/modules/Core/services/ConfigService';
-import { WebSocketService } from 'src/modules/Core/services/WebSocketService';
 import { LogService } from 'src/modules/Core/services/LogService';
 import type { SsrServiceOptions } from 'src/modules/Core/types/service.types';
 import type { ServiceClass } from 'src/modules/Core/types/service.types';
@@ -38,9 +35,9 @@ export function createContainer(ssrContext?: QSsrContext | null): ServiceContain
     ['LogService', LogService],
     ['ApiService', ApiService],
     ['I18nService', I18nService],
-    ['ValidationService', ValidationService],
-    ['TaskService', TaskService],
-    ['WebSocketService', WebSocketService],
+    // ['ValidationService', ValidationService],
+    // ['TaskService', TaskService],
+    // ['WebSocketService', WebSocketService],
   ]);
 
   return new ServiceContainer(serviceContext, serviceClasses);

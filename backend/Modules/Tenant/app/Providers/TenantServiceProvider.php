@@ -59,7 +59,8 @@ class TenantServiceProvider extends ModuleServiceProvider
             return $pipeline;
         });
 
-        // Register the tenant config provider registry
+        // Register the tenant config provider registry as singleton
+        // The registry stores class names, not instances, making it safe for Octane
         $this->app->singleton(TenantConfigProviderRegistry::class);
 
         // Register the tenant config seeder registry

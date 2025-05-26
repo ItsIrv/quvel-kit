@@ -2,14 +2,16 @@
 
 ## Overview
 
-The Service Container in QuVel Kit implements a dependency injection pattern that orchestrates core and dynamic services throughout the application lifecycle. This architecture provides a centralized access point for essential services like API communication, validation, internationalization, task management, and real-time WebSocket communication. All core services work in both server and client environments with no additional configuration.
+The Service Container in QuVel Kit implements a dependency injection pattern that orchestrates core and dynamic services throughout the application lifecycle. This architecture provides a centralized access point for essential services like API communication, validation, internationalization, task management, and real-time WebSocket communication. All core services work in both server and client environments with SSR support built-in.
 
 ## Key Features
 
 - **Strongly Typed Services** – TypeScript interfaces ensure type safety
-- **Dynamic Registration** – Runtime service registration with dependency resolution
-- **Lifecycle Management** – Services implement registration and boot phases
-- **SSR Compatibility** – Works in both server and client environments
+- **Uniform DI Strategy** – All services follow the same lifecycle pattern
+- **SSR-Aware Services** – Services can access request/response objects in SSR context
+- **Lifecycle Management** – Three-phase initialization: construct → boot → register
+- **Error Handling** – Comprehensive error handling during service initialization
+- **Lazy Loading** – Services can be instantiated on-demand
 - **Store Integration** – Available in Pinia stores via plugin
 
 ## Core Services
@@ -59,31 +61,73 @@ export const useUserStore = defineStore('user', {
 });
 ```
 
+## Service Lifecycle
+
+All services follow a uniform three-phase lifecycle:
+
+1. **Constructor** - Parameterless constructor for basic setup
+2. **Boot** (optional) - Receives SSR context for initialization
+3. **Register** (optional) - Receives container for dependency injection
+
 ## Creating Custom Services
 
-Custom services should implement the `RegisterService` interface:
+### Basic Service (Non-SSR)
+
+For services that don't need SSR context:
 
 ```ts
+import { Service } from 'src/modules/Core/services/Service';
 import { RegisterService } from 'src/modules/Core/types/service.types';
 import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
-import { Service } from 'src/modules/Core/services/Service';
 
 export class NotificationService extends Service implements RegisterService {
-  private apiService!: ApiService;
+  private api!: ApiService;
   
-  // Register dependencies from the container
-  register({ api }: ServiceContainer): void {
-    this.apiService = api;
+  constructor() {
+    super();
+    // No parameters allowed
   }
   
-  // Optional boot method for initialization
-  boot(): void {
-    // Initialization logic
+  // Called after all services are instantiated
+  register(container: ServiceContainer): void {
+    this.api = container.api;
   }
   
   // Service methods
   send(message: string): void {
-    // Implementation
+    // Implementation using this.api
+  }
+}
+```
+
+### SSR-Aware Service
+
+For services that need access to request/response objects:
+
+```ts
+import { Service } from 'src/modules/Core/services/Service';
+import { RegisterService, SsrAwareService, SsrServiceOptions } from 'src/modules/Core/types/service.types';
+import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
+
+export class ServerDataService extends Service implements SsrAwareService, RegisterService {
+  private data?: any;
+  private api!: ApiService;
+  
+  // Called with SSR context (req/res) if available
+  boot(ssrServiceOptions?: SsrServiceOptions): void {
+    if (ssrServiceOptions?.req) {
+      // Access request headers, cookies, etc.
+      this.data = ssrServiceOptions.req.headers['x-custom-header'];
+    }
+  }
+  
+  // Called after all services are instantiated
+  register(container: ServiceContainer): void {
+    this.api = container.api;
+  }
+  
+  getData(): any {
+    return this.data;
   }
 }
 ```
@@ -92,7 +136,9 @@ export class NotificationService extends Service implements RegisterService {
 
 You can register your own services to the container in multiple ways:
 
-### Using Class Constructor
+### Lazy Loading with Class Constructor
+
+Services are automatically instantiated, booted (if SSR-aware), and registered when first accessed:
 
 ```ts
 import { NotificationService } from './NotificationService';
@@ -105,7 +151,9 @@ const notification = container.get(NotificationService);
 notification.send("Operation completed");
 ```
 
-### Using Factory Function
+### Pre-registering Services
+
+You can add services to the container explicitly:
 
 ```ts
 import { NotificationService } from './NotificationService';
@@ -113,39 +161,90 @@ import { NotificationService } from './NotificationService';
 // Get the container
 const container = useContainer();
 
-// Get or lazily create a service by factory function
-const notification = container.get(() => new NotificationService());
-notification.send("Operation completed");
-```
-
-### Using addService Method
-
-```ts
-import { NotificationService } from './NotificationService';
-
-// Get the container
-const container = useContainer();
-
-// Add a service instance
-container.addService(NotificationService, new NotificationService());
+// Add a service class (will be instantiated with proper lifecycle)
+const added = container.addService(NotificationService);
+console.log(added); // true if added, false if already exists
 
 // Later, retrieve the service
 const notification = container.get(NotificationService);
 notification.send("Operation completed");
 ```
 
-## Rules and Gotchas
+### Checking Service Existence
 
-- Services are initialized in a specific order; core services are available first
+```ts
+import { NotificationService } from './NotificationService';
+
+const container = useContainer();
+
+// Check if a service is registered
+if (container.hasService(NotificationService)) {
+  const notification = container.get(NotificationService);
+  notification.send("Service exists!");
+}
+```
+
+## Rules and Best Practices
+
+### Lifecycle Rules
+
+- **Constructor** must be parameterless - no arguments allowed
+- **Boot** method should NOT access the container or other services
+- **Register** method is where you get dependencies from the container
+- Services are instantiated in order, then all are booted, then all are registered
+
+### Architecture Guidelines
+
 - Circular dependencies between services should be avoided
 - The container is recreated for each SSR request to maintain isolation
-- Dynamic services are not available during SSR unless explicitly registered
+- Services are singleton instances within a container - they maintain state
 - Always destructure only the services you need from the container
-- Services are singleton instances - they maintain state between uses
+- Use utility functions (createApi, createLogger, etc.) for complex initialization
+
+### SSR Considerations
+
+- SSR-aware services receive request/response objects in boot()
+- Non-SSR services work the same in both server and client
+- The container handles SSR context automatically - no manual checks needed
+- Dynamic services added after container creation still follow the full lifecycle
+
+### Error Handling
+
+- Service initialization errors are caught and logged with descriptive messages
+- Failed boot or register phases will throw with the service name and error
+- Check console for detailed error information during development
+
+## Type Definitions
+
+```ts
+// Base service type
+export type Service = object;
+
+// SSR context passed to boot method
+export interface SsrServiceOptions {
+  req?: Request;
+  res?: Response;
+}
+
+// Interface for SSR-aware services
+export interface SsrAwareService extends Service {
+  boot(ssrServiceOptions?: SsrServiceOptions): void;
+}
+
+// Interface for services that need the container
+export interface RegisterService {
+  register(container: ServiceContainer): void;
+}
+
+// Service class type for container
+export type ServiceClass<T extends Service = Service> = new () => T;
+```
 
 ## Source Files
 
 - [ServiceContainer.ts](../../frontend/src/modules/Core/services/ServiceContainer.ts) - Main container implementation
+- [service.types.ts](../../frontend/src/modules/Core/types/service.types.ts) - Service type definitions
+- [containerUtil.ts](../../frontend/src/modules/Core/utils/containerUtil.ts) - Container creation utility
 - [container.ts](../../frontend/src/boot/container.ts) - Quasar boot file for container initialization
 - [serviceContainer.ts](../../frontend/src/modules/Core/stores/plugins/serviceContainer.ts) - Pinia plugin for store integration
 

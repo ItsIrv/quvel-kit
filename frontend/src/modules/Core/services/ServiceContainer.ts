@@ -3,11 +3,11 @@ import type { Service } from './Service';
 import type { SsrServiceOptions } from 'src/modules/Core/types/service.types';
 import type { ConfigService } from './ConfigService';
 import type { LogService } from './LogService';
-import type { ApiService } from './ApiService';
-import type { I18nService } from './I18nService';
-import type { ValidationService } from './ValidationService';
-import type { TaskService } from './TaskService';
-import type { WebSocketService } from './WebSocketService';
+import { ApiService } from './ApiService';
+import { I18nService } from './I18nService';
+import { ValidationService } from './ValidationService';
+import { TaskService } from './TaskService';
+import { WebSocketService } from './WebSocketService';
 import type { ServiceClass, ServiceInstance } from 'src/modules/Core/types/service.types';
 
 /**
@@ -39,8 +39,6 @@ export class ServiceContainer {
    * Boot SSR-aware services with the SSR context.
    */
   private bootServices(): void {
-    if (!this.ssrServiceOptions) return;
-
     for (const [name, service] of this.services) {
       if (this.hasBoot(service)) {
         try {
@@ -221,22 +219,22 @@ export class ServiceContainer {
   }
 
   get api(): ApiService {
-    return this.getByName<ApiService>('ApiService')!;
+    return this.get(ApiService);
   }
 
   get i18n(): I18nService {
-    return this.getByName<I18nService>('I18nService')!;
+    return this.get(I18nService);
   }
 
   get validation(): ValidationService {
-    return this.getByName<ValidationService>('ValidationService')!;
+    return this.get(ValidationService);
   }
 
   get task(): TaskService {
-    return this.getByName<TaskService>('TaskService')!;
+    return this.get(TaskService);
   }
 
   get ws(): WebSocketService {
-    return this.getByName<WebSocketService>('WebSocketService')!;
+    return this.get(WebSocketService);
   }
 }
