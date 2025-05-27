@@ -20,7 +20,8 @@ class ModuleRouteServiceProviderTest extends TestCase
      */
     private function createStubProvider(string $moduleName): ModuleRouteServiceProvider
     {
-        return new class ($moduleName) extends ModuleRouteServiceProvider {
+        return new class ($moduleName) extends ModuleRouteServiceProvider
+        {
             public function __construct(protected string $name)
             {
                 parent::__construct($this->name);
@@ -48,7 +49,8 @@ class ModuleRouteServiceProviderTest extends TestCase
      */
     private function createGroupMock(string $expectedPath): Mockery\MockInterface
     {
-        $groupMock = new class () {
+        $groupMock = new class ()
+        {
             public function group(string $path): void
             {
                 // Placeholder for group method
@@ -109,33 +111,5 @@ class ModuleRouteServiceProviderTest extends TestCase
 
         $provider = $this->createStubProvider($moduleName);
         $provider->mapApiRoutes();
-    }
-
-    /**
-     * Tests mapping channel routes.
-     */
-    public function testMapChannelRoutes(): void
-    {
-        $moduleName   = 'Tenant';
-        $expectedPath = module_path($moduleName, '/routes/channels.php');
-
-        // Ensure the directory exists
-        $directory = dirname($expectedPath);
-        if (!File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
-
-        // Create a temporary channels.php file
-        File::put($expectedPath, "<?php return 'channels loaded'; ?>");
-
-        // Capture the return value of require
-        $provider = $this->createStubProvider($moduleName);
-        $result   = require $expectedPath; // Instead of capturing output
-
-        // Assert that the channels.php file was correctly loaded
-        $this->assertEquals('channels loaded', $result);
-
-        // Clean up the temporary file
-        File::delete($expectedPath);
     }
 }

@@ -5,7 +5,6 @@ namespace Modules\Tenant\Contexts;
 use Modules\Tenant\Enums\TenantError;
 use Modules\Tenant\Exceptions\TenantNotFoundException;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\ValueObjects\TenantConfig;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 
 /**
@@ -45,7 +44,7 @@ class TenantContext
     /**
      * Get the tenant's scoped configuration.
      */
-    public function getConfig(): DynamicTenantConfig|TenantConfig|null
+    public function getConfig(): DynamicTenantConfig|null
     {
         return $this->tenant->config;
     }
@@ -56,11 +55,11 @@ class TenantContext
     public function getConfigValue(string $key, mixed $default = null): mixed
     {
         $config = $this->tenant->config;
-        
+
         if ($config instanceof DynamicTenantConfig) {
             return $config->get($key, $default);
         }
-        
+
         return $config->{$key} ?? $default;
     }
 }

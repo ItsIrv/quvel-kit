@@ -3,7 +3,6 @@
 namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\App;
