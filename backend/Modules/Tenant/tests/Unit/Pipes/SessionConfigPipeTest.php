@@ -8,6 +8,7 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Foundation\Application;
 use Illuminate\Log\LogManager;
 use Illuminate\Session\SessionManager;
+use Modules\Tenant\Logs\Pipes\SessionConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Pipes\SessionConfigPipe;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -48,23 +49,46 @@ class SessionConfigPipeTest extends TestCase
         $logger->expects($this->any())->method('debug');
         $logger->expects($this->any())->method('error');
             
+        // Create a mock logger for SessionConfigPipe that will be used by app()
+        $sessionLoggerForApp = $this->createMock(SessionConfigPipeLogs::class);
+        
         $this->app->method('make')
             ->willReturnMap([
                 ['config', [], $this->config],
                 ['log', [], $logger],
-                [SessionManager::class, [], $this->sessionManager]
+                [SessionManager::class, [], $this->sessionManager],
+                [SessionConfigPipeLogs::class, [], $sessionLoggerForApp]
             ]);
             
         $this->app->method('environment')
             ->willReturn(true);
             
-        $this->pipe = new SessionConfigPipe();
+        // Create a mock logger for SessionConfigPipe
+        $sessionLogger = $this->createMock(SessionConfigPipeLogs::class);
+        $sessionLogger->expects($this->any())->method('driverChanged');
+        $sessionLogger->expects($this->any())->method('lifetimeChanged');
+        $sessionLogger->expects($this->any())->method('encryptionChanged');
+        $sessionLogger->expects($this->any())->method('pathChanged');
+        $sessionLogger->expects($this->any())->method('domainChanged');
+        $sessionLogger->expects($this->any())->method('cookieNameChanged');
+        $sessionLogger->expects($this->any())->method('databaseConnectionChanged');
+        $sessionLogger->expects($this->any())->method('applyingChanges');
+        $sessionLogger->expects($this->any())->method('noChangesToApply');
+        $sessionLogger->expects($this->any())->method('sessionManagerRebound');
+        $sessionLogger->expects($this->any())->method('sessionManagerRebindFailed');
+        $sessionLogger->expects($this->any())->method('sessionManagerNotBound');
+        $sessionLogger->expects($this->any())->method('sessionManagerReset');
+        $sessionLogger->expects($this->any())->method('sessionManagerResetFailed');
+        $sessionLogger->expects($this->any())->method('sessionManagerNotBoundDuringReset');
+        
+        $this->pipe = new SessionConfigPipe($sessionLogger);
     }
 
     public function testHandleAppliesAllSessionConfig(): void
     {
         $tenant = new Tenant();
         $tenant->id = '123';
+        $tenant->public_id = 'test-tenant-123';
         $tenantConfig = [
             'session_driver' => 'redis',
             'session_lifetime' => 240,
@@ -126,6 +150,7 @@ class SessionConfigPipeTest extends TestCase
     {
         $tenant = new Tenant();
         $tenant->id = '456';
+        $tenant->public_id = 'test-tenant-456';
         $tenantConfig = ['session_driver' => 'file'];
         
         $callIndex = 0;
@@ -163,6 +188,7 @@ class SessionConfigPipeTest extends TestCase
     {
         $tenant = new Tenant();
         $tenant->id = '789';
+        $tenant->public_id = 'test-tenant-789';
         $tenantConfig = ['session_driver' => 'database'];
         
         $callIndex = 0;
@@ -206,6 +232,7 @@ class SessionConfigPipeTest extends TestCase
     {
         $tenant = new Tenant();
         $tenant->id = '123';
+        $tenant->public_id = 'test-tenant-123';
         
         $this->config->expects($this->exactly($expectedSetCalls))
             ->method('set');
@@ -257,6 +284,7 @@ class SessionConfigPipeTest extends TestCase
     {
         $tenant = new Tenant();
         $tenant->id = '123';
+        $tenant->public_id = 'test-tenant-123';
         $tenantConfig = ['session_driver' => 'file'];
         
         $this->config->expects($this->any())->method('set');
@@ -283,6 +311,7 @@ class SessionConfigPipeTest extends TestCase
     {
         $tenant = new Tenant();
         $tenant->id = '123';
+        $tenant->public_id = 'test-tenant-123';
         $tenantConfig = ['session_driver' => 'file'];
         
         $this->config->expects($this->any())->method('set');

@@ -93,13 +93,13 @@ class SessionConfigPipe implements ConfigurationPipeInterface
         }
 
         // Set the session connection to match the database connection if using database driver
-        // if ($config->get('session.driver') === 'database') {
-        //     $dbConnection = $config->get('database.default');
-        //     $config->set('session.connection', $dbConnection);
-        //     $hasSessionChanges = true;
+        if ($config->get('session.driver') === 'database') {
+            $dbConnection = $config->get('database.default');
+            $config->set('session.connection', $dbConnection);
+            $hasSessionChanges = true;
 
-        //     $this->logger->databaseConnectionChanged($dbConnection, $tenant->public_id);
-        // }
+            $this->logger->databaseConnectionChanged($dbConnection, $tenant->public_id);
+        }
 
         // Apply the changes to the actual resources
         if ($hasSessionChanges) {

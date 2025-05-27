@@ -106,7 +106,7 @@ return [
      * rather than adding them here.
      */
     'tables'       => [
-        'users'         => [
+        'users' => [
             /**
              * Column after which the tenant_id should be added
              */
@@ -184,22 +184,22 @@ return [
         'basic'      => [
             'queue_retry_after'  => 60,
             'log_retention_days' => 7,
-            'session_lifetime'   => 120,
+            // 'session_lifetime'   => 120,
         ],
         'standard'   => [
             'queue_retry_after'  => 90,
             'log_retention_days' => 30,
-            'session_lifetime'   => 240,
+            // 'session_lifetime'   => 240,
         ],
         'premium'    => [
             'queue_retry_after'  => 120,
             'log_retention_days' => 90,
-            'session_lifetime'   => 480,
+            // 'session_lifetime'   => 480,
         ],
         'enterprise' => [
             'queue_retry_after'  => 180,
             'log_retention_days' => 365,
-            'session_lifetime'   => 1440,
+            // 'session_lifetime'   => 1440,
         ],
     ],
 ];

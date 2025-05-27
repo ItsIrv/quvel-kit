@@ -9,10 +9,9 @@ use Illuminate\Validation\Rules\Email;
  */
 class EmailRule extends Email
 {
-    // public static function default(): EmailRule
-    // {
-    //     return self::strict()
-    //         ->validateMxRecord()
-    //         ->preventSpoofing();
-    // }
+    public static function default(): EmailRule
+    {
+        return (new static())
+            ->strict();
+    }
 }
