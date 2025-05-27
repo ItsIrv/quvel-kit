@@ -12,7 +12,7 @@ class PasswordRule extends Password
     /**
      * Default password validation rules.
      */
-    public static function default(): PasswordRule
+    public static function default(): Password
     {
         return self::min(8);
         // ->mixedCase()

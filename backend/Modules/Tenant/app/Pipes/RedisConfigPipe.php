@@ -5,6 +5,7 @@ namespace Modules\Tenant\Pipes;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Redis\Factory as RedisFactory;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Logs\Pipes\RedisConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 
 /**
@@ -103,11 +104,13 @@ class RedisConfigPipe implements ConfigurationPipeInterface
             app()->forgetInstance(RedisFactory::class);
             app()->forgetInstance('redis');
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Refreshed Redis connections with new configuration");
+            if (app()->environment(['local', 'development', 'testing']) && app()->bound(RedisConfigPipeLogs::class)) {
+                app(RedisConfigPipeLogs::class)->connectionsRefreshed();
             }
         } catch (\Exception $e) {
-            logger()->error("[Tenant] Failed to refresh Redis connections: {$e->getMessage()}");
+            if (app()->bound(RedisConfigPipeLogs::class)) {
+                app(RedisConfigPipeLogs::class)->connectionsFailed($e->getMessage());
+            }
         }
     }
 
@@ -137,11 +140,13 @@ class RedisConfigPipe implements ConfigurationPipeInterface
             app()->forgetInstance(RedisFactory::class);
             app()->forgetInstance('redis');
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Reset Redis connections with current configuration");
+            if (app()->environment(['local', 'development', 'testing']) && app()->bound(RedisConfigPipeLogs::class)) {
+                app(RedisConfigPipeLogs::class)->connectionsReset();
             }
         } catch (\Exception $e) {
-            logger()->error("[Tenant] Failed to reset Redis connections: {$e->getMessage()}");
+            if (app()->bound(RedisConfigPipeLogs::class)) {
+                app(RedisConfigPipeLogs::class)->resetFailed($e->getMessage());
+            }
         }
     }
 

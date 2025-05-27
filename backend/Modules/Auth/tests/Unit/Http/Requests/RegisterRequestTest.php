@@ -85,7 +85,7 @@ class RegisterRequestTest extends TestCase
         // Assert
         $this->assertContains('required', $rules['email']);
         $this->assertContains('string', $rules['email']);
-        $this->assertInstanceOf(EmailRule::class, $rules['email'][2]);
+        $this->assertEquals('email', $rules['email'][2]);
 
         $this->assertContains('required', $rules['password']);
         $this->assertContains('string', $rules['password']);

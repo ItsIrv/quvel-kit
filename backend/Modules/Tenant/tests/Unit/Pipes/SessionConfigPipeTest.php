@@ -4,9 +4,7 @@ namespace Modules\Tenant\Tests\Unit\Pipes;
 
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Illuminate\Contracts\Session\Session;
 use Illuminate\Foundation\Application;
-use Illuminate\Log\LogManager;
 use Illuminate\Session\SessionManager;
 use Modules\Tenant\Logs\Pipes\SessionConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
@@ -29,6 +27,7 @@ class SessionConfigPipeTest extends TestCase
     private ConfigRepository|MockObject $config;
     private Application|MockObject $app;
     private SessionManager|MockObject $sessionManager;
+    private SessionConfigPipeLogs|MockObject $logger;
     private ?Container $originalContainer = null;
 
     protected function setUp(): void
@@ -38,50 +37,26 @@ class SessionConfigPipeTest extends TestCase
         $this->originalContainer = Container::getInstance();
         
         $this->app = $this->createPartialMock(Application::class, [
-            'make', 'bound', 'environment', 'extend', 'forgetInstance'
+            'make', 'bound'
         ]);
         $this->config = $this->createMock(ConfigRepository::class);
         $this->sessionManager = $this->createMock(SessionManager::class);
         
         Container::setInstance($this->app);
         
-        $logger = $this->createMock(LogManager::class);
-        $logger->expects($this->any())->method('debug');
-        $logger->expects($this->any())->method('error');
-            
-        // Create a mock logger for SessionConfigPipe that will be used by app()
+        // Create a mock logger for SessionConfigPipe
+        $this->logger = $this->createMock(SessionConfigPipeLogs::class);
+        
+        // Create a mock logger for static methods
         $sessionLoggerForApp = $this->createMock(SessionConfigPipeLogs::class);
+        $sessionLoggerForApp->expects($this->any())->method('sessionManagerNotBoundDuringReset');
         
         $this->app->method('make')
             ->willReturnMap([
-                ['config', [], $this->config],
-                ['log', [], $logger],
-                [SessionManager::class, [], $this->sessionManager],
                 [SessionConfigPipeLogs::class, [], $sessionLoggerForApp]
             ]);
-            
-        $this->app->method('environment')
-            ->willReturn(true);
-            
-        // Create a mock logger for SessionConfigPipe
-        $sessionLogger = $this->createMock(SessionConfigPipeLogs::class);
-        $sessionLogger->expects($this->any())->method('driverChanged');
-        $sessionLogger->expects($this->any())->method('lifetimeChanged');
-        $sessionLogger->expects($this->any())->method('encryptionChanged');
-        $sessionLogger->expects($this->any())->method('pathChanged');
-        $sessionLogger->expects($this->any())->method('domainChanged');
-        $sessionLogger->expects($this->any())->method('cookieNameChanged');
-        $sessionLogger->expects($this->any())->method('databaseConnectionChanged');
-        $sessionLogger->expects($this->any())->method('applyingChanges');
-        $sessionLogger->expects($this->any())->method('noChangesToApply');
-        $sessionLogger->expects($this->any())->method('sessionManagerRebound');
-        $sessionLogger->expects($this->any())->method('sessionManagerRebindFailed');
-        $sessionLogger->expects($this->any())->method('sessionManagerNotBound');
-        $sessionLogger->expects($this->any())->method('sessionManagerReset');
-        $sessionLogger->expects($this->any())->method('sessionManagerResetFailed');
-        $sessionLogger->expects($this->any())->method('sessionManagerNotBoundDuringReset');
         
-        $this->pipe = new SessionConfigPipe($sessionLogger);
+        $this->pipe = new SessionConfigPipe($this->logger);
     }
 
     public function testHandleAppliesAllSessionConfig(): void
@@ -116,26 +91,47 @@ class SessionConfigPipeTest extends TestCase
                 return null;
             });
         
-        $this->config->method('get')->willReturn('file');
+        $this->config->method('get')
+            ->willReturnMap([
+                ['session.cookie', null, 'old_cookie'],
+                ['session.driver', null, 'file']
+            ]);
         
+        // Logger expectations
+        $this->logger->expects($this->once())->method('driverChanged')->with('redis');
+        $this->logger->expects($this->once())->method('lifetimeChanged')->with(240);
+        $this->logger->expects($this->once())->method('encryptionChanged')->with(true);
+        $this->logger->expects($this->once())->method('pathChanged')->with('/app');
+        $this->logger->expects($this->once())->method('domainChanged')->with('.tenant.com');
+        $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_session', true);
+        $this->logger->expects($this->once())->method('debug')->with(
+            'Session cookie name changed',
+            ['old_cookie' => 'old_cookie', 'new_cookie' => 'tenant_session']
+        );
+        $this->logger->expects($this->once())->method('applyingChanges')->with(6);
+        
+        // Session manager update test
         $this->app->expects($this->once())
             ->method('bound')
-            ->with(SessionManager::class)
+            ->with('session')
             ->willReturn(true);
             
-        $this->app->expects($this->once())
-            ->method('extend')
-            ->with(SessionManager::class);
-            
-        $callIndex = 0;
-        $this->app->expects($this->exactly(2))
-            ->method('forgetInstance')
-            ->willReturnCallback(function ($arg) use (&$callIndex) {
-                $expected = [SessionManager::class, Session::class];
-                $this->assertEquals($expected[$callIndex], $arg);
-                $callIndex++;
-                return null;
-            });
+        $driver = $this->createMock(\Illuminate\Session\Store::class);
+        $driver->expects($this->once())->method('setName')->with('tenant_session');
+        
+        $this->sessionManager->expects($this->once())->method('driver')->willReturn($driver);
+        
+        $sessionManagerReturner = function ($abstract) {
+            if ($abstract === 'session') {
+                return $this->sessionManager;
+            }
+            if ($abstract === SessionConfigPipeLogs::class) {
+                return $this->logger;
+            }
+            return null;
+        };
+        
+        $this->app->method('make')->willReturnCallback($sessionManagerReturner);
         
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;
@@ -153,29 +149,32 @@ class SessionConfigPipeTest extends TestCase
         $tenant->public_id = 'test-tenant-456';
         $tenantConfig = ['session_driver' => 'file'];
         
-        $callIndex = 0;
-        $this->config->expects($this->exactly(2))
+        $expectedSets = [
+            ['session.driver', 'file'],
+            ['session.cookie', 'tenant_456_session']
+        ];
+        
+        $this->config->expects($this->exactly(count($expectedSets)))
             ->method('set')
-            ->willReturnCallback(function ($key, $value) use (&$callIndex) {
-                $expected = [
-                    ['session.driver', 'file'],
-                    ['session.cookie', 'tenant_456_session']
-                ];
-                $this->assertEquals($expected[$callIndex][0], $key);
-                $this->assertEquals($expected[$callIndex][1], $value);
-                $callIndex++;
+            ->willReturnCallback(function ($key, $value) use (&$expectedSets) {
+                $expected = array_shift($expectedSets);
+                $this->assertEquals($expected[0], $key);
+                $this->assertEquals($expected[1], $value);
                 return null;
             });
         
         $this->config->method('get')->willReturn('file');
         
+        // Logger expectations
+        $this->logger->expects($this->once())->method('driverChanged')->with('file');
+        $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_456_session', false);
+        $this->logger->expects($this->once())->method('applyingChanges')->with(1);
+        
+        // No session manager interaction when session not bound
         $this->app->expects($this->once())
             ->method('bound')
-            ->with(SessionManager::class)
-            ->willReturn(true);
-            
-        $this->app->expects($this->once())->method('extend');
-        $this->app->expects($this->exactly(2))->method('forgetInstance');
+            ->with('session')
+            ->willReturn(false);
         
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;
@@ -191,34 +190,33 @@ class SessionConfigPipeTest extends TestCase
         $tenant->public_id = 'test-tenant-789';
         $tenantConfig = ['session_driver' => 'database'];
         
-        $callIndex = 0;
-        $this->config->expects($this->exactly(3))
+        $expectedSets = [
+            ['session.driver', 'database'],
+            ['session.cookie', 'tenant_789_session'],
+            ['session.connection', 'mysql']
+        ];
+        
+        $this->config->expects($this->exactly(count($expectedSets)))
             ->method('set')
-            ->willReturnCallback(function ($key, $value) use (&$callIndex) {
-                $expected = [
-                    ['session.driver', 'database'],
-                    ['session.cookie', 'tenant_789_session'],
-                    ['session.connection', 'mysql']
-                ];
-                $this->assertEquals($expected[$callIndex][0], $key);
-                $this->assertEquals($expected[$callIndex][1], $value);
-                $callIndex++;
+            ->willReturnCallback(function ($key, $value) use (&$expectedSets) {
+                $expected = array_shift($expectedSets);
+                $this->assertEquals($expected[0], $key);
+                $this->assertEquals($expected[1], $value);
                 return null;
             });
         
         $this->config->method('get')
             ->willReturnMap([
                 ['session.driver', null, 'database'],
-                ['database.default', null, 'mysql']
+                ['database.default', null, 'mysql'],
+                ['session.cookie', null, 'old_cookie']
             ]);
         
-        $this->app->expects($this->once())
-            ->method('bound')
-            ->with(SessionManager::class)
-            ->willReturn(true);
-            
-        $this->app->expects($this->once())->method('extend');
-        $this->app->expects($this->exactly(2))->method('forgetInstance');
+        // Logger expectations
+        $this->logger->expects($this->once())->method('driverChanged')->with('database');
+        $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_789_session', false);
+        $this->logger->expects($this->once())->method('databaseConnectionChanged')->with('mysql');
+        $this->logger->expects($this->once())->method('applyingChanges')->with(1);
         
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;
@@ -240,15 +238,9 @@ class SessionConfigPipeTest extends TestCase
         $this->config->method('get')->willReturn('file');
         
         if ($expectedSetCalls > 0) {
-            $this->app->expects($this->once())
-                ->method('bound')
-                ->with(SessionManager::class)
-                ->willReturn(true);
-                
-            $this->app->expects($this->once())->method('extend');
-            $this->app->expects($this->exactly(2))->method('forgetInstance');
+            $this->logger->expects($this->once())->method('applyingChanges');
         } else {
-            $this->app->expects($this->never())->method('bound');
+            $this->logger->expects($this->once())->method('noChangesToApply');
         }
         
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
@@ -280,49 +272,22 @@ class SessionConfigPipeTest extends TestCase
         ];
     }
 
-    public function testRebindSessionManagerHandlesException(): void
+    public function testNoChangesWhenAllConfigMatchesExisting(): void
     {
         $tenant = new Tenant();
         $tenant->id = '123';
         $tenant->public_id = 'test-tenant-123';
-        $tenantConfig = ['session_driver' => 'file'];
+        $tenantConfig = [];
         
-        $this->config->expects($this->any())->method('set');
-        $this->config->method('get')->willReturn('file');
+        // Only the default cookie should be set
+        $this->config->expects($this->once())
+            ->method('set')
+            ->with('session.cookie', 'tenant_123_session');
         
-        $this->app->expects($this->once())
-            ->method('bound')
-            ->with(SessionManager::class)
-            ->willReturn(true);
-            
-        $this->app->expects($this->once())
-            ->method('extend')
-            ->willThrowException(new \Exception('Extend failed'));
+        $this->config->method('get')->willReturn('tenant_123_session');
         
-        // Should not throw exception, but handle it gracefully
-        $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-        
-        $this->assertSame($tenant, $result['tenant']);
-    }
-
-    public function testRebindSessionManagerSkipsWhenNotBound(): void
-    {
-        $tenant = new Tenant();
-        $tenant->id = '123';
-        $tenant->public_id = 'test-tenant-123';
-        $tenantConfig = ['session_driver' => 'file'];
-        
-        $this->config->expects($this->any())->method('set');
-        $this->config->method('get')->willReturn('file');
-        
-        $this->app->expects($this->once())
-            ->method('bound')
-            ->with(SessionManager::class)
-            ->willReturn(false);
-            
-        $this->app->expects($this->never())->method('extend');
+        $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_123_session', false);
+        $this->logger->expects($this->once())->method('applyingChanges')->with(0);
         
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;
@@ -331,90 +296,64 @@ class SessionConfigPipeTest extends TestCase
         $this->assertSame($tenant, $result['tenant']);
     }
 
-    public function testResetResourcesRebindsSessionManager(): void
+    public function testUpdatesSessionDriverWhenSessionExists(): void
     {
-        Container::setInstance(null);
-        $mockApp = $this->createPartialMock(Application::class, [
-            'bound', 'make', 'extend', 'forgetInstance', 'environment'
-        ]);
-        Container::setInstance($mockApp);
+        $tenant = new Tenant();
+        $tenant->id = '123';
+        $tenant->public_id = 'test-tenant-123';
+        $tenantConfig = ['session_cookie' => 'my_custom_cookie'];
         
-        $mockLogger = $this->createMock(LogManager::class);
+        $this->config->expects($this->once())
+            ->method('set')
+            ->with('session.cookie', 'my_custom_cookie');
         
-        $mockApp->expects($this->once())
+        $this->config->method('get')
+            ->willReturnMap([
+                ['session.cookie', null, 'old_cookie']
+            ]);
+        
+        // Session manager update test
+        $this->app->expects($this->once())
             ->method('bound')
-            ->with(SessionManager::class)
+            ->with('session')
             ->willReturn(true);
             
-        $mockApp->method('make')
-            ->willReturnMap([
-                ['log', [], $mockLogger]
-            ]);
-            
-        $mockApp->method('environment')->willReturn(true);
+        $driver = $this->createMock(\Illuminate\Session\Store::class);
+        $driver->expects($this->once())->method('setName')->with('my_custom_cookie');
         
-        $mockApp->expects($this->once())
-            ->method('extend')
-            ->with(SessionManager::class);
-            
-        $callIndex = 0;
-        $mockApp->expects($this->exactly(2))
-            ->method('forgetInstance')
-            ->willReturnCallback(function ($arg) use (&$callIndex) {
-                $expected = [SessionManager::class, Session::class];
-                $this->assertEquals($expected[$callIndex], $arg);
-                $callIndex++;
-                return null;
-            });
+        $this->sessionManager->expects($this->once())->method('driver')->willReturn($driver);
         
-        $mockLogger->expects($this->once())->method('debug');
+        $sessionManagerReturner = function ($abstract) {
+            if ($abstract === 'session') {
+                return $this->sessionManager;
+            }
+            if ($abstract === SessionConfigPipeLogs::class) {
+                return $this->logger;
+            }
+            return null;
+        };
         
-        SessionConfigPipe::resetResources();
+        $this->app->method('make')->willReturnCallback($sessionManagerReturner);
+        
+        $this->logger->expects($this->once())->method('cookieNameChanged')->with('my_custom_cookie', true);
+        $this->logger->expects($this->once())->method('applyingChanges')->with(1);
+        $this->logger->expects($this->once())->method('debug')
+            ->with('Session cookie name changed', ['old_cookie' => 'old_cookie', 'new_cookie' => 'my_custom_cookie']);
+        
+        $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
+            return $data;
+        });
+        
+        $this->assertSame($tenant, $result['tenant']);
     }
 
-    public function testResetResourcesHandlesException(): void
+    public function testResetResourcesDoesNothing(): void
     {
-        Container::setInstance(null);
-        $mockApp = $this->createPartialMock(Application::class, [
-            'bound', 'make', 'extend'
-        ]);
-        Container::setInstance($mockApp);
-        
-        $mockLogger = $this->createMock(LogManager::class);
-        
-        $mockApp->expects($this->once())
-            ->method('bound')
-            ->with(SessionManager::class)
-            ->willReturn(true);
-            
-        $mockApp->method('make')
-            ->willReturnMap([
-                ['log', [], $mockLogger]
-            ]);
-            
-        $mockApp->expects($this->once())
-            ->method('extend')
-            ->willThrowException(new \Exception('Test exception'));
-        
-        $mockLogger->expects($this->once())
-            ->method('error')
-            ->with($this->stringContains('Failed to reset session manager'));
-        
+        // Since resetResources() now does nothing, just call it to ensure no errors
         SessionConfigPipe::resetResources();
-    }
-
-    public function testResetResourcesSkipsWhenNotBound(): void
-    {
-        Container::setInstance(null);
-        $mockApp = $this->createPartialMock(Application::class, ['bound']);
-        Container::setInstance($mockApp);
         
-        $mockApp->expects($this->once())
-            ->method('bound')
-            ->with(SessionManager::class)
-            ->willReturn(false);
-        
-        SessionConfigPipe::resetResources();
+        // Assert that we got here without errors
+        $this->assertTrue(true);
     }
 
     public function testHandlesReturnsCorrectKeys(): void
@@ -440,7 +379,7 @@ class SessionConfigPipeTest extends TestCase
     {
         $priority = $this->pipe->priority();
         
-        $this->assertEquals(83, $priority);
+        $this->assertEquals(10, $priority);
     }
 
     protected function tearDown(): void

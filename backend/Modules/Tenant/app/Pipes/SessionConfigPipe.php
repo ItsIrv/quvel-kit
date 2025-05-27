@@ -40,7 +40,7 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.driver', $driver);
             $hasSessionChanges = true;
 
-            $this->logger->driverChanged($driver, $tenant->public_id);
+            $this->logger->driverChanged($driver);
         }
 
         if (isset($tenantConfig['session_lifetime'])) {
@@ -48,7 +48,7 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.lifetime', $lifetime);
             $hasSessionChanges = true;
 
-            $this->logger->lifetimeChanged($lifetime, $tenant->public_id);
+            $this->logger->lifetimeChanged($lifetime);
         }
 
         if (isset($tenantConfig['session_encrypt'])) {
@@ -56,7 +56,7 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.encrypt', $tenantConfig['session_encrypt']);
             $hasSessionChanges = true;
 
-            $this->logger->encryptionChanged($tenantConfig['session_encrypt'], $tenant->public_id);
+            $this->logger->encryptionChanged($tenantConfig['session_encrypt']);
         }
 
         if (isset($tenantConfig['session_path'])) {
@@ -64,7 +64,7 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.path', $path);
             $hasSessionChanges = true;
 
-            $this->logger->pathChanged($path, $tenant->public_id);
+            $this->logger->pathChanged($path);
         }
 
         if (isset($tenantConfig['session_domain'])) {
@@ -72,7 +72,7 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.domain', $domain);
             $hasSessionChanges = true;
 
-            $this->logger->domainChanged($domain, $tenant->public_id);
+            $this->logger->domainChanged($domain);
         }
 
         // Always set a tenant-specific session cookie name if not overridden
@@ -82,20 +82,19 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.cookie', $cookie);
             $hasSessionChanges = true;
 
-            $this->logger->cookieNameChanged($cookie, true, $tenant->public_id);
+            $this->logger->cookieNameChanged($cookie, true);
         } else {
             // Default to tenant-specific cookie name
             $cookie = "tenant_{$tenant->id}_session";
             $config->set('session.cookie', $cookie);
             $hasSessionChanges = true;
 
-            $this->logger->cookieNameChanged($cookie, false, $tenant->public_id);
+            $this->logger->cookieNameChanged($cookie, false);
         }
 
         // Log the change for debugging
         if ($oldCookie !== $cookie) {
             $this->logger->debug('Session cookie name changed', [
-                'tenant_id'  => $tenant->public_id,
                 'old_cookie' => $oldCookie,
                 'new_cookie' => $cookie,
             ]);
@@ -107,14 +106,18 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.connection', $dbConnection);
             $hasSessionChanges = true;
 
-            $this->logger->databaseConnectionChanged($dbConnection, $tenant->public_id);
+            $this->logger->databaseConnectionChanged($dbConnection);
         }
 
         // Apply the configuration changes
         if ($hasSessionChanges) {
             $this->logger->applyingChanges(
-                $tenant->public_id,
-                count(array_intersect_key($tenantConfig, array_flip($this->handles()))),
+                count(
+                    array_intersect_key(
+                        $tenantConfig,
+                        array_flip($this->handles()),
+                    ),
+                ),
             );
 
             // Force the session manager to use the new configuration
@@ -124,19 +127,19 @@ class SessionConfigPipe implements ConfigurationPipeInterface
                 $sessionManager = app('session');
 
                 // If it's using the cookie session handler, update the cookie name
-                if (method_exists($sessionManager, 'driver')) {
+                if ($sessionManager && method_exists($sessionManager, 'driver')) {
                     $driver = $sessionManager->driver();
-                    if (method_exists($driver, 'setName')) {
+                    if ($driver && method_exists($driver, 'setName')) {
                         $driver->setName($config->get('session.cookie'));
+
                         $this->logger->debug('Updated session driver cookie name', [
-                            'tenant_id'   => $tenant->public_id,
                             'cookie_name' => $config->get('session.cookie'),
                         ]);
                     }
                 }
             }
         } else {
-            $this->logger->noChangesToApply($tenant->public_id);
+            $this->logger->noChangesToApply();
         }
 
         return $next([

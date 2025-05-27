@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Date;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Logs\Pipes\CoreConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 
 /**
@@ -154,11 +155,13 @@ class CoreConfigPipe implements ConfigurationPipeInterface
                 $urlGenerator->forceRootUrl($appUrl);
             }
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Updated URL generator with new root URL: {$appUrl}");
+            if (app()->environment(['local', 'development', 'testing']) && app()->bound(CoreConfigPipeLogs::class)) {
+                app(CoreConfigPipeLogs::class)->urlGeneratorUpdated($appUrl);
             }
         } catch (\Exception $e) {
-            logger()->error("[Tenant] Failed to refresh URL generator: {$e->getMessage()}");
+            if (app()->bound(CoreConfigPipeLogs::class)) {
+                app(CoreConfigPipeLogs::class)->urlGeneratorFailed($e->getMessage());
+            }
         }
     }
 
@@ -169,11 +172,13 @@ class CoreConfigPipe implements ConfigurationPipeInterface
             date_default_timezone_set($timezone);
             Date::setFallbackTimezone($timezone);
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Updated application timezone to: {$timezone}");
+            if (app()->environment(['local', 'development', 'testing']) && app()->bound(CoreConfigPipeLogs::class)) {
+                app(CoreConfigPipeLogs::class)->timezoneUpdated($timezone);
             }
         } catch (\Exception $e) {
-            logger()->error("[Tenant] Failed to refresh timezone: {$e->getMessage()}");
+            if (app()->bound(CoreConfigPipeLogs::class)) {
+                app(CoreConfigPipeLogs::class)->timezoneFailed($e->getMessage());
+            }
         }
     }
 
@@ -184,11 +189,13 @@ class CoreConfigPipe implements ConfigurationPipeInterface
             App::setLocale($locale);
             app()->forgetInstance(Translator::class);
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Updated application locale to: {$locale}");
+            if (app()->environment(['local', 'development', 'testing']) && app()->bound(CoreConfigPipeLogs::class)) {
+                app(CoreConfigPipeLogs::class)->localeUpdated($locale);
             }
         } catch (\Exception $e) {
-            logger()->error("[Tenant] Failed to refresh locale: {$e->getMessage()}");
+            if (app()->bound(CoreConfigPipeLogs::class)) {
+                app(CoreConfigPipeLogs::class)->localeFailed($e->getMessage());
+            }
         }
     }
 
@@ -230,14 +237,16 @@ class CoreConfigPipe implements ConfigurationPipeInterface
                 $instance->refreshTimezone($config);
                 $instance->refreshLocale($config);
 
-                if (app()->environment(['local', 'development', 'testing'])) {
-                    logger()->debug("[Tenant] Reset core resources to original configuration");
+                if (app()->environment(['local', 'development', 'testing']) && app()->bound(CoreConfigPipeLogs::class)) {
+                    app(CoreConfigPipeLogs::class)->resourcesReset();
                 }
 
                 // Clean up the stored config
                 app()->forgetInstance(self::ORIGINAL_CONFIG_KEY);
             } catch (\Exception $e) {
-                logger()->error("[Tenant] Failed to reset core resources: {$e->getMessage()}");
+                if (app()->bound(CoreConfigPipeLogs::class)) {
+                    app(CoreConfigPipeLogs::class)->resourcesResetFailed($e->getMessage());
+                }
             }
         }
     }

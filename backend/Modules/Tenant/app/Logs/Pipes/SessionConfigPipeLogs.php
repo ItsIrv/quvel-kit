@@ -27,81 +27,66 @@ class SessionConfigPipeLogs extends BaseLogger
     /**
      * Log a session driver change.
      */
-    public function driverChanged(string $driver, string $tenantId): void
+    public function driverChanged(string $driver): void
     {
-        $this->debug("Set session driver: {$driver}", [
-            'tenant_id' => $tenantId,
-        ]);
+        $this->debug("Set session driver: {$driver}");
     }
 
     /**
      * Log a session lifetime change.
      */
-    public function lifetimeChanged(int $lifetime, string $tenantId): void
+    public function lifetimeChanged(int $lifetime): void
     {
-        $this->debug("Set session lifetime: {$lifetime} minutes", [
-            'tenant_id' => $tenantId,
-        ]);
+        $this->debug("Set session lifetime: {$lifetime} minutes");
     }
 
     /**
      * Log a session encryption change.
      */
-    public function encryptionChanged(bool $encrypt, string $tenantId): void
+    public function encryptionChanged(bool $encrypt): void
     {
-        $this->debug("Set session encryption: " . ($encrypt ? 'true' : 'false'), [
-            'tenant_id' => $tenantId,
-        ]);
+        $this->debug("Set session encryption: " . ($encrypt ? 'true' : 'false'));
     }
 
     /**
      * Log a session path change.
      */
-    public function pathChanged(string $path, string $tenantId): void
+    public function pathChanged(string $path): void
     {
-        $this->debug("Set session path: {$path}", [
-            'tenant_id' => $tenantId,
-        ]);
+        $this->debug("Set session path: {$path}");
     }
 
     /**
      * Log a session domain change.
      */
-    public function domainChanged(string $domain, string $tenantId): void
+    public function domainChanged(string $domain): void
     {
-        $this->debug("Set session domain: {$domain}", [
-            'tenant_id' => $tenantId,
-        ]);
+        $this->debug("Set session domain: {$domain}");
     }
 
     /**
      * Log a session cookie name change.
      */
-    public function cookieNameChanged(string $cookie, bool $isCustom, string $tenantId): void
+    public function cookieNameChanged(string $cookie, bool $isCustom): void
     {
         $prefix = $isCustom ? 'custom' : 'default';
-        $this->debug("Set {$prefix} session cookie name: {$cookie}", [
-            'tenant_id' => $tenantId,
-        ]);
+        $this->debug("Set {$prefix} session cookie name: {$cookie}");
     }
 
     /**
      * Log a session database connection change.
      */
-    public function databaseConnectionChanged(string $connection, string $tenantId): void
+    public function databaseConnectionChanged(string $connection): void
     {
-        $this->debug("Set session database connection to match tenant database: {$connection}", [
-            'tenant_id' => $tenantId,
-        ]);
+        $this->debug("Set session database connection to match tenant database: {$connection}");
     }
 
     /**
      * Log session configuration changes being applied.
      */
-    public function applyingChanges(string $tenantId, int $changesCount): void
+    public function applyingChanges(int $changesCount): void
     {
         $this->debug("Applying session configuration changes", [
-            'tenant_id'     => $tenantId,
             'changes_count' => $changesCount,
         ]);
     }
@@ -109,31 +94,25 @@ class SessionConfigPipeLogs extends BaseLogger
     /**
      * Log when no session configuration changes need to be applied.
      */
-    public function noChangesToApply(string $tenantId): void
+    public function noChangesToApply(): void
     {
-        $this->debug("No session configuration changes to apply", [
-            'tenant_id' => $tenantId,
-        ]);
+        $this->debug("No session configuration changes to apply");
     }
 
     /**
      * Log session manager rebinding.
      */
-    public function sessionManagerRebound(string $tenantId, float $durationMs): void
+    public function sessionManagerRebound(): void
     {
-        $this->debug("Rebound session manager with new configuration", [
-            'tenant_id'   => $tenantId,
-            'duration_ms' => $durationMs,
-        ]);
+        $this->debug("Rebound session manager with new configuration");
     }
 
     /**
      * Log session manager rebinding failure.
      */
-    public function sessionManagerRebindFailed(string $tenantId, \Exception $exception): void
+    public function sessionManagerRebindFailed(\Exception $exception): void
     {
         $this->error("Failed to rebind session manager: {$exception->getMessage()}", [
-            'tenant_id' => $tenantId,
             'exception' => get_class($exception),
             'file'      => $exception->getFile(),
             'line'      => $exception->getLine(),
@@ -143,21 +122,17 @@ class SessionConfigPipeLogs extends BaseLogger
     /**
      * Log when session manager is not bound in container.
      */
-    public function sessionManagerNotBound(string $tenantId): void
+    public function sessionManagerNotBound(): void
     {
-        $this->debug("SessionManager not bound in container, skipping rebind", [
-            'tenant_id' => $tenantId,
-        ]);
+        $this->debug("SessionManager not bound in container, skipping rebind");
     }
 
     /**
      * Log session manager reset.
      */
-    public function sessionManagerReset(float $durationMs): void
+    public function sessionManagerReset(): void
     {
-        $this->debug("Reset session manager with current configuration", [
-            'duration_ms' => $durationMs,
-        ]);
+        $this->debug("Reset session manager with current configuration");
     }
 
     /**

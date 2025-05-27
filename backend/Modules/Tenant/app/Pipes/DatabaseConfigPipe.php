@@ -5,6 +5,7 @@ namespace Modules\Tenant\Pipes;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Database\DatabaseManager;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 
 /**
@@ -76,8 +77,8 @@ class DatabaseConfigPipe implements ConfigurationPipeInterface
             $dbManager->setDefaultConnection($connection);
             $dbManager->reconnect($connection);
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Switched database connection to {$connection} for tenant {$tenant->name}");
+            if (app()->environment(['local', 'development', 'testing']) && app()->bound(DatabaseConfigPipeLogs::class)) {
+                app(DatabaseConfigPipeLogs::class)->connectionSwitched($connection, $tenant->name);
             }
         }
 
@@ -109,14 +110,16 @@ class DatabaseConfigPipe implements ConfigurationPipeInterface
                 $dbManager->setDefaultConnection($originalConfig['default']);
                 $dbManager->reconnect($originalConfig['default']);
 
-                if (app()->environment(['local', 'development', 'testing'])) {
-                    logger()->debug("[Tenant] Reset database connection to original: " . $originalConfig['default']);
+                if (app()->environment(['local', 'development', 'testing']) && app()->bound(DatabaseConfigPipeLogs::class)) {
+                    app(DatabaseConfigPipeLogs::class)->connectionReset($originalConfig['default']);
                 }
 
                 // Clean up the stored config
                 app()->forgetInstance(self::ORIGINAL_CONFIG_KEY);
             } catch (\Exception $e) {
-                logger()->error("[Tenant] Failed to reset database connection: {$e->getMessage()}");
+                if (app()->bound(DatabaseConfigPipeLogs::class)) {
+                    app(DatabaseConfigPipeLogs::class)->resetFailed($e->getMessage());
+                }
             }
         }
     }

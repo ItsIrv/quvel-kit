@@ -6,6 +6,7 @@ use Illuminate\Cache\CacheManager;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Logs\Pipes\CacheConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 
 /**
@@ -82,11 +83,13 @@ class CacheConfigPipe implements ConfigurationPipeInterface
             app()->forgetInstance(CacheManager::class);
             app()->forgetInstance(CacheRepository::class);
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Rebound cache manager with new configuration");
+            if (app()->environment(['local', 'development', 'testing']) && app()->bound(CacheConfigPipeLogs::class)) {
+                app(CacheConfigPipeLogs::class)->cacheManagerRebound();
             }
         } catch (\Exception $e) {
-            logger()->error("[Tenant] Failed to rebind cache manager: {$e->getMessage()}");
+            if (app()->bound(CacheConfigPipeLogs::class)) {
+                app(CacheConfigPipeLogs::class)->rebindFailed($e->getMessage());
+            }
         }
     }
 
@@ -114,14 +117,16 @@ class CacheConfigPipe implements ConfigurationPipeInterface
                 app()->forgetInstance(CacheManager::class);
                 app()->forgetInstance(CacheRepository::class);
 
-                if (app()->environment(['local', 'development', 'testing'])) {
-                    logger()->debug("[Tenant] Reset cache manager to original configuration");
+                if (app()->environment(['local', 'development', 'testing']) && app()->bound(CacheConfigPipeLogs::class)) {
+                    app(CacheConfigPipeLogs::class)->cacheManagerReset();
                 }
 
                 // Clean up the stored config
                 app()->forgetInstance(self::ORIGINAL_CONFIG_KEY);
             } catch (\Exception $e) {
-                logger()->error("[Tenant] Failed to reset cache manager: {$e->getMessage()}");
+                if (app()->bound(CacheConfigPipeLogs::class)) {
+                    app(CacheConfigPipeLogs::class)->resetFailed($e->getMessage());
+                }
             }
         }
     }

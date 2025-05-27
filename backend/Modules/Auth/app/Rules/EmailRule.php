@@ -7,11 +7,10 @@ use Illuminate\Validation\Rules\Email;
 /**
  * Email validation rule.
  */
-class EmailRule extends Email
+class EmailRule
 {
-    public static function default(): EmailRule
+    public static function default(): string
     {
-        return (new static())
-            ->strict();
+        return 'email';
     }
 }

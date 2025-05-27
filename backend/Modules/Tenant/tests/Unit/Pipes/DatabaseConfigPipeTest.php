@@ -258,12 +258,12 @@ class DatabaseConfigPipeTest extends TestCase
     public function testResetResourcesRestoresOriginalConfig(): void
     {
         Container::setInstance(null);
-        $mockApp = $this->createPartialMock(Application::class, ['has', 'make', 'forgetInstance', 'environment']);
+        $mockApp = $this->createPartialMock(Application::class, ['has', 'make', 'forgetInstance', 'environment', 'bound']);
         Container::setInstance($mockApp);
 
         $mockConfig    = $this->createMock(ConfigRepository::class);
         $mockDbManager = $this->createMock(DatabaseManager::class);
-        $mockLogger    = $this->createMock(LogManager::class);
+        $mockLogger    = $this->createMock(\Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs::class);
 
         $originalConfig = [
             'default'     => 'mysql',
@@ -275,12 +275,16 @@ class DatabaseConfigPipeTest extends TestCase
             ->with('tenant.original_db_config')
             ->willReturn(true);
 
+        $mockApp->method('bound')
+            ->with(\Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs::class)
+            ->willReturn(true);
+
         $mockApp->method('make')
             ->willReturnMap([
                 ['tenant.original_db_config', [], $originalConfig],
                 ['config', [], $mockConfig],
                 [DatabaseManager::class, [], $mockDbManager],
-                ['log', [], $mockLogger],
+                [\Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs::class, [], $mockLogger],
             ]);
 
         $mockApp->method('environment')
@@ -301,7 +305,7 @@ class DatabaseConfigPipeTest extends TestCase
         $mockDbManager->expects($this->once())->method('setDefaultConnection')->with('mysql');
         $mockDbManager->expects($this->once())->method('reconnect')->with('mysql');
 
-        $mockLogger->expects($this->once())->method('debug');
+        $mockLogger->expects($this->once())->method('connectionReset')->with('mysql');
 
         DatabaseConfigPipe::resetResources();
     }
