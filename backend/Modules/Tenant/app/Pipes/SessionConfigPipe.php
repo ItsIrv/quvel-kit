@@ -11,7 +11,6 @@ use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles session configuration for tenants.
- * Octane-safe: No static state needed.
  */
 class SessionConfigPipe implements ConfigurationPipeInterface
 {
@@ -77,6 +76,7 @@ class SessionConfigPipe implements ConfigurationPipeInterface
         }
 
         // Always set a tenant-specific session cookie name if not overridden
+        $oldCookie = $config->get('session.cookie');
         if (isset($tenantConfig['session_cookie'])) {
             $cookie = $tenantConfig['session_cookie'];
             $config->set('session.cookie', $cookie);
@@ -92,6 +92,15 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $this->logger->cookieNameChanged($cookie, false, $tenant->public_id);
         }
 
+        // Log the change for debugging
+        if ($oldCookie !== $cookie) {
+            $this->logger->debug('Session cookie name changed', [
+                'tenant_id'  => $tenant->public_id,
+                'old_cookie' => $oldCookie,
+                'new_cookie' => $cookie,
+            ]);
+        }
+
         // Set the session connection to match the database connection if using database driver
         if ($config->get('session.driver') === 'database') {
             $dbConnection = $config->get('database.default');
@@ -101,13 +110,31 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $this->logger->databaseConnectionChanged($dbConnection, $tenant->public_id);
         }
 
-        // Apply the changes to the actual resources
+        // Apply the configuration changes
         if ($hasSessionChanges) {
             $this->logger->applyingChanges(
                 $tenant->public_id,
                 count(array_intersect_key($tenantConfig, array_flip($this->handles()))),
             );
-            $this->rebindSessionManager($tenant->public_id);
+
+            // Force the session manager to use the new configuration
+            // This is necessary because the session might be lazily initialized
+            if (app()->bound('session')) {
+                // Get the current session manager
+                $sessionManager = app('session');
+
+                // If it's using the cookie session handler, update the cookie name
+                if (method_exists($sessionManager, 'driver')) {
+                    $driver = $sessionManager->driver();
+                    if (method_exists($driver, 'setName')) {
+                        $driver->setName($config->get('session.cookie'));
+                        $this->logger->debug('Updated session driver cookie name', [
+                            'tenant_id'   => $tenant->public_id,
+                            'cookie_name' => $config->get('session.cookie'),
+                        ]);
+                    }
+                }
+            }
         } else {
             $this->logger->noChangesToApply($tenant->public_id);
         }
@@ -120,60 +147,18 @@ class SessionConfigPipe implements ConfigurationPipeInterface
     }
 
     /**
-     * Rebind the session manager with new configuration.
-     *
-     * @param string $tenantId The tenant's public ID for logging
-     */
-    protected function rebindSessionManager(string $tenantId = ''): void
-    {
-        if (app()->bound(SessionManager::class)) {
-            try {
-                $startTime = microtime(true);
-
-                app()->extend(SessionManager::class, function (SessionManager $sessionManager, $app): SessionManager {
-                    return $sessionManager;
-                });
-
-                app()->forgetInstance(SessionManager::class);
-                app()->forgetInstance(Session::class);
-
-                $duration = round((microtime(true) - $startTime) * 1000, 2);
-
-                $this->logger->sessionManagerRebound($tenantId, $duration);
-            } catch (\Exception $e) {
-                $this->logger->sessionManagerRebindFailed($tenantId, $e);
-            }
-        } else {
-            $this->logger->sessionManagerNotBound($tenantId);
-        }
-    }
-
-    /**
      * Reset session resources.
-     * Octane-safe: No static state to clean up.
+     *
+     * Note: We don't actually reset the session manager here because
+     * doing so would destroy active sessions and log users out.
+     * Session configuration is applied at the start of each request
+     * before the session is initialized.
      */
     public static function resetResources(): void
     {
-        if (app()->bound(SessionManager::class)) {
-            try {
-                $startTime = microtime(true);
-
-                app()->extend(SessionManager::class, function ($sessionManager, $app) {
-                    return new SessionManager($app);
-                });
-
-                app()->forgetInstance(SessionManager::class);
-                app()->forgetInstance(Session::class);
-
-                $duration = round((microtime(true) - $startTime) * 1000, 2);
-
-                self::getLogger()->sessionManagerReset($duration);
-            } catch (\Exception $e) {
-                self::getLogger()->sessionManagerResetFailed($e);
-            }
-        } else {
-            self::getLogger()->sessionManagerNotBoundDuringReset();
-        }
+        // No action needed - session configuration is applied per-request
+        // before the session starts, so there's nothing to reset
+        self::getLogger()->sessionManagerNotBoundDuringReset();
     }
 
     /**
@@ -201,6 +186,9 @@ class SessionConfigPipe implements ConfigurationPipeInterface
 
     public function priority(): int
     {
-        return 83;
+        // Session configuration must be set very early, before any services
+        // that might start or use sessions. This needs to run before
+        // any other pipes that might trigger session initialization.
+        return 10;
     }
 }
