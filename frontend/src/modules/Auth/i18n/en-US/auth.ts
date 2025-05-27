@@ -21,6 +21,8 @@ export default {
       providers: {
         apple: 'Apple',
         google: 'Google',
+        facebook: 'Facebook',
+        microsoft: 'Microsoft',
       },
       link: 'Use Email/Password instead?',
       logInWith: '@:auth.forms.oauth.{provider} Login',

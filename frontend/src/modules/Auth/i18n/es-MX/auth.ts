@@ -21,6 +21,8 @@ export default {
       providers: {
         apple: 'Apple',
         google: 'Google',
+        facebook: 'Facebook',
+        microsoft: 'Microsoft',
       },
       link: '¿Prefieres correo/contraseña?',
       logInWith: 'Iniciar sesión con {provider}',
