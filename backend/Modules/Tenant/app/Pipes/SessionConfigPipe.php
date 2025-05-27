@@ -2,10 +2,11 @@
 
 namespace Modules\Tenant\Pipes;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Session\SessionManager;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Logs\Pipes\SessionConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 
 /**
@@ -15,9 +16,22 @@ use Modules\Tenant\Models\Tenant;
 class SessionConfigPipe implements ConfigurationPipeInterface
 {
     /**
+     * The logger instance.
+     */
+    protected SessionConfigPipeLogs $logger;
+
+    /**
+     * Create a new SessionConfigPipe instance.
+     */
+    public function __construct(SessionConfigPipeLogs $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
      * Apply session configuration.
      */
-    public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
+    public function handle(Tenant $tenant, Repository $config, array $tenantConfig, callable $next): mixed
     {
         // Session configuration
         $hasSessionChanges = false;
@@ -27,11 +41,7 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.driver', $driver);
             $hasSessionChanges = true;
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Set session driver: {$driver}", [
-                    'tenant_id' => $tenant->public_id,
-                ]);
-            }
+            $this->logger->driverChanged($driver, $tenant->public_id);
         }
 
         if (isset($tenantConfig['session_lifetime'])) {
@@ -39,11 +49,7 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.lifetime', $lifetime);
             $hasSessionChanges = true;
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Set session lifetime: {$lifetime} minutes", [
-                    'tenant_id' => $tenant->public_id,
-                ]);
-            }
+            $this->logger->lifetimeChanged($lifetime, $tenant->public_id);
         }
 
         if (isset($tenantConfig['session_encrypt'])) {
@@ -51,11 +57,7 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.encrypt', $tenantConfig['session_encrypt']);
             $hasSessionChanges = true;
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Set session encryption: {$encrypt}", [
-                    'tenant_id' => $tenant->public_id,
-                ]);
-            }
+            $this->logger->encryptionChanged($tenantConfig['session_encrypt'], $tenant->public_id);
         }
 
         if (isset($tenantConfig['session_path'])) {
@@ -63,11 +65,7 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.path', $path);
             $hasSessionChanges = true;
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Set session path: {$path}", [
-                    'tenant_id' => $tenant->public_id,
-                ]);
-            }
+            $this->logger->pathChanged($path, $tenant->public_id);
         }
 
         if (isset($tenantConfig['session_domain'])) {
@@ -75,11 +73,7 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.domain', $domain);
             $hasSessionChanges = true;
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Set session domain: {$domain}", [
-                    'tenant_id' => $tenant->public_id,
-                ]);
-            }
+            $this->logger->domainChanged($domain, $tenant->public_id);
         }
 
         // Always set a tenant-specific session cookie name if not overridden
@@ -88,52 +82,34 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $config->set('session.cookie', $cookie);
             $hasSessionChanges = true;
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Set custom session cookie name: {$cookie}", [
-                    'tenant_id' => $tenant->public_id,
-                ]);
-            }
+            $this->logger->cookieNameChanged($cookie, true, $tenant->public_id);
         } else {
             // Default to tenant-specific cookie name
             $cookie = "tenant_{$tenant->id}_session";
             $config->set('session.cookie', $cookie);
             $hasSessionChanges = true;
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Set default session cookie name: {$cookie}", [
-                    'tenant_id' => $tenant->public_id,
-                ]);
-            }
+            $this->logger->cookieNameChanged($cookie, false, $tenant->public_id);
         }
 
         // Set the session connection to match the database connection if using database driver
-        if ($config->get('session.driver') === 'database') {
-            $dbConnection = $config->get('database.default');
-            $config->set('session.connection', $dbConnection);
-            $hasSessionChanges = true;
+        // if ($config->get('session.driver') === 'database') {
+        //     $dbConnection = $config->get('database.default');
+        //     $config->set('session.connection', $dbConnection);
+        //     $hasSessionChanges = true;
 
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Set session database connection to match tenant database: {$dbConnection}", [
-                    'tenant_id' => $tenant->public_id,
-                ]);
-            }
-        }
+        //     $this->logger->databaseConnectionChanged($dbConnection, $tenant->public_id);
+        // }
 
         // Apply the changes to the actual resources
         if ($hasSessionChanges) {
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] Applying session configuration changes", [
-                    'tenant_id'     => $tenant->public_id,
-                    'changes_count' => count(array_intersect_key($tenantConfig, array_flip($this->handles()))),
-                ]);
-            }
+            $this->logger->applyingChanges(
+                $tenant->public_id,
+                count(array_intersect_key($tenantConfig, array_flip($this->handles()))),
+            );
             $this->rebindSessionManager($tenant->public_id);
         } else {
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] No session configuration changes to apply", [
-                    'tenant_id' => $tenant->public_id,
-                ]);
-            }
+            $this->logger->noChangesToApply($tenant->public_id);
         }
 
         return $next([
@@ -163,26 +139,12 @@ class SessionConfigPipe implements ConfigurationPipeInterface
 
                 $duration = round((microtime(true) - $startTime) * 1000, 2);
 
-                if (app()->environment(['local', 'development', 'testing'])) {
-                    logger()->debug("[Tenant] Rebound session manager with new configuration", [
-                        'tenant_id'   => $tenantId,
-                        'duration_ms' => $duration,
-                    ]);
-                }
+                $this->logger->sessionManagerRebound($tenantId, $duration);
             } catch (\Exception $e) {
-                logger()->error("[Tenant] Failed to rebind session manager: {$e->getMessage()}", [
-                    'tenant_id' => $tenantId,
-                    'exception' => get_class($e),
-                    'file'      => $e->getFile(),
-                    'line'      => $e->getLine(),
-                ]);
+                $this->logger->sessionManagerRebindFailed($tenantId, $e);
             }
         } else {
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] SessionManager not bound in container, skipping rebind", [
-                    'tenant_id' => $tenantId,
-                ]);
-            }
+            $this->logger->sessionManagerNotBound($tenantId);
         }
     }
 
@@ -205,25 +167,26 @@ class SessionConfigPipe implements ConfigurationPipeInterface
 
                 $duration = round((microtime(true) - $startTime) * 1000, 2);
 
-                if (app()->environment(['local', 'development', 'testing'])) {
-                    logger()->debug("[Tenant] Reset session manager with current configuration", [
-                        'duration_ms' => $duration,
-                    ]);
-                }
+                self::getLogger()->sessionManagerReset($duration);
             } catch (\Exception $e) {
-                logger()->error("[Tenant] Failed to reset session manager: {$e->getMessage()}", [
-                    'exception' => get_class($e),
-                    'file'      => $e->getFile(),
-                    'line'      => $e->getLine(),
-                ]);
+                self::getLogger()->sessionManagerResetFailed($e);
             }
         } else {
-            if (app()->environment(['local', 'development', 'testing'])) {
-                logger()->debug("[Tenant] No SessionManager bound in container during reset");
-            }
+            self::getLogger()->sessionManagerNotBoundDuringReset();
         }
     }
 
+    /**
+     * Get the logger instance for static methods.
+     */
+    protected static function getLogger(): SessionConfigPipeLogs
+    {
+        return app(SessionConfigPipeLogs::class);
+    }
+
+    /**
+     * The configuration keys that this pipe handles.
+     */
     public function handles(): array
     {
         return [
