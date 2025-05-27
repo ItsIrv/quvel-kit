@@ -130,8 +130,8 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             try {
                 $startTime = microtime(true);
 
-                app()->extend(SessionManager::class, function ($sessionManager, $app) {
-                    return new SessionManager($app);
+                app()->extend(SessionManager::class, function (SessionManager $sessionManager, $app): SessionManager {
+                    return $sessionManager;
                 });
 
                 app()->forgetInstance(SessionManager::class);
