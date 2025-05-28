@@ -106,20 +106,32 @@ class Tenant extends Model
         }
 
         // Merge parent and child configs
-        // Convert both to DynamicTenantConfig if needed
         $childDynamic  = $config;
         $parentDynamic = $parentConfig;
 
-        // Parent config is base, child config overrides
-        $merged = clone $parentDynamic;
-        $merged->merge($childDynamic);
+        // Create a new DynamicTenantConfig with parent's data as a starting point
+        $mergedConfig = new \Modules\Tenant\ValueObjects\DynamicTenantConfig(
+            [], // Empty data array to start
+            [], // Empty visibility array to start
+            $parentDynamic->getTier(),
+        );
+
+        // Copy all parent values first
+        foreach ($parentDynamic->toArray()['config'] as $key => $value) {
+            $mergedConfig->set($key, $value);
+        }
+
+        // Then override with child values
+        foreach ($childDynamic->toArray()['config'] as $key => $value) {
+            $mergedConfig->set($key, $value);
+        }
 
         // Child tier takes precedence (if set in config)
         if ($childDynamic->getTier()) {
-            $merged->setTier($childDynamic->getTier());
+            $mergedConfig->setTier($childDynamic->getTier());
         }
 
-        return $merged;
+        return $mergedConfig;
     }
 
     /**

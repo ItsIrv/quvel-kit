@@ -182,7 +182,7 @@ final class HelpersTest extends TestCase
         setTenant($tenantId);
     }
 
-    #[TestDox('setTenantContext function sets context without applying config')]
+    #[TestDox('setTenantContext function sets context by ID without applying config')]
     #[Covers('setTenantContext')]
     public function testSetTenantContextWithoutApplyingConfig(): void
     {
@@ -208,6 +208,88 @@ final class HelpersTest extends TestCase
 
         // Assert
         $this->assertTrue($result);
+    }
+    
+    #[TestDox('setTenantContext function sets context by domain without applying config')]
+    #[Covers('setTenantContext')]
+    public function testSetTenantContextByDomain(): void
+    {
+        // Arrange
+        $domain = 'example.com';
+
+        $this->findService->shouldReceive('findTenantByDomain')
+            ->once()
+            ->with($domain)
+            ->andReturn($this->tenant);
+
+        $tenantContextMock = $this->mock(TenantContext::class);
+        $tenantContextMock->shouldReceive('set')
+            ->once()
+            ->with($this->tenant);
+        $this->app->instance(TenantContext::class, $tenantContextMock);
+
+        // ConfigRepository should NOT be called
+        $this->configRepository->shouldNotReceive('set');
+
+        // Act
+        $result = setTenantContext($domain);
+
+        // Assert
+        $this->assertTrue($result);
+    }
+    
+    #[TestDox('setTenantContext function sets context by tenant instance without applying config')]
+    #[Covers('setTenantContext')]
+    public function testSetTenantContextByInstance(): void
+    {
+        // Arrange
+        $tenant = new Tenant();
+        $tenant->id = 123;
+
+        $tenantContextMock = $this->mock(TenantContext::class);
+        $tenantContextMock->shouldReceive('set')
+            ->once()
+            ->with($tenant);
+        $this->app->instance(TenantContext::class, $tenantContextMock);
+
+        // ConfigRepository should NOT be called
+        $this->configRepository->shouldNotReceive('set');
+
+        // Act
+        $result = setTenantContext($tenant);
+
+        // Assert
+        $this->assertTrue($result);
+    }
+    
+    #[TestDox('setTenantContext function throws exception for invalid type')]
+    #[Covers('setTenantContext')]
+    public function testSetTenantContextThrowsExceptionForInvalidType(): void
+    {
+        // Assert & Act
+        $this->expectException(TenantNotFoundException::class);
+        $this->expectExceptionMessage('Tenant not found.');
+
+        setTenantContext([]);
+    }
+    
+    #[TestDox('setTenantContext function throws exception when tenant not found')]
+    #[Covers('setTenantContext')]
+    public function testSetTenantContextThrowsExceptionWhenTenantNotFound(): void
+    {
+        // Arrange
+        $tenantId = 999; // Non-existent tenant ID
+
+        $this->findService->shouldReceive('findById')
+            ->once()
+            ->with($tenantId)
+            ->andReturn(null);
+
+        // Assert & Act
+        $this->expectException(TenantNotFoundException::class);
+        $this->expectExceptionMessage('Tenant not found');
+
+        setTenantContext($tenantId);
     }
 
     #[TestDox('getTenant function returns tenant from context')]

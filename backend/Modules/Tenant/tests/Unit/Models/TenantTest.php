@@ -167,6 +167,97 @@ class TenantTest extends TestCase
 
         $this->assertNull($tenant->getEffectiveConfig());
     }
+    
+    /**
+     * Test that `getEffectiveConfig()` correctly merges parent and child configs.
+     */
+    public function testGetEffectiveConfigMergesParentAndChildConfigs(): void
+    {
+        // Create a parent tenant with a config
+        $parentConfig = new DynamicTenantConfig([
+            'domain' => 'parent.example.com',
+            'theme' => 'dark',
+            'features' => ['feature1', 'feature2'],
+            'shared_setting' => 'parent_value'
+        ], [], 'basic');
+        
+        $parentTenant = Tenant::factory()->create([
+            'config' => $parentConfig,
+        ]);
+
+        // Create a child tenant with its own config
+        $childConfig = new DynamicTenantConfig([
+            'domain' => 'child.example.com',
+            'logo' => 'custom_logo.png',
+            'shared_setting' => 'child_value'
+        ], [], 'premium');
+        
+        $childTenant = Tenant::factory()->create([
+            'parent_id' => $parentTenant->id,
+            'config' => $childConfig,
+        ]);
+
+        // Refresh to ensure relationships are loaded
+        $childTenant->refresh();
+        
+        // Get the effective config
+        $effectiveConfig = $childTenant->getEffectiveConfig();
+        
+        // Assert the config is merged correctly
+        $this->assertInstanceOf(DynamicTenantConfig::class, $effectiveConfig);
+        
+        // Child-specific values should be preserved
+        $this->assertEquals('child.example.com', $effectiveConfig->get('domain'));
+        $this->assertEquals('custom_logo.png', $effectiveConfig->get('logo'));
+        
+        // Parent values should be inherited when not overridden
+        $this->assertEquals('dark', $effectiveConfig->get('theme'));
+        $this->assertEquals(['feature1', 'feature2'], $effectiveConfig->get('features'));
+        
+        // Child values should override parent values for shared settings
+        $this->assertEquals('child_value', $effectiveConfig->get('shared_setting'));
+        
+        // Child tier should take precedence
+        $this->assertEquals('premium', $effectiveConfig->getTier());
+    }
+    
+    /**
+     * Test that `getEffectiveConfig()` preserves parent tier when child has no tier set.
+     */
+    public function testGetEffectiveConfigPreservesParentTierWhenChildHasNoTier(): void
+    {
+        // Create a parent tenant with a config and tier
+        $parentConfig = new DynamicTenantConfig([
+            'domain' => 'parent.example.com'
+        ], [], 'enterprise');
+        
+        $parentTenant = Tenant::factory()->create([
+            'config' => $parentConfig,
+        ]);
+
+        // Create a child tenant with config but no tier
+        $childConfig = new DynamicTenantConfig([
+            'domain' => 'child.example.com'
+        ]);
+        // Explicitly not setting a tier
+        
+        $childTenant = Tenant::factory()->create([
+            'parent_id' => $parentTenant->id,
+            'config' => $childConfig,
+        ]);
+
+        // Refresh to ensure relationships are loaded
+        $childTenant->refresh();
+
+        // Get the effective config
+        $effectiveConfig = $childTenant->getEffectiveConfig();
+        
+        // Assert parent tier is preserved
+        $this->assertEquals('enterprise', $effectiveConfig->getTier());
+        
+        // Child-specific values should still override parent values
+        $this->assertEquals('child.example.com', $effectiveConfig->get('domain'));
+    }
 
     /**
      * Test that the `config` attribute is properly cast to `DynamicTenantConfig`.

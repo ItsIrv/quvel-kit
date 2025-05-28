@@ -122,12 +122,13 @@ class SessionConfigPipe implements ConfigurationPipeInterface
 
             // Force the session manager to use the new configuration
             // This is necessary because the session might be lazily initialized
-            if (app()->bound('session')) {
+            if (app()->bound(SessionManager::class)) {
                 // Get the current session manager
-                $sessionManager = app('session');
+                $sessionManager = app(SessionManager::class);
 
                 // If it's using the cookie session handler, update the cookie name
                 if ($sessionManager && method_exists($sessionManager, 'driver')) {
+                    /** @var \Illuminate\Session\Store $driver */
                     $driver = $sessionManager->driver();
                     if ($driver && method_exists($driver, 'setName')) {
                         $driver->setName($config->get('session.cookie'));
