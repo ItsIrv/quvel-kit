@@ -3,9 +3,7 @@
 namespace Modules\Auth\Tests\Unit\Providers;
 
 use Illuminate\Foundation\Application;
-use Modules\Auth\Pipes\AuthConfigPipe;
 use Modules\Auth\Providers\AuthServiceProvider;
-use Modules\Auth\Providers\AuthTenantConfigProvider;
 use Modules\Auth\Providers\RouteServiceProvider;
 use Modules\Auth\Services\ClientNonceService;
 use Modules\Auth\Services\HmacService;
@@ -39,7 +37,7 @@ class AuthServiceProviderTest extends TestCase
         $app = $this->createMock(Application::class);
 
         $singletons = [];
-        $registers = [];
+        $registers  = [];
 
         $app->method('singleton')
             ->willReturnCallback(function ($class) use (&$singletons): void {
@@ -82,19 +80,19 @@ class AuthServiceProviderTest extends TestCase
         // Call the private method using reflection
         $method = new \ReflectionMethod(AuthServiceProvider::class, 'registerAuthConfigSeeders');
         $method->setAccessible(true);
-        
+
         // Since we can't easily intercept static method calls, we'll test the callback logic directly
         // by simulating what TenantServiceProvider::registerConfigSeederForAllTiers would do
-        
+
         // Extract the callback by temporarily overriding the method
-        $capturedCallback = null;
-        $capturedPriority = null;
+        $capturedCallback           = null;
+        $capturedPriority           = null;
         $capturedVisibilityCallback = null;
-        
+
         // We'll test the callback logic directly since it's what matters
         $method->invoke($this->provider);
-        
-        // Since we can't intercept the static call, we'll validate the behavior 
+
+        // Since we can't intercept the static call, we'll validate the behavior
         // by testing a known implementation detail - that the method exists and can be called
         $this->assertTrue(method_exists(AuthServiceProvider::class, 'registerAuthConfigSeeders'));
     }
@@ -104,13 +102,13 @@ class AuthServiceProviderTest extends TestCase
     public function testConfigSeederGeneratesCorrectConfigurationForDifferentTiers(
         string $tier,
         array $inputConfig,
-        array $expectedConfig
+        array $expectedConfig,
     ): void {
         // We'll test the callback logic directly by simulating what it should produce
         // This tests the business logic without needing to intercept static calls
-        
+
         $authConfig = [
-            'session_cookie' => 'quvel_session',
+            'session_cookie'      => 'quvel_session',
             'socialite_providers' => ['google'],
         ];
 
@@ -127,7 +125,7 @@ class AuthServiceProviderTest extends TestCase
         // Generate unique session cookie for standard+ tiers
         if (in_array($tier, ['standard', 'premium', 'enterprise']) && isset($inputConfig['cache_prefix'])) {
             if (preg_match('/tenant_([a-z0-9]+)_?/i', $inputConfig['cache_prefix'], $matches)) {
-                $tenantId = $matches[1];
+                $tenantId                     = $matches[1];
                 $authConfig['session_cookie'] = "quvel_{$tenantId}";
             } else {
                 $authConfig['session_cookie'] = 'quvel_' . substr(md5($inputConfig['cache_prefix']), 0, 8);
@@ -140,44 +138,44 @@ class AuthServiceProviderTest extends TestCase
     public static function tierConfigurationProvider(): array
     {
         return [
-            'basic tier' => [
+            'basic tier'                              => [
                 'basic',
                 [],
                 [
-                    'session_cookie' => 'quvel_session',
+                    'session_cookie'      => 'quvel_session',
                     'socialite_providers' => ['google'],
                 ],
             ],
-            'standard tier with cache prefix' => [
+            'standard tier with cache prefix'         => [
                 'standard',
                 ['cache_prefix' => 'tenant_abc123_'],
                 [
-                    'session_cookie' => 'quvel_abc123',
+                    'session_cookie'      => 'quvel_abc123',
                     'socialite_providers' => ['google'],
                 ],
             ],
-            'premium tier with cache prefix' => [
+            'premium tier with cache prefix'          => [
                 'premium',
                 ['cache_prefix' => 'tenant_xyz789_'],
                 [
-                    'session_cookie' => 'quvel_xyz789',
+                    'session_cookie'      => 'quvel_xyz789',
                     'socialite_providers' => ['google', 'microsoft'],
                 ],
             ],
-            'enterprise tier with cache prefix' => [
+            'enterprise tier with cache prefix'       => [
                 'enterprise',
                 ['cache_prefix' => 'tenant_ent456_'],
                 [
-                    'session_cookie' => 'quvel_ent456',
+                    'session_cookie'      => 'quvel_ent456',
                     'socialite_providers' => ['google', 'microsoft'],
-                    'session_lifetime' => 240,
+                    'session_lifetime'    => 240,
                 ],
             ],
             'standard tier with invalid cache prefix' => [
                 'standard',
                 ['cache_prefix' => 'invalid_format'],
                 [
-                    'session_cookie' => 'quvel_' . substr(md5('invalid_format'), 0, 8),
+                    'session_cookie'      => 'quvel_' . substr(md5('invalid_format'), 0, 8),
                     'socialite_providers' => ['google'],
                 ],
             ],
@@ -189,24 +187,24 @@ class AuthServiceProviderTest extends TestCase
     {
         // Test that visibility settings would be consistent
         $expectedVisibility = [
-            'session_cookie' => TenantConfigVisibility::PROTECTED,
-            'socialite_providers' => TenantConfigVisibility::PUBLIC,
-            'session_lifetime' => TenantConfigVisibility::PROTECTED,
+            'session_cookie'      => TenantConfigVisibility::PROTECTED ,
+            'socialite_providers' => TenantConfigVisibility::PUBLIC ,
+            'session_lifetime'    => TenantConfigVisibility::PROTECTED ,
         ];
 
         // Verify the visibility constants are used correctly
-        $this->assertEquals('protected', TenantConfigVisibility::PROTECTED->value);
-        $this->assertEquals('public', TenantConfigVisibility::PUBLIC->value);
+        $this->assertEquals('protected', TenantConfigVisibility::PROTECTED ->value);
+        $this->assertEquals('public', TenantConfigVisibility::PUBLIC ->value);
     }
 
     #[TestDox('regex pattern correctly extracts tenant ID from cache prefix')]
     #[DataProvider('regexPatternProvider')]
     public function testRegexPatternCorrectlyExtractsTenantIdFromCachePrefix(
         string $cachePrefix,
-        ?string $expectedTenantId
+        ?string $expectedTenantId,
     ): void {
         $matches = [];
-        $result = preg_match('/tenant_([a-z0-9]+)_?/i', $cachePrefix, $matches);
+        $result  = preg_match('/tenant_([a-z0-9]+)_?/i', $cachePrefix, $matches);
 
         if ($expectedTenantId !== null) {
             $this->assertEquals(1, $result);
