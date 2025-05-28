@@ -313,14 +313,18 @@ class DatabaseConfigPipeTest extends TestCase
     public function testResetResourcesHandlesException(): void
     {
         Container::setInstance(null);
-        $mockApp = $this->createPartialMock(Application::class, ['has', 'make', 'forgetInstance']);
+        $mockApp = $this->createPartialMock(Application::class, ['has', 'make', 'forgetInstance', 'bound']);
         Container::setInstance($mockApp);
 
-        $mockLogger = $this->createMock(LogManager::class);
+        $mockLogger = $this->createMock(\Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs::class);
 
         $mockApp->expects($this->once())
             ->method('has')
             ->with('tenant.original_db_config')
+            ->willReturn(true);
+
+        $mockApp->method('bound')
+            ->with(\Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs::class)
             ->willReturn(true);
 
         $mockApp->method('make')
@@ -328,15 +332,15 @@ class DatabaseConfigPipeTest extends TestCase
                 if ($abstract === 'tenant.original_db_config') {
                     throw new \Exception('Test exception');
                 }
-                if ($abstract === 'log') {
+                if ($abstract === \Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs::class) {
                     return $mockLogger;
                 }
                 return null;
             });
 
         $mockLogger->expects($this->once())
-            ->method('error')
-            ->with($this->stringContains('Failed to reset database connection'));
+            ->method('resetFailed')
+            ->with('Test exception');
 
         DatabaseConfigPipe::resetResources();
     }

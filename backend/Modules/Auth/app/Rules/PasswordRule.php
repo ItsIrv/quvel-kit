@@ -14,7 +14,7 @@ class PasswordRule extends Password
      */
     public static function default(): Password
     {
-        return self::min(8);
+        return parent::min(8);
         // ->mixedCase()
         // ->letters()
         // ->numbers()

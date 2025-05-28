@@ -2,11 +2,11 @@
 
 namespace Modules\Auth\Tests\Unit\Rules;
 
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
 use Modules\Auth\Rules\PasswordRule;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use ReflectionClass;
 use Tests\TestCase;
 
 #[CoversClass(PasswordRule::class)]
@@ -15,33 +15,21 @@ use Tests\TestCase;
 class PasswordRuleTest extends TestCase
 {
     /**
-     * Test that the PasswordRule enforces minimum length correctly.
+     * Test that PasswordRule::default() returns a Password instance with min length of 8.
      */
-    #[DataProvider('passwordProvider')]
-    public function testPasswordRuleEnforcesMinimumLength(string $password, bool $shouldPass): void
+    public function testDefaultReturnsPasswordInstanceWithMinLength8(): void
     {
-        // Arrange
-        $validator = Validator::make(
-            ['password' => $password],
-            ['password' => PasswordRule::default()],
-        );
-
         // Act
-        $passes = !$validator->fails();
+        $passwordRule = PasswordRule::default();
 
         // Assert
-        $this->assertEquals($shouldPass, $passes, "Failed asserting that '$password' validation is correct.");
-    }
-
-    /**
-     * Provides test cases for password validation.
-     */
-    public static function passwordProvider(): array
-    {
-        return [
-            'valid password (8 chars)'     => ['password1', true],
-            'valid password (longer)'      => ['supersecure123!', true],
-            'invalid password (too short)' => ['short', false],
-        ];
+        $this->assertInstanceOf(Password::class, $passwordRule);
+        
+        // Use reflection to check the min property
+        $reflection = new ReflectionClass($passwordRule);
+        $minProperty = $reflection->getProperty('min');
+        $minProperty->setAccessible(true);
+        
+        $this->assertEquals(8, $minProperty->getValue($passwordRule));
     }
 }

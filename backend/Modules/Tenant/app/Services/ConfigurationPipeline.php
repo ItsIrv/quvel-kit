@@ -7,6 +7,7 @@ use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
 use Modules\Tenant\Models\Tenant;
+use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 
 /**
  * Manages the configuration pipeline for applying tenant configurations.
@@ -76,7 +77,7 @@ class ConfigurationPipeline
         }
 
         // Convert to array for pipeline processing
-        $configArray = $tenantConfig instanceof \Modules\Tenant\ValueObjects\DynamicTenantConfig
+        $configArray = $tenantConfig instanceof DynamicTenantConfig
             ? $tenantConfig->toArray()['config']
             : $tenantConfig->toArray();
 
@@ -88,7 +89,7 @@ class ConfigurationPipeline
                     $passable['tenant'],
                     $passable['config'],
                     $passable['tenantConfig'],
-                    $next
+                    $next,
                 );
             })
             ->toArray();
@@ -96,8 +97,8 @@ class ConfigurationPipeline
         // Run the pipeline
         app(Pipeline::class)
             ->send([
-                'tenant' => $tenant,
-                'config' => $config,
+                'tenant'       => $tenant,
+                'config'       => $config,
                 'tenantConfig' => $configArray,
             ])
             ->through($sortedPipes)
