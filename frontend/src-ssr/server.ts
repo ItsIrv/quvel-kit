@@ -17,7 +17,7 @@ import {
   defineSsrServeStaticContent,
   defineSsrRenderPreloadTag,
 } from '#q-app/wrappers';
-import { TenantCacheService } from './services/TenantCache';
+import { ServiceContainer } from './services/ServiceContainer';
 import { configureExpress } from './utils/configureExpress';
 
 /**
@@ -28,8 +28,8 @@ import { configureExpress } from './utils/configureExpress';
  * Can be async: defineSsrCreate(async ({ ... }) => { ... })
  */
 export const create = defineSsrCreate(async (/* { ... } */) => {
-  // Fetch Tenants before accepting requests
-  await TenantCacheService.getInstance();
+  // Initialize service container
+  await ServiceContainer.getInstance();
 
   const app = express();
 

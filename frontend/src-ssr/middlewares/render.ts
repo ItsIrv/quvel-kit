@@ -2,7 +2,7 @@ import { type RenderError } from '#q-app';
 import { defineSsrMiddleware } from '#q-app/wrappers';
 import type { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { TenantCacheService } from '../services/TenantCache';
+import { ServiceContainer } from '../services/ServiceContainer';
 import { TenantConfigProtected } from '../types/tenant.types';
 import { createTenantConfigFromEnv, filterTenantConfig } from '../utils/tenantConfigUtil';
 import { isValidHostname } from '../utils/validationUtil';
@@ -36,7 +36,8 @@ export default defineSsrMiddleware(({ app, resolve, render, serve }) => {
           return;
         }
 
-        tenantConfig = await (await TenantCacheService.getInstance()).getTenantConfigByDomain(host);
+        const container = await ServiceContainer.getInstance();
+        tenantConfig = await container.tenantResolver.getTenantConfigByDomain(host);
 
         if (!tenantConfig) {
           // TODO: SSR Error pages
