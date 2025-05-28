@@ -24,12 +24,12 @@ class PasswordRuleTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(Password::class, $passwordRule);
-        
+
         // Use reflection to check the min property
-        $reflection = new ReflectionClass($passwordRule);
+        $reflection  = new ReflectionClass($passwordRule);
         $minProperty = $reflection->getProperty('min');
         $minProperty->setAccessible(true);
-        
+
         $this->assertEquals(8, $minProperty->getValue($passwordRule));
     }
 }
