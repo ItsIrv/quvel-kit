@@ -5,7 +5,9 @@ import { SessionName } from 'src/modules/Auth/models/Session';
 export function createConfig(ssrServiceOptions?: SsrServiceOptions): TenantConfig {
   // Check if running in browser and `window.__TENANT_CONFIG__` is available
   const config = ssrServiceOptions?.req?.tenantConfig ??
-    (window as unknown as { __TENANT_CONFIG__: TenantConfig }).__TENANT_CONFIG__ ?? {
+    (typeof window !== 'undefined'
+      ? window.__TENANT_CONFIG__
+      : null) ?? {
       apiUrl: import.meta.env.VITE_API_URL ?? '',
       appUrl: import.meta.env.VITE_APP_URL ?? '',
       appName: import.meta.env.VITE_APP_NAME ?? 'QuVel',

@@ -17,8 +17,9 @@ import {
   defineSsrServeStaticContent,
   defineSsrRenderPreloadTag,
 } from '#q-app/wrappers';
-import { TenantCacheService } from './services/TenantCache';
+import { getSSRContainer } from './utils/ssrContainerSingleton';
 import { configureExpress } from './utils/configureExpress';
+import { SSRTenantCacheService } from './services/SSRTenantCacheService';
 
 /**
  * Create your webserver and return its instance.
@@ -27,9 +28,9 @@ import { configureExpress } from './utils/configureExpress';
  *
  * Can be async: defineSsrCreate(async ({ ... }) => { ... })
  */
-export const create = defineSsrCreate(async (/* { ... } */) => {
-  // Fetch Tenants before accepting requests
-  await TenantCacheService.getInstance();
+export const create = defineSsrCreate((/* { ... } */) => {
+  // Initialize the global SSR container (singleton)
+  getSSRContainer();
 
   const app = express();
 
@@ -80,6 +81,13 @@ export const listen = defineSsrListen(({ app, devHttpsApp, port }) => {
  * Can be async: defineSsrClose(async ({ listenResult }) => { ... })
  */
 export const close = defineSsrClose(({ listenResult }) => {
+  // Clean up cache service
+  const ssrContainer = getSSRContainer();
+  const cacheService = ssrContainer.get(SSRTenantCacheService);
+  if (cacheService && 'destroy' in cacheService) {
+    cacheService.destroy();
+  }
+
   return listenResult.close();
 });
 

@@ -53,12 +53,6 @@ export class ApiService extends Service implements SsrAwareService, RegisterServ
   boot(ssrServiceOptions?: SsrServiceOptions): void {
     // Create API instance with SSR context if available
     this.api = createApi(ssrServiceOptions);
-
-    // Add request interceptor to track timing
-    this.api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-      config.metadata = { startTime: Date.now() };
-      return config;
-    });
   }
 
   /**
