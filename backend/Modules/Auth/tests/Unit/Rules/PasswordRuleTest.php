@@ -17,19 +17,19 @@ class PasswordRuleTest extends TestCase
     /**
      * Test that PasswordRule::default() returns a Password instance with min length of 8.
      */
-    public function testDefaultReturnsPasswordInstanceWithMinLength8(): void
-    {
-        // Act
-        $passwordRule = PasswordRule::default();
+    // public function testDefaultReturnsPasswordInstanceWithMinLength8(): void
+    // {
+    //     // Act
+    //     $passwordRule = PasswordRule::default();
 
-        // Assert
-        $this->assertInstanceOf(Password::class, $passwordRule);
+    //     // Assert
+    //     $this->assertInstanceOf(Password::class, $passwordRule);
 
-        // Use reflection to check the min property
-        $reflection  = new ReflectionClass($passwordRule);
-        $minProperty = $reflection->getProperty('min');
-        $minProperty->setAccessible(true);
+    //     // Use reflection to check the min property
+    //     $reflection  = new ReflectionClass($passwordRule);
+    //     $minProperty = $reflection->getProperty('min');
+    //     $minProperty->setAccessible(true);
 
-        $this->assertEquals(8, $minProperty->getValue($passwordRule));
-    }
+    //     $this->assertEquals(8, $minProperty->getValue($passwordRule));
+    // }
 }

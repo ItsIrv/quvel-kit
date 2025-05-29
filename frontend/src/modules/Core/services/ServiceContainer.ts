@@ -12,6 +12,12 @@ import type { ServiceClass, ServiceInstance } from 'src/modules/Core/types/servi
 
 /**
  * The service container manages core services and allows dynamic service registration.
+ * Create service container with service classes
+ * The container will automatically:
+ * 1. Instantiate each service
+ * 2. Check if service has a boot method
+ * 3. Pass SSR context only to services that need it
+ * 4. Call register() on services that implement RegisterService
  */
 export class ServiceContainer {
   private readonly services: Map<string, ServiceInstance> = new Map();
