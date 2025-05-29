@@ -3,7 +3,8 @@ import type { SSRServiceContainer } from './SSRServiceContainer';
 import type { SSRRegisterService, SSRServiceOptions, SSRSsrAwareService } from '../types/service.types';
 import { SSRLogService } from './SSRLogService';
 import type { Request, Response } from 'express';
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { createAxios } from '../utils/createAxios';
 
 /**
  * SSR-specific API service
@@ -24,8 +25,8 @@ export class SSRApiService extends SSRService implements SSRRegisterService, SSR
 
   constructor() {
     super();
-    // Create axios instance in constructor
-    this.api = axios.create({
+    // Create axios instance with SSR configuration
+    this.api = createAxios({
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
@@ -38,6 +39,11 @@ export class SSRApiService extends SSRService implements SSRRegisterService, SSR
     if (options) {
       this.req = options.req;
       this.res = options.res;
+      
+      // Update base URL if tenant config is available
+      if (options.req?.tenantConfig?.internalApiUrl) {
+        this.api.defaults.baseURL = options.req.tenantConfig.internalApiUrl;
+      }
     }
   }
 
@@ -59,6 +65,10 @@ export class SSRApiService extends SSRService implements SSRRegisterService, SSR
           // Forward user agent
           if (this.req.headers['user-agent']) {
             config.headers['User-Agent'] = `SSR/${this.req.headers['user-agent']}`;
+          }
+          // Add tenant domain if available
+          if (this.req.tenantConfig?.apiUrl) {
+            config.headers['X-Tenant-Domain'] = this.req.tenantConfig.apiUrl;
           }
         }
 

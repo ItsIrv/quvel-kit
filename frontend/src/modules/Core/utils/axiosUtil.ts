@@ -2,7 +2,6 @@ import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { Cookies } from 'quasar';
 import { SessionName } from 'src/modules/Auth/models/Session';
 import { SsrServiceOptions } from '../types/service.types';
-import { TenantConfig } from 'src/modules/Core/types/tenant.types';
 
 /**
  * Creates an Axios instance with the given configuration.
@@ -36,7 +35,7 @@ export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosIn
   // In order: Internal API URL, Public API URL, Vite API URL
   const baseURL =
     ssrServiceOptions?.req?.tenantConfig?.internalApiUrl ??
-    (window as unknown as { __TENANT_CONFIG__: TenantConfig }).__TENANT_CONFIG__?.apiUrl ??
+    (typeof window !== 'undefined' ? window.__TENANT_CONFIG__?.apiUrl : null) ??
     process.env.VITE_API_URL ??
     '';
 
