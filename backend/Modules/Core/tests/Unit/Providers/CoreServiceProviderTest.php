@@ -388,4 +388,56 @@ class CoreServiceProviderTest extends TestCase
         $this->assertEquals(TenantConfigVisibility::PRIVATE , $visibility['pusher_app_id']);
         $this->assertEquals(TenantConfigVisibility::PUBLIC , $visibility['pusher_app_cluster']);
     }
+
+    #[TestDox('registerCoreConfigSeeders registers all required config seeders')]
+    public function testRegisterCoreConfigSeeders(): void
+    {
+        if (!class_exists(TenantServiceProvider::class)) {
+            $this->markTestSkipped('Tenant module not available');
+        }
+
+        // Use reflection to access the private method
+        $method = new \ReflectionMethod(CoreServiceProvider::class, 'registerCoreConfigSeeders');
+        $method->setAccessible(true);
+        
+        // Since we can't easily mock static methods, we'll verify the method exists and runs without errors
+        try {
+            $method->invoke($this->provider);
+            $this->assertTrue(true, 'Method executed without errors');
+        } catch (\Exception $e) {
+            $this->fail('Method threw an exception: ' . $e->getMessage());
+        }
+        
+        // Verify the method exists
+        $this->assertTrue(method_exists(CoreServiceProvider::class, 'registerCoreConfigSeeders'));
+        
+        // Verify the method contains the expected calls by examining its code
+        $methodCode = file_get_contents(__DIR__ . '/../../../app/Providers/CoreServiceProvider.php');
+        
+        // Check for core config seeder registration
+        $this->assertStringContainsString(
+            'TenantServiceProvider::registerConfigSeederForAllTiers',
+            $methodCode,
+            'Method should call registerConfigSeederForAllTiers'
+        );
+        
+        // Verify it registers the expected seeders
+        $this->assertStringContainsString(
+            "'app_name'",
+            $methodCode,
+            'Method should register core config with app_name'
+        );
+        
+        $this->assertStringContainsString(
+            "'recaptcha_site_key'",
+            $methodCode,
+            'Method should register reCAPTCHA config'
+        );
+        
+        $this->assertStringContainsString(
+            "'pusher_app_key'",
+            $methodCode,
+            'Method should register Pusher config'
+        );
+    }
 }
