@@ -35,7 +35,7 @@ export function createTenantConfigFromEnv(): TenantConfigProtected {
 /**
  * Filters out non-public fields from the tenant config.
  */
-export function filterTenantConfig(config: TenantConfigProtected): Partial<TenantConfigProtected> {
+export function filterTenantConfig(config: TenantConfigProtected): TenantConfigProtected {
   const publicConfig: Partial<TenantConfigProtected> = {};
 
   Object.keys(config.__visibility).forEach((key) => {
@@ -50,5 +50,12 @@ export function filterTenantConfig(config: TenantConfigProtected): Partial<Tenan
     }
   });
 
-  return publicConfig;
+  // Ensure required properties are present
+  return {
+    ...config,
+    ...publicConfig,
+    __visibility: {
+      ...config.__visibility,
+    },
+  };
 }

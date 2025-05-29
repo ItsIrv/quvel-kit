@@ -17,7 +17,7 @@ export function createLogger(
   type: string = process.env.VITE_LOGGER || LoggerType.NULL,
 ): LoggerInterface {
   const traceInfo = ssrContext?.req?.traceInfo ??
-    (window as { __TRACE__?: TraceInfo }).__TRACE__ ?? {
+    (typeof window !== 'undefined' ? (window as { __TRACE__?: TraceInfo }).__TRACE__ : null) ?? {
       id: '',
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV,
