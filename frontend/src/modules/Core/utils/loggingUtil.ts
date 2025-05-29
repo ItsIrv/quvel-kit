@@ -1,4 +1,4 @@
-import { LoggerInterface, TraceInfo } from 'src/modules/Core/types/logging.types';
+import { LoggerInterface } from 'src/modules/Core/types/logging.types';
 import { ConsoleLogger } from '../services/Logger/ConsoleLogger';
 import { NullLogger } from '../services/Logger/NullLogger';
 import { LoggerType } from '../models/Logging/LoggerType';
@@ -17,12 +17,12 @@ export function createLogger(
   type: string = process.env.VITE_LOGGER || LoggerType.NULL,
 ): LoggerInterface {
   const traceInfo = ssrContext?.req?.traceInfo ??
-    (typeof window !== 'undefined' ? (window as { __TRACE__?: TraceInfo }).__TRACE__ : null) ?? {
+    (typeof window !== 'undefined' ? window.__TRACE__ : null) ?? {
       id: '',
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV,
+      environment: process.env.NODE_ENV ?? 'development',
       tenant: ssrContext?.req?.tenantConfig?.tenantId ?? 'unknown',
-      runtime: 'client',
+      runtime: 'client' as const,
     };
 
   switch (type.toLowerCase() as LoggerType) {

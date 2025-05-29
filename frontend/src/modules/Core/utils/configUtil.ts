@@ -6,7 +6,7 @@ export function createConfig(ssrServiceOptions?: SsrServiceOptions): TenantConfi
   // Check if running in browser and `window.__TENANT_CONFIG__` is available
   const config = ssrServiceOptions?.req?.tenantConfig ??
     (typeof window !== 'undefined'
-      ? (window as unknown as { __TENANT_CONFIG__: TenantConfig }).__TENANT_CONFIG__
+      ? window.__TENANT_CONFIG__
       : null) ?? {
       apiUrl: import.meta.env.VITE_API_URL ?? '',
       appUrl: import.meta.env.VITE_APP_URL ?? '',
