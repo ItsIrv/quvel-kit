@@ -13,6 +13,7 @@ import type {
  */
 export class SSRServiceContainer {
   private readonly services: Map<string, SSRServiceInstance> = new Map();
+  private readonly serviceClassToKey: Map<SSRServiceClassGeneric, string> = new Map();
 
   constructor(
     private readonly ssrServiceOptions?: SSRServiceOptions,
@@ -30,6 +31,8 @@ export class SSRServiceContainer {
     for (const [name, ServiceClass] of serviceClasses) {
       const instance = new ServiceClass();
       this.services.set(name, instance);
+      // Store the mapping from class to key for lookup
+      this.serviceClassToKey.set(ServiceClass, name);
     }
   }
 
@@ -85,6 +88,13 @@ export class SSRServiceContainer {
    * Get a service by its class
    */
   get<T extends SSRServiceInstance>(ServiceClass: SSRServiceClass<T>): T {
+    // Look up the service key from our mapping
+    const key = this.serviceClassToKey.get(ServiceClass as SSRServiceClassGeneric);
+    if (key && this.services.has(key)) {
+      return this.services.get(key) as T;
+    }
+
+    // Fallback to class name for backward compatibility
     const name = ServiceClass.name;
     if (this.services.has(name)) {
       return this.services.get(name) as T;

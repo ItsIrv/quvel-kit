@@ -3,7 +3,6 @@
 namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository;
-use Illuminate\Contracts\Session\Session;
 use Illuminate\Session\SessionManager;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
 use Modules\Tenant\Logs\Pipes\SessionConfigPipeLogs;

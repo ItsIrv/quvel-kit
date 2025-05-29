@@ -15,6 +15,7 @@ import type { ServiceClass, ServiceInstance } from 'src/modules/Core/types/servi
  */
 export class ServiceContainer {
   private readonly services: Map<string, ServiceInstance> = new Map();
+  private readonly serviceClassToKey: Map<ServiceClass, string> = new Map();
 
   constructor(
     private readonly ssrServiceOptions?: SsrServiceOptions,
@@ -32,6 +33,8 @@ export class ServiceContainer {
     for (const [name, ServiceClass] of serviceClasses) {
       const instance = new ServiceClass();
       this.services.set(name, instance);
+      // Store the mapping from class to key for lookup
+      this.serviceClassToKey.set(ServiceClass, name);
     }
   }
 
@@ -78,8 +81,14 @@ export class ServiceContainer {
    * @param ServiceClass - The service class constructor.
    */
   get<T extends Service>(ServiceClass: ServiceClass<T>): T {
-    const name = ServiceClass.name;
+    // Look up the service key from our mapping
+    const key = this.serviceClassToKey.get(ServiceClass);
+    if (key && this.services.has(key)) {
+      return this.services.get(key) as T;
+    }
 
+    // Fallback to class name for backward compatibility
+    const name = ServiceClass.name;
     if (this.services.has(name)) {
       return this.services.get(name) as T;
     }
