@@ -3,21 +3,6 @@ import { Cookies } from 'quasar';
 import { SessionName } from 'src/modules/Auth/models/Session';
 import { SsrServiceOptions } from '../types/service.types';
 
-/**
- * Creates an Axios instance with the given configuration.
- *
- * @param axiosConfig - The configuration for the Axios instance.
- * @returns An Axios instance.
- */
-// Extend axios request config to include metadata for timing
-declare module 'axios' {
-  export interface InternalAxiosRequestConfig {
-    metadata?: {
-      startTime: number;
-    };
-  }
-}
-
 export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance {
   const instance = axios.create(axiosConfig);
 
