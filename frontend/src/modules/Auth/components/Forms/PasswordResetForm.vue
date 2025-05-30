@@ -7,7 +7,6 @@
 import { ref } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 import { useRecaptcha } from 'src/modules/Core/composables/useRecaptcha';
-import type { ErrorHandler } from 'src/modules/Core/types/task.types';
 import EmailField from 'src/modules/Auth/components/Form/EmailField.vue';
 import TaskErrors from 'src/modules/Core/components/Common/TaskErrors.vue';
 import { PasswordResetService } from 'src/modules/Auth/services/PasswordResetService';
@@ -21,7 +20,7 @@ const emit = defineEmits(['success', 'switch-form', 'reset-success']);
 /**
  * Services
  */
-const container = useContainer();
+const { task, i18n } = useContainer();
 const { isLoaded, execute: executeRecaptcha } = useRecaptcha();
 // Instead of using container.get which keeps the service in memory
 // we use useScopedService which creates a new instance of the service
@@ -39,13 +38,15 @@ const authForm = ref<HTMLFormElement>();
  *
  * Handles password reset request with reCAPTCHA verification.
  */
-const resetTask = container.task.newTask({
+const resetTask = task.newTask({
   task: async () => {
     const recaptchaToken = await executeRecaptcha('password_reset');
 
     return await passwordResetService.sendPasswordResetLink(email.value, recaptchaToken);
   },
-  errorHandlers: <ErrorHandler[]>[container.task.errorHandlers.Laravel(undefined, true)],
+  handleLaravelError: {
+    translate: true,
+  },
   successHandlers: () => {
     emit('reset-success');
     resetForm();
@@ -68,7 +69,7 @@ function onSubmit() {
   if (!isLoaded.value) {
     resetTask.errors.value.set(
       'recaptcha',
-      container.i18n.t('auth.status.errors.captcha_not_loaded')
+      i18n.t('auth.status.errors.captcha_not_loaded')
     );
 
     return;

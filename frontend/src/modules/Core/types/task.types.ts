@@ -1,5 +1,6 @@
-import { ErrorBag } from 'src/modules/Core/types/laravel.types';
+import { ErrorBag, LaravelErrorResponse } from 'src/modules/Core/types/laravel.types';
 import { I18nService } from '../services/I18nService';
+import { AxiosError } from 'axios';
 
 /**
  * Represents the state of a task.
@@ -145,5 +146,15 @@ export interface TaskOptions<Result = unknown, Payload = unknown> {
   /**
    * Whether to handle Laravel errors automatically.
    */
-  handleLaravelError?: boolean;
+  handleLaravelError?:
+    | boolean
+    | {
+        translate?: boolean;
+        userCallBack?: ErrorHandlerCallback;
+      };
 }
+
+type ErrorHandlerCallback = (
+  err: AxiosError,
+  context: ErrorHandlerContext<LaravelErrorResponse>,
+) => void;

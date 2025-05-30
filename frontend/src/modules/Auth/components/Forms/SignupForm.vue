@@ -8,7 +8,6 @@ import { ref } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import { useRecaptcha } from 'src/modules/Core/composables/useRecaptcha';
-import type { ErrorHandler } from 'src/modules/Core/types/task.types';
 import EmailField from 'src/modules/Auth/components/Form/EmailField.vue';
 import PasswordField from 'src/modules/Auth/components/Form/PasswordField.vue';
 import PasswordConfirmField from 'src/modules/Auth/components/Form/PasswordConfirmField.vue';
@@ -55,7 +54,6 @@ const signupTask = task.newTask<AuthStatusEnum>({
       recaptchaToken
     );
   },
-  errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
   successHandlers: (status) => {
     if (status === AuthStatusEnum.REGISTER_SUCCESS) {
       emit('registration-success');

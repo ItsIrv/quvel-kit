@@ -7,7 +7,6 @@
  */
 import { ref } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
-import type { ErrorHandler } from 'src/modules/Core/types/task.types';
 import EmailField from 'src/modules/Auth/components/Form/EmailField.vue';
 import PasswordField from 'src/modules/Auth/components/Form/PasswordField.vue';
 import PasswordConfirmField from 'src/modules/Auth/components/Form/PasswordConfirmField.vue';
@@ -54,7 +53,9 @@ const resetTask = task.newTask({
       password.value,
       passwordConfirmation.value
     ),
-  errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel(undefined, true)],
+  handleLaravelError: {
+    translate: true,
+  },
   successHandlers: () => {
     resetForm();
     emit('switch-form', 'login');

@@ -7,7 +7,6 @@
 import { ref } from 'vue';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
-import type { ErrorHandler } from 'src/modules/Core/types/task.types';
 import EmailField from 'src/modules/Auth/components/Form/EmailField.vue';
 import PasswordField from 'src/modules/Auth/components/Form/PasswordField.vue';
 import TaskErrors from 'src/modules/Core/components/Common/TaskErrors.vue';
@@ -45,7 +44,6 @@ const loginTask = task.newTask({
     success: () => i18n.t('auth.status.success.loggedIn'),
   },
   task: async () => await sessionStore.login(email.value, password.value),
-  errorHandlers: <ErrorHandler[]>[task.errorHandlers.Laravel()],
   successHandlers: () => {
     emit('success');
     resetForm();
