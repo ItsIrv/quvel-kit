@@ -1,17 +1,21 @@
 import { useScript } from 'src/modules/Core/composables/useScript';
+import { useContainer } from 'src/modules/Core/composables/useContainer';
+import { computed } from 'vue';
 
 /**
  * Script constants
  */
 const SCRIPT_ID = 'google_recaptcha';
-const RECAPTCHA_KEY = import.meta.env.VITE_RECAPTCHA_KEY || '';
-const RECAPTCHA_URL = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_KEY}`;
 
 /**
  * Composable for handling Google reCAPTCHA v3.
  */
 export function useRecaptcha() {
-  const { isLoaded, isLoading, error, load, unload } = useScript(SCRIPT_ID, RECAPTCHA_URL, {
+  const { config } = useContainer();
+  const recaptchaKey = computed(() => config.get('recaptchaGoogleSiteKey') || '');
+  const recaptchaUrl = computed(() => `https://www.google.com/recaptcha/api.js?render=${recaptchaKey.value}`);
+
+  const { isLoaded, isLoading, error, load, unload } = useScript(SCRIPT_ID, recaptchaUrl.value, {
     autoLoad: true,
     autoUnload: true,
     onUnload: () => {
@@ -54,10 +58,15 @@ export function useRecaptcha() {
       throw new Error('reCAPTCHA not available on window');
     }
 
+    const siteKey = recaptchaKey.value;
+    if (!siteKey) {
+      throw new Error('reCAPTCHA site key not configured');
+    }
+
     return new Promise((resolve, reject) => {
       try {
         window.grecaptcha.ready(() => {
-          window.grecaptcha.execute(RECAPTCHA_KEY, { action }).then(resolve).catch(reject);
+          window.grecaptcha.execute(siteKey, { action }).then(resolve).catch(reject);
         });
       } catch (err) {
         reject(err instanceof Error ? err : new Error('Failed to execute reCAPTCHA'));
@@ -72,6 +81,7 @@ export function useRecaptcha() {
     load,
     unload,
     execute,
+    recaptchaKey: recaptchaKey,
   };
 }
 

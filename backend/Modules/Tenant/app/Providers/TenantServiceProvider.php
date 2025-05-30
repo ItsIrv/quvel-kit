@@ -10,7 +10,6 @@ use Modules\Tenant\Contracts\ConfigurationPipeInterface;
 use Modules\Tenant\Contracts\TenantConfigProviderInterface;
 use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Services\RequestPrivacy;
-use Modules\Tenant\Services\ConfigApplier;
 use Modules\Tenant\Services\ConfigurationPipeline;
 use Modules\Tenant\Services\TenantConfigProviderRegistry;
 use Modules\Tenant\Services\FindService;
