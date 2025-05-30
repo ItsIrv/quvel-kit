@@ -16,6 +16,7 @@ use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\TierService;
 use Modules\Tenant\Services\TenantTableRegistry;
 use Modules\Tenant\Services\TenantConfigSeederRegistry;
+use Modules\Tenant\Services\TenantExclusionRegistry;
 use Illuminate\Log\Context\Repository;
 
 /**
@@ -35,6 +36,7 @@ class TenantServiceProvider extends ModuleServiceProvider
 
         $this->app->singleton(FindService::class);
         $this->app->singleton(TierService::class);
+        $this->app->singleton(TenantExclusionRegistry::class);
 
         // Register the tenant table registry
         $this->app->singleton(TenantTableRegistry::class, function ($app) {
@@ -196,5 +198,27 @@ class TenantServiceProvider extends ModuleServiceProvider
         ?callable $visibilitySeeder = null,
     ): void {
         app(TenantConfigSeederRegistry::class)->registerSeederForTiers($tiers, $seeder, $priority, $visibilitySeeder);
+    }
+
+    /**
+     * Register paths to exclude from tenant resolution.
+     *
+     * @param string|array $paths Exact paths to exclude
+     * @return void
+     */
+    public static function excludePaths(string|array $paths): void
+    {
+        app(TenantExclusionRegistry::class)->excludePaths($paths);
+    }
+
+    /**
+     * Register path patterns to exclude from tenant resolution.
+     *
+     * @param string|array $patterns Path patterns to exclude (supports wildcards)
+     * @return void
+     */
+    public static function excludePatterns(string|array $patterns): void
+    {
+        app(TenantExclusionRegistry::class)->excludePatterns($patterns);
     }
 }

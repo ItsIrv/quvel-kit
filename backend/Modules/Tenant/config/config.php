@@ -17,6 +17,25 @@ return [
     'resolver'     => HostResolver::class,
 
     /**
+     * Paths that should bypass tenant resolution.
+     * These paths will not have tenant context applied.
+     * Modules should use TenantServiceProvider::excludePaths() to register paths dynamically.
+     */
+    'excluded_paths' => [
+        // Static exclusions can be added here if needed
+    ],
+
+    /**
+     * Path patterns that should bypass tenant resolution.
+     * Uses Laravel's request->is() method for pattern matching.
+     * Supports wildcards: admin/* will match admin/setup, admin/tenants, etc.
+     * Modules should use TenantServiceProvider::excludePatterns() to register patterns dynamically.
+     */
+    'excluded_patterns' => [
+        // Static exclusions can be added here if needed
+    ],
+
+    /**
      * SSR tenant cache configuration.
      */
     'tenant_cache' => [

@@ -3,6 +3,7 @@
 namespace Modules\TenantAdmin\Providers;
 
 use Modules\Core\Providers\ModuleServiceProvider;
+use Modules\Tenant\Providers\TenantServiceProvider;
 
 class TenantAdminServiceProvider extends ModuleServiceProvider
 {
@@ -34,16 +35,15 @@ class TenantAdminServiceProvider extends ModuleServiceProvider
      */
     protected function registerTenantExclusions(): void
     {
-        // Merge additional excluded patterns into the tenant config
-        $currentPatterns = config('tenant.excluded_patterns', []);
-        
-        $adminPatterns = [
+        // Check if Tenant module is available
+        if (!class_exists(TenantServiceProvider::class)) {
+            return;
+        }
+
+        // Register admin routes to bypass tenant resolution
+        TenantServiceProvider::excludePatterns([
             'admin/tenants*',
             'api/admin/tenants*',
-        ];
-
-        config([
-            'tenant.excluded_patterns' => array_unique(array_merge($currentPatterns, $adminPatterns))
         ]);
     }
 }
