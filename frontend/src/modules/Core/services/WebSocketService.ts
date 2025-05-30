@@ -24,13 +24,14 @@ export class WebSocketService extends Service implements SsrAwareService, Regist
   private apiKey!: string;
   private cluster!: string;
   private readonly isSsr: boolean = typeof window === 'undefined';
+  get echo() {
+    return this.#echo;
+  }
 
   /**
    * Boot method to initialize with config.
    */
-  boot(): void {
-    // WebSocket config will be initialized in register when we have access to container
-    // For now, just set up Pusher global if needed
+  public boot(): void {
     if (!this.isSsr && !(window as unknown as { Pusher: typeof Pusher }).Pusher) {
       (window as unknown as { Pusher: typeof Pusher }).Pusher = Pusher;
     }
@@ -38,10 +39,6 @@ export class WebSocketService extends Service implements SsrAwareService, Regist
     const wsConfig = createWebsocketConfig();
     this.apiKey = wsConfig.apiKey;
     this.cluster = wsConfig.cluster;
-  }
-
-  get echo() {
-    return this.#echo;
   }
 
   public register(container: ServiceContainer): void {

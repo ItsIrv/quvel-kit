@@ -141,4 +141,9 @@ export interface TaskOptions<Result = unknown, Payload = unknown> {
    * Handlers executed when an error occurs.
    */
   errorHandlers?: ErrorCallbackOrValue;
+
+  /**
+   * Whether to handle Laravel errors automatically.
+   */
+  handleLaravelError?: boolean;
 }

@@ -10,14 +10,10 @@ import { Service } from './Service';
 export class ValidationService extends Service implements RegisterService {
   private i18n!: I18nService;
 
-  constructor() {
-    super();
-  }
-
   /**
    * Injects the container dependencies.
    */
-  register(container: ServiceContainer): void {
+  public register(container: ServiceContainer): void {
     this.i18n = container.i18n;
   }
 
@@ -29,7 +25,11 @@ export class ValidationService extends Service implements RegisterService {
    * @param attribute - The field name (e.g., "Email").
    * @returns The first translated error or `true` if valid.
    */
-  validateFirstError<T>(value: unknown, schema: ZodSchema<T>, attribute: string): string | true {
+  public validateFirstError<T>(
+    value: unknown,
+    schema: ZodSchema<T>,
+    attribute: string,
+  ): string | true {
     const result = schema.safeParse(value);
     if (result.success) return true;
 
@@ -49,7 +49,7 @@ export class ValidationService extends Service implements RegisterService {
    * @param attribute - The field name (e.g., "Email").
    * @returns An array of translated errors or `[]` if valid.
    */
-  validateAllErrors<T>(value: unknown, schema: ZodSchema<T>, attribute: string): string[] {
+  public validateAllErrors<T>(value: unknown, schema: ZodSchema<T>, attribute: string): string[] {
     const result = schema.safeParse(value);
     if (result.success) return [];
 
@@ -59,7 +59,10 @@ export class ValidationService extends Service implements RegisterService {
   /**
    * Creates a Quasar-compatible validation rule that stops at the first error.
    */
-  createInputRule<T>(schema: ZodSchema<T>, attribute: string): (value: unknown) => string | true {
+  public createInputRule<T>(
+    schema: ZodSchema<T>,
+    attribute: string,
+  ): (value: unknown) => string | true {
     return (value: unknown) => this.validateFirstError(value, schema, attribute);
   }
 
@@ -68,7 +71,7 @@ export class ValidationService extends Service implements RegisterService {
    * @param issue - The Zod validation issue.
    * @param attribute - The attribute name (required).
    */
-  private translateError(issue: ZodIssue, attribute: string): string {
+  public translateError(issue: ZodIssue, attribute: string): string {
     const i18n = this.i18n;
 
     switch (issue.code) {

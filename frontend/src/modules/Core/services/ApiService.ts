@@ -1,32 +1,7 @@
-import type {
-  AxiosInstance,
-  AxiosRequestConfig as BaseAxiosRequestConfig,
-  AxiosResponse,
-  InternalAxiosRequestConfig as BaseInternalAxiosRequestConfig,
-} from 'axios';
-
-/**
- * Extended Axios request config with metadata
- */
-interface AxiosRequestConfig extends BaseAxiosRequestConfig {
-  metadata?: {
-    startTime: number;
-    [key: string]: unknown;
-  };
-  signal?: AbortSignal;
-}
-
-/**
- * Extended internal Axios request config with metadata
- */
-interface InternalAxiosRequestConfig extends BaseInternalAxiosRequestConfig {
-  metadata?: {
-    startTime: number;
-    [key: string]: unknown;
-  };
-}
-import { Service } from './Service';
+import type { AxiosInstance, AxiosResponse } from 'axios';
 import type { RegisterService, SsrServiceOptions, SsrAwareService } from '../types/service.types';
+import { AxiosRequestConfig, InternalAxiosRequestConfig } from '../types/axios.types';
+import { Service } from './Service';
 import { ServiceContainer } from './ServiceContainer';
 import { LogService } from './LogService';
 import { createApi } from '../utils/axiosUtil';
