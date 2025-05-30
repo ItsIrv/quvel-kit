@@ -89,7 +89,7 @@ class TenantServiceProvider extends ModuleServiceProvider
 
         Context::hydrated(function (Repository $context): void {
             if ($context->hasHidden('tenant')) {
-                ConfigApplier::apply(
+                app(ConfigurationPipeline::class)->apply(
                     $context->getHidden('tenant'),
                     $this->app->make(ConfigRepository::class),
                 );

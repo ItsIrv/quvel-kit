@@ -4,11 +4,11 @@ use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Enums\TenantConfigVisibility;
 use Modules\Tenant\Exceptions\TenantNotFoundException;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\Services\ConfigApplier;
 use Modules\Tenant\Services\FindService;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
+use Modules\Tenant\Services\ConfigurationPipeline;
 
 if (!function_exists('setTenant')) {
     /**
@@ -44,7 +44,7 @@ if (!function_exists('setTenant')) {
 
         $app->make(TenantContext::class)->set($tenant);
 
-        ConfigApplier::apply(
+        $app->make(ConfigurationPipeline::class)->apply(
             $tenant,
             $app->make(ConfigRepository::class),
         );
