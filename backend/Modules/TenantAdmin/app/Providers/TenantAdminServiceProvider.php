@@ -4,6 +4,8 @@ namespace Modules\TenantAdmin\Providers;
 
 use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Tenant\Providers\TenantServiceProvider;
+use Modules\TenantAdmin\Http\Middleware\CheckInstallation;
+use Modules\TenantAdmin\Http\Middleware\TenantAdminAuth;
 
 class TenantAdminServiceProvider extends ModuleServiceProvider
 {

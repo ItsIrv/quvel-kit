@@ -17,7 +17,7 @@ class RouteServiceProvider extends ModuleRouteServiceProvider
         $webRoutes = module_path($this->name, '/routes/web.php');
 
         if (file_exists($webRoutes)) {
-            Route::middleware('admin')
+            Route::middleware('web')
                 ->prefix('admin/tenants')
                 ->name('admin.tenants.')
                 ->group($webRoutes);

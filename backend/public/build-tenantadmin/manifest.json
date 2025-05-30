@@ -1,0 +1,23 @@
+{
+  "_vendor-DJ7W-YlK.js": {
+    "file": "assets/vendor-DJ7W-YlK.js",
+    "name": "vendor"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-BkpWIBIG.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.ts": {
+    "file": "assets/app-Bt-O1s46.js",
+    "name": "app",
+    "src": "resources/js/app.ts",
+    "isEntry": true,
+    "imports": [
+      "_vendor-DJ7W-YlK.js"
+    ],
+    "css": [
+      "assets/app-CFQiXINR.css"
+    ]
+  }
+}
