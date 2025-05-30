@@ -1,10 +1,6 @@
-import Pusher, { Channel } from 'pusher-js';
+import type { Channel } from 'pusher-js';
 import Echo from 'laravel-echo';
-import {
-  RegisterService,
-  SsrAwareService,
-  SsrServiceOptions,
-} from 'src/modules/Core/types/service.types';
+import { RegisterService, SsrAwareService } from 'src/modules/Core/types/service.types';
 import {
   EncryptedChannelType,
   PresenceChannelType,
@@ -14,7 +10,6 @@ import {
 } from '../types/websocket.types';
 import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
 import { ApiService } from 'src/modules/Core/services/ApiService';
-import { createWebsocketConfig } from 'src/modules/Core/utils/websocketUtil';
 
 import { Service } from './Service';
 
@@ -36,23 +31,13 @@ export class WebSocketService extends Service implements SsrAwareService, Regist
   /**
    * Boot method to initialize with config.
    */
-  public boot(ssrOptions?: SsrServiceOptions): void {
-    if (!this.isSsr && !(window as unknown as { Pusher: typeof Pusher }).Pusher) {
-      (window as unknown as { Pusher: typeof Pusher }).Pusher = Pusher;
-    }
-
-    const wsConfig = createWebsocketConfig(ssrOptions?.req?.tenantConfig);
-    this.apiKey = wsConfig.apiKey;
-    this.cluster = wsConfig.cluster;
-  }
+  public boot(): void {}
 
   public register(container: ServiceContainer): void {
     this.api = container.api;
-
-    // If not initialized yet (no SSR context), boot now
-    if (!this.apiKey) {
-      this.boot();
-    }
+    this.apiKey = container.config.get('pusherAppKey') ?? import.meta.env.VITE_PUSHER_APP_KEY;
+    this.cluster =
+      container.config.get('pusherAppCluster') ?? import.meta.env.VITE_PUSHER_APP_CLUSTER;
   }
 
   public connect(): Promise<void> {
@@ -60,46 +45,51 @@ export class WebSocketService extends Service implements SsrAwareService, Regist
     if (this.connectionPromise) return this.connectionPromise;
 
     this.connectionPromise = new Promise<void>((resolve, reject) => {
-      this.#echo = new Echo({
-        broadcaster: 'pusher',
-        key: this.apiKey,
-        cluster: this.cluster,
-        authorizer: (channel: Channel) => {
-          const apiService = this.api;
-          return {
-            authorize: async (socketId: string, callback: (b: boolean, d: unknown) => void) => {
-              try {
-                const data = await apiService.post('/broadcasting/auth', {
-                  socket_id: socketId,
-                  channel_name: channel.name,
-                });
+      void import('pusher-js').then((Pusher) => {
+        if (!this.isSsr && !(window as unknown as { Pusher: typeof Pusher }).Pusher) {
+          (window as unknown as { Pusher: typeof Pusher }).Pusher = Pusher;
+        }
 
-                return callback(false, data);
-              } catch {
-                return callback(true, null);
-              }
-            },
-          };
-        },
-      });
+        this.#echo = new Echo({
+          broadcaster: 'pusher',
+          key: this.apiKey,
+          cluster: this.cluster,
+          authorizer: (channel: Channel) => {
+            const apiService = this.api;
+            return {
+              authorize: async (socketId: string, callback: (b: boolean, d: unknown) => void) => {
+                try {
+                  const data = await apiService.post('/broadcasting/auth', {
+                    socket_id: socketId,
+                    channel_name: channel.name,
+                  });
 
-      this.#echo.connector.pusher.connection.bind('connected', () => {
-        this.isConnected = true;
-        this.connectionPromise = null;
-        resolve();
-      });
+                  return callback(false, data);
+                } catch {
+                  return callback(true, null);
+                }
+              },
+            };
+          },
+        });
 
-      this.#echo.connector.pusher.connection.bind('disconnected', () => {
-        this.isConnected = false;
-        this.connectionPromise = null;
-      });
+        this.#echo.connector.pusher.connection.bind('connected', () => {
+          this.isConnected = true;
+          this.connectionPromise = null;
+          resolve();
+        });
 
-      this.#echo.connector.pusher.connection.bind('error', (err: unknown) => {
-        console.error('[WebSocket Error]', err);
-        reject(new Error('WebSocket connection error'));
+        this.#echo.connector.pusher.connection.bind('disconnected', () => {
+          this.isConnected = false;
+          this.connectionPromise = null;
+        });
+
+        this.#echo.connector.pusher.connection.bind('error', (err: unknown) => {
+          console.error('[WebSocket Error]', err);
+          reject(new Error('WebSocket connection error'));
+        });
       });
     });
-
     return this.connectionPromise;
   }
 
