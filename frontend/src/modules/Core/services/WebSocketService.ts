@@ -1,9 +1,10 @@
 import Pusher, { Channel } from 'pusher-js';
 import Echo from 'laravel-echo';
-import { RegisterService, SsrAwareService } from 'src/modules/Core/types/service.types';
-import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
-import { ApiService } from 'src/modules/Core/services/ApiService';
-import { createWebsocketConfig } from 'src/modules/Core/utils/websocketUtil';
+import {
+  RegisterService,
+  SsrAwareService,
+  SsrServiceOptions,
+} from 'src/modules/Core/types/service.types';
 import {
   EncryptedChannelType,
   PresenceChannelType,
@@ -11,6 +12,10 @@ import {
   PublicChannelType,
   SubscribeOptions,
 } from '../types/websocket.types';
+import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
+import { ApiService } from 'src/modules/Core/services/ApiService';
+import { createWebsocketConfig } from 'src/modules/Core/utils/websocketUtil';
+
 import { Service } from './Service';
 
 /**
@@ -31,12 +36,12 @@ export class WebSocketService extends Service implements SsrAwareService, Regist
   /**
    * Boot method to initialize with config.
    */
-  public boot(): void {
+  public boot(ssrOptions?: SsrServiceOptions): void {
     if (!this.isSsr && !(window as unknown as { Pusher: typeof Pusher }).Pusher) {
       (window as unknown as { Pusher: typeof Pusher }).Pusher = Pusher;
     }
 
-    const wsConfig = createWebsocketConfig();
+    const wsConfig = createWebsocketConfig(ssrOptions?.req?.tenantConfig);
     this.apiKey = wsConfig.apiKey;
     this.cluster = wsConfig.cluster;
   }
