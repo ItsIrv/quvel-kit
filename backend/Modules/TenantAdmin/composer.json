@@ -1,0 +1,28 @@
+{
+    "name": "itsirv/tenantadmin",
+    "description": "Handles tenant admin features for QuVel Kit.",
+    "authors": [
+        {
+            "name": "Irving Gomez",
+            "email": "gomirv.work@gmail.com"
+        }
+    ],
+    "require": {},
+    "extra": {
+        "laravel": {
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\TenantAdmin\\": "app/",
+            "Modules\\TenantAdmin\\Database\\Factories\\": "database/factories/",
+            "Modules\\TenantAdmin\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\TenantAdmin\\Tests\\": "tests/"
+        }
+    }
+}
