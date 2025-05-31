@@ -10,8 +10,11 @@
         "typecheck": "vue-tsc --noEmit"
     },
     "dependencies": {
+        "@primeuix/themes": "^1.1.1",
         "axios": "^1.6.0",
         "pinia": "^2.1.7",
+        "primeicons": "^7.0.0",
+        "primevue": "^4.3.4",
         "vue": "^3.4.0",
         "vue-router": "^4.2.5"
     },

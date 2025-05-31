@@ -1,35 +1,45 @@
 {
-  "_vendor-Dgf6597Q.js": {
-    "file": "assets/vendor-Dgf6597Q.js",
+  "_vendor-BYAx2r8F.js": {
+    "file": "assets/vendor-BYAx2r8F.js",
     "name": "vendor"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BHnDkxMo.css",
+    "file": "assets/app-BOsP81yd.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.ts": {
-    "file": "assets/app-CjsubAa8.js",
+    "file": "assets/app-By-Tb-gR.js",
     "name": "app",
     "src": "resources/js/app.ts",
     "isEntry": true,
     "imports": [
-      "_vendor-Dgf6597Q.js"
+      "_vendor-BYAx2r8F.js"
     ],
     "dynamicImports": [
-      "resources/js/views/Install.vue"
+      "resources/js/layouts/GuestLayout.vue",
+      "resources/js/pages/Install.vue"
     ],
     "css": [
-      "assets/app-BHnDkxMo.css"
+      "assets/app-BOsP81yd.css"
     ]
   },
-  "resources/js/views/Install.vue": {
-    "file": "assets/Install-BhyrBa3k.js",
-    "name": "Install",
-    "src": "resources/js/views/Install.vue",
+  "resources/js/layouts/GuestLayout.vue": {
+    "file": "assets/GuestLayout-D4G1xG20.js",
+    "name": "GuestLayout",
+    "src": "resources/js/layouts/GuestLayout.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-Dgf6597Q.js"
+      "_vendor-BYAx2r8F.js"
+    ]
+  },
+  "resources/js/pages/Install.vue": {
+    "file": "assets/Install-DpRg4gq9.js",
+    "name": "Install",
+    "src": "resources/js/pages/Install.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-BYAx2r8F.js"
     ]
   }
 }
