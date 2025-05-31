@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
-import { useAuthService } from '../composables/useServices'
+import { useAuthStore } from '../stores/useAuthStore'
+import { useRouter, useRoute } from 'vue-router'
 import type { LoginRequest, ApiError } from '../types'
 import { isValidationError, getValidationErrors, getUserFriendlyMessage, logError } from '../utils/errorHandler'
 import Button from 'primevue/button'
@@ -10,8 +11,10 @@ import Checkbox from 'primevue/checkbox'
 import Message from 'primevue/message'
 import Card from 'primevue/card'
 
-// Get the auth service
-const authService = useAuthService()
+// Get the auth store and router
+const authStore = useAuthStore()
+const router = useRouter()
+const route = useRoute()
 
 // Form data
 const form = reactive<LoginRequest>({
@@ -33,12 +36,11 @@ const submitLogin = async () => {
     message.value = ''
 
     try {
-        const response = await authService.login(form)
+        await authStore.login(form.username, form.password)
         
-        if (response.success) {
-            // Keep loading while redirecting
-            window.location.href = response.redirect_url || '/admin/tenants/dashboard'
-        }
+        // Redirect to the intended page or dashboard
+        const redirectTo = route.query.redirect as string || '/dashboard'
+        await router.push(redirectTo)
     } catch (error) {
         const apiError = error as ApiError
         

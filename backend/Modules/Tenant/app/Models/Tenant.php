@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Modules\Tenant\Casts\DynamicTenantConfigCast;
 use Modules\Tenant\Database\Factories\TenantFactory;
@@ -35,6 +36,7 @@ class Tenant extends Model
     /** @use HasFactory<TenantFactory> */
     use HasFactory;
     use HasTierFeatures;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.

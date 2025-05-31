@@ -1,5 +1,4 @@
 import { BaseApiService } from "./BaseApiService";
-import type { ApiError } from "../types/api";
 import type {
     Tenant,
     TenantListResponse,
@@ -27,7 +26,7 @@ export class TenantService extends BaseApiService {
         perPage: number = 10
     ): Promise<TenantListResponse> {
         return await this.get<TenantListResponse>(
-            `/api/tenants?page=${page}&per_page=${perPage}`
+            `/tenants?page=${page}&per_page=${perPage}`
         );
     }
 
@@ -37,7 +36,7 @@ export class TenantService extends BaseApiService {
      * @returns Promise with tenant data
      */
     async getById(id: number): Promise<Tenant> {
-        return await this.get<Tenant>(`/api/tenants/${id}`);
+        return await this.get<Tenant>(`/tenants/${id}`);
     }
 
     /**
@@ -46,7 +45,7 @@ export class TenantService extends BaseApiService {
      * @returns Promise with created tenant
      */
     async create(data: TenantCreateRequest): Promise<Tenant> {
-        return await this.post<Tenant>("/api/tenants", data);
+        return await this.post<Tenant>("/tenants", data);
     }
 
     /**
@@ -56,7 +55,7 @@ export class TenantService extends BaseApiService {
      * @returns Promise with updated tenant
      */
     async update(id: number, data: TenantUpdateRequest): Promise<Tenant> {
-        return await this.put<Tenant>(`/api/tenants/${id}`, data);
+        return await this.put<Tenant>(`/tenants/${id}`, data);
     }
 
     /**
@@ -65,7 +64,7 @@ export class TenantService extends BaseApiService {
      * @returns Promise with success response
      */
     async deleteTenant(id: number): Promise<void> {
-        return await this.delete<void>(`/api/tenants/${id}`);
+        return await this.delete<void>(`/tenants/${id}`);
     }
 
     /**
@@ -75,7 +74,7 @@ export class TenantService extends BaseApiService {
      */
     async search(query: string): Promise<TenantListResponse> {
         return await this.get<TenantListResponse>(
-            `/api/tenants/search?q=${encodeURIComponent(query)}`
+            `/tenants/search?q=${encodeURIComponent(query)}`
         );
     }
 }

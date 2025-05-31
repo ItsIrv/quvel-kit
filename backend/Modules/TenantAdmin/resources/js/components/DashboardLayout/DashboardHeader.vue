@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAuthService } from '../../composables/useServices'
+import { useAuthStore } from '../../stores/useAuthStore'
+import { useRouter, useRoute } from 'vue-router'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 
-const authService = useAuthService()
+const authStore = useAuthStore()
+const router = useRouter()
+const route = useRoute()
 
 // Props
 interface Props {
@@ -28,12 +31,8 @@ const profileMenuItems = ref<MenuItem[]>([
     label: 'Logout',
     icon: 'pi pi-sign-out',
     command: async () => {
-      try {
-        await authService.logout()
-        window.location.href = '/admin/tenants/login'
-      } catch (error) {
-        console.error('Logout failed:', error)
-      }
+      await authStore.logout()
+      await router.push('/login')
     }
   }
 ])
@@ -41,12 +40,32 @@ const profileMenuItems = ref<MenuItem[]>([
 
 <template>
   <header class="bg-white border-b px-6 py-4 flex items-center justify-between">
-    <Button 
-      icon="pi pi-bars" 
-      severity="secondary" 
-      text
-      @click="emit('toggleSidebar')"
-    />
+    <div class="flex items-center gap-6">
+      <Button 
+        icon="pi pi-bars" 
+        severity="secondary" 
+        text
+        @click="emit('toggleSidebar')"
+      />
+      
+      <!-- Navigation Links -->
+      <nav class="flex items-center gap-4">
+        <Button 
+          :label="'Dashboard'"
+          :severity="route.name === 'dashboard' ? 'primary' : 'secondary'"
+          :text="route.name !== 'dashboard'"
+          size="small"
+          @click="router.push('/dashboard')"
+        />
+        <Button 
+          :label="'Tenants'"
+          :severity="route.name === 'tenants' ? 'primary' : 'secondary'"
+          :text="route.name !== 'tenants'"
+          size="small"
+          @click="router.push('/tenants')"
+        />
+      </nav>
+    </div>
     
     <div class="flex items-center gap-3">
       <Button 

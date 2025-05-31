@@ -83,7 +83,7 @@ const deleteTenant = async (tenant: Tenant) => {
     }
 
     try {
-        await tenantService.delete(tenant.id)
+        await tenantService.deleteTenant(tenant.id)
         toast.add({
             severity: 'success',
             summary: 'Success',
@@ -177,6 +177,12 @@ onMounted(() => {
             responsiveLayout="scroll"
             class="p-datatable-sm"
         >
+            <template #empty>
+                <div class="text-center py-8">
+                    <i class="pi pi-inbox text-4xl text-gray-400 mb-3"></i>
+                    <p class="text-gray-600">No tenants found</p>
+                </div>
+            </template>
             <Column
                 field="public_id"
                 header="ID"
