@@ -8,7 +8,7 @@ import type { LoginRequest, LoginResponse, User } from "../types/auth";
  */
 export class AuthService extends BaseApiService {
     constructor() {
-        super("/admin/tenants");
+        super("/admin/tenants/api");
     }
 
     /**
@@ -41,8 +41,7 @@ export class AuthService extends BaseApiService {
             // Handle other errors
             throw {
                 ...apiError,
-                message:
-                    apiError.message || "Login failed. Please try again.",
+                message: apiError.message || "Login failed. Please try again.",
             };
         }
     }
@@ -74,7 +73,7 @@ export class AuthService extends BaseApiService {
             return await this.get<User>("/user");
         } catch (error) {
             const apiError = error as ApiError;
-            
+
             if (apiError.status === 401) {
                 throw {
                     ...apiError,

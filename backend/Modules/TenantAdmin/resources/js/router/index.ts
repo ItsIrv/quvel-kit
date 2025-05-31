@@ -43,7 +43,15 @@ const routes: RouteRecordRaw[] = [
                     requiresAuth: true,
                 },
             },
-            // Add more authenticated routes here
+            {
+                path: "tenants",
+                name: "tenants",
+                component: () => import("../pages/TenantList.vue"),
+                meta: {
+                    title: "Tenants",
+                    requiresAuth: true,
+                },
+            },
         ],
     },
 ];

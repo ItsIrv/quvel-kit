@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\TenantAdmin\Http\Controllers\PageController;
 use Modules\TenantAdmin\Http\Controllers\Api\InstallationController;
 use Modules\TenantAdmin\Http\Controllers\AuthController;
+use Modules\TenantAdmin\Http\Controllers\TenantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,22 +17,32 @@ use Modules\TenantAdmin\Http\Controllers\AuthController;
 |
 */
 
-// Installation routes (only accessible when not installed)
-Route::middleware(['check_not_installed'])->group(function () {
-    Route::get('/install', [PageController::class, 'show'])->name('install');
-    Route::get('/install/status', [InstallationController::class, 'status'])->name('api.install.status');
-    Route::post('/install', [InstallationController::class, 'install'])->name('api.install');
-});
+Route::prefix('api')->group(function () {
+    // Installation routes (only accessible when not installed)
+    Route::middleware(['check_not_installed'])->group(function () {
+        Route::get('/install', [PageController::class, 'show'])->name('install');
+        Route::get('/install/status', [InstallationController::class, 'status'])->name('api.install.status');
+        Route::post('/install', [InstallationController::class, 'install'])->name('api.install');
+    });
 
-// Protected routes (only accessible when installed)
-Route::middleware(['check_installed'])->group(function () {
-    // Authentication routes
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    // Protected routes (only accessible when installed)
+    Route::middleware(['check_installed'])->group(function () {
+        // Authentication routes
+        Route::post('/login', [AuthController::class, 'login'])->name('login');
+        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Authenticated routes
-    Route::middleware(['tenant_admin_auth'])->group(function () {
-        Route::get('/user', [AuthController::class, 'user'])->name('user');
+        // Authenticated routes
+        Route::middleware(['tenant_admin_auth'])->group(function () {
+            Route::get('/user', [AuthController::class, 'user'])->name('user');
+
+            // Tenant management API routes
+            Route::get('/tenants', [TenantController::class, 'index'])->name('api.tenants.index');
+            Route::get('/tenants/search', [TenantController::class, 'search'])->name('api.tenants.search');
+            Route::get('/tenants/{tenant}', [TenantController::class, 'show'])->name('api.tenants.show');
+            Route::post('/tenants', [TenantController::class, 'store'])->name('api.tenants.store');
+            Route::put('/tenants/{tenant}', [TenantController::class, 'update'])->name('api.tenants.update');
+            Route::delete('/tenants/{tenant}', [TenantController::class, 'destroy'])->name('api.tenants.destroy');
+        });
     });
 });
 

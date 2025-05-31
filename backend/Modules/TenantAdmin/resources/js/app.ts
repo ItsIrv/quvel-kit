@@ -12,6 +12,7 @@ import "../css/app.css"; // Custom CSS (should be last)
 import Tooltip from "primevue/tooltip";
 import BadgeDirective from "primevue/badgedirective";
 import Ripple from "primevue/ripple";
+import ToastService from 'primevue/toastservice';
 
 const app = createApp(App);
 
@@ -25,6 +26,7 @@ app.use(PrimeVue, {
     },
     ripple: true,
 });
+app.use(ToastService);
 
 // Register directives
 app.directive("tooltip", Tooltip);

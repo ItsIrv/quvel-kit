@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\ValueObjects\TenantConfig;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 use Modules\Tenant\Services\TenantConfigProviderRegistry;
 

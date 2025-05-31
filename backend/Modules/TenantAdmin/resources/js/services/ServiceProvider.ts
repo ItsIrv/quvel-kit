@@ -1,5 +1,6 @@
 import { InstallationService } from './InstallationService';
 import { AuthService } from './AuthService';
+import { TenantService } from './TenantService';
 
 /**
  * Service provider for dependency injection
@@ -32,6 +33,9 @@ export class ServiceProvider {
     
     // Register AuthService as a singleton
     this.services.set('auth', new AuthService());
+    
+    // Register TenantService as a singleton
+    this.services.set('tenant', new TenantService());
   }
 
   /**
@@ -57,6 +61,13 @@ export class ServiceProvider {
    */
   get auth(): AuthService {
     return this.get<AuthService>('auth');
+  }
+
+  /**
+   * Get the TenantService instance
+   */
+  get tenant(): TenantService {
+    return this.get<TenantService>('tenant');
   }
 
   /**

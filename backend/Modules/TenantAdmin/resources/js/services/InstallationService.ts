@@ -12,7 +12,7 @@ import type {
  */
 export class InstallationService extends BaseApiService {
     constructor() {
-        super("/admin/tenants");
+        super("/admin/tenants/api");
     }
 
     /**
