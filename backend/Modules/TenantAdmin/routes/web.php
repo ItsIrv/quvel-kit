@@ -28,7 +28,7 @@ Route::middleware(['check_installed'])->group(function () {
     // Authentication routes
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    
+
     // Authenticated routes
     Route::middleware(['tenant_admin_auth'])->group(function () {
         Route::get('/user', [AuthController::class, 'user'])->name('user');

@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Ensure PrimeVue components inherit font */
+.p-component {
+    font-family: inherit;
+}
+
+/* Fix input widths */
+.p-inputtext,
+.p-password,
+.p-password-input {
+    width: 100%;
+}
