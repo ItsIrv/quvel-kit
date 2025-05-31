@@ -1,23 +1,35 @@
 {
-  "_vendor-DJ7W-YlK.js": {
-    "file": "assets/vendor-DJ7W-YlK.js",
+  "_vendor-Dgf6597Q.js": {
+    "file": "assets/vendor-Dgf6597Q.js",
     "name": "vendor"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BkpWIBIG.css",
+    "file": "assets/app-BHnDkxMo.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.ts": {
-    "file": "assets/app-Bt-O1s46.js",
+    "file": "assets/app-CjsubAa8.js",
     "name": "app",
     "src": "resources/js/app.ts",
     "isEntry": true,
     "imports": [
-      "_vendor-DJ7W-YlK.js"
+      "_vendor-Dgf6597Q.js"
+    ],
+    "dynamicImports": [
+      "resources/js/views/Install.vue"
     ],
     "css": [
-      "assets/app-CFQiXINR.css"
+      "assets/app-BHnDkxMo.css"
+    ]
+  },
+  "resources/js/views/Install.vue": {
+    "file": "assets/Install-BhyrBa3k.js",
+    "name": "Install",
+    "src": "resources/js/views/Install.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-Dgf6597Q.js"
     ]
   }
 }

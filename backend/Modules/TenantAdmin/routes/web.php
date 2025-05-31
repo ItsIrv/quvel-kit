@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\TenantAdmin\Http\Controllers\PageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,4 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// TenantAdmin web routes
+// Catch-all route for SPA
+Route::get('/{any}', [PageController::class, 'show'])
+    ->where('any', '.*')
+    ->name('spa');
