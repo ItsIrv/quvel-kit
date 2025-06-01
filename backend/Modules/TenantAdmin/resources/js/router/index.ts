@@ -53,6 +53,15 @@ const routes: RouteRecordRaw[] = [
                     requiresAuth: true,
                 },
             },
+            {
+                path: "tenants/edit",
+                name: "tenants-edit",
+                component: () => import("../pages/TenantEdit.vue"),
+                meta: {
+                    title: "Edit Tenant",
+                    requiresAuth: true,
+                },
+            },
         ],
     },
 ];

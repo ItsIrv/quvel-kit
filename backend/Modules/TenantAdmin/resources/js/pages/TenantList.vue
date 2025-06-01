@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useTenantService } from '../composables/useServices'
+import { useTenantTabsStore } from '../stores/useTenantTabsStore'
+import { useRouter } from 'vue-router'
 import type { Tenant } from '../types/tenant'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -12,6 +14,8 @@ import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 
 const tenantService = useTenantService()
+const tenantTabsStore = useTenantTabsStore()
+const router = useRouter()
 const toast = useToast()
 
 // State
@@ -20,7 +24,9 @@ const loading = ref(false)
 const totalRecords = ref(0)
 const searchQuery = ref('')
 const editModalVisible = ref(false)
+const deleteModalVisible = ref(false)
 const selectedTenant = ref<Tenant | null>(null)
+const tenantToDelete = ref<Tenant | null>(null)
 
 // Pagination
 const page = ref(1)
@@ -70,20 +76,24 @@ const searchTenants = async () => {
     }
 }
 
-// Edit tenant
+// Edit tenant - open in tab
 const editTenant = (tenant: Tenant) => {
-    selectedTenant.value = tenant
-    editModalVisible.value = true
+    tenantTabsStore.openTenant(tenant)
+    router.push('/tenants/edit')
+}
+
+// Show delete confirmation
+const showDeleteConfirmation = (tenant: Tenant) => {
+    tenantToDelete.value = tenant
+    deleteModalVisible.value = true
 }
 
 // Delete tenant
-const deleteTenant = async (tenant: Tenant) => {
-    if (!confirm(`Are you sure you want to delete ${tenant.name}?`)) {
-        return
-    }
+const confirmDelete = async () => {
+    if (!tenantToDelete.value) return
 
     try {
-        await tenantService.deleteTenant(tenant.id)
+        await tenantService.deleteTenant(tenantToDelete.value.id)
         toast.add({
             severity: 'success',
             summary: 'Success',
@@ -98,6 +108,9 @@ const deleteTenant = async (tenant: Tenant) => {
             detail: 'Failed to delete tenant',
             life: 3000
         })
+    } finally {
+        deleteModalVisible.value = false
+        tenantToDelete.value = null
     }
 }
 
@@ -239,12 +252,47 @@ onMounted(() => {
                             severity="danger"
                             text
                             rounded
-                            @click="deleteTenant(slotProps.data)"
+                            @click="showDeleteConfirmation(slotProps.data)"
                         />
                     </div>
                 </template>
             </Column>
         </DataTable>
+
+        <!-- Delete Confirmation Dialog -->
+        <Dialog
+            v-model:visible="deleteModalVisible"
+            header="Delete Tenant"
+            :style="{ width: '450px' }"
+            :modal="true"
+        >
+            <div class="flex items-center gap-3 mb-4">
+                <i class="pi pi-exclamation-triangle text-orange-500 text-2xl"></i>
+                <div>
+                    <p class="font-semibold mb-1">Are you sure you want to delete this tenant?</p>
+                    <p class="text-gray-600 text-sm">
+                        This will permanently delete <strong>{{ tenantToDelete?.name }}</strong> and all associated
+                        data.
+                        This action cannot be undone.
+                    </p>
+                </div>
+            </div>
+
+            <template #footer>
+                <Button
+                    label="Cancel"
+                    icon="pi pi-times"
+                    severity="secondary"
+                    @click="deleteModalVisible = false"
+                />
+                <Button
+                    label="Delete"
+                    icon="pi pi-trash"
+                    severity="danger"
+                    @click="confirmDelete"
+                />
+            </template>
+        </Dialog>
 
         <!-- Edit Modal -->
         <Dialog

@@ -4,11 +4,6 @@
  */
 const socialLinks = [
   {
-    name: 'LinkedIn',
-    url: 'https://www.linkedin.com/in/itsirv/',
-    icon: 'eva-linkedin-outline',
-  },
-  {
     name: 'GitHub',
     url: 'https://github.com/ItsIrv/quvel-kit',
     icon: 'eva-github-outline',

@@ -10,7 +10,7 @@ import type { MenuItem } from 'primevue/menuitem'
 const router = useRouter()
 
 // State
-const sidebarVisible = ref(true)
+const sidebarVisible = ref(false)
 
 // Toggle sidebar
 const toggleSidebar = () => {
@@ -66,7 +66,11 @@ const menuItems = ref<MenuItem[]>([
                 />
             </template>
 
-            <router-view />
+            <router-view v-slot="{ Component }">
+                <keep-alive>
+                    <component :is="Component" />
+                </keep-alive>
+            </router-view>
         </DashboardMain>
     </div>
 </template>
