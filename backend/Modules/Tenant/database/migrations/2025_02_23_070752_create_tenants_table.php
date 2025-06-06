@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Modules\Tenant\Models\Tenant;
 
 return new class () extends Migration
 {
@@ -10,11 +11,12 @@ return new class () extends Migration
     {
         Schema::create('tenants', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('parent_id')->nullable()->constrained('tenants')->cascadeOnDelete();
+            $table->foreignIdFor(Tenant::class, 'parent_id')->nullable()->constrained()->cascadeOnDelete();
             $table->char('public_id', 26)->unique();
             $table->string('name')->unique();
             $table->string('domain')->unique();
             $table->json('config')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

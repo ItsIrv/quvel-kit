@@ -37,13 +37,13 @@ const submitLogin = async () => {
 
     try {
         await authStore.login(form.username, form.password)
-        
+
         // Redirect to the intended page or dashboard
         const redirectTo = route.query.redirect as string || '/dashboard'
         await router.push(redirectTo)
     } catch (error) {
         const apiError = error as ApiError
-        
+
         if (isValidationError(apiError)) {
             errors.value = getValidationErrors(apiError)
             message.value = apiError.message || 'Please fix the errors below.'
@@ -64,9 +64,12 @@ const submitLogin = async () => {
                 <h1 class="text-2xl font-semibold text-center">TenantAdmin Login</h1>
             </template>
             <template #content>
-                <form @submit.prevent="submitLogin" class="space-y-6">
-                    <Message 
-                        v-if="message && messageType === 'error'" 
+                <form
+                    @submit.prevent="submitLogin"
+                    class="space-y-6"
+                >
+                    <Message
+                        v-if="message && messageType === 'error'"
                         severity="error"
                         :closable="false"
                     >
@@ -74,8 +77,11 @@ const submitLogin = async () => {
                     </Message>
 
                     <div>
-                        <label for="username" class="block text-sm font-medium mb-2">Username</label>
-                        <InputText 
+                        <label
+                            for="username"
+                            class="block text-sm font-medium mb-2"
+                        >Username</label>
+                        <InputText
                             id="username"
                             v-model="form.username"
                             class="w-full"
@@ -83,12 +89,18 @@ const submitLogin = async () => {
                             :disabled="loading"
                             placeholder="Enter username"
                         />
-                        <small v-if="errors.username" class="text-red-500">{{ errors.username[0] }}</small>
+                        <small
+                            v-if="errors.username"
+                            class="text-red-500"
+                        >{{ errors.username[0] }}</small>
                     </div>
 
                     <div>
-                        <label for="password" class="block text-sm font-medium mb-2">Password</label>
-                        <Password 
+                        <label
+                            for="password"
+                            class="block text-sm font-medium mb-2"
+                        >Password</label>
+                        <Password
                             id="password"
                             v-model="form.password"
                             class="w-full"
@@ -98,20 +110,13 @@ const submitLogin = async () => {
                             toggleMask
                             placeholder="Enter password"
                         />
-                        <small v-if="errors.password" class="text-red-500">{{ errors.password[0] }}</small>
+                        <small
+                            v-if="errors.password"
+                            class="text-red-500"
+                        >{{ errors.password[0] }}</small>
                     </div>
 
-                    <div class="flex items-center">
-                        <Checkbox 
-                            v-model="form.remember"
-                            inputId="remember"
-                            :binary="true"
-                            :disabled="loading"
-                        />
-                        <label for="remember" class="ml-2">Remember me</label>
-                    </div>
-
-                    <Button 
+                    <Button
                         type="submit"
                         label="Sign in"
                         icon="pi pi-sign-in"
