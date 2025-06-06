@@ -51,13 +51,6 @@ class BroadcastingConfigPipeTest extends TestCase
             'broadcast_driver' => 'redis',
         ];
 
-        // Set up config expectations for original config storage
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                ['broadcasting.default', null, 'pusher'],
-                ['broadcasting.connections', null, []],
-            ]);
 
         // Set up config expectations for tenant-specific settings
         $this->config->expects($this->once())

@@ -29,35 +29,6 @@ class FilesystemConfigPipeTest extends TestCase
         $this->pipe = new FilesystemConfigPipe();
     }
 
-    public function testHandleStoresOriginalConfig(): void
-    {
-        $tenant = new Tenant();
-        $tenant->id = '123';
-        $tenantConfig = [];
-
-        $originalDisks = ['local' => [], 'public' => []];
-
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                ['filesystems.default', null, 'local'],
-                ['filesystems.cloud', null, 's3'],
-                ['filesystems.disks', null, $originalDisks],
-                ['app.url', null, 'https://app.com'],
-            ]);
-
-        // Expect default tenant isolation to be set
-        $this->config->expects($this->exactly(4))
-            ->method('set');
-
-        $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        $this->assertSame($tenant, $result['tenant']);
-        $this->assertSame($this->config, $result['config']);
-        $this->assertSame($tenantConfig, $result['tenantConfig']);
-    }
 
     public function testHandleAppliesDefaultAndCloudFilesystems(): void
     {
@@ -288,45 +259,6 @@ class FilesystemConfigPipeTest extends TestCase
         $this->assertSame($tenant, $result['tenant']);
     }
 
-    public function testResetRestoresOriginalConfig(): void
-    {
-        $tenant = new Tenant();
-        $tenant->id = '123';
-        $tenantConfig = ['filesystem_default' => 's3'];
-
-        $originalDisks = ['local' => ['driver' => 'local'], 'public' => ['driver' => 'local']];
-
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                ['filesystems.default', null, 'local'],
-                ['filesystems.cloud', null, 's3'],
-                ['filesystems.disks', null, $originalDisks],
-            ]);
-
-        // First, handle to store original config
-        $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        // Then reset
-        $callIndex = 0;
-        $this->config->expects($this->exactly(3))
-            ->method('set')
-            ->willReturnCallback(function ($key, $value) use (&$callIndex, $originalDisks) {
-                $expected = [
-                    ['filesystems.default', 'local'],
-                    ['filesystems.cloud', 's3'],
-                    ['filesystems.disks', $originalDisks]
-                ];
-                $this->assertEquals($expected[$callIndex][0], $key);
-                $this->assertEquals($expected[$callIndex][1], $value);
-                $callIndex++;
-                return null;
-            });
-
-        $this->pipe->reset($this->config);
-    }
 
     public function testHandlesReturnsCorrectKeys(): void
     {

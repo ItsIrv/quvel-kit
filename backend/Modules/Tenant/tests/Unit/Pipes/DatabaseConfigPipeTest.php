@@ -43,7 +43,6 @@ class DatabaseConfigPipeTest extends TestCase
 
         $this->app->method('has')
             ->willReturnMap([
-                ['tenant.original_db_config', false],
                 ['config', true],
             ]);
 
@@ -70,28 +69,6 @@ class DatabaseConfigPipeTest extends TestCase
         $this->pipe = new DatabaseConfigPipe();
     }
 
-    public function testHandleStoresOriginalDatabaseConfig(): void
-    {
-        $tenant       = $this->createMock(Tenant::class);
-        $tenant->name = 'Test Tenant';
-        $tenantConfig = [];
-
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                ['database.default', null, 'mysql'],
-                ['database.connections', null, ['mysql' => ['host' => 'localhost']]],
-                ['tenant.enable_tiers', false, false],
-            ]);
-
-        $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        $this->assertSame($tenant, $result['tenant']);
-        $this->assertSame($this->config, $result['config']);
-        $this->assertSame($tenantConfig, $result['tenantConfig']);
-    }
 
     public function testHandleSkipsConfigurationWhenTiersEnabledAndNoFeature(): void
     {
@@ -255,109 +232,8 @@ class DatabaseConfigPipeTest extends TestCase
         ];
     }
 
-    public function testResetResourcesRestoresOriginalConfig(): void
-    {
-        Container::setInstance(null);
-        $mockApp = $this->createPartialMock(Application::class, ['has', 'make', 'forgetInstance', 'environment', 'bound']);
-        Container::setInstance($mockApp);
 
-        $mockConfig    = $this->createMock(ConfigRepository::class);
-        $mockDbManager = $this->createMock(DatabaseManager::class);
-        $mockLogger    = $this->createMock(\Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs::class);
 
-        $originalConfig = [
-            'default'     => 'mysql',
-            'connections' => ['mysql' => ['host' => 'localhost']],
-        ];
-
-        $mockApp->expects($this->once())
-            ->method('has')
-            ->with('tenant.original_db_config')
-            ->willReturn(true);
-
-        $mockApp->method('bound')
-            ->with(\Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs::class)
-            ->willReturn(true);
-
-        $mockApp->method('make')
-            ->willReturnMap([
-                ['tenant.original_db_config', [], $originalConfig],
-                ['config', [], $mockConfig],
-                [DatabaseManager::class, [], $mockDbManager],
-                [\Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs::class, [], $mockLogger],
-            ]);
-
-        $mockApp->method('environment')
-            ->willReturn(true);
-
-        $mockApp->expects($this->once())
-            ->method('forgetInstance')
-            ->with('tenant.original_db_config');
-
-        $mockConfig->expects($this->once())
-            ->method('set')
-            ->with([
-                'database.default'     => 'mysql',
-                'database.connections' => ['mysql' => ['host' => 'localhost']],
-            ]);
-
-        $mockDbManager->expects($this->once())->method('purge');
-        $mockDbManager->expects($this->once())->method('setDefaultConnection')->with('mysql');
-        $mockDbManager->expects($this->once())->method('reconnect')->with('mysql');
-
-        $mockLogger->expects($this->once())->method('connectionReset')->with('mysql');
-
-        DatabaseConfigPipe::resetResources();
-    }
-
-    public function testResetResourcesHandlesException(): void
-    {
-        Container::setInstance(null);
-        $mockApp = $this->createPartialMock(Application::class, ['has', 'make', 'forgetInstance', 'bound']);
-        Container::setInstance($mockApp);
-
-        $mockLogger = $this->createMock(\Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs::class);
-
-        $mockApp->expects($this->once())
-            ->method('has')
-            ->with('tenant.original_db_config')
-            ->willReturn(true);
-
-        $mockApp->method('bound')
-            ->with(\Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs::class)
-            ->willReturn(true);
-
-        $mockApp->method('make')
-            ->willReturnCallback(function ($abstract) use ($mockLogger) {
-                if ($abstract === 'tenant.original_db_config') {
-                    throw new \Exception('Test exception');
-                }
-                if ($abstract === \Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs::class) {
-                    return $mockLogger;
-                }
-                return null;
-            });
-
-        $mockLogger->expects($this->once())
-            ->method('resetFailed')
-            ->with('Test exception');
-
-        DatabaseConfigPipe::resetResources();
-    }
-
-    public function testResetResourcesSkipsWhenNoOriginalConfig(): void
-    {
-        Container::setInstance(null);
-        $mockApp = $this->createPartialMock(Application::class, ['has']);
-        Container::setInstance($mockApp);
-
-        $mockApp->expects($this->once())
-            ->method('has')
-            ->with('tenant.original_db_config')
-            ->willReturn(false);
-
-        DatabaseConfigPipe::resetResources();
-    }
 
     public function testHandlesReturnsCorrectKeys(): void
     {

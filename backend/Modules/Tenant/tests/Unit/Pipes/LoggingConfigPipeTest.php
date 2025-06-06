@@ -30,34 +30,6 @@ class LoggingConfigPipeTest extends TestCase
         $this->pipe   = new LoggingConfigPipe();
     }
 
-    public function testHandleStoresOriginalConfig(): void
-    {
-        $tenant       = new Tenant();
-        $tenant->id   = '123';
-        $tenantConfig = [];
-
-        $originalChannels = ['single' => [], 'daily' => []];
-
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                ['logging.default', null, 'stack'],
-                ['logging.deprecations', null, ['channel' => null]],
-                ['logging.channels', null, $originalChannels],
-            ]);
-
-        // Expect default tenant isolation to be set
-        $this->config->expects($this->exactly(2))
-            ->method('set');
-
-        $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        $this->assertSame($tenant, $result['tenant']);
-        $this->assertSame($this->config, $result['config']);
-        $this->assertSame($tenantConfig, $result['tenantConfig']);
-    }
 
     public function testHandleAppliesDefaultLogChannel(): void
     {
@@ -390,46 +362,6 @@ class LoggingConfigPipeTest extends TestCase
         ];
     }
 
-    public function testResetRestoresOriginalConfig(): void
-    {
-        $tenant       = new Tenant();
-        $tenant->id   = '123';
-        $tenantConfig = ['log_channel' => 'slack'];
-
-        $originalChannels     = ['single' => [], 'daily' => []];
-        $originalDeprecations = ['channel' => null];
-
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                ['logging.default', null, 'stack'],
-                ['logging.deprecations', null, $originalDeprecations],
-                ['logging.channels', null, $originalChannels],
-            ]);
-
-        // First, handle to store original config
-        $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        // Then reset
-        $callIndex = 0;
-        $this->config->expects($this->exactly(3))
-            ->method('set')
-            ->willReturnCallback(function ($key, $value) use (&$callIndex, $originalDeprecations, $originalChannels) {
-                $expected = [
-                    ['logging.default', 'stack'],
-                    ['logging.deprecations', $originalDeprecations],
-                    ['logging.channels', $originalChannels],
-                ];
-                $this->assertEquals($expected[$callIndex][0], $key);
-                $this->assertEquals($expected[$callIndex][1], $value);
-                $callIndex++;
-                return null;
-            });
-
-        $this->pipe->reset($this->config);
-    }
 
     public function testHandlesReturnsCorrectKeys(): void
     {

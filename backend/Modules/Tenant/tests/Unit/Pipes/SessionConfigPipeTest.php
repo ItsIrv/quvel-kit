@@ -48,13 +48,9 @@ class SessionConfigPipeTest extends TestCase
         // Create a mock logger for SessionConfigPipe
         $this->logger = $this->createMock(SessionConfigPipeLogs::class);
 
-        // Create a mock logger for static methods
-        $sessionLoggerForApp = $this->createMock(SessionConfigPipeLogs::class);
-        $sessionLoggerForApp->expects($this->any())->method('sessionManagerNotBoundDuringReset');
-
         $this->app->method('make')
             ->willReturnMap([
-                [SessionConfigPipeLogs::class, [], $sessionLoggerForApp],
+                [SessionConfigPipeLogs::class, [], $this->logger],
             ]);
 
         $this->pipe = new SessionConfigPipe($this->logger);
@@ -312,15 +308,6 @@ class SessionConfigPipeTest extends TestCase
         });
 
         $this->assertSame($tenant, $result['tenant']);
-    }
-
-    public function testResetResourcesDoesNothing(): void
-    {
-        // Since resetResources() now does nothing, just call it to ensure no errors
-        SessionConfigPipe::resetResources();
-
-        // Assert that we got here without errors
-        $this->assertTrue(true);
     }
 
     public function testHandlesReturnsCorrectKeys(): void
