@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '../../stores/useAuthStore'
 import { useTenantTabsStore } from '../../stores/useTenantTabsStore'
 import { useRouter, useRoute } from 'vue-router'
@@ -28,8 +28,49 @@ const emit = defineEmits<{
 
 // State
 const profileMenuRef = ref()
+const tabsMenuRef = ref()
 const closeTabModalVisible = ref(false)
 const tabToClose = ref<TenantTab | null>(null)
+const windowWidth = ref(window.innerWidth)
+
+// Max visible tabs based on screen size
+const maxVisibleTabs = computed(() => {
+    if (windowWidth.value < 640) return 1  // sm
+    if (windowWidth.value < 768) return 2  // md
+    return 3  // lg+
+})
+
+// Split tabs into visible and hidden
+const visibleTabs = computed(() => {
+    return tenantTabsStore.tabs.slice(0, maxVisibleTabs.value)
+})
+
+const hiddenTabs = computed(() => {
+    return tenantTabsStore.tabs.slice(maxVisibleTabs.value)
+})
+
+// Create menu items for hidden tabs
+const hiddenTabMenuItems = computed((): MenuItem[] => {
+    return hiddenTabs.value.map(tab => ({
+        label: tab.tenant.name,
+        icon: tab.isDirty ? 'pi pi-circle-fill text-orange-500 text-xs' : undefined,
+        command: () => switchToTab(tab.id),
+        class: tab.id === tenantTabsStore.activeTabId ? 'bg-primary-50' : ''
+    }))
+})
+
+// Window resize handler
+const handleResize = () => {
+    windowWidth.value = window.innerWidth
+}
+
+onMounted(() => {
+    window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('resize', handleResize)
+})
 
 // Close tenant tab
 const closeTenantTab = (tabId: string, event: Event) => {
@@ -119,8 +160,9 @@ const profileMenuItems = ref<MenuItem[]>([
                 v-if="tenantTabsStore.tabs.length > 0"
                 class="flex items-center gap-1 ml-6"
             >
+                <!-- Visible tabs based on screen size -->
                 <div
-                    v-for="tab in tenantTabsStore.tabs"
+                    v-for="(tab, index) in visibleTabs"
                     :key="tab.id"
                     class="relative group"
                 >
@@ -151,6 +193,24 @@ const profileMenuItems = ref<MenuItem[]>([
                             <i class="pi pi-times text-xs"></i>
                         </div>
                     </button>
+                </div>
+
+                <!-- Overflow dropdown -->
+                <div
+                    v-if="hiddenTabs.length > 0"
+                    class="relative"
+                >
+                    <Button
+                        :label="`+${hiddenTabs.length}`"
+                        severity="secondary"
+                        size="small"
+                        @click="(e) => tabsMenuRef.toggle(e)"
+                    />
+                    <Menu
+                        ref="tabsMenuRef"
+                        :model="hiddenTabMenuItems"
+                        popup
+                    />
                 </div>
             </div>
         </div>
