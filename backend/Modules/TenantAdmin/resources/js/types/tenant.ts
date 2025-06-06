@@ -6,6 +6,7 @@ export interface Tenant {
     name: string;
     domain: string;
     parent_id: number | null;
+    is_active: boolean;
     tier?: string;
     config: {
         tier?: string;
@@ -45,11 +46,11 @@ export interface Tenant {
         recaptcha_site_key?: string;
         recaptcha_secret_key?: string;
         socialite_providers?: string[];
-        status?: 'active' | 'inactive' | 'suspended';
+        status?: "active" | "inactive" | "suspended";
         [key: string]: any;
     } | null;
     visibility?: {
-        [key: string]: 'public' | 'protected' | 'private';
+        [key: string]: "public" | "protected" | "private";
     };
     created_at: string;
     updated_at: string;
@@ -69,7 +70,7 @@ export interface TenantCreateRequest {
     database_name?: string;
     parent_id?: number;
     config?: {
-        status?: 'active' | 'inactive' | 'suspended';
+        status?: "active" | "inactive" | "suspended";
         [key: string]: any;
     };
 }
@@ -82,7 +83,6 @@ export interface TenantUpdateRequest {
         [key: string]: any;
     };
     visibility?: {
-        [key: string]: 'public' | 'protected' | 'private';
+        [key: string]: "public" | "protected" | "private";
     };
 }
-

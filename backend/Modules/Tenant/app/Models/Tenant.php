@@ -51,7 +51,8 @@ class Tenant extends Model
      * @var array<string, class-string>
      */
     protected $casts = [
-        'config' => DynamicTenantConfigCast::class,
+        'config'    => DynamicTenantConfigCast::class,
+        'is_active' => 'boolean',
     ];
 
     /**
@@ -112,7 +113,7 @@ class Tenant extends Model
         $parentDynamic = $parentConfig;
 
         // Create a new DynamicTenantConfig with parent's data as a starting point
-        $mergedConfig = new \Modules\Tenant\ValueObjects\DynamicTenantConfig(
+        $mergedConfig = new DynamicTenantConfig(
             [], // Empty data array to start
             [], // Empty visibility array to start
             $parentDynamic->getTier(),

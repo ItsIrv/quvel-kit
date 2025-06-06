@@ -45,21 +45,11 @@ const routes: RouteRecordRaw[] = [
                 },
             },
             {
-                path: "tenants",
-                name: "tenants",
-                component: () => import("../pages/TenantList.vue"),
-                meta: {
-                    title: "Tenants",
-                    requiresAuth: true,
-                },
-            },
-            {
-                path: "tenants/edit",
-                name: "tenants-edit",
+                path: "tenants/:id/edit",
+                name: "tenant-edit",
                 component: () => import("../pages/TenantEdit.vue"),
                 meta: {
                     title: "Edit Tenant",
-                    requiresAuth: true,
                 },
             },
         ],
@@ -74,31 +64,31 @@ const router = createRouter({
 // Navigation guards
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore();
-    
+
     // Update page title
     document.title = `${to.meta.title || "TenantAdmin"} - TenantAdmin`;
-    
+
     // Check if route requires authentication
     if (to.meta.requiresAuth) {
         // Check authentication status
         const isAuthenticated = await authStore.checkAuth();
-        
+
         if (!isAuthenticated) {
             // Redirect to login
-            return next({ name: 'login', query: { redirect: to.fullPath } });
+            return next({ name: "login", query: { redirect: to.fullPath } });
         }
     }
-    
+
     // Check if route requires guest (not authenticated)
     if (to.meta.requiresGuest) {
         const isAuthenticated = await authStore.checkAuth();
-        
+
         if (isAuthenticated) {
             // Redirect to dashboard
-            return next({ name: 'dashboard' });
+            return next({ name: "dashboard" });
         }
     }
-    
+
     next();
 });
 

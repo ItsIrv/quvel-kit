@@ -6,7 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\Http\Resources\TenantDumpResource;
+use Modules\TenantAdmin\App\Http\Resources\TenantAdminResource;
 use Modules\TenantAdmin\Http\Requests\TenantCreateRequest;
 use Modules\TenantAdmin\Http\Requests\TenantUpdateRequest;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
@@ -27,7 +27,7 @@ class TenantController extends Controller
                 ->paginate($perPage, ['*'], 'page', $page);
 
             return response()->json([
-                'data'         => $tenants->items(),
+                'data'         => TenantAdminResource::collection($tenants->items()),
                 'current_page' => $tenants->currentPage(),
                 'last_page'    => $tenants->lastPage(),
                 'per_page'     => $tenants->perPage(),
@@ -59,7 +59,7 @@ class TenantController extends Controller
             ->paginate($perPage);
 
         return response()->json([
-            'data'         => $tenants->items(),
+            'data'         => TenantAdminResource::collection($tenants->items()),
             'current_page' => $tenants->currentPage(),
             'last_page'    => $tenants->lastPage(),
             'per_page'     => $tenants->perPage(),
@@ -77,7 +77,7 @@ class TenantController extends Controller
             ->with('parent')
             ->firstOrFail();
 
-        return response()->json(new TenantDumpResource($tenant));
+        return response()->json(new TenantAdminResource($tenant));
     }
 
     /**
@@ -104,7 +104,7 @@ class TenantController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Tenant created successfully',
-            'data'    => new TenantDumpResource($tenant),
+            'data'    => new TenantAdminResource($tenant),
         ], 201);
     }
 
@@ -128,11 +128,28 @@ class TenantController extends Controller
             $tenant->domain = $data['domain'];
         }
 
-        // Update config if status is provided
-        if (isset($data['status'])) {
-            $config = $tenant->config ?? new DynamicTenantConfig();
-            $config->set('status', $data['status']);
+        if (isset($data['config'])) {
+            // Get existing config or create new one with proper initialization
+            $config = $tenant->config;
+            if (!$config) {
+                $config = new DynamicTenantConfig();
+            }
+            
+            // Merge the new config values into the existing config
+            foreach ($data['config'] as $key => $value) {
+                // Handle empty strings by removing the key instead of setting empty value
+                if ($value === '' || $value === null) {
+                    $config->forget($key);
+                } else {
+                    $config->set($key, $value);
+                }
+            }
+            
             $tenant->config = $config;
+        }
+
+        if (isset($data['is_active'])) {
+            $tenant->is_active = $data['is_active'];
         }
 
         $tenant->save();
@@ -140,7 +157,7 @@ class TenantController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Tenant updated successfully',
-            'data'    => new TenantDumpResource($tenant),
+            'data'    => new TenantAdminResource($tenant),
         ]);
     }
 

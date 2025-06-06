@@ -19,9 +19,10 @@ use Modules\TenantAdmin\Http\Controllers\TenantController;
 
 Route::prefix('api')->group(function () {
     // Installation routes (only accessible when not installed)
+    Route::get('/install/status', [InstallationController::class, 'status'])->name('api.install.status');
+
     Route::middleware(['check_not_installed'])->group(function () {
         Route::get('/install', [PageController::class, 'show'])->name('install');
-        Route::get('/install/status', [InstallationController::class, 'status'])->name('api.install.status');
         Route::post('/install', [InstallationController::class, 'install'])->name('api.install');
     });
 
@@ -47,6 +48,6 @@ Route::prefix('api')->group(function () {
 });
 
 // Catch-all route for SPA
-Route::get('/{any}', [PageController::class, 'show'])
+Route::get('/{any?}', [PageController::class, 'show'])
     ->where('any', '.*')
     ->name('spa');
