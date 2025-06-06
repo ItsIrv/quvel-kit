@@ -8,16 +8,9 @@ use Modules\Tenant\Models\Tenant;
 
 class LoggingConfigPipe implements ConfigurationPipeInterface
 {
-    protected array $originalConfig = [];
 
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-        // Store original config for Octane reset
-        $this->originalConfig = [
-            'default' => $config->get('logging.default'),
-            'deprecations' => $config->get('logging.deprecations'),
-            'channels' => $config->get('logging.channels'),
-        ];
 
         // Apply default log channel
         if (isset($tenantConfig['log_channel'])) {
@@ -136,11 +129,4 @@ class LoggingConfigPipe implements ConfigurationPipeInterface
         return 40; // Run after broadcasting pipe
     }
 
-    public function reset(ConfigRepository $config): void
-    {
-        // Reset to original configuration for Octane
-        $config->set('logging.default', $this->originalConfig['default']);
-        $config->set('logging.deprecations', $this->originalConfig['deprecations']);
-        $config->set('logging.channels', $this->originalConfig['channels']);
-    }
 }

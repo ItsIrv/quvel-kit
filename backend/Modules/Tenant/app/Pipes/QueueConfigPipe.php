@@ -26,31 +26,31 @@ class QueueConfigPipe implements ConfigurationPipeInterface
         // Configure queue connection settings
         if (isset($tenantConfig['queue_connection'])) {
             $connection = $tenantConfig['queue_connection'];
-            
+
             // Database queue configuration
             if ($connection === 'database' && isset($tenantConfig['queue_database_table'])) {
                 $config->set('queue.connections.database.table', $tenantConfig['queue_database_table']);
                 $config->set('queue.connections.database.queue', $tenantConfig['queue_name'] ?? 'default');
                 $config->set('queue.connections.database.retry_after', $tenantConfig['queue_retry_after'] ?? 90);
             }
-            
+
             // Redis queue configuration
             if ($connection === 'redis') {
                 $config->set('queue.connections.redis.queue', $tenantConfig['queue_name'] ?? 'default');
                 $config->set('queue.connections.redis.retry_after', $tenantConfig['queue_retry_after'] ?? 90);
-                
+
                 // Use tenant-specific Redis database if configured
                 if (isset($tenantConfig['redis_queue_database'])) {
                     $config->set('queue.connections.redis.connection', 'queue');
                     $config->set('database.redis.queue.database', $tenantConfig['redis_queue_database']);
                 }
             }
-            
+
             // SQS queue configuration for enterprise tenants
             if ($connection === 'sqs' && isset($tenantConfig['aws_sqs_queue'])) {
                 $config->set('queue.connections.sqs.queue', $tenantConfig['aws_sqs_queue']);
                 $config->set('queue.connections.sqs.region', $tenantConfig['aws_sqs_region'] ?? 'us-east-1');
-                
+
                 if (isset($tenantConfig['aws_sqs_key'])) {
                     $config->set('queue.connections.sqs.key', $tenantConfig['aws_sqs_key']);
                     $config->set('queue.connections.sqs.secret', $tenantConfig['aws_sqs_secret']);

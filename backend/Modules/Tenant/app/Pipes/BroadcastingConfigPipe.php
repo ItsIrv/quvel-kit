@@ -8,16 +8,8 @@ use Modules\Tenant\Models\Tenant;
 
 class BroadcastingConfigPipe implements ConfigurationPipeInterface
 {
-    protected array $originalConfig = [];
-
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-        // Store original config for Octane reset
-        $this->originalConfig = [
-            'default' => $config->get('broadcasting.default'),
-            'connections' => $config->get('broadcasting.connections'),
-        ];
-
         // Apply default broadcaster
         if (isset($tenantConfig['broadcast_driver'])) {
             $config->set('broadcasting.default', $tenantConfig['broadcast_driver']);
@@ -27,16 +19,16 @@ class BroadcastingConfigPipe implements ConfigurationPipeInterface
         if (isset($tenantConfig['pusher_app_id'])) {
             $config->set('broadcasting.connections.pusher.app_id', $tenantConfig['pusher_app_id']);
         }
-        
+
         if (isset($tenantConfig['pusher_app_key'])) {
             $config->set('broadcasting.connections.pusher.key', $tenantConfig['pusher_app_key']);
             $config->set('broadcasting.connections.pusher.options.key', $tenantConfig['pusher_app_key']);
         }
-        
+
         if (isset($tenantConfig['pusher_app_secret'])) {
             $config->set('broadcasting.connections.pusher.secret', $tenantConfig['pusher_app_secret']);
         }
-        
+
         if (isset($tenantConfig['pusher_app_cluster'])) {
             $config->set('broadcasting.connections.pusher.options.cluster', $tenantConfig['pusher_app_cluster']);
         }
@@ -45,11 +37,11 @@ class BroadcastingConfigPipe implements ConfigurationPipeInterface
         if (isset($tenantConfig['pusher_scheme'])) {
             $config->set('broadcasting.connections.pusher.options.scheme', $tenantConfig['pusher_scheme']);
         }
-        
+
         if (isset($tenantConfig['pusher_host'])) {
             $config->set('broadcasting.connections.pusher.options.host', $tenantConfig['pusher_host']);
         }
-        
+
         if (isset($tenantConfig['pusher_port'])) {
             $config->set('broadcasting.connections.pusher.options.port', $tenantConfig['pusher_port']);
         }
@@ -58,20 +50,20 @@ class BroadcastingConfigPipe implements ConfigurationPipeInterface
         if (isset($tenantConfig['reverb_app_id'])) {
             $config->set('broadcasting.connections.reverb.app_id', $tenantConfig['reverb_app_id']);
         }
-        
+
         if (isset($tenantConfig['reverb_app_key'])) {
             $config->set('broadcasting.connections.reverb.key', $tenantConfig['reverb_app_key']);
             $config->set('broadcasting.connections.reverb.options.key', $tenantConfig['reverb_app_key']);
         }
-        
+
         if (isset($tenantConfig['reverb_app_secret'])) {
             $config->set('broadcasting.connections.reverb.secret', $tenantConfig['reverb_app_secret']);
         }
-        
+
         if (isset($tenantConfig['reverb_host'])) {
             $config->set('broadcasting.connections.reverb.options.host', $tenantConfig['reverb_host']);
         }
-        
+
         if (isset($tenantConfig['reverb_port'])) {
             $config->set('broadcasting.connections.reverb.options.port', $tenantConfig['reverb_port']);
         }
@@ -89,8 +81,8 @@ class BroadcastingConfigPipe implements ConfigurationPipeInterface
 
         // Pass to next pipe
         return $next([
-            'tenant' => $tenant,
-            'config' => $config,
+            'tenant'       => $tenant,
+            'config'       => $config,
             'tenantConfig' => $tenantConfig,
         ]);
     }
@@ -119,12 +111,5 @@ class BroadcastingConfigPipe implements ConfigurationPipeInterface
     public function priority(): int
     {
         return 45; // Run after filesystem pipe
-    }
-
-    public function reset(ConfigRepository $config): void
-    {
-        // Reset to original configuration for Octane
-        $config->set('broadcasting.default', $this->originalConfig['default']);
-        $config->set('broadcasting.connections', $this->originalConfig['connections']);
     }
 }

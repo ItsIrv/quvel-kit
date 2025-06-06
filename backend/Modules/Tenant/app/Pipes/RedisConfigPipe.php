@@ -114,41 +114,6 @@ class RedisConfigPipe implements ConfigurationPipeInterface
         }
     }
 
-    /**
-     * Reset Redis connections.
-     * Octane-safe: No static state to clean up.
-     */
-    public static function resetResources(): void
-    {
-        try {
-            $instance = new static();
-
-            if (!$instance->isRedisAvailable()) {
-                return;
-            }
-
-            // Rebind Redis factory with current config
-            app()->extend(RedisFactory::class, function ($redisFactory, $app) {
-                return new \Illuminate\Redis\RedisManager(
-                    $app,
-                    $app['config']['database.redis.client'] ?? 'phpredis',
-                    $app['config']['database.redis'] ?? []
-                );
-            });
-
-            // Clear the resolved instances
-            app()->forgetInstance(RedisFactory::class);
-            app()->forgetInstance('redis');
-
-            if (app()->environment(['local', 'development', 'testing']) && app()->bound(RedisConfigPipeLogs::class)) {
-                app(RedisConfigPipeLogs::class)->connectionsReset();
-            }
-        } catch (\Exception $e) {
-            if (app()->bound(RedisConfigPipeLogs::class)) {
-                app(RedisConfigPipeLogs::class)->resetFailed($e->getMessage());
-            }
-        }
-    }
 
     public function handles(): array
     {

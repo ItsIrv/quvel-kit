@@ -14,20 +14,12 @@ use Modules\Tenant\Models\Tenant;
  */
 class DatabaseConfigPipe implements ConfigurationPipeInterface
 {
-    private const ORIGINAL_CONFIG_KEY = 'tenant.original_db_config';
 
     /**
      * Apply database configuration.
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-        // Store original database config if not already stored (Octane-safe)
-        if (!app()->has(self::ORIGINAL_CONFIG_KEY)) {
-            app()->instance(self::ORIGINAL_CONFIG_KEY, [
-                'default'     => $config->get('database.default'),
-                'connections' => $config->get('database.connections'),
-            ]);
-        }
 
         // Check if tenant has database isolation feature (only if tiers are enabled)
         if (config('tenant.enable_tiers', false) && !$tenant->hasFeature('database_isolation')) {
@@ -89,40 +81,6 @@ class DatabaseConfigPipe implements ConfigurationPipeInterface
         ]);
     }
 
-    /**
-     * Reset database connection.
-     * Octane-safe: Uses container instance instead of static property.
-     */
-    public static function resetResources(): void
-    {
-        if (app()->has(self::ORIGINAL_CONFIG_KEY)) {
-            try {
-                $originalConfig = app(self::ORIGINAL_CONFIG_KEY);
-
-                // Restore original configuration
-                config([
-                    'database.default'     => $originalConfig['default'],
-                    'database.connections' => $originalConfig['connections'],
-                ]);
-
-                $dbManager = app(DatabaseManager::class);
-                $dbManager->purge();
-                $dbManager->setDefaultConnection($originalConfig['default']);
-                $dbManager->reconnect($originalConfig['default']);
-
-                if (app()->environment(['local', 'development', 'testing']) && app()->bound(DatabaseConfigPipeLogs::class)) {
-                    app(DatabaseConfigPipeLogs::class)->connectionReset($originalConfig['default']);
-                }
-
-                // Clean up the stored config
-                app()->forgetInstance(self::ORIGINAL_CONFIG_KEY);
-            } catch (\Exception $e) {
-                if (app()->bound(DatabaseConfigPipeLogs::class)) {
-                    app(DatabaseConfigPipeLogs::class)->resetFailed($e->getMessage());
-                }
-            }
-        }
-    }
 
     public function handles(): array
     {

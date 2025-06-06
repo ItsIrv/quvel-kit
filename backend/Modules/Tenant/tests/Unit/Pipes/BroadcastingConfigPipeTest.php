@@ -36,46 +36,7 @@ class BroadcastingConfigPipeTest extends TestCase
         $this->pipe = new BroadcastingConfigPipe();
     }
 
-    /**
-     * Test that the pipe correctly stores original broadcasting configuration.
-     */
-    public function testHandleStoresOriginalBroadcastingConfig(): void
-    {
-        // Arrange
-        $tenant = $this->createPartialMock(Tenant::class, []);
-        $tenant->id = 'test123';
-        $tenant->public_id = 'public-test123';
-        $tenantConfig = [];
 
-        // Set up config expectations for original config storage
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                ['broadcasting.default', null, 'pusher'],
-                ['broadcasting.connections', null, [
-                    'pusher' => [
-                        'driver' => 'pusher',
-                        'key' => 'original-key',
-                        'secret' => 'original-secret',
-                        'app_id' => 'original-app-id',
-                        'options' => [
-                            'cluster' => 'original-cluster',
-                            'key' => 'original-key',
-                        ],
-                    ],
-                ]],
-            ]);
-
-        // Act
-        $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        // Assert
-        $this->assertSame($tenant, $result['tenant']);
-        $this->assertSame($this->config, $result['config']);
-        $this->assertSame($tenantConfig, $result['tenantConfig']);
-    }
 
     /**
      * Test that the pipe correctly applies custom broadcast driver.
@@ -322,14 +283,11 @@ class BroadcastingConfigPipeTest extends TestCase
             'broadcast_driver' => 'redis',
         ];
 
-        // Set up config expectations for original config storage
-        $this->config->expects($this->exactly(3))
+        // Set up config expectations
+        $this->config->expects($this->once())
             ->method('get')
-            ->willReturnMap([
-                ['broadcasting.default', null, 'redis'],
-                ['broadcasting.connections', null, []],
-                ['broadcasting.default', null, 'redis'],
-            ]);
+            ->with('broadcasting.default')
+            ->willReturn('redis');
 
         // Set up config expectations for tenant-specific settings
         $this->config->expects($this->exactly(2))
@@ -431,79 +389,7 @@ class BroadcastingConfigPipeTest extends TestCase
         $this->assertSame($tenant, $result['tenant']);
     }
 
-    /**
-     * Test that the reset method correctly restores original configuration.
-     */
-    public function testResetRestoresOriginalConfiguration(): void
-    {
-        // Arrange
-        $tenant = $this->createPartialMock(Tenant::class, []);
-        $tenant->id = 'test123';
-        $tenant->public_id = 'public-test123';
-        $tenantConfig = [];
 
-        // Set up config expectations for original config storage
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                ['broadcasting.default', null, 'pusher'],
-                ['broadcasting.connections', null, [
-                    'pusher' => [
-                        'driver' => 'pusher',
-                        'key' => 'original-key',
-                        'secret' => 'original-secret',
-                        'app_id' => 'original-app-id',
-                        'options' => [
-                            'cluster' => 'original-cluster',
-                            'key' => 'original-key',
-                        ],
-                    ],
-                ]],
-            ]);
-
-        // First handle to set up the original config
-        $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        // Reset expectations for the reset call
-        $this->config->expects($this->exactly(2))
-            ->method('set')
-            ->willReturnCallback(function ($key, $value) {
-                static $callIndex = 0;
-                $callIndex++;
-
-                switch ($callIndex) {
-                    case 1:
-                        $this->assertEquals('broadcasting.default', $key);
-                        $this->assertEquals('pusher', $value);
-                        break;
-                    case 2:
-                        $this->assertEquals('broadcasting.connections', $key);
-                        $this->assertEquals([
-                            'pusher' => [
-                                'driver' => 'pusher',
-                                'key' => 'original-key',
-                                'secret' => 'original-secret',
-                                'app_id' => 'original-app-id',
-                                'options' => [
-                                    'cluster' => 'original-cluster',
-                                    'key' => 'original-key',
-                                ],
-                            ],
-                        ], $value);
-                        break;
-                }
-
-                return null;
-            });
-
-        // Act
-        $this->pipe->reset($this->config);
-
-        // Assert - No exceptions thrown
-        $this->assertTrue(true);
-    }
 
     /**
      * Test that the pipe returns the correct handles array.

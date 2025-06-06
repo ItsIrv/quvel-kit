@@ -76,7 +76,49 @@ const configForm = ref({
     db_port: '',
     db_database: '',
     db_username: '',
-    db_password: ''
+    db_password: '',
+    
+    // Filesystem Config
+    filesystem_default: '',
+    filesystem_cloud: '',
+    filesystem_local_root: '',
+    filesystem_public_root: '',
+    aws_s3_bucket: '',
+    aws_s3_path_prefix: '',
+    aws_s3_key: '',
+    aws_s3_secret: '',
+    aws_s3_region: '',
+    aws_s3_url: '',
+    disable_temp_isolation: false,
+    
+    // Logging Config
+    log_channel: '',
+    log_deprecations_channel: '',
+    log_single_path: '',
+    log_daily_path: '',
+    log_daily_days: '',
+    log_level: '',
+    log_slack_webhook_url: '',
+    log_slack_channel: '',
+    log_slack_username: '',
+    sentry_dsn: '',
+    sentry_level: '',
+    sentry_environment: '',
+    log_custom_driver: '',
+    log_custom_path: '',
+    log_custom_level: '',
+    log_custom_days: '',
+    log_stack_channels: '',
+    
+    // Mail Config
+    mail_mailer: '',
+    mail_host: '',
+    mail_port: '',
+    mail_username: '',
+    mail_password: '',
+    mail_encryption: '',
+    mail_from_address: '',
+    mail_from_name: ''
 })
 
 // Get tenant ID from route
@@ -148,7 +190,49 @@ const loadTenant = async () => {
                 db_port: config.db_port || '',
                 db_database: config.db_database || '',
                 db_username: config.db_username || '',
-                db_password: config.db_password || ''
+                db_password: config.db_password || '',
+                
+                // Filesystem Config
+                filesystem_default: config.filesystem_default || '',
+                filesystem_cloud: config.filesystem_cloud || '',
+                filesystem_local_root: config.filesystem_local_root || '',
+                filesystem_public_root: config.filesystem_public_root || '',
+                aws_s3_bucket: config.aws_s3_bucket || '',
+                aws_s3_path_prefix: config.aws_s3_path_prefix || '',
+                aws_s3_key: config.aws_s3_key || '',
+                aws_s3_secret: config.aws_s3_secret || '',
+                aws_s3_region: config.aws_s3_region || '',
+                aws_s3_url: config.aws_s3_url || '',
+                disable_temp_isolation: config.disable_temp_isolation || false,
+                
+                // Logging Config
+                log_channel: config.log_channel || '',
+                log_deprecations_channel: config.log_deprecations_channel || '',
+                log_single_path: config.log_single_path || '',
+                log_daily_path: config.log_daily_path || '',
+                log_daily_days: config.log_daily_days || '',
+                log_level: config.log_level || '',
+                log_slack_webhook_url: config.log_slack_webhook_url || '',
+                log_slack_channel: config.log_slack_channel || '',
+                log_slack_username: config.log_slack_username || '',
+                sentry_dsn: config.sentry_dsn || '',
+                sentry_level: config.sentry_level || '',
+                sentry_environment: config.sentry_environment || '',
+                log_custom_driver: config.log_custom_driver || '',
+                log_custom_path: config.log_custom_path || '',
+                log_custom_level: config.log_custom_level || '',
+                log_custom_days: config.log_custom_days || '',
+                log_stack_channels: config.log_stack_channels || '',
+                
+                // Mail Config
+                mail_mailer: config.mail_mailer || '',
+                mail_host: config.mail_host || '',
+                mail_port: config.mail_port || '',
+                mail_username: config.mail_username || '',
+                mail_password: config.mail_password || '',
+                mail_encryption: config.mail_encryption || '',
+                mail_from_address: config.mail_from_address || '',
+                mail_from_name: config.mail_from_name || ''
             }
         }
     } catch (err: any) {
@@ -782,6 +866,405 @@ onMounted(() => {
                                             type="password"
                                         />
                                         <label for="db_password">DB Password</label>
+                                    </FloatLabel>
+                                </div>
+                            </TabPanel>
+
+                            <TabPanel
+                                header="Filesystem Config"
+                                value="filesystem"
+                            >
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                                    <!-- Default & Cloud Settings -->
+                                    <FloatLabel>
+                                        <InputText
+                                            id="filesystem_default"
+                                            v-model="configForm.filesystem_default"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="filesystem_default">Default Filesystem</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="filesystem_cloud"
+                                            v-model="configForm.filesystem_cloud"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="filesystem_cloud">Cloud Filesystem</label>
+                                    </FloatLabel>
+
+                                    <!-- Local & Public Paths -->
+                                    <FloatLabel>
+                                        <InputText
+                                            id="filesystem_local_root"
+                                            v-model="configForm.filesystem_local_root"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="filesystem_local_root">Local Root Path</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="filesystem_public_root"
+                                            v-model="configForm.filesystem_public_root"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="filesystem_public_root">Public Root Path</label>
+                                    </FloatLabel>
+
+                                    <!-- AWS S3 Settings -->
+                                    <FloatLabel>
+                                        <InputText
+                                            id="aws_s3_bucket"
+                                            v-model="configForm.aws_s3_bucket"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="aws_s3_bucket">AWS S3 Bucket</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="aws_s3_path_prefix"
+                                            v-model="configForm.aws_s3_path_prefix"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="aws_s3_path_prefix">S3 Path Prefix</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="aws_s3_key"
+                                            v-model="configForm.aws_s3_key"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="aws_s3_key">AWS S3 Key</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="aws_s3_secret"
+                                            v-model="configForm.aws_s3_secret"
+                                            class="w-full"
+                                            :disabled="saving"
+                                            type="password"
+                                        />
+                                        <label for="aws_s3_secret">AWS S3 Secret</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="aws_s3_region"
+                                            v-model="configForm.aws_s3_region"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="aws_s3_region">AWS S3 Region</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="aws_s3_url"
+                                            v-model="configForm.aws_s3_url"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="aws_s3_url">AWS S3 URL</label>
+                                    </FloatLabel>
+
+                                    <!-- Disable Temp Isolation Toggle -->
+                                    <div class="flex items-center gap-2">
+                                        <Checkbox
+                                            id="disable_temp_isolation"
+                                            v-model="configForm.disable_temp_isolation"
+                                            :binary="true"
+                                            :disabled="saving"
+                                        />
+                                        <label for="disable_temp_isolation" class="text-sm font-medium text-gray-700">Disable Temp Isolation</label>
+                                    </div>
+                                </div>
+                            </TabPanel>
+
+                            <TabPanel
+                                header="Logging Config"
+                                value="logging"
+                            >
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                                    <!-- Basic Logging Settings -->
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_channel"
+                                            v-model="configForm.log_channel"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="log_channel">Log Channel</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_level"
+                                            v-model="configForm.log_level"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="log_level">Log Level</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_deprecations_channel"
+                                            v-model="configForm.log_deprecations_channel"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="log_deprecations_channel">Deprecations Channel</label>
+                                    </FloatLabel>
+
+                                    <!-- File Logging -->
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_single_path"
+                                            v-model="configForm.log_single_path"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="log_single_path">Single Log Path</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_daily_path"
+                                            v-model="configForm.log_daily_path"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="log_daily_path">Daily Log Path</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_daily_days"
+                                            v-model="configForm.log_daily_days"
+                                            class="w-full"
+                                            :disabled="saving"
+                                            type="number"
+                                        />
+                                        <label for="log_daily_days">Daily Log Days</label>
+                                    </FloatLabel>
+
+                                    <!-- Slack Logging -->
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_slack_webhook_url"
+                                            v-model="configForm.log_slack_webhook_url"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="log_slack_webhook_url">Slack Webhook URL</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_slack_channel"
+                                            v-model="configForm.log_slack_channel"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="log_slack_channel">Slack Channel</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_slack_username"
+                                            v-model="configForm.log_slack_username"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="log_slack_username">Slack Username</label>
+                                    </FloatLabel>
+
+                                    <!-- Sentry -->
+                                    <FloatLabel>
+                                        <InputText
+                                            id="sentry_dsn"
+                                            v-model="configForm.sentry_dsn"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="sentry_dsn">Sentry DSN</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="sentry_level"
+                                            v-model="configForm.sentry_level"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="sentry_level">Sentry Level</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="sentry_environment"
+                                            v-model="configForm.sentry_environment"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="sentry_environment">Sentry Environment</label>
+                                    </FloatLabel>
+
+                                    <!-- Custom Logging -->
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_custom_driver"
+                                            v-model="configForm.log_custom_driver"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="log_custom_driver">Custom Log Driver</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_custom_path"
+                                            v-model="configForm.log_custom_path"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="log_custom_path">Custom Log Path</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_custom_level"
+                                            v-model="configForm.log_custom_level"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="log_custom_level">Custom Log Level</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_custom_days"
+                                            v-model="configForm.log_custom_days"
+                                            class="w-full"
+                                            :disabled="saving"
+                                            type="number"
+                                        />
+                                        <label for="log_custom_days">Custom Log Days</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="log_stack_channels"
+                                            v-model="configForm.log_stack_channels"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="log_stack_channels">Stack Channels</label>
+                                    </FloatLabel>
+                                </div>
+                            </TabPanel>
+
+                            <TabPanel
+                                header="Mail Config"
+                                value="mail"
+                            >
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                                    <!-- Mail Driver & Basic Settings -->
+                                    <FloatLabel>
+                                        <InputText
+                                            id="mail_mailer"
+                                            v-model="configForm.mail_mailer"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="mail_mailer">Mail Mailer</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="mail_host"
+                                            v-model="configForm.mail_host"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="mail_host">Mail Host</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="mail_port"
+                                            v-model="configForm.mail_port"
+                                            class="w-full"
+                                            :disabled="saving"
+                                            type="number"
+                                        />
+                                        <label for="mail_port">Mail Port</label>
+                                    </FloatLabel>
+
+                                    <!-- Authentication -->
+                                    <FloatLabel>
+                                        <InputText
+                                            id="mail_username"
+                                            v-model="configForm.mail_username"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="mail_username">Mail Username</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="mail_password"
+                                            v-model="configForm.mail_password"
+                                            class="w-full"
+                                            :disabled="saving"
+                                            type="password"
+                                        />
+                                        <label for="mail_password">Mail Password</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="mail_encryption"
+                                            v-model="configForm.mail_encryption"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="mail_encryption">Mail Encryption</label>
+                                    </FloatLabel>
+
+                                    <!-- From Address & Name -->
+                                    <FloatLabel>
+                                        <InputText
+                                            id="mail_from_address"
+                                            v-model="configForm.mail_from_address"
+                                            class="w-full"
+                                            :disabled="saving"
+                                            type="email"
+                                        />
+                                        <label for="mail_from_address">From Address</label>
+                                    </FloatLabel>
+
+                                    <FloatLabel>
+                                        <InputText
+                                            id="mail_from_name"
+                                            v-model="configForm.mail_from_name"
+                                            class="w-full"
+                                            :disabled="saving"
+                                        />
+                                        <label for="mail_from_name">From Name</label>
                                     </FloatLabel>
                                 </div>
                             </TabPanel>

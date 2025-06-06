@@ -149,28 +149,7 @@ class SessionConfigPipe implements ConfigurationPipeInterface
         ]);
     }
 
-    /**
-     * Reset session resources.
-     *
-     * Note: We don't actually reset the session manager here because
-     * doing so would destroy active sessions and log users out.
-     * Session configuration is applied at the start of each request
-     * before the session is initialized.
-     */
-    public static function resetResources(): void
-    {
-        // No action needed - session configuration is applied per-request
-        // before the session starts, so there's nothing to reset
-        self::getLogger()->sessionManagerNotBoundDuringReset();
-    }
 
-    /**
-     * Get the logger instance for static methods.
-     */
-    protected static function getLogger(): SessionConfigPipeLogs
-    {
-        return app(SessionConfigPipeLogs::class);
-    }
 
     /**
      * The configuration keys that this pipe handles.

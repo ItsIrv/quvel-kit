@@ -18,34 +18,12 @@ use Modules\Tenant\Models\Tenant;
  */
 class CoreConfigPipe implements ConfigurationPipeInterface
 {
-    private const ORIGINAL_CONFIG_KEY = 'tenant.original_core_config';
 
     /**
      * Apply core configuration.
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-        // Store original core config if not already stored (Octane-safe)
-        if (!app()->has(self::ORIGINAL_CONFIG_KEY)) {
-            app()->instance(self::ORIGINAL_CONFIG_KEY, [
-                'app_name'             => $config->get('app.name'),
-                'app_env'              => $config->get('app.env'),
-                'app_key'              => $config->get('app.key'),
-                'app_debug'            => $config->get('app.debug'),
-                'app_url'              => $config->get('app.url'),
-                'app_timezone'         => $config->get('app.timezone'),
-                'app_locale'           => $config->get('app.locale'),
-                'app_fallback_locale'  => $config->get('app.fallback_locale'),
-                'frontend_url'         => $config->get('frontend.url'),
-                'internal_api_url'     => $config->get('frontend.internal_api_url'),
-                'capacitor_scheme'     => $config->get('frontend.capacitor_scheme'),
-                'cors_allowed_origins' => $config->get('cors.allowed_origins'),
-                'pusher_app_key'       => $config->get('broadcasting.connections.pusher.key'),
-                'pusher_app_secret'    => $config->get('broadcasting.connections.pusher.secret'),
-                'pusher_app_id'        => $config->get('broadcasting.connections.pusher.app_id'),
-                'pusher_app_cluster'   => $config->get('broadcasting.connections.pusher.options.cluster'),
-            ]);
-        }
 
         // Track changes to know which resources need refreshing
         $hasUrlChanges      = false;
@@ -199,57 +177,6 @@ class CoreConfigPipe implements ConfigurationPipeInterface
         }
     }
 
-    /**
-     * Reset resources after tenant context is done.
-     * Octane-safe: Uses container instance instead of static property.
-     */
-    public static function resetResources(): void
-    {
-        if (app()->has(self::ORIGINAL_CONFIG_KEY)) {
-            try {
-                $originalConfig = app(self::ORIGINAL_CONFIG_KEY);
-
-                // Restore original configuration
-                config([
-                    'app.name'                                        => $originalConfig['app_name'],
-                    'app.env'                                         => $originalConfig['app_env'],
-                    'app.key'                                         => $originalConfig['app_key'],
-                    'app.debug'                                       => $originalConfig['app_debug'],
-                    'app.url'                                         => $originalConfig['app_url'],
-                    'app.timezone'                                    => $originalConfig['app_timezone'],
-                    'app.locale'                                      => $originalConfig['app_locale'],
-                    'app.fallback_locale'                             => $originalConfig['app_fallback_locale'],
-                    'frontend.url'                                    => $originalConfig['frontend_url'],
-                    'frontend.internal_api_url'                       => $originalConfig['internal_api_url'],
-                    'frontend.capacitor_scheme'                       => $originalConfig['capacitor_scheme'],
-                    'cors.allowed_origins'                            => $originalConfig['cors_allowed_origins'],
-                    'broadcasting.connections.pusher.key'             => $originalConfig['pusher_app_key'],
-                    'broadcasting.connections.pusher.secret'          => $originalConfig['pusher_app_secret'],
-                    'broadcasting.connections.pusher.app_id'          => $originalConfig['pusher_app_id'],
-                    'broadcasting.connections.pusher.options.cluster' => $originalConfig['pusher_app_cluster'],
-                ]);
-
-                $config   = app(ConfigRepository::class);
-                $instance = new static();
-
-                // Refresh with original config
-                $instance->refreshUrlGenerator($config);
-                $instance->refreshTimezone($config);
-                $instance->refreshLocale($config);
-
-                if (app()->environment(['local', 'development', 'testing']) && app()->bound(CoreConfigPipeLogs::class)) {
-                    app(CoreConfigPipeLogs::class)->resourcesReset();
-                }
-
-                // Clean up the stored config
-                app()->forgetInstance(self::ORIGINAL_CONFIG_KEY);
-            } catch (\Exception $e) {
-                if (app()->bound(CoreConfigPipeLogs::class)) {
-                    app(CoreConfigPipeLogs::class)->resourcesResetFailed($e->getMessage());
-                }
-            }
-        }
-    }
 
     public function handles(): array
     {

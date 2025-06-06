@@ -8,16 +8,9 @@ use Modules\Tenant\Models\Tenant;
 
 class FilesystemConfigPipe implements ConfigurationPipeInterface
 {
-    protected array $originalConfig = [];
 
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-        // Store original config for Octane reset
-        $this->originalConfig = [
-            'default' => $config->get('filesystems.default'),
-            'cloud' => $config->get('filesystems.cloud'),
-            'disks' => $config->get('filesystems.disks'),
-        ];
 
         // Apply default disk configuration
         if (isset($tenantConfig['filesystem_default'])) {
@@ -110,11 +103,4 @@ class FilesystemConfigPipe implements ConfigurationPipeInterface
         return 55; // Run after queue pipe
     }
 
-    public function reset(ConfigRepository $config): void
-    {
-        // Reset to original configuration for Octane
-        $config->set('filesystems.default', $this->originalConfig['default']);
-        $config->set('filesystems.cloud', $this->originalConfig['cloud']);
-        $config->set('filesystems.disks', $this->originalConfig['disks']);
-    }
 }
