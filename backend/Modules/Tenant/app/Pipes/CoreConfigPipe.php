@@ -14,17 +14,14 @@ use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles core Laravel configuration for tenants.
- * Octane-safe: Uses container for state storage instead of static properties.
  */
 class CoreConfigPipe implements ConfigurationPipeInterface
 {
-
     /**
      * Apply core configuration.
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-
         // Track changes to know which resources need refreshing
         $hasUrlChanges      = false;
         $hasTimezoneChanges = false;
@@ -176,7 +173,6 @@ class CoreConfigPipe implements ConfigurationPipeInterface
             }
         }
     }
-
 
     public function handles(): array
     {

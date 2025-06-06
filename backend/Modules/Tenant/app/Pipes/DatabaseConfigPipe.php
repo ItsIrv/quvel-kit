@@ -10,17 +10,14 @@ use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles database configuration for tenants.
- * Octane-safe: Uses container for state storage instead of static properties.
  */
 class DatabaseConfigPipe implements ConfigurationPipeInterface
 {
-
     /**
      * Apply database configuration.
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-
         // Check if tenant has database isolation feature (only if tiers are enabled)
         if (config('tenant.enable_tiers', false) && !$tenant->hasFeature('database_isolation')) {
             // Pass to next pipe without database changes for basic/standard tiers
@@ -80,7 +77,6 @@ class DatabaseConfigPipe implements ConfigurationPipeInterface
             'tenantConfig' => $tenantConfig,
         ]);
     }
-
 
     public function handles(): array
     {

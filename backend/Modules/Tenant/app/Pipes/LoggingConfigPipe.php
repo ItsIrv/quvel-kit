@@ -8,10 +8,8 @@ use Modules\Tenant\Models\Tenant;
 
 class LoggingConfigPipe implements ConfigurationPipeInterface
 {
-
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-
         // Apply default log channel
         if (isset($tenantConfig['log_channel'])) {
             $config->set('logging.default', $tenantConfig['log_channel']);
@@ -35,7 +33,7 @@ class LoggingConfigPipe implements ConfigurationPipeInterface
         } else {
             $config->set('logging.channels.daily.path', storage_path('logs/tenants/' . $tenant->id . '/laravel.log'));
         }
-        
+
         if (isset($tenantConfig['log_daily_days'])) {
             $config->set('logging.channels.daily.days', $tenantConfig['log_daily_days']);
         }
@@ -52,11 +50,11 @@ class LoggingConfigPipe implements ConfigurationPipeInterface
         // Configure Slack logging for important events
         if (isset($tenantConfig['log_slack_webhook_url'])) {
             $config->set('logging.channels.slack.url', $tenantConfig['log_slack_webhook_url']);
-            
+
             if (isset($tenantConfig['log_slack_channel'])) {
                 $config->set('logging.channels.slack.channel', $tenantConfig['log_slack_channel']);
             }
-            
+
             if (isset($tenantConfig['log_slack_username'])) {
                 $config->set('logging.channels.slack.username', $tenantConfig['log_slack_username']);
             }
@@ -66,13 +64,13 @@ class LoggingConfigPipe implements ConfigurationPipeInterface
         if (isset($tenantConfig['sentry_dsn'])) {
             $config->set('logging.channels.sentry', [
                 'driver' => 'sentry',
-                'level' => $tenantConfig['sentry_level'] ?? 'error',
+                'level'  => $tenantConfig['sentry_level'] ?? 'error',
                 'bubble' => true,
             ]);
-            
+
             // Also set Sentry DSN in services config
             $config->set('services.sentry.dsn', $tenantConfig['sentry_dsn']);
-            
+
             if (isset($tenantConfig['sentry_environment'])) {
                 $config->set('services.sentry.environment', $tenantConfig['sentry_environment']);
             }
@@ -82,9 +80,9 @@ class LoggingConfigPipe implements ConfigurationPipeInterface
         if (isset($tenantConfig['log_custom_driver'])) {
             $config->set('logging.channels.tenant', [
                 'driver' => $tenantConfig['log_custom_driver'],
-                'path' => $tenantConfig['log_custom_path'] ?? storage_path('logs/tenants/' . $tenant->id . '/custom.log'),
-                'level' => $tenantConfig['log_custom_level'] ?? 'info',
-                'days' => $tenantConfig['log_custom_days'] ?? 14,
+                'path'   => $tenantConfig['log_custom_path'] ?? storage_path('logs/tenants/' . $tenant->id . '/custom.log'),
+                'level'  => $tenantConfig['log_custom_level'] ?? 'info',
+                'days'   => $tenantConfig['log_custom_days'] ?? 14,
             ]);
         }
 
@@ -95,8 +93,8 @@ class LoggingConfigPipe implements ConfigurationPipeInterface
 
         // Pass to next pipe
         return $next([
-            'tenant' => $tenant,
-            'config' => $config,
+            'tenant'       => $tenant,
+            'config'       => $config,
             'tenantConfig' => $tenantConfig,
         ]);
     }
@@ -128,5 +126,4 @@ class LoggingConfigPipe implements ConfigurationPipeInterface
     {
         return 40; // Run after broadcasting pipe
     }
-
 }

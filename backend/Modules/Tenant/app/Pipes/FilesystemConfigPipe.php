@@ -8,10 +8,8 @@ use Modules\Tenant\Models\Tenant;
 
 class FilesystemConfigPipe implements ConfigurationPipeInterface
 {
-
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-
         // Apply default disk configuration
         if (isset($tenantConfig['filesystem_default'])) {
             $config->set('filesystems.default', $tenantConfig['filesystem_default']);
@@ -41,7 +39,7 @@ class FilesystemConfigPipe implements ConfigurationPipeInterface
         // Configure S3 disk for tenant
         if (isset($tenantConfig['aws_s3_bucket'])) {
             $config->set('filesystems.disks.s3.bucket', $tenantConfig['aws_s3_bucket']);
-            
+
             // Tenant-specific path prefix
             if (isset($tenantConfig['aws_s3_path_prefix'])) {
                 $config->set('filesystems.disks.s3.path_prefix', $tenantConfig['aws_s3_path_prefix']);
@@ -67,16 +65,16 @@ class FilesystemConfigPipe implements ConfigurationPipeInterface
         // Configure temporary disk with tenant isolation
         if (!isset($tenantConfig['disable_temp_isolation'])) {
             $config->set('filesystems.disks.temp', [
-                'driver' => 'local',
-                'root' => storage_path('app/temp/tenants/' . $tenant->id),
+                'driver'     => 'local',
+                'root'       => storage_path('app/temp/tenants/' . $tenant->id),
                 'visibility' => 'private',
             ]);
         }
 
         // Pass to next pipe
         return $next([
-            'tenant' => $tenant,
-            'config' => $config,
+            'tenant'       => $tenant,
+            'config'       => $config,
             'tenantConfig' => $tenantConfig,
         ]);
     }
@@ -102,5 +100,4 @@ class FilesystemConfigPipe implements ConfigurationPipeInterface
     {
         return 55; // Run after queue pipe
     }
-
 }

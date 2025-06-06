@@ -8,15 +8,8 @@ use Modules\Tenant\Models\Tenant;
 
 class ServicesConfigPipe implements ConfigurationPipeInterface
 {
-    protected array $originalConfig = [];
-
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-        // Store original config for Octane reset
-        $this->originalConfig = [
-            'services' => $config->get('services'),
-        ];
-
         // Configure Stripe payment gateway
         if (isset($tenantConfig['stripe_key'])) {
             $config->set('services.stripe.key', $tenantConfig['stripe_key']);
@@ -160,11 +153,5 @@ class ServicesConfigPipe implements ConfigurationPipeInterface
     public function priority(): int
     {
         return 35; // Run after logging pipe
-    }
-
-    public function reset(ConfigRepository $config): void
-    {
-        // Reset to original configuration for Octane
-        $config->set('services', $this->originalConfig['services']);
     }
 }

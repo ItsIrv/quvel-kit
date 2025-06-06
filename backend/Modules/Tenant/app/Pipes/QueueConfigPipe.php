@@ -8,16 +8,8 @@ use Modules\Tenant\Models\Tenant;
 
 class QueueConfigPipe implements ConfigurationPipeInterface
 {
-    protected array $originalConfig = [];
-
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-        // Store original config for Octane reset
-        $this->originalConfig = [
-            'default' => $config->get('queue.default'),
-            'connections' => $config->get('queue.connections'),
-        ];
-
         // Apply tenant-specific queue configuration
         if (isset($tenantConfig['queue_default'])) {
             $config->set('queue.default', $tenantConfig['queue_default']);
@@ -50,7 +42,6 @@ class QueueConfigPipe implements ConfigurationPipeInterface
             if ($connection === 'sqs' && isset($tenantConfig['aws_sqs_queue'])) {
                 $config->set('queue.connections.sqs.queue', $tenantConfig['aws_sqs_queue']);
                 $config->set('queue.connections.sqs.region', $tenantConfig['aws_sqs_region'] ?? 'us-east-1');
-
                 if (isset($tenantConfig['aws_sqs_key'])) {
                     $config->set('queue.connections.sqs.key', $tenantConfig['aws_sqs_key']);
                     $config->set('queue.connections.sqs.secret', $tenantConfig['aws_sqs_secret']);
@@ -65,8 +56,8 @@ class QueueConfigPipe implements ConfigurationPipeInterface
 
         // Pass to next pipe
         return $next([
-            'tenant' => $tenant,
-            'config' => $config,
+            'tenant'       => $tenant,
+            'config'       => $config,
             'tenantConfig' => $tenantConfig,
         ]);
     }
@@ -91,12 +82,5 @@ class QueueConfigPipe implements ConfigurationPipeInterface
     public function priority(): int
     {
         return 65; // Run after Redis pipe but before Mail pipe
-    }
-
-    public function reset(ConfigRepository $config): void
-    {
-        // Reset to original configuration for Octane
-        $config->set('queue.default', $this->originalConfig['default']);
-        $config->set('queue.connections', $this->originalConfig['connections']);
     }
 }

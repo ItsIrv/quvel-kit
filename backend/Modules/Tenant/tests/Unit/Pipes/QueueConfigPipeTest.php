@@ -30,26 +30,7 @@ class QueueConfigPipeTest extends TestCase
         $this->pipe   = new QueueConfigPipe();
     }
 
-    public function testHandleStoresOriginalConfig(): void
-    {
-        $tenant       = $this->createMock(Tenant::class);
-        $tenantConfig = [];
 
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                ['queue.default', null, 'sync'],
-                ['queue.connections', null, ['sync' => [], 'database' => []]],
-            ]);
-
-        $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        $this->assertSame($tenant, $result['tenant']);
-        $this->assertSame($this->config, $result['config']);
-        $this->assertSame($tenantConfig, $result['tenantConfig']);
-    }
 
     public function testHandleAppliesDefaultQueue(): void
     {
@@ -272,43 +253,7 @@ class QueueConfigPipeTest extends TestCase
         $this->assertSame($tenant, $result['tenant']);
     }
 
-    public function testResetRestoresOriginalConfig(): void
-    {
-        $tenant       = $this->createMock(Tenant::class);
-        $tenantConfig = ['queue_default' => 'redis'];
 
-        $originalConnections = ['sync' => [], 'database' => []];
-
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                ['queue.default', null, 'sync'],
-                ['queue.connections', null, $originalConnections],
-            ]);
-
-        // First, handle to store original config
-        $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        // Then reset
-        $callIndex = 0;
-        $this->config->expects($this->exactly(2))
-            ->method('set')
-            ->willReturnCallback(function ($key, $value) use (&$callIndex, $originalConnections) {
-                if ($callIndex === 0) {
-                    $this->assertEquals('queue.default', $key);
-                    $this->assertEquals('sync', $value);
-                } else {
-                    $this->assertEquals('queue.connections', $key);
-                    $this->assertEquals($originalConnections, $value);
-                }
-                $callIndex++;
-                return null;
-            });
-
-        $this->pipe->reset($this->config);
-    }
 
     public function testHandlesReturnsCorrectKeys(): void
     {

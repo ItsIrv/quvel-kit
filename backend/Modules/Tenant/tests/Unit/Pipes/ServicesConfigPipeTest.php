@@ -30,26 +30,7 @@ class ServicesConfigPipeTest extends TestCase
         $this->pipe = new ServicesConfigPipe();
     }
 
-    public function testHandleStoresOriginalConfig(): void
-    {
-        $tenant = $this->createMock(Tenant::class);
-        $tenantConfig = [];
 
-        $originalServices = ['stripe' => [], 'paypal' => []];
-
-        $this->config->expects($this->once())
-            ->method('get')
-            ->with('services')
-            ->willReturn($originalServices);
-
-        $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        $this->assertSame($tenant, $result['tenant']);
-        $this->assertSame($this->config, $result['config']);
-        $this->assertSame($tenantConfig, $result['tenantConfig']);
-    }
 
     public function testHandleConfiguresStripe(): void
     {
@@ -410,33 +391,7 @@ class ServicesConfigPipeTest extends TestCase
         ];
     }
 
-    public function testResetRestoresOriginalConfig(): void
-    {
-        $tenant = $this->createMock(Tenant::class);
-        $tenantConfig = ['stripe_key' => 'pk_test_123'];
 
-        $originalServices = [
-            'stripe' => ['key' => 'original_key'],
-            'paypal' => [],
-        ];
-
-        $this->config->expects($this->once())
-            ->method('get')
-            ->with('services')
-            ->willReturn($originalServices);
-
-        // First, handle to store original config
-        $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        // Then reset
-        $this->config->expects($this->once())
-            ->method('set')
-            ->with('services', $originalServices);
-
-        $this->pipe->reset($this->config);
-    }
 
     public function testHandlesReturnsCorrectKeys(): void
     {
