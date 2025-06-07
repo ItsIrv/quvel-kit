@@ -30,6 +30,7 @@ class CoreServiceProvider extends ModuleServiceProvider
      */
     public function register(): void
     {
+        $this->app->register(RouteServiceProvider::class);
         $this->app->singleton(UserCreateService::class);
         $this->app->singleton(UserFindService::class);
         $this->app->scoped(
