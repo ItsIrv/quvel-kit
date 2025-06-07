@@ -42,7 +42,7 @@ export default defineConfig(() => {
       middlewares: [
         'render', // keep this as last one
       ],
-      pwa: Boolean(process.env.SSR_PWA),
+      pwa: false,
     },
   };
 });
