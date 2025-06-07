@@ -20,6 +20,7 @@ export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosIn
   // In order: Internal API URL, Public API URL, Vite API URL
   const baseURL =
     ssrServiceOptions?.req?.tenantConfig?.internalApiUrl ??
+    ssrServiceOptions?.req?.tenantConfig?.apiUrl ??
     (typeof window !== 'undefined' ? window.__TENANT_CONFIG__?.apiUrl : null) ??
     process.env.VITE_API_URL ??
     '';
