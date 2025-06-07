@@ -8,7 +8,7 @@ import type { LoginRequest, LoginResponse, User } from "../types/auth";
  */
 export class AuthService extends BaseApiService {
     constructor() {
-        super("/admin/tenants/api");
+        super(import.meta.env.VITE_API_BASE_URL || "/admin/tenants/api");
     }
 
     /**

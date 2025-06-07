@@ -12,7 +12,7 @@ import type {
  */
 export class InstallationService extends BaseApiService {
     constructor() {
-        super("/admin/tenants/api");
+        super(import.meta.env.VITE_API_BASE_URL || "/admin/tenants/api");
     }
 
     /**
