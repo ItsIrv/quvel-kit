@@ -25,7 +25,6 @@ class GoogleRecaptchaVerifierTest extends TestCase
     private HttpClient|MockObject $httpClient;
     private GoogleRecaptchaVerifier $verifier;
     private TenantContext|MockObject $mockTenantContext;
-    private Tenant|MockObject $mockTenant;
 
     protected function setUp(): void
     {
@@ -43,29 +42,22 @@ class GoogleRecaptchaVerifierTest extends TestCase
 
         // Mock tenant context
         $this->mockTenantContext = $this->createMock(TenantContext::class);
-        $this->mockTenant        = $this->createMock(Tenant::class);
-
-        app()->instance(TenantContext::class, $this->mockTenantContext);
 
         $this->verifier = new GoogleRecaptchaVerifier(
             $this->request,
             $this->httpClient,
+            $this->mockTenantContext,
         );
     }
 
     #[TestDox('returns false when no secret key is configured')]
     public function testReturnsFalseWhenNoSecretKeyIsConfigured(): void
     {
-        // Mock tenant with empty config
-        $config = new DynamicTenantConfig([]);
-
-        $this->mockTenant->expects($this->once())
-            ->method('getEffectiveConfig')
-            ->willReturn($config);
-
+        // Mock getConfigValue to return empty
         $this->mockTenantContext->expects($this->once())
-            ->method('get')
-            ->willReturn($this->mockTenant);
+            ->method('getConfigValue')
+            ->with('recaptcha_secret_key')
+            ->willReturn(null);
 
         // Verify no HTTP request will be made
         $this->httpClient->expects($this->never())->method('asForm');
@@ -78,16 +70,11 @@ class GoogleRecaptchaVerifierTest extends TestCase
     #[TestDox('verifies token successfully with Google API')]
     public function testVerifiesTokenSuccessfullyWithGoogleApi(): void
     {
-        // Mock tenant with secret key
-        $config = new DynamicTenantConfig(['recaptcha_secret_key' => 'test-secret-key']);
-
-        $this->mockTenant->expects($this->once())
-            ->method('getEffectiveConfig')
-            ->willReturn($config);
-
+        // Mock getConfigValue to return secret key
         $this->mockTenantContext->expects($this->once())
-            ->method('get')
-            ->willReturn($this->mockTenant);
+            ->method('getConfigValue')
+            ->with('recaptcha_secret_key')
+            ->willReturn('test-secret-key');
 
         $this->request->expects($this->once())
             ->method('ip')
@@ -124,16 +111,11 @@ class GoogleRecaptchaVerifierTest extends TestCase
     #[TestDox('uses provided IP address when given')]
     public function testUsesProvidedIpAddressWhenGiven(): void
     {
-        // Mock tenant with secret key
-        $config = new DynamicTenantConfig(['recaptcha_secret_key' => 'test-secret-key']);
-
-        $this->mockTenant->expects($this->once())
-            ->method('getEffectiveConfig')
-            ->willReturn($config);
-
+        // Mock getConfigValue to return secret key
         $this->mockTenantContext->expects($this->once())
-            ->method('get')
-            ->willReturn($this->mockTenant);
+            ->method('getConfigValue')
+            ->with('recaptcha_secret_key')
+            ->willReturn('test-secret-key');
 
         // Should not call request->ip() when IP is provided
         $this->request->expects($this->never())->method('ip');
@@ -172,16 +154,11 @@ class GoogleRecaptchaVerifierTest extends TestCase
         $googleResponse,
         bool $expectedResult,
     ): void {
-        // Mock tenant with secret key
-        $config = new DynamicTenantConfig(['recaptcha_secret_key' => 'test-secret-key']);
-
-        $this->mockTenant->expects($this->once())
-            ->method('getEffectiveConfig')
-            ->willReturn($config);
-
+        // Mock getConfigValue to return secret key
         $this->mockTenantContext->expects($this->once())
-            ->method('get')
-            ->willReturn($this->mockTenant);
+            ->method('getConfigValue')
+            ->with('recaptcha_secret_key')
+            ->willReturn('test-secret-key');
 
         $this->request->expects($this->once())
             ->method('ip')

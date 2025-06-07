@@ -11,6 +11,7 @@ use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Http\Middleware\TenantMiddleware;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Services\ConfigurationPipeline;
+use Modules\Tenant\Services\TenantExclusionRegistry;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -42,6 +43,11 @@ final class TenantMiddlewareTest extends TestCase
     protected ConfigRepository $config;
 
     /**
+     * @var TenantExclusionRegistry|MockInterface
+     */
+    protected TenantExclusionRegistry $exclusionRegistry;
+
+    /**
      * @var Request|MockInterface
      */
     protected Request $request;
@@ -59,6 +65,7 @@ final class TenantMiddlewareTest extends TestCase
         $this->tenantContext  = Mockery::mock(TenantContext::class);
         $this->configPipeline = Mockery::mock(ConfigurationPipeline::class);
         $this->config         = Mockery::mock(ConfigRepository::class);
+        $this->exclusionRegistry = Mockery::mock(TenantExclusionRegistry::class);
         $this->request        = Mockery::mock(Request::class);
 
         $this->middleware = new TenantMiddleware(
@@ -66,6 +73,7 @@ final class TenantMiddlewareTest extends TestCase
             $this->tenantContext,
             $this->configPipeline,
             $this->config,
+            $this->exclusionRegistry,
         );
     }
 
@@ -75,6 +83,24 @@ final class TenantMiddlewareTest extends TestCase
         // Arrange
         $tenant           = Mockery::mock(Tenant::class);
         $expectedResponse = 'response';
+
+        // Mock exclusion registry
+        $this->exclusionRegistry->shouldReceive('getExcludedPaths')
+            ->once()
+            ->andReturn([]);
+        
+        $this->exclusionRegistry->shouldReceive('getExcludedPatterns')
+            ->once()
+            ->andReturn([]);
+
+        // Mock config
+        $this->config->shouldReceive('get')
+            ->with('tenant.excluded_paths', [])
+            ->andReturn([]);
+        
+        $this->config->shouldReceive('get')
+            ->with('tenant.excluded_patterns', [])
+            ->andReturn([]);
 
         $this->tenantResolver->shouldReceive('resolveTenant')
             ->once()

@@ -15,6 +15,7 @@ use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\RequestPrivacy;
 use Modules\Tenant\Services\TenantConfigProviderRegistry;
 use Modules\Tenant\Services\TenantConfigSeederRegistry;
+use Modules\Tenant\Services\TenantExclusionRegistry;
 use Modules\Tenant\Services\TenantTableRegistry;
 use Modules\Tenant\Services\TierService;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -64,6 +65,7 @@ class TenantServiceProviderTest extends TestCase
         $expectedSingletons = [
             strtolower(FindService::class),
             strtolower(TierService::class),
+            strtolower(TenantExclusionRegistry::class),
             strtolower(TenantTableRegistry::class),
             strtolower(ConfigurationPipeline::class),
             strtolower(TenantConfigProviderRegistry::class),
