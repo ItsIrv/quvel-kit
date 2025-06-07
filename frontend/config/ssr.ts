@@ -42,7 +42,12 @@ export default defineConfig(() => {
       middlewares: [
         'render', // keep this as last one
       ],
-      pwa: Boolean(process.env.SSR_PWA),
+      // Disable PWA in SSR when multi-tenant is enabled (PWA can't resolve tenant-specific API URLs)
+      pwa: Boolean(process.env.SSR_PWA) && Boolean(process.env.VITE_MULTI_TENANT) === false,
+    },
+    pwa: {
+      injectPwaMetaTags:
+        Boolean(process.env.SSR_PWA) && Boolean(process.env.VITE_MULTI_TENANT) === false,
     },
   };
 });

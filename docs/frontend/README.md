@@ -62,6 +62,7 @@ frontend/
 ### Development
 
 - **[Environment Setup & Usage](./frontend-usage.md)** - Development workflow
+- **[PWA Limitations](./frontend-pwa-limitations.md)** - PWA limitations with multi-tenancy
 
 ## Need Help?
 
