@@ -1,4 +1,5 @@
 import { RouteRecordRaw } from 'vue-router';
+import MainLayout from 'src/modules/Quvel/layouts/MainLayout.vue';
 
 /**
  * Quvel module routes
@@ -6,7 +7,7 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('src/modules/Quvel/layouts/MainLayout.vue'),
+    component: MainLayout,
     children: [
       {
         path: '',

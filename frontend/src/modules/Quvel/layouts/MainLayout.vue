@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { defineAsyncComponent, ref, watch, computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import { useNotificationStore } from 'src/modules/Notifications/stores/notificationStore';
@@ -8,9 +8,8 @@ import PageHeader from 'src/modules/Quvel/components/Layouts/MainLayout/PageHead
 import PageFooter from 'src/modules/Quvel/components/Layouts/MainLayout/PageFooter.vue';
 import LanderBackground from '../components/Pages/LandingPage/LanderBackground.vue';
 import AuthDialog from 'src/modules/Auth/components/Dialogs/AuthDialog.vue';
-
-const MenuRightDrawer = defineAsyncComponent(() => import('src/modules/Quvel/components/Layouts/MainLayout/MenuRightDrawer.vue'));
-const MenuLeftDrawer = defineAsyncComponent(() => import('src/modules/Quvel/components/Layouts/MainLayout/MenuLeftDrawer.vue'));
+import MenuRightDrawer from 'src/modules/Quvel/components/Layouts/MainLayout/MenuRightDrawer.vue';
+import MenuLeftDrawer from 'src/modules/Quvel/components/Layouts/MainLayout/MenuLeftDrawer.vue';
 
 /**
  * Services

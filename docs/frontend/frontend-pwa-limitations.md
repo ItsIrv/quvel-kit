@@ -42,7 +42,7 @@ The issue occurs because:
 
 Example of the problem:
 
-```
+```txt
 ✅ SSR calls: https://api.tenant.domain.com/auth/session
 ❌ PWA calls: https://<VITE_API_URL ?? ''>/auth/session (wrong!)
 ```
