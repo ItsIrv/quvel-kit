@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Modules\Core\Http\Actions\Debug;
 
 use Illuminate\Http\JsonResponse;
