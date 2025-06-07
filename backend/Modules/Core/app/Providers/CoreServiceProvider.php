@@ -58,6 +58,8 @@ class CoreServiceProvider extends ModuleServiceProvider
         parent::boot();
 
         $this->app['request']->server->set('HTTPS', 'on');
+        $this->app['url']->forceScheme('https');
+
         $this->app['router']->pushMiddlewareToGroup('web', SetRequestLocale::class);
         $this->app['router']->pushMiddlewareToGroup('api', SetRequestLocale::class);
 

@@ -6,21 +6,8 @@ import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { MenuItem } from 'primevue/menuitem'
 
-const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
-
-// Props
-interface Props {
-    sidebarVisible: boolean
-}
-
-const props = defineProps<Props>()
-
-// Emits
-const emit = defineEmits<{
-    toggleSidebar: []
-}>()
 
 // Initialize auth on mount
 onMounted(async () => {
@@ -38,7 +25,7 @@ const userMenuItems = ref<MenuItem[]>([
         icon: 'pi pi-sign-out',
         command: async () => {
             await authStore.logout()
-            window.location.reload()
+            router.push({ name: 'login' })
         }
     }
 ])

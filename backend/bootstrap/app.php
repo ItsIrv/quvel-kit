@@ -19,10 +19,13 @@ return Application::configure(basePath: dirname(__DIR__))
         // Only trust proxy headers when behind a reverse proxy like Nginx
         // Do NOT trust headers like X-Forwarded-Host if Swoole is exposed directly
         if (env('OCTANE_SERVER') === 'swoole') {
-            $middleware->trustProxies([
-                '127.0.0.1',
-                'localhost',
-            ], Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_HOST);
+            $middleware->trustProxies(
+                [
+                    '127.0.0.1',
+                    'localhost',
+                ],
+                Request::HEADER_X_FORWARDED_TRAEFIK,
+            );
         }
     })
     ->withBroadcasting('')

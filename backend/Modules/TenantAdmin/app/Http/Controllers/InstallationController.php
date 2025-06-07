@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\TenantAdmin\Http\Controllers\Api;
+namespace Modules\TenantAdmin\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
@@ -12,8 +12,9 @@ use Modules\TenantAdmin\Services\InstallationService;
 class InstallationController extends Controller
 {
     public function __construct(
-        private InstallationService $installationService
-    ) {}
+        private InstallationService $installationService,
+    ) {
+    }
 
     /**
      * Check installation status
@@ -21,9 +22,9 @@ class InstallationController extends Controller
     public function status(): JsonResponse
     {
         return response()->json([
-            'installed' => $this->installationService->isInstalled(),
-            'method' => $this->installationService->getInstallationMethod(),
-            'has_env_credentials' => $this->installationService->hasEnvCredentials(),
+            'installed'                => $this->installationService->isInstalled(),
+            'method'                   => $this->installationService->getInstallationMethod(),
+            'has_env_credentials'      => $this->installationService->hasEnvCredentials(),
             'has_database_credentials' => $this->installationService->hasDatabaseCredentials(),
         ]);
     }
@@ -50,8 +51,8 @@ class InstallationController extends Controller
 
                 // Create database entry
                 DB::table('tenant_admin_credentials')->insert([
-                    'username' => $data['username'],
-                    'password' => Hash::make($data['password']),
+                    'username'   => $data['username'],
+                    'password'   => Hash::make($data['password']),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -95,7 +96,7 @@ class InstallationController extends Controller
         $envContent = file_get_contents($envPath);
 
         foreach ($values as $key => $value) {
-            $pattern = "/^{$key}=.*/m";
+            $pattern     = "/^{$key}=.*/m";
             $replacement = "{$key}={$value}";
 
             if (preg_match($pattern, $envContent)) {

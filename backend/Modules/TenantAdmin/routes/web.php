@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\TenantAdmin\Http\Controllers\PageController;
-use Modules\TenantAdmin\Http\Controllers\Api\InstallationController;
+use Modules\TenantAdmin\Http\Controllers\InstallationController;
 use Modules\TenantAdmin\Http\Controllers\AuthController;
 use Modules\TenantAdmin\Http\Controllers\TenantController;
 
