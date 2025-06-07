@@ -26,7 +26,12 @@
     "postinstall": "quasar prepare",
     "test:unit:ui": "vitest --ui",
     "test:unit": "vitest",
-    "test:unit:ci": "vitest run"
+    "test:unit:ci": "vitest run",
+    "icons:generate": "icongenie generate -p config/icongenie.json",
+    "icons:generate-all": "icongenie generate -p config/icongenie.json --mode all",
+    "icons:verify": "icongenie verify",
+    "icons:profile": "icongenie profile",
+    "icons:create-profile": "icongenie profile -o config/icongenie-custom.json"
   },
   "dependencies": {
     "@fastify/compress": "^8.0.1",
@@ -57,6 +62,7 @@
     "@eslint/js": "^9.14.0",
     "@intlify/unplugin-vue-i18n": "^2.0.0",
     "@quasar/app-vite": "^2.0.0",
+    "@quasar/icongenie": "^4.0.0",
     "@quasar/quasar-app-extension-testing-unit-vitest": "^1.1.0",
     "@types/cors": "^2.8.18",
     "@types/node": "^20.5.9",
