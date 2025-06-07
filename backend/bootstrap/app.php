@@ -16,14 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prepend(TenantMiddleware::class);
 
-        // Only trust proxy headers when behind a reverse proxy like Nginx
-        // Do NOT trust headers like X-Forwarded-Host if Swoole is exposed directly
-        if (env('OCTANE_SERVER') === 'swoole') {
+        // Trust proxy headers when enabled via environment
+        if (env('TRUST_PROXIES', false)) {
+            $trustedProxies = env('TRUSTED_PROXY_IPS', '127.0.0.1,localhost');
+            $proxyIps       = array_map('trim', explode(',', $trustedProxies));
+
             $middleware->trustProxies(
-                [
-                    '127.0.0.1',
-                    'localhost',
-                ],
+                $proxyIps,
                 Request::HEADER_X_FORWARDED_TRAEFIK,
             );
         }
