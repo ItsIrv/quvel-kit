@@ -16,20 +16,20 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         TenantMiddlewareProvider::bootstrapMiddleware($middleware);
 
+        \Log::info('TRUST_PROXIES', [env('TRUST_PROXIES', false)]);
+
         // Trust proxy headers when enabled via environment
-        // if (env('TRUST_PROXIES', false)) {
-        // $trustedProxies = env('TRUSTED_PROXY_IPS', '127.0.0.1,localhost');
-        // $proxyIps       = array_map('trim', explode(',', $trustedProxies));
-    
-        $middleware->trustProxies(
-            // $proxyIps,
-            [
-                '127.0.0.1',
-                'localhost',
-            ],
-            Request::HEADER_X_FORWARDED_TRAEFIK,
-        );
-        // }
+        if (env('TRUST_PROXIES', false)) {
+            $trustedProxies = env('TRUSTED_PROXY_IPS', '127.0.0.1,localhost');
+            $proxyIps       = array_map('trim', explode(',', $trustedProxies));
+
+            \Log::info('TRUSTED_PROXY_IPS', [$proxyIps]);
+
+            $middleware->trustProxies(
+                $proxyIps,
+                Request::HEADER_X_FORWARDED_TRAEFIK,
+            );
+        }
     })
     ->withBroadcasting('')
     ->withExceptions(function (Exceptions $exceptions): void {

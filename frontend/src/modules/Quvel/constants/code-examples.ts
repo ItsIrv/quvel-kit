@@ -15,7 +15,7 @@ export const CODE_EXAMPLES: CodeExample[] = [
     language: 'php',
     code: `<?php
 // Set the current tenant context
-> setTenant('api.quvel.pdxapps.com');
+> setTenant('api.quvel.127.0.0.1.nip.io');
 = true
 
 // Get the current tenant
