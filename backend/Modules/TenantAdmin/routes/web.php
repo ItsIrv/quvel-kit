@@ -5,6 +5,7 @@ use Modules\TenantAdmin\Http\Controllers\PageController;
 use Modules\TenantAdmin\Http\Controllers\InstallationController;
 use Modules\TenantAdmin\Http\Controllers\AuthController;
 use Modules\TenantAdmin\Http\Controllers\TenantController;
+use Modules\Tenant\Http\Middleware\IsInternalRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +18,12 @@ use Modules\TenantAdmin\Http\Controllers\TenantController;
 |
 */
 
-Route::prefix('api')->group(function () {
+Route::group([
+    'prefix'     => 'api',
+    'middleware' => [
+        IsInternalRequest::class,
+    ],
+], function () {
     // Installation routes (only accessible when not installed)
     Route::get('/install/status', [InstallationController::class, 'status'])->name('api.install.status');
 
@@ -49,5 +55,6 @@ Route::prefix('api')->group(function () {
 
 // Catch-all route for SPA
 Route::get('/{any?}', [PageController::class, 'show'])
+    ->middleware(IsInternalRequest::class)
     ->where('any', '.*')
     ->name('spa');
