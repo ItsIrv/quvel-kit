@@ -6,7 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Tenant\Models\Tenant;
-use Modules\TenantAdmin\App\Http\Resources\TenantAdminResource;
+use Modules\TenantAdmin\Http\Resources\TenantAdminResource;
 use Modules\TenantAdmin\Http\Requests\TenantCreateRequest;
 use Modules\TenantAdmin\Http\Requests\TenantUpdateRequest;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
@@ -134,7 +134,7 @@ class TenantController extends Controller
             if (!$config) {
                 $config = new DynamicTenantConfig();
             }
-            
+
             // Merge the new config values into the existing config
             foreach ($data['config'] as $key => $value) {
                 // Handle empty strings by removing the key instead of setting empty value
@@ -144,7 +144,7 @@ class TenantController extends Controller
                     $config->set($key, $value);
                 }
             }
-            
+
             $tenant->config = $config;
         }
 

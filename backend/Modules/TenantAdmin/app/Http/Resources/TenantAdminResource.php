@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\TenantAdmin\App\Http\Resources;
+namespace Modules\TenantAdmin\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
