@@ -17,17 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         TenantMiddlewareProvider::bootstrapMiddleware($middleware);
 
-        // Trust proxy headers when enabled via environment
-        // Note: env() works here but Log facade may not be fully initialized yet
         $trustProxies = env('TRUST_PROXIES', false);
-
-        error_log('Trust Proxies: ' . json_encode($trustProxies));
 
         if ($trustProxies) {
             $trustedProxyIps = env('TRUSTED_PROXY_IPS', '127.0.0.1,localhost');
             $proxyIps        = array_map('trim', explode(',', $trustedProxyIps));
-
-            error_log('Trust Proxies Enabled: ' . json_encode($proxyIps));
 
             $middleware->trustProxies(
                 $proxyIps,
@@ -37,5 +31,4 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withBroadcasting('')
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Exception handling is configured in CoreServiceProvider
     })->create();

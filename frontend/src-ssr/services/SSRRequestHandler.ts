@@ -61,15 +61,21 @@ export class SSRRequestHandler extends SSRService implements SSRRegisterService 
       // Attach trace info to the request for use in SSR
       (req as unknown as { traceInfo: TraceInfo }).traceInfo = context.traceInfo;
 
-      // Render the application
-      const startRender = Date.now();
-      const html = await renderFn({ req, res });
-      const renderDuration = Date.now() - startRender;
-
       // Filter non-public fields before injecting into window
       const publicTenantConfig = context.tenantConfig
         ? filterTenantConfig(context.tenantConfig)
         : null;
+
+      if (!publicTenantConfig) {
+        context.logger.error('No tenant config found', { domain: req.get('host') });
+
+        throw new Error('No tenant config found');
+      }
+
+      // Render the application
+      const startRender = Date.now();
+      const html = await renderFn({ req, res });
+      const renderDuration = Date.now() - startRender;
 
       // Change runtime to client for browser
       const clientTraceInfo = { ...context.traceInfo, runtime: 'client' as const };

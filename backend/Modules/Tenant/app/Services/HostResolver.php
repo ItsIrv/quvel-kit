@@ -8,6 +8,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Modules\Tenant\Enums\TenantHeader;
+use Modules\Tenant\Exceptions\TenantNotFoundException;
 use Modules\Tenant\Models\Tenant;
 use Modules\Core\Services\FrontendService;
 use Modules\Tenant\Contracts\TenantResolver;
@@ -52,6 +53,7 @@ class HostResolver implements TenantResolver
         return $this->tenantFindService->findTenantByDomain($this->getHost())
             ?? throw new HttpResponseException(
                 $this->frontendService->redirect(''),
+                new TenantNotFoundException('Tenant not found for hostname ' . $this->getHost()),
             );
     }
 
