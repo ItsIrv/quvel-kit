@@ -2,7 +2,7 @@ import { TenantConfigProtected } from '../types/tenant.types';
 
 /**
  * Creates a tenant config object from environment variables.
- * Used in single-tenant mode when VITE_MULTI_TENANT is false.
+ * Used in single-tenant mode when SSR_MULTI_TENANT is false.
  */
 export function createTenantConfigFromEnv(): TenantConfigProtected {
   return {

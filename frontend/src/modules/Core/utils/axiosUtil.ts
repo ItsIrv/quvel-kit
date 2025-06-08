@@ -61,6 +61,7 @@ export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosIn
     // Attach session cookie (for authentication)
     api.defaults.headers['Host'] = '';
     api.defaults.maxRedirects = 0;
+    api.defaults.timeout = 2500;
 
     if (isValidSessionToken(sessionToken)) {
       api.defaults.headers.Cookie = `${sessionCookie}=${sessionToken}`;

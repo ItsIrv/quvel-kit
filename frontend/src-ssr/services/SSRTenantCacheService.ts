@@ -34,10 +34,10 @@ export class SSRTenantCacheService extends SSRService implements SSRRegisterServ
     super();
     
     // Load configuration from environment
-    this.preloadMode = Boolean(process.env.SSR_TENANT_SSR_PRELOAD_TENANTS);
+    this.preloadMode = process.env.SSR_TENANT_SSR_PRELOAD_TENANTS === 'true';
     this.resolverTtl = Number(process.env.SSR_TENANT_SSR_RESOLVER_TTL) || 60 * 5; // 5 minutes
     this.cacheTtl = Number(process.env.SSR_TENANT_SSR_CACHE_TTL) || 60 * 5; // 5 minutes
-    this.enableCache = Boolean(process.env.SSR_ENABLE_CACHE);
+    this.enableCache = process.env.SSR_ENABLE_CACHE === 'true';
   }
 
   override register(container: SSRServiceContainer): void {

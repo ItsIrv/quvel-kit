@@ -79,7 +79,7 @@ export class SSRRequestHandler extends SSRService implements SSRRegisterService 
           window.__TENANT_CONFIG__ = ${JSON.stringify(publicTenantConfig)};
           window.__TRACE__ = ${JSON.stringify(clientTraceInfo)};
         </script>`;
-      
+
       // Inject before title tag (similar to Quasar's __INITIAL_STATE__)
       const hydratedHtml = html.includes('<title>')
         ? html.replace('<title>', `${scriptTag}<title>`)
@@ -137,7 +137,7 @@ export class SSRRequestHandler extends SSRService implements SSRRegisterService 
     req: Request,
     logger: SSRLogService,
   ): Promise<TenantConfigProtected | null> {
-    const isMultiTenant = Boolean(process.env.VITE_MULTI_TENANT);
+    const isMultiTenant = process.env.SSR_MULTI_TENANT === 'true';
 
     if (!isMultiTenant) {
       // Single-tenant mode

@@ -26,11 +26,11 @@ config values (e.g. VITE_API_URL) coming from the environment are correct.
 
 ## Configuration
 
-PWA is automatically disabled in SSR mode when `VITE_MULTI_TENANT=true` is set in your environment variables.
+PWA is automatically disabled in SSR mode when `SSR_MULTI_TENANT=true` is set in your environment variables.
 
 ```bash
 # .env
-VITE_MULTI_TENANT=true  # Disables PWA in SSR mode
+SSR_MULTI_TENANT=true  # Disables PWA in SSR mode
 ```
 
 ## Technical Details

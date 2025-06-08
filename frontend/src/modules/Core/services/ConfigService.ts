@@ -20,7 +20,7 @@ export class ConfigService extends Service implements SsrAwareService {
     return typeof window === 'undefined';
   }
 
-  public get<K extends keyof TenantConfig>(key: K): TenantConfig[K] {
+  public get<K extends keyof TenantConfig>(key: K): TenantConfig[K] | null {
     return this.config?.[key] ?? null;
   }
 

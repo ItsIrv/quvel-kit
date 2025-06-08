@@ -12,10 +12,10 @@ QuVel Kit supports both single-tenant and multi-tenant deployments:
 
 ```env
 # Enable or disable multi-tenant mode
-VITE_MULTI_TENANT=true
+SSR_MULTI_TENANT=true
 ```
 
-When `VITE_MULTI_TENANT` is set to `true`, the application will resolve tenant configuration based on the hostname. When set to `false`, the application will use the values from environment variables.
+When `SSR_MULTI_TENANT` is set to `true`, the application will resolve tenant configuration based on the hostname. When set to `false`, the application will use the values from environment variables.
 
 ## Core Configuration
 
@@ -118,7 +118,6 @@ VITE_RECAPTCHA_KEY=your_recaptcha_key
 
 | Variable | Description | Default |
 |----------|-------------|--------|
-| `VITE_MULTI_TENANT` | Enables multi-tenant mode | `false` |
 | `VITE_API_URL` | Public API endpoint | - |
 | `VITE_APP_URL` | Public application URL | - |
 | `VITE_APP_NAME` | Application name | `QuVel` |
@@ -143,6 +142,7 @@ VITE_RECAPTCHA_KEY=your_recaptcha_key
 | `SSR_TENANT_SSR_CACHE_TTL` | Tenant data cache TTL (seconds) | `300` |
 | `SSR_TENANT_SSR_API_URL` | API URL for SSR tenant resolution | - |
 | `SSR_API_KEY` | API key for secure SSR communication | - |
+| `SSR_MULTI_TENANT` | Enables multi-tenant mode | `false` |
 
 ## Security Considerations
 
