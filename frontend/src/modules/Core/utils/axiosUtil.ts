@@ -10,6 +10,21 @@ export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance
 }
 
 /**
+ * Gets the tenant-specific XSRF cookie name
+ */
+function getTenantXsrfCookieName(ssrServiceOptions?: SsrServiceOptions | null): string {
+  const tenantId =
+    ssrServiceOptions?.req?.tenantConfig?.tenantId ??
+    (typeof window !== 'undefined' ? window.__TENANT_CONFIG__?.tenantId : null);
+
+  if (tenantId) {
+    return `XSRF-TOKEN-${tenantId}`;
+  }
+
+  return 'XSRF-TOKEN';
+}
+
+/**
  * Creates an Axios with support for making requests to the API
  * with the SSR internal request system.
  *
@@ -29,6 +44,8 @@ export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosIn
     baseURL,
     withCredentials: true,
     withXSRFToken: true,
+    xsrfCookieName: getTenantXsrfCookieName(ssrServiceOptions),
+    xsrfHeaderName: 'X-XSRF-TOKEN',
     headers: {
       Accept: 'application/json',
     },

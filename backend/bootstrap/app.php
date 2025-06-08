@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Modules\Tenant\Http\Middleware\TenantMiddleware;
+use Modules\Tenant\Providers\TenantMiddlewareProvider;
 use Symfony\Component\HttpFoundation\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->prepend(TenantMiddleware::class);
+        TenantMiddlewareProvider::bootstrapMiddleware($middleware);
 
         // Trust proxy headers when enabled via environment
         // if (env('TRUST_PROXIES', false)) {

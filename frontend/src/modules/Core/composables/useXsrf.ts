@@ -5,12 +5,19 @@ import { useContainer } from 'src/modules/Core/composables/useContainer';
 
 /**
  * Sets the XSRF-TOKEN cookie if not already set.
+ * Supports tenant-aware CSRF tokens.
  */
 export function useXsrf(): void {
   const $q = useQuasar();
 
   onMounted(() => {
-    const xsrf = $q.cookies.get(XsrfName);
+    // Get tenant ID from config service
+    const { config } = useContainer();
+    const tenantId = config.get('tenantId');
+    
+    // Use tenant-specific cookie name if tenant ID is available
+    const cookieName = tenantId ? `${XsrfName}-${tenantId}` : XsrfName;
+    const xsrf = $q.cookies.get(cookieName);
 
     if (xsrf === null) {
       try {
