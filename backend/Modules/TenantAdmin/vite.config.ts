@@ -4,6 +4,7 @@ import laravel from "laravel-vite-plugin";
 import { resolve } from "path";
 
 export default defineConfig({
+    base: process.env.VITE_ASSET_BASE_URL || "/build-tenantadmin/",
     build: {
         outDir: "../../public/build-tenantadmin",
         emptyOutDir: true,

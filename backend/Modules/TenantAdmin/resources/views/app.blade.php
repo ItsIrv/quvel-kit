@@ -13,17 +13,8 @@
   <meta name="title" content="TenantAdmin - {{ config('app.name', 'Laravel') }}">
   <meta name="description" content="{{ config('app.description', 'Tenant Administration Portal') }}">
 
-  <!-- Mobile-specific Meta Tags -->
-  <meta name="theme-color" content="#ffffff">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="{{ config('app.name', 'Laravel') }}">
-  <meta name="format-detection" content="telephone=no">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="{{ asset('build-tenantadmin/manifest.json') }}">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.bunny.net">
