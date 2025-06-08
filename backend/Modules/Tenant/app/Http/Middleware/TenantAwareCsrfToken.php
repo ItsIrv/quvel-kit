@@ -23,9 +23,7 @@ class TenantAwareCsrfToken extends VerifyCsrfToken
      */
     protected function getCookieName(): string
     {
-        $tenant = $this->tenantContext->get();
-
-        if ($tenant && $tenant->public_id) {
+        if ($this->tenantContext->has() && $tenant = $this->tenantContext->get()) {
             return "XSRF-TOKEN-{$tenant->public_id}";
         }
 

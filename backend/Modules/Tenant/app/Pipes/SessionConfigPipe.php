@@ -83,8 +83,8 @@ class SessionConfigPipe implements ConfigurationPipeInterface
 
             $this->logger->cookieNameChanged($cookie, true);
         } else {
-            // Default to tenant-specific cookie name
-            $cookie = "tenant_{$tenant->id}_session";
+            // Default to tenant-specific cookie name using public_id for security
+            $cookie = "tenant_{$tenant->public_id}_session";
             $config->set('session.cookie', $cookie);
             $hasSessionChanges = true;
 

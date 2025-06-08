@@ -42,6 +42,14 @@ class TenantContext
     }
 
     /**
+     * Check if a tenant is set.
+     */
+    public function has(): bool
+    {
+        return isset($this->tenant);
+    }
+
+    /**
      * Get the tenant's scoped configuration.
      */
     public function getConfig(): DynamicTenantConfig|null
