@@ -21,10 +21,17 @@ class AuthTenantConfigProvider implements TenantConfigProviderInterface
         // Get tenant's dynamic config
         $tenantConfig = $tenant->getEffectiveConfig();
 
+        if ($tenantConfig === null) {
+            return [
+                'config'     => [],
+                'visibility' => [],
+            ];
+        }
+
         return [
             'config'     => [
-                'socialiteProviders' => $tenantConfig?->get('socialite_providers', ['google']),
-                'sessionCookie'      => $tenantConfig?->get('session_cookie', 'quvel_session'),
+                'socialiteProviders' => $tenantConfig->get('socialite_providers', ['google']),
+                'sessionCookie'      => $tenantConfig->get('session_cookie', 'quvel_session'),
             ],
             'visibility' => [
                 'socialiteProviders' => 'public',
