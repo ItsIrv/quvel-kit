@@ -34,6 +34,8 @@ class TenantMiddleware
     {
         // Check if the current route should bypass tenant resolution
         if ($this->shouldBypassTenant($request)) {
+            $this->tenantContext->setBypassed(true);
+
             return $next($request);
         }
 

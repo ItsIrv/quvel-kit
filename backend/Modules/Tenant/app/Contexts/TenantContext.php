@@ -18,11 +18,24 @@ class TenantContext
     protected Tenant $tenant;
 
     /**
+     * Whether tenant resolution has been bypassed for this request.
+     */
+    protected bool $bypassed = false;
+
+    /**
      * Set the tenant.
      */
     public function set(Tenant $tenant): void
     {
         $this->tenant = $tenant;
+    }
+
+    /**
+     * Mark tenant resolution as bypassed for this request.
+     */
+    public function setBypassed(bool $bypassed = true): void
+    {
+        $this->bypassed = $bypassed;
     }
 
     /**
@@ -47,6 +60,14 @@ class TenantContext
     public function has(): bool
     {
         return isset($this->tenant);
+    }
+
+    /**
+     * Check if tenant resolution has been bypassed for this request.
+     */
+    public function isBypassed(): bool
+    {
+        return $this->bypassed;
     }
 
     /**

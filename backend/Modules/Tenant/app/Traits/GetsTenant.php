@@ -12,16 +12,23 @@ trait GetsTenant
     /**
      * Get the resolved tenant.
      *
-     * @throws RuntimeException When no tenant can be resolved
+     * @throws RuntimeException When no tenant can be resolved and not bypassed
      */
     protected function getTenant(): Tenant
     {
-        // Otherwise use the tenant context
-        return app(TenantContext::class)->get();
+        $tenantContext = app(TenantContext::class);
+
+        if ($tenantContext->isBypassed()) {
+            throw new RuntimeException('Tenant resolution is bypassed for this request');
+        }
+
+        return $tenantContext->get();
     }
 
     /**
      * Get the resolved tenant ID.
+     *
+     * @throws RuntimeException When no tenant can be resolved and not bypassed
      */
     protected function getTenantId(): int
     {
