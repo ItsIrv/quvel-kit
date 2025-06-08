@@ -53,7 +53,7 @@ export class ApiService extends Service implements SsrAwareService, RegisterServ
         config.headers.set('X-Trace-ID', this.log.getLogger().getTraceInfo().id);
         config.headers.set('X-Tenant-ID', this.log.getLogger().getTraceInfo().tenant);
 
-        this.log.info(`API Request: ${method} ${url}`, {
+        this.log.debug(`API Request: ${method} ${url}`, {
           method,
           url,
           baseURL: config.baseURL,
@@ -79,7 +79,7 @@ export class ApiService extends Service implements SsrAwareService, RegisterServ
         const status = response.status;
         const statusText = response.statusText;
 
-        this.log.info(`API Response: ${method} ${url} ${status} ${statusText}`, {
+        this.log.debug(`API Response: ${method} ${url} ${status} ${statusText}`, {
           method,
           url,
           status,

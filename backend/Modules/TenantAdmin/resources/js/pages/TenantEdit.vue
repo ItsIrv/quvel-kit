@@ -118,7 +118,15 @@ const configForm = ref({
     mail_password: '',
     mail_encryption: '',
     mail_from_address: '',
-    mail_from_name: ''
+    mail_from_name: '',
+    
+    // Session Config
+    session_driver: '',
+    session_lifetime: '',
+    session_encrypt: false,
+    session_path: '',
+    session_domain: '',
+    session_cookie: ''
 })
 
 // Get tenant ID from route
@@ -232,7 +240,15 @@ const loadTenant = async () => {
                 mail_password: config.mail_password || '',
                 mail_encryption: config.mail_encryption || '',
                 mail_from_address: config.mail_from_address || '',
-                mail_from_name: config.mail_from_name || ''
+                mail_from_name: config.mail_from_name || '',
+                
+                // Session Config
+                session_driver: config.session_driver || '',
+                session_lifetime: config.session_lifetime || '',
+                session_encrypt: config.session_encrypt || false,
+                session_path: config.session_path || '',
+                session_domain: config.session_domain || '',
+                session_cookie: config.session_cookie || ''
             }
         }
     } catch (err: any) {
@@ -363,10 +379,10 @@ onMounted(() => {
             <!-- Edit form -->
             <div
                 v-if="tenant && !loading"
-                class="space-y-6"
+                class="h-screen flex flex-col"
             >
-                <!-- Full-width Basic Info Section -->
-                <Card>
+                <!-- Fixed Header with Basic Info -->
+                <Card class="mb-4">
                     <template #title>
                         <h2 class="text-lg font-semibold mb-6">
                             Tenant Information
@@ -374,127 +390,126 @@ onMounted(() => {
                     </template>
 
                     <template #content>
-                        <form
-                            @submit.prevent="saveTenant"
-                            class="space-y-6"
-                        >
-                            <!-- Basic Info Grid -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-                                <FloatLabel>
-                                    <InputText
-                                        id="name"
-                                        v-model="form.name"
-                                        class="w-full"
-                                        :disabled="saving"
-                                    />
-                                    <label for="name">Name</label>
-                                </FloatLabel>
+                        <!-- Basic Info Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
+                            <FloatLabel>
+                                <InputText
+                                    id="name"
+                                    v-model="form.name"
+                                    class="w-full"
+                                    :disabled="saving"
+                                />
+                                <label for="name">Name</label>
+                            </FloatLabel>
 
-                                <FloatLabel>
-                                    <InputText
-                                        id="domain"
-                                        v-model="form.domain"
-                                        class="w-full"
-                                        :disabled="saving"
-                                    />
-                                    <label for="domain">Domain</label>
-                                </FloatLabel>
+                            <FloatLabel>
+                                <InputText
+                                    id="domain"
+                                    v-model="form.domain"
+                                    class="w-full"
+                                    :disabled="saving"
+                                />
+                                <label for="domain">Domain</label>
+                            </FloatLabel>
 
-                                <FloatLabel>
-                                    <InputText
-                                        id="tier"
-                                        v-model="form.tier"
-                                        class="w-full"
-                                        :disabled="saving"
-                                    />
-                                    <label for="tier">Tier</label>
-                                </FloatLabel>
+                            <FloatLabel>
+                                <InputText
+                                    id="tier"
+                                    v-model="form.tier"
+                                    class="w-full"
+                                    :disabled="saving"
+                                />
+                                <label for="tier">Tier</label>
+                            </FloatLabel>
 
-                                <FloatLabel>
-                                    <InputText
-                                        id="parent_id"
-                                        :model-value="form.parent_id?.toString() || ''"
-                                        @update:model-value="form.parent_id = $event ? Number($event) : null"
-                                        class="w-full"
-                                        :disabled="saving"
-                                        type="number"
-                                    />
-                                    <label for="parent_id">Parent ID</label>
-                                </FloatLabel>
+                            <FloatLabel>
+                                <InputText
+                                    id="parent_id"
+                                    :model-value="form.parent_id?.toString() || ''"
+                                    @update:model-value="form.parent_id = $event ? Number($event) : null"
+                                    class="w-full"
+                                    :disabled="saving"
+                                    type="number"
+                                />
+                                <label for="parent_id">Parent ID</label>
+                            </FloatLabel>
 
-                                <div class="flex items-center gap-3">
-                                    <InputSwitch
-                                        id="is_active"
-                                        v-model="form.is_active"
-                                        :disabled="saving"
-                                    />
-                                    <label
-                                        for="is_active"
-                                        class="text-sm font-medium text-gray-700"
-                                    >
-                                        {{ form.is_active ? 'Active' : 'Inactive' }}
-                                    </label>
-                                </div>
+                            <div class="flex items-center gap-3">
+                                <InputSwitch
+                                    id="is_active"
+                                    v-model="form.is_active"
+                                    :disabled="saving"
+                                />
+                                <label
+                                    for="is_active"
+                                    class="text-sm font-medium text-gray-700"
+                                >
+                                    {{ form.is_active ? 'Active' : 'Inactive' }}
+                                </label>
                             </div>
+                        </div>
 
-                            <!-- Read-only info -->
-                            <div class="border-t pt-6">
-                                <h4 class="text-sm font-medium text-gray-700 mb-4">Read-only Information</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                    <div class="space-y-2">
-                                        <label class="block text-sm font-medium text-gray-500">ID</label>
-                                        <div class="text-sm text-gray-900 font-mono">{{ tenant.id }}</div>
+                        <!-- Read-only info -->
+                        <div class="border-t pt-4">
+                            <h4 class="text-sm font-medium text-gray-700 mb-4">Read-only Information</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-500">ID</label>
+                                    <div class="text-sm text-gray-900 font-mono">{{ tenant.id }}</div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-500">Public ID</label>
+                                    <div class="text-sm text-gray-900 font-mono">{{ tenant.public_id }}</div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-500">Created</label>
+                                    <div class="text-sm text-gray-900">
+                                        {{ new Date(tenant.created_at).toLocaleString() }}
                                     </div>
+                                </div>
 
-                                    <div class="space-y-2">
-                                        <label class="block text-sm font-medium text-gray-500">Public ID</label>
-                                        <div class="text-sm text-gray-900 font-mono">{{ tenant.public_id }}</div>
-                                    </div>
-
-                                    <div class="space-y-2">
-                                        <label class="block text-sm font-medium text-gray-500">Created</label>
-                                        <div class="text-sm text-gray-900">
-                                            {{ new Date(tenant.created_at).toLocaleString() }}
-                                        </div>
-                                    </div>
-
-                                    <div class="space-y-2">
-                                        <label class="block text-sm font-medium text-gray-500">Updated</label>
-                                        <div class="text-sm text-gray-900">
-                                            {{ new Date(tenant.updated_at).toLocaleString() }}
-                                        </div>
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-500">Updated</label>
+                                    <div class="text-sm text-gray-900">
+                                        {{ new Date(tenant.updated_at).toLocaleString() }}
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Actions -->
-                            <div class="flex justify-end gap-3 pt-6 border-t">
-                                <Button
-                                    label="Cancel"
-                                    severity="secondary"
-                                    @click="goBack"
-                                    :disabled="saving"
-                                />
-                                <Button
-                                    label="Save Changes"
-                                    type="submit"
-                                    :loading="saving"
-                                    :disabled="saving"
-                                />
-                            </div>
-                        </form>
+                        </div>
                     </template>
                 </Card>
 
-                <!-- Configuration Tabs -->
-                <Card>
-                    <template #content>
-                        <TabView>
+                <!-- Fixed Height Configuration Container -->
+                <div class="flex-1 flex flex-col">
+                    <!-- Fixed Action Buttons -->
+                    <div class="flex justify-end gap-3 mb-4">
+                        <Button
+                            label="Cancel"
+                            severity="secondary"
+                            @click="goBack"
+                            :disabled="saving"
+                        />
+                        <Button
+                            label="Save Changes"
+                            @click="saveTenant"
+                            :loading="saving"
+                            :disabled="saving"
+                        />
+                    </div>
+
+                    <!-- Configuration Tabs with Fixed Height -->
+                    <Card class="flex-1 flex flex-col">
+                        <template #content>
+                            <div class="flex-1 flex flex-col">
+                                <TabView class="flex-1 flex flex-col" :scrollable="true">
                             <TabPanel
                                 header="Core Config"
                                 value="core"
                             >
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                                <div class="h-96 overflow-y-auto">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
                                     <!-- App Settings -->
                                     <FloatLabel>
                                         <InputText
@@ -651,6 +666,7 @@ onMounted(() => {
                                         />
                                         <label for="pusher_app_cluster">Pusher Cluster</label>
                                     </FloatLabel>
+                                    </div>
                                 </div>
                             </TabPanel>
 
@@ -658,7 +674,8 @@ onMounted(() => {
                                 header="Broadcasting Config"
                                 value="broadcasting"
                             >
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                                <div class="h-96 overflow-y-auto">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
                                     <!-- Broadcasting Driver -->
                                     <FloatLabel>
                                         <InputText
@@ -772,6 +789,7 @@ onMounted(() => {
                                         />
                                         <label for="ably_key">Ably Key</label>
                                     </FloatLabel>
+                                    </div>
                                 </div>
                             </TabPanel>
 
@@ -779,7 +797,8 @@ onMounted(() => {
                                 header="Cache Config"
                                 value="cache"
                             >
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                                <div class="h-96 overflow-y-auto">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
                                     <FloatLabel>
                                         <InputText
                                             id="cache_store"
@@ -799,6 +818,7 @@ onMounted(() => {
                                         />
                                         <label for="cache_prefix">Cache Prefix</label>
                                     </FloatLabel>
+                                    </div>
                                 </div>
                             </TabPanel>
 
@@ -806,7 +826,8 @@ onMounted(() => {
                                 header="Database Config"
                                 value="database"
                             >
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                                <div class="h-96 overflow-y-auto">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
                                     <FloatLabel>
                                         <InputText
                                             id="db_connection"
@@ -867,6 +888,7 @@ onMounted(() => {
                                         />
                                         <label for="db_password">DB Password</label>
                                     </FloatLabel>
+                                    </div>
                                 </div>
                             </TabPanel>
 
@@ -874,7 +896,8 @@ onMounted(() => {
                                 header="Filesystem Config"
                                 value="filesystem"
                             >
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                                <div class="h-96 overflow-y-auto">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
                                     <!-- Default & Cloud Settings -->
                                     <FloatLabel>
                                         <InputText
@@ -989,6 +1012,7 @@ onMounted(() => {
                                         />
                                         <label for="disable_temp_isolation" class="text-sm font-medium text-gray-700">Disable Temp Isolation</label>
                                     </div>
+                                    </div>
                                 </div>
                             </TabPanel>
 
@@ -996,7 +1020,8 @@ onMounted(() => {
                                 header="Logging Config"
                                 value="logging"
                             >
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                                <div class="h-96 overflow-y-auto">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
                                     <!-- Basic Logging Settings -->
                                     <FloatLabel>
                                         <InputText
@@ -1173,6 +1198,7 @@ onMounted(() => {
                                         />
                                         <label for="log_stack_channels">Stack Channels</label>
                                     </FloatLabel>
+                                    </div>
                                 </div>
                             </TabPanel>
 
@@ -1180,97 +1206,175 @@ onMounted(() => {
                                 header="Mail Config"
                                 value="mail"
                             >
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
-                                    <!-- Mail Driver & Basic Settings -->
-                                    <FloatLabel>
-                                        <InputText
-                                            id="mail_mailer"
-                                            v-model="configForm.mail_mailer"
-                                            class="w-full"
-                                            :disabled="saving"
-                                        />
-                                        <label for="mail_mailer">Mail Mailer</label>
-                                    </FloatLabel>
+                                <div class="h-96 overflow-y-auto">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                                        <!-- Mail Driver & Basic Settings -->
+                                        <FloatLabel>
+                                            <InputText
+                                                id="mail_mailer"
+                                                v-model="configForm.mail_mailer"
+                                                class="w-full"
+                                                :disabled="saving"
+                                            />
+                                            <label for="mail_mailer">Mail Mailer</label>
+                                        </FloatLabel>
 
-                                    <FloatLabel>
-                                        <InputText
-                                            id="mail_host"
-                                            v-model="configForm.mail_host"
-                                            class="w-full"
-                                            :disabled="saving"
-                                        />
-                                        <label for="mail_host">Mail Host</label>
-                                    </FloatLabel>
+                                        <FloatLabel>
+                                            <InputText
+                                                id="mail_host"
+                                                v-model="configForm.mail_host"
+                                                class="w-full"
+                                                :disabled="saving"
+                                            />
+                                            <label for="mail_host">Mail Host</label>
+                                        </FloatLabel>
 
-                                    <FloatLabel>
-                                        <InputText
-                                            id="mail_port"
-                                            v-model="configForm.mail_port"
-                                            class="w-full"
-                                            :disabled="saving"
-                                            type="number"
-                                        />
-                                        <label for="mail_port">Mail Port</label>
-                                    </FloatLabel>
+                                        <FloatLabel>
+                                            <InputText
+                                                id="mail_port"
+                                                v-model="configForm.mail_port"
+                                                class="w-full"
+                                                :disabled="saving"
+                                                type="number"
+                                            />
+                                            <label for="mail_port">Mail Port</label>
+                                        </FloatLabel>
 
-                                    <!-- Authentication -->
-                                    <FloatLabel>
-                                        <InputText
-                                            id="mail_username"
-                                            v-model="configForm.mail_username"
-                                            class="w-full"
-                                            :disabled="saving"
-                                        />
-                                        <label for="mail_username">Mail Username</label>
-                                    </FloatLabel>
+                                        <!-- Authentication -->
+                                        <FloatLabel>
+                                            <InputText
+                                                id="mail_username"
+                                                v-model="configForm.mail_username"
+                                                class="w-full"
+                                                :disabled="saving"
+                                            />
+                                            <label for="mail_username">Mail Username</label>
+                                        </FloatLabel>
 
-                                    <FloatLabel>
-                                        <InputText
-                                            id="mail_password"
-                                            v-model="configForm.mail_password"
-                                            class="w-full"
-                                            :disabled="saving"
-                                            type="password"
-                                        />
-                                        <label for="mail_password">Mail Password</label>
-                                    </FloatLabel>
+                                        <FloatLabel>
+                                            <InputText
+                                                id="mail_password"
+                                                v-model="configForm.mail_password"
+                                                class="w-full"
+                                                :disabled="saving"
+                                                type="password"
+                                            />
+                                            <label for="mail_password">Mail Password</label>
+                                        </FloatLabel>
 
-                                    <FloatLabel>
-                                        <InputText
-                                            id="mail_encryption"
-                                            v-model="configForm.mail_encryption"
-                                            class="w-full"
-                                            :disabled="saving"
-                                        />
-                                        <label for="mail_encryption">Mail Encryption</label>
-                                    </FloatLabel>
+                                        <FloatLabel>
+                                            <InputText
+                                                id="mail_encryption"
+                                                v-model="configForm.mail_encryption"
+                                                class="w-full"
+                                                :disabled="saving"
+                                            />
+                                            <label for="mail_encryption">Mail Encryption</label>
+                                        </FloatLabel>
 
-                                    <!-- From Address & Name -->
-                                    <FloatLabel>
-                                        <InputText
-                                            id="mail_from_address"
-                                            v-model="configForm.mail_from_address"
-                                            class="w-full"
-                                            :disabled="saving"
-                                            type="email"
-                                        />
-                                        <label for="mail_from_address">From Address</label>
-                                    </FloatLabel>
+                                        <!-- From Address & Name -->
+                                        <FloatLabel>
+                                            <InputText
+                                                id="mail_from_address"
+                                                v-model="configForm.mail_from_address"
+                                                class="w-full"
+                                                :disabled="saving"
+                                                type="email"
+                                            />
+                                            <label for="mail_from_address">From Address</label>
+                                        </FloatLabel>
 
-                                    <FloatLabel>
-                                        <InputText
-                                            id="mail_from_name"
-                                            v-model="configForm.mail_from_name"
-                                            class="w-full"
-                                            :disabled="saving"
-                                        />
-                                        <label for="mail_from_name">From Name</label>
-                                    </FloatLabel>
+                                        <FloatLabel>
+                                            <InputText
+                                                id="mail_from_name"
+                                                v-model="configForm.mail_from_name"
+                                                class="w-full"
+                                                :disabled="saving"
+                                            />
+                                            <label for="mail_from_name">From Name</label>
+                                        </FloatLabel>
+                                    </div>
                                 </div>
                             </TabPanel>
-                        </TabView>
-                    </template>
-                </Card>
+
+                            <TabPanel
+                                header="Session Config"
+                                value="session"
+                            >
+                                <div class="h-96 overflow-y-auto">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                                        <!-- Session Driver -->
+                                        <FloatLabel>
+                                            <InputText
+                                                id="session_driver"
+                                                v-model="configForm.session_driver"
+                                                class="w-full"
+                                                :disabled="saving"
+                                            />
+                                            <label for="session_driver">Session Driver</label>
+                                        </FloatLabel>
+
+                                        <FloatLabel>
+                                            <InputText
+                                                id="session_lifetime"
+                                                v-model="configForm.session_lifetime"
+                                                class="w-full"
+                                                :disabled="saving"
+                                                type="number"
+                                            />
+                                            <label for="session_lifetime">Session Lifetime (minutes)</label>
+                                        </FloatLabel>
+
+                                        <div class="flex items-center gap-2">
+                                            <Checkbox
+                                                id="session_encrypt"
+                                                v-model="configForm.session_encrypt"
+                                                :binary="true"
+                                                :disabled="saving"
+                                            />
+                                            <label
+                                                for="session_encrypt"
+                                                class="text-sm font-medium text-gray-700"
+                                            >Session Encrypt</label>
+                                        </div>
+
+                                        <FloatLabel>
+                                            <InputText
+                                                id="session_path"
+                                                v-model="configForm.session_path"
+                                                class="w-full"
+                                                :disabled="saving"
+                                            />
+                                            <label for="session_path">Session Path</label>
+                                        </FloatLabel>
+
+                                        <FloatLabel>
+                                            <InputText
+                                                id="session_domain"
+                                                v-model="configForm.session_domain"
+                                                class="w-full"
+                                                :disabled="saving"
+                                            />
+                                            <label for="session_domain">Session Domain</label>
+                                        </FloatLabel>
+
+                                        <FloatLabel>
+                                            <InputText
+                                                id="session_cookie"
+                                                v-model="configForm.session_cookie"
+                                                class="w-full"
+                                                :disabled="saving"
+                                            />
+                                            <label for="session_cookie">Session Cookie Name</label>
+                                        </FloatLabel>
+                                    </div>
+                                </div>
+                            </TabPanel>
+                                </TabView>
+                            </div>
+                        </template>
+                    </Card>
+                </div>
             </div>
         </div>
     </div>
