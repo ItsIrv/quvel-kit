@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
+use Modules\Core\Enums\CoreHeader;
 
 class FrontendService
 {
@@ -42,7 +43,7 @@ class FrontendService
         $this->url             = '';
         $this->capacitorScheme = null;
 
-        $this->isCapacitor = $this->request->hasHeader('X-Capacitor');
+        $this->isCapacitor = $this->request->hasHeader(CoreHeader::CAPACITOR->value);
     }
 
     /**

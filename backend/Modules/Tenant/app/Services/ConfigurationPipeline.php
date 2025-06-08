@@ -70,6 +70,12 @@ class ConfigurationPipeline
      */
     public function apply(Tenant $tenant, ConfigRepository $config): void
     {
+        // Check if tenant context is bypassed
+        $tenantContext = app(\Modules\Tenant\Contexts\TenantContext::class);
+        if ($tenantContext->isBypassed()) {
+            return;
+        }
+
         $tenantConfig = $tenant->getEffectiveConfig();
 
         if (!$tenantConfig) {
