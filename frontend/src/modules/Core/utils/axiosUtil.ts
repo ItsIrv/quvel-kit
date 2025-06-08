@@ -60,8 +60,12 @@ export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosIn
 
     // Attach session cookie (for authentication)
     api.defaults.headers['Host'] = '';
-    api.defaults.maxRedirects = 0;
-    api.defaults.timeout = 2500;
+    api.defaults.maxRedirects = process.env.SSR_AXIOS_MAX_REDIRECTS
+      ? Number(process.env.SSR_AXIOS_MAX_REDIRECTS)
+      : 0;
+    api.defaults.timeout = process.env.SSR_AXIOS_TIMEOUT
+      ? Number(process.env.SSR_AXIOS_TIMEOUT)
+      : 5000;
 
     if (isValidSessionToken(sessionToken)) {
       api.defaults.headers.Cookie = `${sessionCookie}=${sessionToken}`;
@@ -71,6 +75,10 @@ export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosIn
     api.defaults.headers['X-SSR-Key'] = process.env.SSR_API_KEY ?? '';
   } else {
     // TODO: On browser, add interceptors for XSRF expired/missing
+  }
+
+  if (process.env.MODE === 'capacitor') {
+    api.defaults.headers['X-Capacitor'] = 'true';
   }
 
   return api;

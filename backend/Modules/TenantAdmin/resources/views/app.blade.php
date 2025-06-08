@@ -21,7 +21,7 @@
   <meta name="format-detection" content="telephone=no">
 
   <!-- PWA Meta Tags -->
-  <link rel="manifest" href="{{ asset('build/manifest.json') }}">
+  <link rel="manifest" href="{{ asset('build-tenantadmin/manifest.json') }}">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
