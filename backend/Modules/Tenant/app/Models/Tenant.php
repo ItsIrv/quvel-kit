@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Modules\Tenant\Casts\DynamicTenantConfigCast;
 use Modules\Tenant\Database\Factories\TenantFactory;
-use Modules\Tenant\Traits\HasTierFeatures;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 
 /**
@@ -35,7 +34,6 @@ class Tenant extends Model
 {
     /** @use HasFactory<TenantFactory> */
     use HasFactory;
-    use HasTierFeatures;
     use SoftDeletes;
 
     /**
@@ -116,7 +114,6 @@ class Tenant extends Model
         $mergedConfig = new DynamicTenantConfig(
             [], // Empty data array to start
             [], // Empty visibility array to start
-            $parentDynamic->getTier(),
         );
 
         // Copy all parent values first
@@ -127,11 +124,6 @@ class Tenant extends Model
         // Then override with child values
         foreach ($childDynamic->toArray()['config'] as $key => $value) {
             $mergedConfig->set($key, $value);
-        }
-
-        // Child tier takes precedence (if set in config)
-        if ($childDynamic->getTier()) {
-            $mergedConfig->setTier($childDynamic->getTier());
         }
 
         return $mergedConfig;

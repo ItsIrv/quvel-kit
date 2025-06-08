@@ -29,7 +29,6 @@ const successMessage = ref<string | null>(null)
 const form = ref({
     name: '',
     domain: '',
-    tier: '',
     parent_id: null as number | null,
     is_active: true
 })
@@ -150,7 +149,6 @@ const loadTenant = async () => {
             form.value = {
                 name: tenant.value.name,
                 domain: tenant.value.domain,
-                tier: tenant.value.tier || '',
                 parent_id: tenant.value.parent_id,
                 is_active: tenant.value.is_active ?? true
             }
@@ -277,9 +275,6 @@ const saveTenant = async () => {
         if (form.value.domain !== tenant.value.domain) {
             updateData.domain = form.value.domain
         }
-        if (form.value.tier !== (tenant.value.tier || '')) {
-            updateData.tier = form.value.tier || null
-        }
         if (form.value.is_active !== tenant.value.is_active) {
             updateData.is_active = form.value.is_active
         }
@@ -391,7 +386,7 @@ onMounted(() => {
 
                     <template #content>
                         <!-- Basic Info Grid -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                             <FloatLabel>
                                 <InputText
                                     id="name"
@@ -412,15 +407,6 @@ onMounted(() => {
                                 <label for="domain">Domain</label>
                             </FloatLabel>
 
-                            <FloatLabel>
-                                <InputText
-                                    id="tier"
-                                    v-model="form.tier"
-                                    class="w-full"
-                                    :disabled="saving"
-                                />
-                                <label for="tier">Tier</label>
-                            </FloatLabel>
 
                             <FloatLabel>
                                 <InputText

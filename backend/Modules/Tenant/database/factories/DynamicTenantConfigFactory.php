@@ -2,30 +2,28 @@
 
 namespace Modules\Tenant\database\factories;
 
-use Modules\Tenant\Enums\TenantConfigVisibility;
 use Modules\Tenant\Services\TenantConfigSeederRegistry;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 
 /**
  * Factory for creating dynamic tenant configurations.
- * This factory only provides minimal tenant configuration.
+ * This factory provides simple configuration templates.
  * Modules should register their own config seeders via TenantServiceProvider::registerConfigSeeder()
  */
 class DynamicTenantConfigFactory
 {
     /**
-     * Create a basic tier configuration (shared resources).
+     * Create a basic configuration (minimal settings).
      */
-    public static function createBasicTier(
+    public static function createBasic(
         string $domain,
         string $appName = 'QuVel',
         string $mailFromName = 'QuVel Support',
         string $mailFromAddress = 'support@quvel.app',
     ): DynamicTenantConfig {
         $baseConfig = [
-            // Minimal tenant identification
+            // Basic tenant identification
             'domain' => $domain,
-            'tier' => 'basic',
             
             // Pass through parameters for Core module to use
             '_seed_app_name' => $appName,
@@ -43,28 +41,27 @@ class DynamicTenantConfigFactory
         $baseVisibility = [];
         $visibility = $registry->getSeedVisibility('basic', $baseVisibility);
 
-        return new DynamicTenantConfig($config, $visibility, 'basic');
+        return new DynamicTenantConfig($config, $visibility);
     }
 
     /**
-     * Create a standard tier configuration (dedicated cache).
+     * Create a standard configuration (with some dedicated resources).
      */
-    public static function createStandardTier(
-        string $domain,
+    public static function createStandard(
+        string $apiDomain,
         string $appName = 'QuVel',
         string $mailFromName = 'QuVel Support',
         string $mailFromAddress = 'support@quvel.app',
         ?string $cachePrefix = null,
     ): DynamicTenantConfig {
-        // Generate shorter tenant ID (8 chars)
+        // Generate unique tenant ID for resource naming
         $tenantId = substr(uniqid(), -8);
 
         $baseConfig = [
-            // Minimal tenant identification
-            'domain' => $domain,
-            'tier' => 'standard',
+            // Standard tenant identification
+            'domain' => $apiDomain,
             
-            // Standard tier - dedicated cache
+            // Dedicated cache configuration
             'cache_prefix' => $cachePrefix ?? "tenant_{$tenantId}_",
             
             // Pass through parameters for Core module to use
@@ -83,72 +80,18 @@ class DynamicTenantConfigFactory
         $baseVisibility = [];
         $visibility = $registry->getSeedVisibility('standard', $baseVisibility);
 
-        return new DynamicTenantConfig($config, $visibility, 'standard');
+        return new DynamicTenantConfig($config, $visibility);
     }
 
     /**
-     * Create a premium tier configuration (dedicated database and cache).
+     * Create an isolated configuration (fully dedicated resources).
      */
-    public static function createPremiumTier(
-        string $apiDomain,
-        string $appName = 'QuVel',
-        string $mailFromName = 'QuVel Support',
-        string $mailFromAddress = 'support@quvel.app',
-        ?string $dbDatabase = null,
-        ?string $dbUsername = null,
-        ?string $dbPassword = null,
-        ?string $capacitorScheme = null,
-    ): DynamicTenantConfig {
-        // Generate shorter tenant ID (8 chars)
-        $tenantId = substr(uniqid(), -8);
-
-        $baseConfig = [
-            // Minimal tenant identification
-            'domain' => $apiDomain,
-            'tier' => 'premium',
-            
-            // Premium tier - dedicated database
-            'db_database' => $dbDatabase ?? "tenant_{$tenantId}_db",
-            'db_username' => $dbUsername ?? "tenant_{$tenantId}",
-            'db_password' => $dbPassword ?? bin2hex(random_bytes(16)),
-            
-            // Dedicated cache
-            'cache_prefix' => "tenant_{$tenantId}_",
-            
-            // Pass through parameters for Core module to use
-            '_seed_app_name' => $appName,
-            '_seed_mail_from_name' => $mailFromName,
-            '_seed_mail_from_address' => $mailFromAddress,
-            '_seed_capacitor_scheme' => $capacitorScheme,
-        ];
-
-        // Get module-specific config from registry
-        $registry = app(TenantConfigSeederRegistry::class);
-        $config = $registry->getSeedConfig('premium', $baseConfig);
-        
-        // Remove seed parameters
-        unset(
-            $config['_seed_app_name'], 
-            $config['_seed_mail_from_name'], 
-            $config['_seed_mail_from_address'],
-            $config['_seed_capacitor_scheme']
-        );
-
-        $baseVisibility = [];
-        $visibility = $registry->getSeedVisibility('premium', $baseVisibility);
-
-        return new DynamicTenantConfig($config, $visibility, 'premium');
-    }
-
-    /**
-     * Create an enterprise tier configuration (fully isolated).
-     */
-    public static function createEnterpriseTier(
+    public static function createIsolated(
         string $apiDomain,
         string $appName = 'QuVel',
         array $overrides = [],
     ): DynamicTenantConfig {
-        // Generate shorter tenant ID (8 chars)
+        // Generate unique tenant ID for resource naming
         $tenantId = substr(uniqid(), -8);
 
         // Extract seed parameters from overrides
@@ -161,22 +104,29 @@ class DynamicTenantConfigFactory
         }
 
         $baseConfig = array_merge([
-            // Minimal tenant identification
+            // Isolated tenant identification
             'domain' => $apiDomain,
-            'tier' => 'enterprise',
             
-            // Enterprise gets full configuration control
+            // Dedicated database configuration
             'db_connection' => 'mysql',
             'db_host' => env('DB_HOST', '127.0.0.1'),
             'db_port' => env('DB_PORT', 3306),
             'db_database' => "tenant_{$tenantId}_db",
             'db_username' => "tenant_{$tenantId}",
             'db_password' => bin2hex(random_bytes(16)),
+            
+            // Dedicated cache configuration
             'cache_store' => 'redis',
             'cache_prefix' => "tenant_{$tenantId}_",
+            
+            // Dedicated session configuration
             'session_driver' => 'redis',
+            
+            // Redis configuration
             'redis_host' => env('REDIS_HOST', '127.0.0.1'),
             'redis_port' => env('REDIS_PORT', 6379),
+            
+            // Mail configuration
             'mail_mailer' => 'smtp',
             'mail_host' => env('MAIL_HOST', 'smtp.mailgun.org'),
             'mail_port' => env('MAIL_PORT', 587),
@@ -187,7 +137,7 @@ class DynamicTenantConfigFactory
 
         // Get module-specific config from registry
         $registry = app(TenantConfigSeederRegistry::class);
-        $config = $registry->getSeedConfig('enterprise', $baseConfig);
+        $config = $registry->getSeedConfig('isolated', $baseConfig);
         
         // Remove all seed parameters
         foreach (array_keys($config) as $key) {
@@ -197,9 +147,9 @@ class DynamicTenantConfigFactory
         }
 
         $baseVisibility = [];
-        $visibility = $registry->getSeedVisibility('enterprise', $baseVisibility);
+        $visibility = $registry->getSeedVisibility('isolated', $baseVisibility);
 
-        return new DynamicTenantConfig($config, $visibility, 'enterprise');
+        return new DynamicTenantConfig($config, $visibility);
     }
 
     /**
@@ -207,16 +157,14 @@ class DynamicTenantConfigFactory
      * This helps migrate from the old system where all configs were required.
      */
     public static function createFromEnv(
-        string $tier = 'basic',
+        string $template = 'basic',
         array $overrides = [],
     ): DynamicTenantConfig {
         // Only include minimal configs
-        $config = [
-            'tier' => $tier,
-        ];
+        $config = [];
 
-        // Database settings (only for premium/enterprise tiers)
-        if (in_array($tier, ['premium', 'enterprise'])) {
+        // Database settings (only for isolated template)
+        if ($template === 'isolated') {
             if (env('DB_CONNECTION') !== null) {
                 $config['db_connection'] = env('DB_CONNECTION', 'mysql');
             }
@@ -233,11 +181,11 @@ class DynamicTenantConfigFactory
 
         // Get module-specific config from registry
         $registry = app(TenantConfigSeederRegistry::class);
-        $config = $registry->getSeedConfig($tier, $config);
+        $config = $registry->getSeedConfig($template, $config);
 
         $baseVisibility = [];
-        $visibility = $registry->getSeedVisibility($tier, $baseVisibility);
+        $visibility = $registry->getSeedVisibility($template, $baseVisibility);
 
-        return new DynamicTenantConfig($config, $visibility, $tier);
+        return new DynamicTenantConfig($config, $visibility);
     }
 }

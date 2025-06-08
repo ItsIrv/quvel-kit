@@ -119,14 +119,6 @@ onMounted(() => {
                     </template>
                 </Column>
                 
-                <Column field="tier" header="Tier" class="w-24">
-                    <template #body="{ data }">
-                        <span v-if="data.tier" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {{ data.tier }}
-                        </span>
-                        <span v-else class="text-gray-400">-</span>
-                    </template>
-                </Column>
                 
                 <Column field="parent_id" header="Parent" class="w-20">
                     <template #body="{ data }">

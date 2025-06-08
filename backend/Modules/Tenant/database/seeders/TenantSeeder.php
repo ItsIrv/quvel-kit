@@ -21,14 +21,13 @@ class TenantSeeder extends Seeder
         $lanApiDomain   = config('quvel.default_lan_domain');
         $lanFrontend    = str_replace('api.', '', $lanApiDomain);
 
-        // Create different tier tenants to demonstrate the system
+        // Create simple tenants for development
 
-        // Basic Tier - Shared everything, minimal config
+        // Basic tenant with minimal config
         $basicTenant = $this->createTenant(
             'basic.example.com',
-            'Basic Tier Tenant',
-            null, // Tier is stored in config now
-            DynamicTenantConfigFactory::createBasicTier(
+            'Basic Tenant',
+            DynamicTenantConfigFactory::createBasic(
                 domain: 'basic.example.com',
                 appName: 'Basic QuVel App',
                 mailFromName: 'Basic Support',
@@ -36,44 +35,29 @@ class TenantSeeder extends Seeder
             )->toArray(),
         );
 
-        // Standard Tier - Shared database, dedicated cache
-        $standardTenant = $this->createTenant(
-            'standard.example.com',
-            'Standard Tier Tenant',
-            null, // Tier is stored in config now
-            DynamicTenantConfigFactory::createStandardTier(
-                domain: 'standard.example.com',
-                appName: 'Standard QuVel App',
-                mailFromName: 'Standard Support',
-                mailFromAddress: 'support@standard.example.com',
-            )->toArray(),
-        );
-
-        // Premium Tier - Dedicated database and cache
-        $premiumTenant = $this->createTenant(
+        // Main API tenant with standard config
+        $mainTenant = $this->createTenant(
             $apiDomain,
-            'Premium Tier Tenant - Main API',
-            null, // Tier is stored in config now
-            DynamicTenantConfigFactory::createPremiumTier(
+            'Main API Tenant',
+            DynamicTenantConfigFactory::createStandard(
                 apiDomain: $apiDomain,
-                appName: 'QuVel Premium',
-                mailFromName: 'Premium Support',
-                mailFromAddress: 'support@premium.example.com',
+                appName: 'QuVel App',
+                mailFromName: 'QuVel Support',
+                mailFromAddress: 'support@quvel.app',
             )->toArray(),
         );
 
-        // Enterprise Tier - Full isolation
-        $enterpriseTenant = $this->createTenant(
+        // LAN API tenant with full isolation
+        $lanTenant = $this->createTenant(
             $lanApiDomain,
-            'Enterprise Tier Tenant - LAN API',
-            null, // Tier is stored in config now
-            DynamicTenantConfigFactory::createEnterpriseTier(
+            'LAN API Tenant',
+            DynamicTenantConfigFactory::createIsolated(
                 apiDomain: $lanApiDomain,
-                appName: 'QuVel Enterprise',
+                appName: 'QuVel LAN',
                 overrides: [
                     '_seed_capacitor_scheme'    => 'quvel',
-                    '_seed_mail_from_address'   => 'enterprise@quvel.app',
-                    '_seed_mail_from_name'      => 'QuVel Enterprise',
+                    '_seed_mail_from_address'   => 'lan@quvel.app',
+                    '_seed_mail_from_name'      => 'QuVel LAN',
                     'internal_api_url'          => 'http://api-lan:8000', // For SSR
                 ],
             )->toArray(),
@@ -82,48 +66,43 @@ class TenantSeeder extends Seeder
         // Create frontend tenants (inherit parent config)
         $this->createTenant(
             $frontendDomain,
-            'Premium Tenant - Frontend',
-            null, // Tier inherited from parent
+            'Main Frontend',
             null,
-            $premiumTenant,
+            $mainTenant,
         );
 
         $this->createTenant(
             $lanFrontend,
-            'Enterprise Tenant - Frontend',
+            'LAN Frontend',
             null,
-            null,
-            $enterpriseTenant,
+            $lanTenant,
         );
 
         // Docker internal domains
         $this->createTenant(
             'quvel-app',
-            'Premium Tenant - Frontend Docker Internal',
+            'Main Frontend Docker Internal',
             null,
-            null,
-            $premiumTenant,
+            $mainTenant,
         );
 
         $this->createTenant(
             'api-lan',
-            'Enterprise Tenant - Frontend Docker Internal',
+            'LAN Frontend Docker Internal',
             null,
-            null,
-            $enterpriseTenant,
+            $lanTenant,
         );
 
-        // Set tenant context to enterprise
-        setTenantContext($enterpriseTenant->id);
+        // Set tenant context to LAN
+        setTenantContext($lanTenant->id);
 
         // Create test users for different tenants
         $this->createTenantUser($basicTenant, 'basic@quvel.app', 'Basic User');
-        $this->createTenantUser($standardTenant, 'standard@quvel.app', 'Standard User');
-        $this->createTenantUser($premiumTenant, 'premium@quvel.app', 'Premium User');
-        $this->createTenantUser($enterpriseTenant, 'enterprise@quvel.app', 'Enterprise User');
+        $this->createTenantUser($mainTenant, 'main@quvel.app', 'Main User');
+        $this->createTenantUser($lanTenant, 'lan@quvel.app', 'LAN User');
 
-        // Set tenant context back to premium for the rest of the seeders
-        setTenantContext($premiumTenant->id);
+        // Set tenant context back to main for the rest of the seeders
+        setTenantContext($mainTenant->id);
     }
 
     /**
@@ -132,7 +111,6 @@ class TenantSeeder extends Seeder
     private function createTenant(
         string $domain,
         string $name,
-        ?string $tier = null,
         ?array $config = null,
         ?Tenant $parent = null,
     ): Tenant {
@@ -142,11 +120,6 @@ class TenantSeeder extends Seeder
             'config'    => $config,
             'parent_id' => $parent?->id,
         ];
-
-        // Add tier if specified
-        if ($tier !== null) {
-            $data['tier'] = $tier;
-        }
 
         return Tenant::updateOrCreate(
             ['domain' => $domain],
