@@ -20,9 +20,6 @@
   <meta name="apple-mobile-web-app-title" content="{{ config('app.name', 'Laravel') }}">
   <meta name="format-detection" content="telephone=no">
 
-  <!-- PWA Meta Tags -->
-  <link rel="manifest" href="{{ asset('build-tenantadmin/manifest.json') }}">
-
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
