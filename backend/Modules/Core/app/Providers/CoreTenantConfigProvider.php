@@ -2,6 +2,7 @@
 
 namespace Modules\Core\Providers;
 
+use Illuminate\Config\Repository;
 use Modules\Tenant\Contracts\TenantConfigProviderInterface;
 use Modules\Tenant\Models\Tenant;
 
@@ -18,36 +19,19 @@ class CoreTenantConfigProvider implements TenantConfigProviderInterface
      */
     public function getConfig(Tenant $tenant): array
     {
-        // Get tenant's effective config which includes seeded values
-        $tenantConfig = $tenant->getEffectiveConfig();
+        $config = app(Repository::class);
 
         return [
             'config'     => [
-                // Core configuration - read from tenant config when available
-                'apiUrl'                 => $tenantConfig?->get('app_url', config('app.url')) ?? config('app.url'),
-                'appUrl'                 => $tenantConfig?->get(
-                    'frontend_url',
-                    config('frontend.url'),
-                ) ?? config('frontend.url'),
-                'appName'                => $tenantConfig?->get(
-                    'app_name',
-                    config('app.name', 'Quvel Kit'),
-                ) ?? config('app.name', 'Quvel Kit'),
+                'apiUrl'                 => $config->get('app.url'),
+                'appUrl'                 => $config->get('frontend.url'),
+                'appName'                => $config->get('app.name', 'Quvel Kit'),
                 'tenantId'               => $tenant->public_id,
                 'tenantName'             => $tenant->name,
-
-                // Pusher config from tenant config
-                'pusherAppKey'           => $tenantConfig?->get('pusher_app_key', '') ?? '',
-                'pusherAppCluster'       => $tenantConfig?->get('pusher_app_cluster', 'mt1') ?? 'mt1',
-
-                // reCAPTCHA config from tenant config (only site key is public)
-                'recaptchaGoogleSiteKey' => $tenantConfig?->get('recaptcha_site_key', '') ?? '',
-
-                // Additional Core module specific configs
-                'internalApiUrl'         => $tenantConfig?->get(
-                    'internal_api_url',
-                    config('frontend.internal_api_url'),
-                ) ?? config('frontend.internal_api_url'),
+                'pusherAppKey'           => $config->get('broadcasting.connections.pusher.key', ''),
+                'pusherAppCluster'       => $config->get('broadcasting.connections.pusher.options.cluster', 'mt1'),
+                'recaptchaGoogleSiteKey' => $config->get('recaptcha_site_key', '') ?? '',
+                'internalApiUrl'         => $config->get('frontend.internal_api_url'),
             ],
             'visibility' => [
                 'apiUrl'                 => 'public',

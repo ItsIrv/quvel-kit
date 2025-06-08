@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Providers;
 
+use Illuminate\Config\Repository;
 use Modules\Tenant\Contracts\TenantConfigProviderInterface;
 use Modules\Tenant\Models\Tenant;
 
@@ -18,36 +19,19 @@ class AuthTenantConfigProvider implements TenantConfigProviderInterface
      */
     public function getConfig(Tenant $tenant): array
     {
-        // Get tenant's dynamic config
-        $tenantConfig = $tenant->config;
-
-        // Extract auth-related configuration from tenant's config
-        $authConfig = [];
-
-        if ($tenantConfig) {
-            // Get values from tenant's dynamic config
-            $authConfig['socialiteProviders'] = $tenantConfig->get('socialite_providers', ['google']);
-            $authConfig['passwordMinLength']  = $tenantConfig->get('password_min_length', 8);
-            $authConfig['sessionCookie']      = $tenantConfig->get('session_cookie', 'quvel_session');
-            $authConfig['twoFactorEnabled']   = $tenantConfig->get('two_factor_enabled', false);
-
-            // Add session lifetime if present
-            if ($tenantConfig->has('session_lifetime')) {
-                $authConfig['sessionLifetime'] = $tenantConfig->get('session_lifetime');
-            }
-        } else {
-            // Fallback defaults
-            $authConfig = [
-            ];
-        }
+        $config = app(Repository::class);
 
         return [
-            'config'     => $authConfig,
+            'config'     => [
+                'socialiteProviders' => $config->get('auth.socialite.providers', ['google']),
+                'passwordMinLength'  => $config->get('auth.password_min_length', 8),
+                'sessionCookie'      => $config->get('session.cookie', 'quvel_session'),
+                'sessionLifetime'    => $config->get('session.lifetime', 120),
+            ],
             'visibility' => [
                 'socialiteProviders' => 'public',
                 'passwordMinLength'  => 'public',
                 'sessionCookie'      => 'protected',
-                'twoFactorEnabled'   => 'public',
                 'sessionLifetime'    => 'protected',
             ],
         ];
