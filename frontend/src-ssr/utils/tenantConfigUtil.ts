@@ -1,4 +1,4 @@
-import { TenantConfigProtected, TenantConfigVisibilityRecords } from '../types/tenant.types';
+import { TenantConfigProtected } from '../types/tenant.types';
 
 /**
  * Creates a tenant config object from environment variables.
@@ -34,28 +34,27 @@ export function createTenantConfigFromEnv(): TenantConfigProtected {
 
 /**
  * Filters out non-public fields from the tenant config.
+ * Only returns fields marked as 'public' in the visibility settings.
  */
-export function filterTenantConfig(config: TenantConfigProtected): TenantConfigProtected {
-  const publicConfig: Partial<TenantConfigProtected> = {};
+export function filterTenantConfig(config: TenantConfigProtected): Record<string, unknown> {
+  const publicConfig: Record<string, unknown> = {};
+  const publicVisibility: Record<string, string> = {};
 
-  Object.keys(config.__visibility).forEach((key) => {
-    const typedKey = key as keyof TenantConfigVisibilityRecords;
+  // First, build the filtered config with only public fields
+  Object.entries(config.__visibility).forEach(([key, visibility]) => {
+    if (visibility === 'public' && key in config) {
+      const value = config[key as keyof TenantConfigProtected];
 
-    if (config.__visibility?.[typedKey] === 'public') {
-      const value = config[typedKey];
-
-      if (typeof value === 'string' || Array.isArray(value)) {
-        publicConfig[typedKey] = value as string & string[];
+      // Only include the value if it exists
+      if (value !== undefined && value !== null) {
+        publicConfig[key] = value;
+        publicVisibility[key] = visibility;
       }
     }
   });
 
-  // Ensure required properties are present
-  return {
-    ...config,
-    ...publicConfig,
-    __visibility: {
-      ...config.__visibility,
-    },
-  };
+  // Include the filtered visibility data
+  publicConfig.__visibility = publicVisibility;
+
+  return publicConfig;
 }

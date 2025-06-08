@@ -8,6 +8,6 @@ export interface TenantConfig {
   pusherAppKey: string;
   pusherAppCluster: string;
   socialiteProviders: string[];
-  sessionCookie: string;
+  sessionCookie?: string;
   recaptchaGoogleSiteKey: string;
 }
