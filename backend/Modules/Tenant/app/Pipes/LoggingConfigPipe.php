@@ -24,14 +24,14 @@ class LoggingConfigPipe implements ConfigurationPipeInterface
         if (isset($tenantConfig['log_single_path'])) {
             $config->set('logging.channels.single.path', $tenantConfig['log_single_path']);
         } else {
-            $config->set('logging.channels.single.path', storage_path('logs/tenants/' . $tenant->id . '/laravel.log'));
+            $config->set('logging.channels.single.path', storage_path('logs/tenants/' . $tenant->public_id . '/laravel.log'));
         }
 
         // Configure daily file logging with tenant isolation
         if (isset($tenantConfig['log_daily_path'])) {
             $config->set('logging.channels.daily.path', $tenantConfig['log_daily_path']);
         } else {
-            $config->set('logging.channels.daily.path', storage_path('logs/tenants/' . $tenant->id . '/laravel.log'));
+            $config->set('logging.channels.daily.path', storage_path('logs/tenants/' . $tenant->public_id . '/laravel.log'));
         }
 
         if (isset($tenantConfig['log_daily_days'])) {
@@ -80,7 +80,7 @@ class LoggingConfigPipe implements ConfigurationPipeInterface
         if (isset($tenantConfig['log_custom_driver'])) {
             $config->set('logging.channels.tenant', [
                 'driver' => $tenantConfig['log_custom_driver'],
-                'path'   => $tenantConfig['log_custom_path'] ?? storage_path('logs/tenants/' . $tenant->id . '/custom.log'),
+                'path'   => $tenantConfig['log_custom_path'] ?? storage_path('logs/tenants/' . $tenant->public_id . '/custom.log'),
                 'level'  => $tenantConfig['log_custom_level'] ?? 'info',
                 'days'   => $tenantConfig['log_custom_days'] ?? 14,
             ]);

@@ -53,8 +53,8 @@ class RedisConfigPipe implements ConfigurationPipeInterface
 
         // Add tenant-specific prefix to Redis keys for isolation
         if (!isset($tenantConfig['redis_prefix'])) {
-            $config->set('database.redis.default.prefix', "tenant_{$tenant->id}:");
-            $config->set('database.redis.cache.prefix', "tenant_{$tenant->id}:");
+            $config->set('database.redis.default.prefix', "tenant_{$tenant->public_id}:");
+            $config->set('database.redis.cache.prefix', "tenant_{$tenant->public_id}:");
             $hasRedisChanges = true;
         } else {
             $config->set('database.redis.default.prefix', $tenantConfig['redis_prefix']);
@@ -113,7 +113,6 @@ class RedisConfigPipe implements ConfigurationPipeInterface
             }
         }
     }
-
 
     public function handles(): array
     {

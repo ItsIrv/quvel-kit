@@ -24,15 +24,11 @@ class AuthTenantConfigProvider implements TenantConfigProviderInterface
         return [
             'config'     => [
                 'socialiteProviders' => $config->get('auth.socialite.providers', ['google']),
-                'passwordMinLength'  => $config->get('auth.password_min_length', 8),
                 'sessionCookie'      => $config->get('session.cookie', 'quvel_session'),
-                'sessionLifetime'    => $config->get('session.lifetime', 120),
             ],
             'visibility' => [
                 'socialiteProviders' => 'public',
-                'passwordMinLength'  => 'public',
                 'sessionCookie'      => 'protected',
-                'sessionLifetime'    => 'protected',
             ],
         ];
     }

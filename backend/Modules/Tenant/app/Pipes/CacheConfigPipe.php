@@ -22,7 +22,7 @@ class CacheConfigPipe implements ConfigurationPipeInterface
         // Check if tenant has dedicated cache feature (only if tiers are enabled)
         if (config('tenant.enable_tiers', false) && !$tenant->hasFeature('dedicated_cache')) {
             // Basic tier: use shared cache with tenant prefix only
-            $config->set('cache.prefix', "tenant_{$tenant->id}_");
+            $config->set('cache.prefix', "tenant_{$tenant->public_id}_");
 
             // Pass to next pipe
             return $next([
@@ -46,7 +46,7 @@ class CacheConfigPipe implements ConfigurationPipeInterface
             $hasCacheChanges = true;
         } else {
             // Default to tenant-specific prefix for isolation
-            $config->set('cache.prefix', "tenant_{$tenant->id}_");
+            $config->set('cache.prefix', "tenant_{$tenant->public_id}_");
             $hasCacheChanges = true;
         }
 

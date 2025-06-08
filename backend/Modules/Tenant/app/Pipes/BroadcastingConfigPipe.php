@@ -70,7 +70,7 @@ class BroadcastingConfigPipe implements ConfigurationPipeInterface
 
         // Configure Redis broadcasting with tenant prefix
         if ($config->get('broadcasting.default') === 'redis' || isset($tenantConfig['redis_broadcast_prefix'])) {
-            $prefix = $tenantConfig['redis_broadcast_prefix'] ?? 'tenant_' . $tenant->id;
+            $prefix = $tenantConfig['redis_broadcast_prefix'] ?? 'tenant_' . $tenant->public_id;
             $config->set('broadcasting.connections.redis.prefix', $prefix);
         }
 

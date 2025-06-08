@@ -26,17 +26,16 @@ class FilesystemConfigPipeTest extends TestCase
         parent::setUp();
 
         $this->config = $this->createMock(ConfigRepository::class);
-        $this->pipe = new FilesystemConfigPipe();
+        $this->pipe   = new FilesystemConfigPipe();
     }
-
 
     public function testHandleAppliesDefaultAndCloudFilesystems(): void
     {
-        $tenant = new Tenant();
-        $tenant->id = '123';
+        $tenant       = new Tenant();
+        $tenant->id   = '123';
         $tenantConfig = [
             'filesystem_default' => 's3',
-            'filesystem_cloud' => 'gcs',
+            'filesystem_cloud'   => 'gcs',
         ];
 
         $this->config->expects($this->any())
@@ -45,7 +44,7 @@ class FilesystemConfigPipeTest extends TestCase
 
         $expectedSets = [
             ['filesystems.default', 's3'],
-            ['filesystems.cloud', 'gcs']
+            ['filesystems.cloud', 'gcs'],
         ];
 
         $foundSets = 0;
@@ -70,10 +69,10 @@ class FilesystemConfigPipeTest extends TestCase
 
     public function testHandleAppliesCustomLocalAndPublicRoots(): void
     {
-        $tenant = new Tenant();
-        $tenant->id = '123';
+        $tenant       = new Tenant();
+        $tenant->id   = '123';
         $tenantConfig = [
-            'filesystem_local_root' => '/custom/local/path',
+            'filesystem_local_root'  => '/custom/local/path',
             'filesystem_public_root' => '/custom/public/path',
         ];
 
@@ -108,9 +107,10 @@ class FilesystemConfigPipeTest extends TestCase
 
     public function testHandleAppliesDefaultTenantIsolation(): void
     {
-        $tenant = new Tenant();
-        $tenant->id = '456';
-        $tenantConfig = [];
+        $tenant            = new Tenant();
+        $tenant->id        = '456';
+        $tenant->public_id = 'test-public-id';
+        $tenantConfig      = [];
 
         $this->config->expects($this->any())
             ->method('get')
@@ -122,14 +122,17 @@ class FilesystemConfigPipeTest extends TestCase
             ]);
 
         $expectedSets = [
-            ['filesystems.disks.local.root', storage_path('app/tenants/456')],
-            ['filesystems.disks.public.root', storage_path('app/public/tenants/456')],
-            ['filesystems.disks.public.url', config('app.url') . '/storage/tenants/456'],
-            ['filesystems.disks.temp', [
-                'driver' => 'local',
-                'root' => storage_path('app/temp/tenants/456'),
-                'visibility' => 'private',
-            ]],
+            ['filesystems.disks.local.root', storage_path('app/tenants/test-public-id')],
+            ['filesystems.disks.public.root', storage_path('app/public/tenants/test-public-id')],
+            ['filesystems.disks.public.url', config('app.url') . '/storage/tenants/test-public-id'],
+            [
+                'filesystems.disks.temp',
+                [
+                    'driver'     => 'local',
+                    'root'       => storage_path('app/temp/tenants/test-public-id'),
+                    'visibility' => 'private',
+                ],
+            ],
         ];
 
         $callIndex = 0;
@@ -152,15 +155,15 @@ class FilesystemConfigPipeTest extends TestCase
 
     public function testHandleConfiguresS3WithAllOptions(): void
     {
-        $tenant = new Tenant();
-        $tenant->id = '789';
+        $tenant       = new Tenant();
+        $tenant->id   = '789';
         $tenantConfig = [
-            'aws_s3_bucket' => 'tenant-bucket',
+            'aws_s3_bucket'      => 'tenant-bucket',
             'aws_s3_path_prefix' => 'custom/prefix',
-            'aws_s3_key' => 'AKIAIOSFODNN7EXAMPLE',
-            'aws_s3_secret' => 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
-            'aws_s3_region' => 'eu-west-1',
-            'aws_s3_url' => 'https://cdn.example.com',
+            'aws_s3_key'         => 'AKIAIOSFODNN7EXAMPLE',
+            'aws_s3_secret'      => 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+            'aws_s3_region'      => 'eu-west-1',
+            'aws_s3_url'         => 'https://cdn.example.com',
         ];
 
         $this->config->expects($this->any())
@@ -204,9 +207,10 @@ class FilesystemConfigPipeTest extends TestCase
 
     public function testHandleConfiguresS3WithDefaultPathPrefix(): void
     {
-        $tenant = new Tenant();
-        $tenant->id = '999';
-        $tenantConfig = [
+        $tenant            = new Tenant();
+        $tenant->id        = '999';
+        $tenant->public_id = 'test-public-id';
+        $tenantConfig      = [
             'aws_s3_bucket' => 'shared-bucket',
         ];
 
@@ -220,7 +224,7 @@ class FilesystemConfigPipeTest extends TestCase
                 if ($key === 'filesystems.disks.s3.bucket') {
                     $this->assertEquals('shared-bucket', $value);
                 } elseif ($key === 'filesystems.disks.s3.path_prefix') {
-                    $this->assertEquals('tenants/999', $value);
+                    $this->assertEquals('tenants/test-public-id', $value);
                 }
                 return null;
             });
@@ -234,8 +238,8 @@ class FilesystemConfigPipeTest extends TestCase
 
     public function testHandleDisablesTempIsolation(): void
     {
-        $tenant = new Tenant();
-        $tenant->id = '111';
+        $tenant       = new Tenant();
+        $tenant->id   = '111';
         $tenantConfig = [
             'disable_temp_isolation' => true,
         ];
@@ -258,7 +262,6 @@ class FilesystemConfigPipeTest extends TestCase
 
         $this->assertSame($tenant, $result['tenant']);
     }
-
 
     public function testHandlesReturnsCorrectKeys(): void
     {

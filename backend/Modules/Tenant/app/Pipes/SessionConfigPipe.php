@@ -79,20 +79,19 @@ class SessionConfigPipe implements ConfigurationPipeInterface
         if (isset($tenantConfig['session_cookie'])) {
             $cookie = $tenantConfig['session_cookie'];
             $config->set('session.cookie', $cookie);
-            $hasSessionChanges = true;
-
             $this->logger->cookieNameChanged($cookie, true);
         } else {
             // Default to tenant-specific cookie name using public_id for security
             $cookie = "tenant_{$tenant->public_id}_session";
             $config->set('session.cookie', $cookie);
-            $hasSessionChanges = true;
 
             $this->logger->cookieNameChanged($cookie, false);
         }
 
         // Log the change for debugging
         if ($oldCookie !== $cookie) {
+            $hasSessionChanges = true;
+
             $this->logger->debug('Session cookie name changed', [
                 'old_cookie' => $oldCookie,
                 'new_cookie' => $cookie,
@@ -148,8 +147,6 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             'tenantConfig' => $tenantConfig,
         ]);
     }
-
-
 
     /**
      * The configuration keys that this pipe handles.

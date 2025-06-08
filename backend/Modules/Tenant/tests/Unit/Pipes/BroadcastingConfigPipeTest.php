@@ -296,7 +296,7 @@ class BroadcastingConfigPipeTest extends TestCase
                         break;
                     case 2:
                         $this->assertEquals('broadcasting.connections.redis.prefix', $key);
-                        $this->assertEquals('tenant_0', $value); // The actual value from the implementation
+                        $this->assertEquals('tenant_public-test123', $value); // The actual value from the implementation
                         break;
                 }
 

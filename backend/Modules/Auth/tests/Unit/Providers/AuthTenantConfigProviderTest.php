@@ -4,29 +4,33 @@ namespace Modules\Auth\Tests\Unit\Providers;
 
 use Modules\Auth\Providers\AuthTenantConfigProvider;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 use Mockery;
+use Illuminate\Config\Repository;
 
 #[CoversClass(AuthTenantConfigProvider::class)]
 #[Group('auth-module')]
+#[Group('auth-providers')]
 #[Group('tenant-config-providers')]
 class AuthTenantConfigProviderTest extends TestCase
 {
     private AuthTenantConfigProvider $provider;
     private Tenant $tenantModel;
-    private DynamicTenantConfig $dynamicConfig;
+    private Repository $configRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->provider = new AuthTenantConfigProvider();
-        $this->tenantModel = Mockery::mock(Tenant::class);
-        $this->dynamicConfig = Mockery::mock(DynamicTenantConfig::class);
+        $this->provider         = new AuthTenantConfigProvider();
+        $this->tenantModel      = Mockery::mock(Tenant::class);
+        $this->configRepository = Mockery::mock(Repository::class);
+
+        // Bind the mock to the container
+        $this->app->instance(Repository::class, $this->configRepository);
     }
 
     protected function tearDown(): void
@@ -35,42 +39,19 @@ class AuthTenantConfigProviderTest extends TestCase
         parent::tearDown();
     }
 
-    #[TestDox('returns configuration with all auth settings when tenant has dynamic config')]
-    public function testReturnsConfigurationWithAllAuthSettingsWhenTenantHasDynamicConfig(): void
+    #[TestDox('returns configuration with all auth settings from Laravel config')]
+    public function testReturnsConfigurationWithAllAuthSettingsFromLaravelConfig(): void
     {
-        $this->tenantModel->shouldReceive('getAttribute')
-            ->with('config')
-            ->andReturn($this->dynamicConfig);
-
-        $this->dynamicConfig
+        // Mock config values that would be set by configuration pipes
+        $this->configRepository
             ->shouldReceive('get')
-            ->with('socialite_providers', ['google'])
+            ->with('auth.socialite.providers', ['google'])
             ->andReturn(['github', 'gitlab']);
-        
-        $this->dynamicConfig
+
+        $this->configRepository
             ->shouldReceive('get')
-            ->with('password_min_length', 8)
-            ->andReturn(12);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('session_cookie', 'quvel_session')
+            ->with('session.cookie', 'quvel_session')
             ->andReturn('custom_session');
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('two_factor_enabled', false)
-            ->andReturn(true);
-        
-        $this->dynamicConfig
-            ->shouldReceive('has')
-            ->with('session_lifetime')
-            ->andReturn(true);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('session_lifetime')
-            ->andReturn(120);
 
         $result = $this->provider->getConfig($this->tenantModel);
 
@@ -79,135 +60,88 @@ class AuthTenantConfigProviderTest extends TestCase
 
         $this->assertEquals([
             'socialiteProviders' => ['github', 'gitlab'],
-            'passwordMinLength' => 12,
-            'sessionCookie' => 'custom_session',
-            'twoFactorEnabled' => true,
-            'sessionLifetime' => 120,
+            'sessionCookie'      => 'custom_session',
         ], $result['config']);
 
         $this->assertEquals([
             'socialiteProviders' => 'public',
-            'passwordMinLength' => 'public',
-            'sessionCookie' => 'protected',
-            'twoFactorEnabled' => 'public',
-            'sessionLifetime' => 'protected',
+            'sessionCookie'      => 'protected',
         ], $result['visibility']);
     }
 
-    #[TestDox('returns default values when tenant config values are not set')]
-    public function testReturnsDefaultValuesWhenTenantConfigValuesAreNotSet(): void
+    #[TestDox('returns default values when config values are not set')]
+    public function testReturnsDefaultValuesWhenConfigValuesAreNotSet(): void
     {
-        $this->tenantModel->shouldReceive('getAttribute')
-            ->with('config')
-            ->andReturn($this->dynamicConfig);
-
-        $this->dynamicConfig
+        // Mock config values returning defaults
+        $this->configRepository
             ->shouldReceive('get')
-            ->with('socialite_providers', ['google'])
+            ->with('auth.socialite.providers', ['google'])
             ->andReturn(['google']);
-        
-        $this->dynamicConfig
+
+        $this->configRepository
             ->shouldReceive('get')
-            ->with('password_min_length', 8)
-            ->andReturn(8);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('session_cookie', 'quvel_session')
+            ->with('session.cookie', 'quvel_session')
             ->andReturn('quvel_session');
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('two_factor_enabled', false)
-            ->andReturn(false);
-        
-        $this->dynamicConfig
-            ->shouldReceive('has')
-            ->with('session_lifetime')
-            ->andReturn(false);
 
         $result = $this->provider->getConfig($this->tenantModel);
 
         $this->assertEquals([
             'socialiteProviders' => ['google'],
-            'passwordMinLength' => 8,
-            'sessionCookie' => 'quvel_session',
-            'twoFactorEnabled' => false,
+            'sessionCookie'      => 'quvel_session',
         ], $result['config']);
 
         $this->assertEquals([
             'socialiteProviders' => 'public',
-            'passwordMinLength' => 'public',
-            'sessionCookie' => 'protected',
-            'twoFactorEnabled' => 'public',
-            'sessionLifetime' => 'protected',
+            'sessionCookie'      => 'protected',
         ], $result['visibility']);
     }
 
-    #[TestDox('returns empty config array when tenant has no dynamic config')]
-    public function testReturnsEmptyConfigArrayWhenTenantHasNoDynamicConfig(): void
+    #[TestDox('returns config from Laravel config repository')]
+    public function testReturnsConfigFromLaravelConfigRepository(): void
     {
-        $this->tenantModel->shouldReceive('getAttribute')
-            ->with('config')
-            ->andReturn(null);
+        // Mock config returning specific values
+        $this->configRepository
+            ->shouldReceive('get')
+            ->with('auth.socialite.providers', ['google'])
+            ->andReturn(['facebook', 'twitter']);
+
+        $this->configRepository
+            ->shouldReceive('get')
+            ->with('session.cookie', 'quvel_session')
+            ->andReturn('tenant_session');
 
         $result = $this->provider->getConfig($this->tenantModel);
 
         $this->assertArrayHasKey('config', $result);
         $this->assertArrayHasKey('visibility', $result);
-        $this->assertEquals([], $result['config']);
+
+        $this->assertEquals([
+            'socialiteProviders' => ['facebook', 'twitter'],
+            'sessionCookie'      => 'tenant_session',
+        ], $result['config']);
 
         // Visibility should still be included
         $this->assertEquals([
             'socialiteProviders' => 'public',
-            'passwordMinLength' => 'public',
-            'sessionCookie' => 'protected',
-            'twoFactorEnabled' => 'public',
-            'sessionLifetime' => 'protected',
+            'sessionCookie'      => 'protected',
         ], $result['visibility']);
     }
 
-    #[TestDox('includes session lifetime only when present in tenant config')]
-    public function testIncludesSessionLifetimeOnlyWhenPresentInTenantConfig(): void
+    #[TestDox('handles empty socialite provider array')]
+    public function testHandlesEmptySocialiteProviderArray(): void
     {
-        $this->tenantModel->shouldReceive('getAttribute')
-            ->with('config')
-            ->andReturn($this->dynamicConfig);
+        $this->configRepository
+            ->shouldReceive('get')
+            ->with('auth.socialite.providers', ['google'])
+            ->andReturn([]);
 
-        $this->dynamicConfig
+        $this->configRepository
             ->shouldReceive('get')
-            ->with('socialite_providers', ['google'])
-            ->andReturn(['google']);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('password_min_length', 8)
-            ->andReturn(8);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('session_cookie', 'quvel_session')
+            ->with('session.cookie', 'quvel_session')
             ->andReturn('quvel_session');
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('two_factor_enabled', false)
-            ->andReturn(false);
-        
-        $this->dynamicConfig
-            ->shouldReceive('has')
-            ->with('session_lifetime')
-            ->andReturn(true);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('session_lifetime')
-            ->andReturn(60);
 
         $result = $this->provider->getConfig($this->tenantModel);
-
-        $this->assertArrayHasKey('sessionLifetime', $result['config']);
-        $this->assertEquals(60, $result['config']['sessionLifetime']);
+        $this->assertEquals([], $result['config']['socialiteProviders']);
     }
 
     #[TestDox('returns priority of 50')]
@@ -221,154 +155,43 @@ class AuthTenantConfigProviderTest extends TestCase
     {
         $this->assertInstanceOf(
             \Modules\Tenant\Contracts\TenantConfigProviderInterface::class,
-            $this->provider
+            $this->provider,
         );
     }
 
     #[TestDox('visibility settings are consistent regardless of config values')]
     public function testVisibilitySettingsAreConsistentRegardlessOfConfigValues(): void
     {
-        $this->tenantModel->shouldReceive('getAttribute')
-            ->with('config')
-            ->andReturn(null, $this->dynamicConfig);
-            
-        $result1 = $this->provider->getConfig($this->tenantModel);
-        
-        $this->dynamicConfig
+        // First call
+        $this->configRepository
             ->shouldReceive('get')
-            ->with('socialite_providers', ['google'])
-            ->andReturn(['github']);
-        
-        $this->dynamicConfig
+            ->with('auth.socialite.providers', ['google'])
+            ->andReturn(['google']);
+
+        $this->configRepository
             ->shouldReceive('get')
-            ->with('password_min_length', 8)
-            ->andReturn(8);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('session_cookie', 'quvel_session')
+            ->with('session.cookie', 'quvel_session')
             ->andReturn('quvel_session');
-        
-        $this->dynamicConfig
+
+        $result1 = $this->provider->getConfig($this->tenantModel);
+
+        // Create a new provider instance to test consistency
+        $provider2 = new AuthTenantConfigProvider();
+
+        // Second call with different values
+        $this->configRepository
             ->shouldReceive('get')
-            ->with('two_factor_enabled', false)
-            ->andReturn(false);
-        
-        $this->dynamicConfig
-            ->shouldReceive('has')
-            ->with('session_lifetime')
-            ->andReturn(false);
-        
-        $result2 = $this->provider->getConfig($this->tenantModel);
+            ->with('auth.socialite.providers', ['google'])
+            ->andReturn(['github']);
+
+        $this->configRepository
+            ->shouldReceive('get')
+            ->with('session.cookie', 'quvel_session')
+            ->andReturn('custom_session');
+
+        $result2 = $provider2->getConfig($this->tenantModel);
 
         $this->assertEquals($result1['visibility'], $result2['visibility']);
     }
 
-    #[TestDox('handles empty socialite provider array')]
-    public function testHandlesEmptySocialiteProviderArray(): void
-    {
-        $this->tenantModel->shouldReceive('getAttribute')
-            ->with('config')
-            ->andReturn($this->dynamicConfig);
-
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('socialite_providers', ['google'])
-            ->andReturn([]);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('password_min_length', 8)
-            ->andReturn(8);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('session_cookie', 'quvel_session')
-            ->andReturn('quvel_session');
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('two_factor_enabled', false)
-            ->andReturn(false);
-        
-        $this->dynamicConfig
-            ->shouldReceive('has')
-            ->with('session_lifetime')
-            ->andReturn(false);
-
-        $result = $this->provider->getConfig($this->tenantModel);
-        $this->assertEquals([], $result['config']['socialiteProviders']);
-    }
-
-    #[TestDox('handles various password min length values')]
-    public function testHandlesVariousPasswordMinLengthValues(): void
-    {
-        $this->tenantModel->shouldReceive('getAttribute')
-            ->with('config')
-            ->andReturn($this->dynamicConfig);
-
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('socialite_providers', ['google'])
-            ->andReturn(['google']);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('password_min_length', 8)
-            ->andReturn(16);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('session_cookie', 'quvel_session')
-            ->andReturn('quvel_session');
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('two_factor_enabled', false)
-            ->andReturn(false);
-        
-        $this->dynamicConfig
-            ->shouldReceive('has')
-            ->with('session_lifetime')
-            ->andReturn(false);
-
-        $result = $this->provider->getConfig($this->tenantModel);
-        $this->assertEquals(16, $result['config']['passwordMinLength']);
-    }
-
-    #[TestDox('handles boolean two factor enabled configuration')]
-    public function testHandlesBooleanTwoFactorEnabledConfiguration(): void
-    {
-        $this->tenantModel->shouldReceive('getAttribute')
-            ->with('config')
-            ->andReturn($this->dynamicConfig);
-
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('socialite_providers', ['google'])
-            ->andReturn(['google']);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('password_min_length', 8)
-            ->andReturn(8);
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('session_cookie', 'quvel_session')
-            ->andReturn('quvel_session');
-        
-        $this->dynamicConfig
-            ->shouldReceive('get')
-            ->with('two_factor_enabled', false)
-            ->andReturn(true);
-        
-        $this->dynamicConfig
-            ->shouldReceive('has')
-            ->with('session_lifetime')
-            ->andReturn(false);
-
-        $result = $this->provider->getConfig($this->tenantModel);
-        $this->assertTrue($result['config']['twoFactorEnabled']);
-    }
 }

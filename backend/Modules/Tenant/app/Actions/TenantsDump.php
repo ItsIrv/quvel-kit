@@ -7,7 +7,7 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Modules\Tenant\Http\Resources\TenantDumpResource;
+use Modules\Tenant\Http\Resources\TenantCacheResource;
 use Modules\Tenant\Services\FindService;
 
 /**
@@ -36,6 +36,6 @@ class TenantsDump
                 fn (): Collection => $tenantFindService->findAll()
             );
 
-        return TenantDumpResource::collection($tenants);
+        return TenantCacheResource::collection($tenants);
     }
 }

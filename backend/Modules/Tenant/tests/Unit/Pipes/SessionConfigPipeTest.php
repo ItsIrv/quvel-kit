@@ -131,7 +131,7 @@ class SessionConfigPipeTest extends TestCase
 
         $expectedSets = [
             ['session.driver', 'file'],
-            ['session.cookie', 'tenant_456_session'],
+            ['session.cookie', 'tenant_test-tenant-456_session'],
         ];
 
         $this->config->expects($this->exactly(count($expectedSets)))
@@ -147,7 +147,7 @@ class SessionConfigPipeTest extends TestCase
 
         // Logger expectations
         $this->logger->expects($this->once())->method('driverChanged')->with('file');
-        $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_456_session', false);
+        $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_test-tenant-456_session', false);
         $this->logger->expects($this->once())->method('applyingChanges')->with(1);
 
         // No session manager interaction when session not bound
@@ -172,7 +172,7 @@ class SessionConfigPipeTest extends TestCase
 
         $expectedSets = [
             ['session.driver', 'database'],
-            ['session.cookie', 'tenant_789_session'],
+            ['session.cookie', 'tenant_test-tenant-789_session'],
             ['session.connection', 'mysql'],
         ];
 
@@ -194,7 +194,7 @@ class SessionConfigPipeTest extends TestCase
 
         // Logger expectations
         $this->logger->expects($this->once())->method('driverChanged')->with('database');
-        $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_789_session', false);
+        $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_test-tenant-789_session', false);
         $this->logger->expects($this->once())->method('databaseConnectionChanged')->with('mysql');
         $this->logger->expects($this->once())->method('applyingChanges')->with(1);
 
@@ -262,12 +262,15 @@ class SessionConfigPipeTest extends TestCase
         // Only the default cookie should be set
         $this->config->expects($this->once())
             ->method('set')
-            ->with('session.cookie', 'tenant_123_session');
+            ->with('session.cookie', 'tenant_test-tenant-123_session');
 
-        $this->config->method('get')->willReturn('tenant_123_session');
+        $this->config->method('get')->willReturnMap([
+            ['session.cookie', null, 'tenant_test-tenant-123_session'],
+            ['session.driver', null, 'file'],
+        ]);
 
-        $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_123_session', false);
-        $this->logger->expects($this->once())->method('applyingChanges')->with(0);
+        $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_test-tenant-123_session', false);
+        $this->logger->expects($this->never())->method('applyingChanges');
 
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;

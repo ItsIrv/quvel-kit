@@ -30,7 +30,6 @@ class LoggingConfigPipeTest extends TestCase
         $this->pipe   = new LoggingConfigPipe();
     }
 
-
     public function testHandleAppliesDefaultLogChannel(): void
     {
         $tenant       = new Tenant();
@@ -98,17 +97,18 @@ class LoggingConfigPipeTest extends TestCase
 
     public function testHandleAppliesDefaultTenantIsolation(): void
     {
-        $tenant       = new Tenant();
-        $tenant->id   = '456';
-        $tenantConfig = [];
+        $tenant            = new Tenant();
+        $tenant->id        = '456';
+        $tenant->public_id = 'test-public-id';
+        $tenantConfig      = [];
 
         $this->config->expects($this->any())
             ->method('get')
             ->willReturn([]);
 
         $expectedSets = [
-            ['logging.channels.single.path', storage_path('logs/tenants/456/laravel.log')],
-            ['logging.channels.daily.path', storage_path('logs/tenants/456/laravel.log')],
+            ['logging.channels.single.path', storage_path('logs/tenants/test-public-id/laravel.log')],
+            ['logging.channels.daily.path', storage_path('logs/tenants/test-public-id/laravel.log')],
         ];
 
         $callIndex = 0;
@@ -361,7 +361,6 @@ class LoggingConfigPipeTest extends TestCase
             ],
         ];
     }
-
 
     public function testHandlesReturnsCorrectKeys(): void
     {

@@ -24,7 +24,7 @@ class FilesystemConfigPipe implements ConfigurationPipeInterface
             $config->set('filesystems.disks.local.root', $tenantConfig['filesystem_local_root']);
         } else {
             // Default tenant-isolated local storage
-            $config->set('filesystems.disks.local.root', storage_path('app/tenants/' . $tenant->id));
+            $config->set('filesystems.disks.local.root', storage_path('app/tenants/' . $tenant->public_id));
         }
 
         // Configure public disk with tenant isolation
@@ -32,8 +32,8 @@ class FilesystemConfigPipe implements ConfigurationPipeInterface
             $config->set('filesystems.disks.public.root', $tenantConfig['filesystem_public_root']);
         } else {
             // Default tenant-isolated public storage
-            $config->set('filesystems.disks.public.root', storage_path('app/public/tenants/' . $tenant->id));
-            $config->set('filesystems.disks.public.url', config('app.url') . '/storage/tenants/' . $tenant->id);
+            $config->set('filesystems.disks.public.root', storage_path('app/public/tenants/' . $tenant->public_id));
+            $config->set('filesystems.disks.public.url', config('app.url') . '/storage/tenants/' . $tenant->public_id);
         }
 
         // Configure S3 disk for tenant
@@ -44,7 +44,7 @@ class FilesystemConfigPipe implements ConfigurationPipeInterface
             if (isset($tenantConfig['aws_s3_path_prefix'])) {
                 $config->set('filesystems.disks.s3.path_prefix', $tenantConfig['aws_s3_path_prefix']);
             } else {
-                $config->set('filesystems.disks.s3.path_prefix', 'tenants/' . $tenant->id);
+                $config->set('filesystems.disks.s3.path_prefix', 'tenants/' . $tenant->public_id);
             }
 
             // Optional tenant-specific AWS credentials
@@ -66,7 +66,7 @@ class FilesystemConfigPipe implements ConfigurationPipeInterface
         if (!isset($tenantConfig['disable_temp_isolation'])) {
             $config->set('filesystems.disks.temp', [
                 'driver'     => 'local',
-                'root'       => storage_path('app/temp/tenants/' . $tenant->id),
+                'root'       => storage_path('app/temp/tenants/' . $tenant->public_id),
                 'visibility' => 'private',
             ]);
         }
