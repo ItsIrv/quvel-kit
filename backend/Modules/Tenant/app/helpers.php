@@ -155,17 +155,6 @@ if (!function_exists('setTenantConfig')) {
     }
 }
 
-if (!function_exists('getTenantTier')) {
-    /**
-     * Get the current tenant's tier.
-     *
-     * @return string
-     */
-    function getTenantTier(): string
-    {
-        return getTenant()->config?->getTier() ?? 'basic';
-    }
-}
 
 if (!function_exists('createTenantConfig')) {
     /**
@@ -174,83 +163,10 @@ if (!function_exists('createTenantConfig')) {
      *
      * @param array $data Configuration data
      * @param array $visibility Visibility settings
-     * @param string $tier Tenant tier (basic, standard, premium, enterprise)
      * @return DynamicTenantConfig
      */
-    function createTenantConfig(array $data = [], array $visibility = [], string $tier = 'basic'): DynamicTenantConfig
+    function createTenantConfig(array $data = [], array $visibility = []): DynamicTenantConfig
     {
-        return new DynamicTenantConfig($data, $visibility, $tier);
-    }
-}
-
-if (!function_exists('tenantHasFeature')) {
-    /**
-     * Check if the current tenant has a specific feature.
-     *
-     * @param string $feature Feature name to check
-     * @return bool
-     */
-    function tenantHasFeature(string $feature): bool
-    {
-        return app(\Modules\Tenant\Services\TierService::class)->currentTenantHasFeature($feature);
-    }
-}
-
-if (!function_exists('tenantMeetsMinimumTier')) {
-    /**
-     * Check if the current tenant meets a minimum tier requirement.
-     *
-     * @param string $minimumTier Minimum tier required
-     * @return bool
-     */
-    function tenantMeetsMinimumTier(string $minimumTier): bool
-    {
-        try {
-            $tenant = getTenant();
-            return app(\Modules\Tenant\Services\TierService::class)->meetsMinimumTier($tenant, $minimumTier);
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-}
-
-if (!function_exists('getTenantFeatures')) {
-    /**
-     * Get all features available for the current tenant's tier.
-     *
-     * @return array
-     */
-    function getTenantFeatures(): array
-    {
-        $tier = getTenantTier();
-        return app(\Modules\Tenant\Services\TierService::class)->getTierFeatures($tier);
-    }
-}
-
-if (!function_exists('getTenantLimits')) {
-    /**
-     * Get resource limits for the current tenant's tier.
-     *
-     * @return array
-     */
-    function getTenantLimits(): array
-    {
-        $tier = getTenantTier();
-        return app(\Modules\Tenant\Services\TierService::class)->getTierLimits($tier);
-    }
-}
-
-if (!function_exists('getTenantLimit')) {
-    /**
-     * Get a specific resource limit for the current tenant.
-     *
-     * @param string $limitKey The limit key (e.g., 'users', 'storage', 'api_calls_per_hour')
-     * @param mixed $default Default value if limit doesn't exist
-     * @return mixed
-     */
-    function getTenantLimit(string $limitKey, mixed $default = PHP_INT_MAX): mixed
-    {
-        $limits = getTenantLimits();
-        return $limits[$limitKey] ?? $default;
+        return new DynamicTenantConfig($data, $visibility);
     }
 }

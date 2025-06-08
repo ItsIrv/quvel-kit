@@ -19,20 +19,7 @@ class CacheConfigPipe implements ConfigurationPipeInterface
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-        // Check if tenant has dedicated cache feature (only if tiers are enabled)
-        if (config('tenant.enable_tiers', false) && !$tenant->hasFeature('dedicated_cache')) {
-            // Basic tier: use shared cache with tenant prefix only
-            $config->set('cache.prefix', "tenant_{$tenant->public_id}_");
-
-            // Pass to next pipe
-            return $next([
-                'tenant'       => $tenant,
-                'config'       => $config,
-                'tenantConfig' => $tenantConfig,
-            ]);
-        }
-
-        // Standard tier and above: can have dedicated cache configuration
+        // Apply cache configuration
         $hasCacheChanges = false;
 
         if (isset($tenantConfig['cache_store'])) {
