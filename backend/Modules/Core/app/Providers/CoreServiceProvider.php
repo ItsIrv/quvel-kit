@@ -63,7 +63,7 @@ class CoreServiceProvider extends ModuleServiceProvider
         parent::boot();
 
         // Register exception handler
-        $this->registerExceptionHandler();
+        // $this->registerExceptionHandler();
 
         $this->app['url']->forceScheme('https');
 

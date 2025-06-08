@@ -79,6 +79,7 @@ Traefik is included in `docker-compose.yml`. To start the entire stack:
 To restart Traefik only:
 
 ```bash
+cd docker
 docker-compose restart traefik
 ```
 

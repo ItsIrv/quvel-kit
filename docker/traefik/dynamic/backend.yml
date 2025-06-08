@@ -1,13 +1,13 @@
 http:
   routers:
     api-local:
-      rule: 'Host(`api.quvel.127.0.0.1.nip.io`)'
+      rule: 'Host(`api.quvel.127.0.0.1.nip.io`) || Host(`api.quvel-two.127.0.0.1.nip.io`)'
       entryPoints: websecure
       service: api-local
       tls: {}
 
     api-lan:
-      rule: 'Host(`api.quvel.192.168.86.21.nip.io`)' # REPLACE_WITH_LOCAL_IP
+      rule: 'Host(`api.quvel.192.168.86.21.nip.io`) || Host(`api.quvel-two.192.168.86.21.nip.io`)' # REPLACE_WITH_LOCAL_IP
       entryPoints: websecure
       service: api-lan
       tls: {}

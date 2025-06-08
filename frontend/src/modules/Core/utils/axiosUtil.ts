@@ -33,12 +33,24 @@ function getTenantXsrfCookieName(ssrServiceOptions?: SsrServiceOptions | null): 
  */
 export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosInstance {
   // In order: Internal API URL, Public API URL, Vite API URL
-  const baseURL =
-    ssrServiceOptions?.req?.tenantConfig?.internalApiUrl ??
-    ssrServiceOptions?.req?.tenantConfig?.apiUrl ??
-    (typeof window !== 'undefined' ? window.__TENANT_CONFIG__?.apiUrl : null) ??
-    process.env.VITE_API_URL ??
-    '';
+  let baseURL = '';
+
+  if (ssrServiceOptions?.req?.tenantConfig) {
+    baseURL =
+      ssrServiceOptions?.req?.tenantConfig?.internalApiUrl ??
+      ssrServiceOptions?.req?.tenantConfig?.apiUrl;
+  } else {
+    baseURL =
+      (typeof window !== 'undefined' ? window.__TENANT_CONFIG__?.apiUrl : null) ??
+      process.env.VITE_API_URL ??
+      '';
+  }
+
+  if (!baseURL) {
+    throw new Error('No API URL found');
+  }
+
+  console.log(baseURL);
 
   const axiosConfig: AxiosRequestConfig = {
     baseURL,

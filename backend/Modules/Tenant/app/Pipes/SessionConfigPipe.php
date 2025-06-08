@@ -72,6 +72,15 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             $hasSessionChanges = true;
 
             $this->logger->domainChanged($domain);
+        } else {
+            // Set tenant-safe session domain by default
+            $sessionDomain = $this->extractSessionDomain($tenant, $tenantConfig);
+            if ($sessionDomain) {
+                $config->set('session.domain', $sessionDomain);
+                $hasSessionChanges = true;
+
+                $this->logger->domainChanged($sessionDomain);
+            }
         }
 
         // Always set a tenant-specific session cookie name if not overridden
@@ -169,5 +178,48 @@ class SessionConfigPipe implements ConfigurationPipeInterface
         // that might start or use sessions. This needs to run before
         // any other pipes that might trigger session initialization.
         return 10;
+    }
+
+    /**
+     * Extract the session domain from tenant configuration.
+     * This creates a tenant-safe session domain that works for both API and frontend.
+     */
+    protected function extractSessionDomain(Tenant $tenant, array $tenantConfig): ?string
+    {
+        // Try to get domain from tenant config first (app_url or frontend_url)
+        $apiUrl      = $tenantConfig['app_url'] ?? null;
+        $frontendUrl = $tenantConfig['frontend_url'] ?? null;
+
+        // Use the API domain if available, otherwise fall back to tenant domain
+        $domain = null;
+        if ($apiUrl) {
+            $domain = parse_url($apiUrl, PHP_URL_HOST);
+        } elseif ($frontendUrl) {
+            $domain = parse_url($frontendUrl, PHP_URL_HOST);
+        } else {
+            $domain = $tenant->domain;
+        }
+
+        if (!$domain) {
+            return null;
+        }
+
+        // Extract root domain for session sharing between subdomains
+        // Examples:
+        // api.quvel.127.0.0.1.nip.io -> .quvel.127.0.0.1.nip.io
+        // api.quvel-two.127.0.0.1.nip.io -> .quvel-two.127.0.0.1.nip.io
+        $parts = explode('.', $domain);
+
+        // If it's a subdomain (has more than 2 parts), remove the first part
+        if (count($parts) > 2) {
+            // Remove the first subdomain (e.g., 'api')
+            array_shift($parts);
+            $rootDomain = '.' . implode('.', $parts);
+        } else {
+            // For simple domains, use as-is with leading dot
+            $rootDomain = '.' . $domain;
+        }
+
+        return $rootDomain;
     }
 }

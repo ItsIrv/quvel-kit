@@ -28,15 +28,23 @@ class AuthTenantConfigProvider implements TenantConfigProviderInterface
             ];
         }
 
+        $config     = [];
+        $visibility = [];
+
+        // Only add keys if they have values set
+        if ($tenantConfig->has('socialite_providers')) {
+            $config['socialiteProviders']     = $tenantConfig->get('socialite_providers');
+            $visibility['socialiteProviders'] = 'public';
+        }
+
+        if ($tenantConfig->has('session_cookie')) {
+            $config['sessionCookie']     = $tenantConfig->get('session_cookie');
+            $visibility['sessionCookie'] = 'protected';
+        }
+
         return [
-            'config'     => [
-                'socialiteProviders' => $tenantConfig->get('socialite_providers', ['google']),
-                'sessionCookie'      => $tenantConfig->get('session_cookie', 'quvel_session'),
-            ],
-            'visibility' => [
-                'socialiteProviders' => 'public',
-                'sessionCookie'      => 'protected',
-            ],
+            'config'     => $config,
+            'visibility' => $visibility,
         ];
     }
 

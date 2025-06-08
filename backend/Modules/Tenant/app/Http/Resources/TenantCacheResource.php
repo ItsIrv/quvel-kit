@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
-use Modules\Tenant\Enums\TenantConfigVisibility;
+use Modules\Tenant\Services\TenantConfigProviderRegistry;
 
 /**
  * Tenant cache resource that reads directly from tenant->config.
@@ -43,19 +43,16 @@ class TenantCacheResource extends JsonResource
     }
 
     /**
-     * Get filtered config directly from tenant->config.
-     * This method reads from the tenant's actual config, not from Laravel's global config.
+     * Get filtered config with config provider enhancements.
+     * This method applies config providers to enhance the configuration before filtering.
      */
     private function getFilteredConfig(): array
     {
-        $tenantConfig = $this->config;
-        $enhancedConfig = new DynamicTenantConfig();
+        $config = $this->config;
 
-        // Core module config - read directly from tenant config
-        $this->addCoreConfig($enhancedConfig, $tenantConfig);
-
-        // Auth module config - read directly from tenant config
-        $this->addAuthConfig($enhancedConfig, $tenantConfig);
+        // Apply config providers to enhance the configuration
+        $registry       = app(TenantConfigProviderRegistry::class);
+        $enhancedConfig = $registry->enhance($this->resource, $config);
 
         // Get protected config (public + protected visibility)
         $protectedConfig = $enhancedConfig->getProtectedConfig();
@@ -70,65 +67,5 @@ class TenantCacheResource extends JsonResource
         $protectedConfig['__visibility'] = $visibility;
 
         return $protectedConfig;
-    }
-
-    /**
-     * Add core module configuration.
-     */
-    private function addCoreConfig(DynamicTenantConfig $enhancedConfig, ?DynamicTenantConfig $tenantConfig): void
-    {
-        // Core configuration - read from tenant config when available
-        $enhancedConfig->set('apiUrl', $tenantConfig?->get('app_url', config('app.url')) ?? config('app.url'));
-        $enhancedConfig->set('appUrl', $tenantConfig?->get('frontend_url', config('frontend.url')) ?? config('frontend.url'));
-        $enhancedConfig->set('appName', $tenantConfig?->get('app_name', config('app.name', 'Quvel Kit')) ?? config('app.name', 'Quvel Kit'));
-        $enhancedConfig->set('tenantId', $this->public_id);
-        $enhancedConfig->set('tenantName', $this->name);
-
-        // Pusher config from tenant config
-        $enhancedConfig->set('pusherAppKey', $tenantConfig?->get('pusher_app_key', '') ?? '');
-        $enhancedConfig->set('pusherAppCluster', $tenantConfig?->get('pusher_app_cluster', 'mt1') ?? 'mt1');
-
-        // reCAPTCHA config from tenant config
-        $enhancedConfig->set('recaptchaGoogleSiteKey', $tenantConfig?->get('recaptcha_site_key', '') ?? '');
-
-        // Additional Core module specific configs
-        $enhancedConfig->set('internalApiUrl', $tenantConfig?->get('internal_api_url', config('frontend.internal_api_url')) ?? config('frontend.internal_api_url'));
-
-        // Set visibility for core config
-        $enhancedConfig->setVisibility('apiUrl', TenantConfigVisibility::PUBLIC);
-        $enhancedConfig->setVisibility('appUrl', TenantConfigVisibility::PUBLIC);
-        $enhancedConfig->setVisibility('appName', TenantConfigVisibility::PUBLIC);
-        $enhancedConfig->setVisibility('tenantId', TenantConfigVisibility::PUBLIC);
-        $enhancedConfig->setVisibility('tenantName', TenantConfigVisibility::PUBLIC);
-        $enhancedConfig->setVisibility('pusherAppKey', TenantConfigVisibility::PUBLIC);
-        $enhancedConfig->setVisibility('pusherAppCluster', TenantConfigVisibility::PUBLIC);
-        $enhancedConfig->setVisibility('recaptchaGoogleSiteKey', TenantConfigVisibility::PUBLIC);
-        $enhancedConfig->setVisibility('internalApiUrl', TenantConfigVisibility::PROTECTED);
-    }
-
-    /**
-     * Add auth module configuration.
-     */
-    private function addAuthConfig(DynamicTenantConfig $enhancedConfig, ?DynamicTenantConfig $tenantConfig): void
-    {
-        // Auth configuration - read from tenant config when available
-        $enhancedConfig->set('socialiteProviders', $tenantConfig?->get('socialite_providers', ['google']) ?? ['google']);
-        $enhancedConfig->set('passwordMinLength', $tenantConfig?->get('password_min_length', 8) ?? 8);
-        $enhancedConfig->set('sessionCookie', $tenantConfig?->get('session_cookie', 'quvel_session') ?? 'quvel_session');
-        $enhancedConfig->set('twoFactorEnabled', $tenantConfig?->get('two_factor_enabled', false) ?? false);
-
-        // Session lifetime if present
-        if ($tenantConfig?->has('session_lifetime')) {
-            $enhancedConfig->set('sessionLifetime', $tenantConfig->get('session_lifetime'));
-        }
-
-        // Set visibility for auth config
-        $enhancedConfig->setVisibility('socialiteProviders', TenantConfigVisibility::PUBLIC);
-        $enhancedConfig->setVisibility('passwordMinLength', TenantConfigVisibility::PUBLIC);
-        $enhancedConfig->setVisibility('sessionCookie', TenantConfigVisibility::PROTECTED);
-        $enhancedConfig->setVisibility('twoFactorEnabled', TenantConfigVisibility::PUBLIC);
-        if ($tenantConfig?->has('session_lifetime')) {
-            $enhancedConfig->setVisibility('sessionLifetime', TenantConfigVisibility::PROTECTED);
-        }
     }
 }

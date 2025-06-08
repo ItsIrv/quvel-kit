@@ -13,7 +13,6 @@ use Modules\Tenant\Services\RequestPrivacy;
 use Modules\Tenant\Services\ConfigurationPipeline;
 use Modules\Tenant\Services\TenantConfigProviderRegistry;
 use Modules\Tenant\Services\FindService;
-use Modules\Tenant\Services\TierService;
 use Modules\Tenant\Services\TenantTableRegistry;
 use Modules\Tenant\Services\TenantConfigSeederRegistry;
 use Modules\Tenant\Services\TenantExclusionRegistry;
@@ -35,7 +34,6 @@ class TenantServiceProvider extends ModuleServiceProvider
         $this->app->register(RouteServiceProvider::class);
 
         $this->app->singleton(FindService::class);
-        $this->app->singleton(TierService::class);
         $this->app->singleton(TenantExclusionRegistry::class);
 
         // Register the tenant table registry
@@ -62,7 +60,7 @@ class TenantServiceProvider extends ModuleServiceProvider
 
         // Register the tenant config provider registry as singleton
         // The registry stores class names, not instances, making it safe for Octane
-        $this->app->singleton(TenantConfigProviderRegistry::class);
+        $this->app->scoped(TenantConfigProviderRegistry::class);
 
         // Register the tenant config seeder registry
         $this->app->singleton(TenantConfigSeederRegistry::class);
