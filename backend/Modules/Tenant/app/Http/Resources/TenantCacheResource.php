@@ -49,27 +49,35 @@ class TenantCacheResource extends JsonResource
      */
     private function getFilteredConfig(): array
     {
-        // Get base tenant config
+        // Get base tenant config (already merged with parent)
         $baseConfig = $this->getEffectiveConfig()?->getProtectedConfig() ?? [];
 
-        // Get pipeline-resolved config (including defaults like session cookie)
+        // Get the merged config array from getEffectiveConfig for pipeline resolution
+        $tenantConfig = $this->getEffectiveConfig();
+        $configArray = $tenantConfig instanceof DynamicTenantConfig
+            ? $tenantConfig->toArray()['config']
+            : ($tenantConfig ? $tenantConfig->toArray() : []);
+
+        // Resolve using the merged configuration array
         $pipeline = app(ConfigurationPipeline::class);
-        $resolvedConfig = $pipeline->resolve($this->resource);
+        $resolvedConfig = $pipeline->resolveFromArray($this->resource, $configArray);
 
         // Merge base + resolved (resolved takes precedence for defaults)
         $finalConfig = array_merge($baseConfig, $resolvedConfig);
 
         // Add tenant identity properties (not stored in config)
-        $finalConfig['tenantId'] = $this->public_id;
-        $finalConfig['tenantName'] = $this->name;
+        // For child tenants, use parent's identity since they represent the same logical tenant
+        $identityTenant = $this->parent ?? $this->resource;
+        $finalConfig['tenantId']   = $identityTenant->public_id;
+        $finalConfig['tenantName'] = $identityTenant->name;
 
         // Build enhanced config with visibility
         $enhancedConfig = new DynamicTenantConfig();
-        
+
         // Add all config values with appropriate visibility
         foreach ($finalConfig as $key => $value) {
             $enhancedConfig->set($key, $value);
-            
+
             // Set visibility based on key patterns
             if (in_array($key, ['tenantId', 'tenantName', 'app_url', 'frontend_url', 'app_name', 'socialite_providers', 'pusher_app_key', 'pusher_app_cluster', 'recaptcha_site_key'])) {
                 $enhancedConfig->setVisibility($key, TenantConfigVisibility::PUBLIC);

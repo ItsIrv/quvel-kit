@@ -137,6 +137,19 @@ class ConfigurationPipeline
             ? $tenantConfig->toArray()['config']
             : $tenantConfig->toArray();
 
+        return $this->resolveFromArray($tenant, $configArray);
+    }
+
+    /**
+     * Resolve configuration values from a configuration array without side effects.
+     * This method works on merged configuration arrays and is the core resolution logic.
+     *
+     * @param Tenant $tenant The tenant context for resolution
+     * @param array $configArray The merged configuration array to resolve
+     * @return array
+     */
+    public function resolveFromArray(Tenant $tenant, array $configArray): array
+    {
         $resolvedConfig = $configArray;
 
         // Sort pipes by priority (higher priority first)

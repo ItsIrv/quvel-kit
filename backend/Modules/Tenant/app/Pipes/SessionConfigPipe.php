@@ -90,8 +90,10 @@ class SessionConfigPipe extends BaseConfigurationPipe
             $config->set('session.cookie', $cookie);
             $this->logger->cookieNameChanged($cookie, true);
         } else {
-            // Default to tenant-specific cookie name using public_id for security
-            $cookie = "tenant_{$tenant->public_id}_session";
+            // For child tenants, use parent's public_id to ensure session sharing
+            // This allows api.domain and app.domain to share the same session
+            $tenantForCookie = $tenant->parent ?? $tenant;
+            $cookie = "tenant_{$tenantForCookie->public_id}_session";
             $config->set('session.cookie', $cookie);
 
             $this->logger->cookieNameChanged($cookie, false);
@@ -169,8 +171,10 @@ class SessionConfigPipe extends BaseConfigurationPipe
         if (isset($tenantConfig['session_cookie'])) {
             $resolved['session_cookie'] = $tenantConfig['session_cookie'];
         } else {
-            // Default to tenant-specific cookie name using public_id for security
-            $resolved['session_cookie'] = "tenant_{$tenant->public_id}_session";
+            // For child tenants, use parent's public_id to ensure session sharing
+            // This allows api.domain and app.domain to share the same session
+            $tenantForCookie = $tenant->parent ?? $tenant;
+            $resolved['session_cookie'] = "tenant_{$tenantForCookie->public_id}_session";
         }
 
         // Resolve session domain if not explicitly set
