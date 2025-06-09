@@ -5,14 +5,14 @@ namespace Modules\Tenant\Pipes;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Logs\Pipes\CacheConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles cache configuration for tenants.
  */
-class CacheConfigPipe implements ConfigurationPipeInterface
+class CacheConfigPipe extends BaseConfigurationPipe
 {
     /**
      * Apply cache configuration.
@@ -67,6 +67,23 @@ class CacheConfigPipe implements ConfigurationPipeInterface
                 app(CacheConfigPipeLogs::class)->rebindFailed($e->getMessage());
             }
         }
+    }
+
+    /**
+     * Resolve cache configuration values without side effects.
+     */
+    public function resolve(Tenant $tenant, array $tenantConfig): array
+    {
+        $resolved = [];
+
+        // Include all cache config values that are explicitly set
+        foreach ($this->handles() as $key) {
+            if (isset($tenantConfig[$key])) {
+                $resolved[$key] = $tenantConfig[$key];
+            }
+        }
+
+        return $resolved;
     }
 
     public function handles(): array

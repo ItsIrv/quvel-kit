@@ -4,14 +4,14 @@ namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Database\DatabaseManager;
-use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles database configuration for tenants.
  */
-class DatabaseConfigPipe implements ConfigurationPipeInterface
+class DatabaseConfigPipe extends BaseConfigurationPipe
 {
     /**
      * Apply database configuration.

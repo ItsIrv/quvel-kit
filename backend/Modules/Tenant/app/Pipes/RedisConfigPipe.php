@@ -4,7 +4,7 @@ namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Redis\Factory as RedisFactory;
-use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Logs\Pipes\RedisConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 
@@ -12,7 +12,7 @@ use Modules\Tenant\Models\Tenant;
  * Handles Redis configuration for tenants.
  * Octane-safe: No static state needed.
  */
-class RedisConfigPipe implements ConfigurationPipeInterface
+class RedisConfigPipe extends BaseConfigurationPipe
 {
     /**
      * Apply Redis configuration.

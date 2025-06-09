@@ -8,14 +8,14 @@ use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Date;
-use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Logs\Pipes\CoreConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles core Laravel configuration for tenants.
  */
-class CoreConfigPipe implements ConfigurationPipeInterface
+class CoreConfigPipe extends BaseConfigurationPipe
 {
     /**
      * Apply core configuration.

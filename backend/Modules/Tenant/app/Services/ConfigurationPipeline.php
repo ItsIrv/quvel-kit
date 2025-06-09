@@ -112,6 +112,46 @@ class ConfigurationPipeline
     }
 
     /**
+     * Resolve configuration values for a tenant without side effects.
+     * This returns the final configuration values that pipes would apply, including calculated defaults.
+     *
+     * @param Tenant $tenant
+     * @return array
+     */
+    public function resolve(Tenant $tenant): array
+    {
+        // Check if tenant context is bypassed
+        $tenantContext = app(\Modules\Tenant\Contexts\TenantContext::class);
+        if ($tenantContext->isBypassed()) {
+            return [];
+        }
+
+        $tenantConfig = $tenant->getEffectiveConfig();
+
+        if (!$tenantConfig) {
+            return [];
+        }
+
+        // Convert to array for pipeline processing
+        $configArray = $tenantConfig instanceof DynamicTenantConfig
+            ? $tenantConfig->toArray()['config']
+            : $tenantConfig->toArray();
+
+        $resolvedConfig = $configArray;
+
+        // Sort pipes by priority (higher priority first)
+        $sortedPipes = $this->pipes->sortByDesc(fn (ConfigurationPipeInterface $pipe) => $pipe->priority());
+
+        // Apply each pipe's resolution
+        foreach ($sortedPipes as $pipe) {
+            $pipeResolved = $pipe->resolve($tenant, $resolvedConfig);
+            $resolvedConfig = array_merge($resolvedConfig, $pipeResolved);
+        }
+
+        return $resolvedConfig;
+    }
+
+    /**
      * Get all registered pipes.
      *
      * @return Collection<int, ConfigurationPipeInterface>

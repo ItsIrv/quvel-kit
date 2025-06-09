@@ -7,7 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
-use Modules\Tenant\Services\TenantConfigProviderRegistry;
+use Modules\Tenant\Services\ConfigurationPipeline;
+use Modules\Tenant\Enums\TenantConfigVisibility;
 
 /**
  * Tenant cache resource that reads directly from tenant->config.
@@ -43,16 +44,39 @@ class TenantCacheResource extends JsonResource
     }
 
     /**
-     * Get filtered config with config provider enhancements.
-     * This method applies config providers to enhance the configuration before filtering.
+     * Get filtered config using pipeline resolution.
+     * This method applies configuration pipes to resolve values including calculated defaults.
      */
     private function getFilteredConfig(): array
     {
-        $config = $this->config;
+        // Get base tenant config
+        $baseConfig = $this->getEffectiveConfig()?->getProtectedConfig() ?? [];
 
-        // Apply config providers to enhance the configuration
-        $registry       = app(TenantConfigProviderRegistry::class);
-        $enhancedConfig = $registry->enhance($this->resource, $config);
+        // Get pipeline-resolved config (including defaults like session cookie)
+        $pipeline = app(ConfigurationPipeline::class);
+        $resolvedConfig = $pipeline->resolve($this->resource);
+
+        // Merge base + resolved (resolved takes precedence for defaults)
+        $finalConfig = array_merge($baseConfig, $resolvedConfig);
+
+        // Add tenant identity properties (not stored in config)
+        $finalConfig['tenantId'] = $this->public_id;
+        $finalConfig['tenantName'] = $this->name;
+
+        // Build enhanced config with visibility
+        $enhancedConfig = new DynamicTenantConfig();
+        
+        // Add all config values with appropriate visibility
+        foreach ($finalConfig as $key => $value) {
+            $enhancedConfig->set($key, $value);
+            
+            // Set visibility based on key patterns
+            if (in_array($key, ['tenantId', 'tenantName', 'app_url', 'frontend_url', 'app_name', 'socialite_providers', 'pusher_app_key', 'pusher_app_cluster', 'recaptcha_site_key'])) {
+                $enhancedConfig->setVisibility($key, TenantConfigVisibility::PUBLIC);
+            } else {
+                $enhancedConfig->setVisibility($key, TenantConfigVisibility::PROTECTED);
+            }
+        }
 
         // Get protected config (public + protected visibility)
         $protectedConfig = $enhancedConfig->getProtectedConfig();

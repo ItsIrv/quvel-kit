@@ -3,14 +3,14 @@
 namespace Modules\Auth\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles authentication configuration for tenants.
  * This demonstrates how modules can add their own tenant configuration.
  */
-class AuthConfigPipe implements ConfigurationPipeInterface
+class AuthConfigPipe extends BaseConfigurationPipe
 {
     /**
      * Apply authentication configuration.

@@ -95,10 +95,6 @@ class CoreServiceProvider extends ModuleServiceProvider
         // Register Core tenant config provider if Tenant module exists
         if (class_exists(TenantServiceProvider::class)) {
             $this->app->booted(function () {
-                // Register configuration provider
-                TenantServiceProvider::registerConfigProvider(
-                    CoreTenantConfigProvider::class,
-                );
 
                 // Register core-specific seed config
                 $this->registerCoreConfigSeeders();

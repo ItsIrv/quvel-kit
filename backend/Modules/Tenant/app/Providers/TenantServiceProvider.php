@@ -7,11 +7,9 @@ use Illuminate\Support\Facades\Context;
 use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
-use Modules\Tenant\Contracts\TenantConfigProviderInterface;
 use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Services\RequestPrivacy;
 use Modules\Tenant\Services\ConfigurationPipeline;
-use Modules\Tenant\Services\TenantConfigProviderRegistry;
 use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\TenantTableRegistry;
 use Modules\Tenant\Services\TenantConfigSeederRegistry;
@@ -58,9 +56,6 @@ class TenantServiceProvider extends ModuleServiceProvider
             return $pipeline;
         });
 
-        // Register the tenant config provider registry as singleton
-        // The registry stores class names, not instances, making it safe for Octane
-        $this->app->scoped(TenantConfigProviderRegistry::class);
 
         // Register the tenant config seeder registry
         $this->app->singleton(TenantConfigSeederRegistry::class);
@@ -108,17 +103,6 @@ class TenantServiceProvider extends ModuleServiceProvider
         app(ConfigurationPipeline::class)->register($pipe);
     }
 
-    /**
-     * Register a tenant config provider.
-     * This method allows other modules to add configuration to tenant API responses.
-     *
-     * @param string|TenantConfigProviderInterface $provider
-     * @return void
-     */
-    public static function registerConfigProvider(string|TenantConfigProviderInterface $provider): void
-    {
-        app(TenantConfigProviderRegistry::class)->register($provider);
-    }
 
     /**
      * Register a tenant-aware table.

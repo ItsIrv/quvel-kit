@@ -4,14 +4,14 @@ namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Session\SessionManager;
-use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Logs\Pipes\SessionConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles session configuration for tenants.
  */
-class SessionConfigPipe implements ConfigurationPipeInterface
+class SessionConfigPipe extends BaseConfigurationPipe
 {
     /**
      * The logger instance.
@@ -155,6 +155,40 @@ class SessionConfigPipe implements ConfigurationPipeInterface
             'config'       => $config,
             'tenantConfig' => $tenantConfig,
         ]);
+    }
+
+    /**
+     * Resolve session configuration values without side effects.
+     * Returns the final configuration values this pipe would apply, including calculated defaults.
+     */
+    public function resolve(Tenant $tenant, array $tenantConfig): array
+    {
+        $resolved = [];
+
+        // Resolve session cookie - always provide a value
+        if (isset($tenantConfig['session_cookie'])) {
+            $resolved['session_cookie'] = $tenantConfig['session_cookie'];
+        } else {
+            // Default to tenant-specific cookie name using public_id for security
+            $resolved['session_cookie'] = "tenant_{$tenant->public_id}_session";
+        }
+
+        // Resolve session domain if not explicitly set
+        if (!isset($tenantConfig['session_domain'])) {
+            $sessionDomain = $this->extractSessionDomain($tenant, $tenantConfig);
+            if ($sessionDomain) {
+                $resolved['session_domain'] = $sessionDomain;
+            }
+        }
+
+        // Include other session config that has explicit values
+        foreach (['session_driver', 'session_lifetime', 'session_encrypt', 'session_path'] as $key) {
+            if (isset($tenantConfig[$key])) {
+                $resolved[$key] = $tenantConfig[$key];
+            }
+        }
+
+        return $resolved;
     }
 
     /**

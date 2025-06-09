@@ -3,14 +3,14 @@
 namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Modules\Tenant\Contracts\ConfigurationPipeInterface;
+use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles mail configuration for tenants.
  * Octane-safe: No static state needed.
  */
-class MailConfigPipe implements ConfigurationPipeInterface
+class MailConfigPipe extends BaseConfigurationPipe
 {
     /**
      * Apply mail configuration.

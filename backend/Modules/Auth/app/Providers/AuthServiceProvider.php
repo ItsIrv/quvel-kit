@@ -51,10 +51,6 @@ class AuthServiceProvider extends ModuleServiceProvider
                     AuthConfigPipe::class,
                 );
 
-                // Also register the config provider for API responses
-                TenantServiceProvider::registerConfigProvider(
-                    AuthTenantConfigProvider::class,
-                );
 
                 // Register auth-specific seed config
                 $this->registerAuthConfigSeeders();
