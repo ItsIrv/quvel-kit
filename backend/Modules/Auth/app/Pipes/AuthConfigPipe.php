@@ -36,7 +36,7 @@ class AuthConfigPipe extends BaseConfigurationPipe
             $config->set('auth.socialite.hmac_secret', $tenantConfig['hmac_secret_key']);
         }
 
-        // OAuth credentials
+        // OAuth credentials - try tenant config first, fallback to environment
         if (isset($tenantConfig['oauth_credentials']) && is_array($tenantConfig['oauth_credentials'])) {
             foreach ($tenantConfig['oauth_credentials'] as $provider => $credentials) {
                 if (isset($credentials['client_id'])) {
@@ -49,6 +49,22 @@ class AuthConfigPipe extends BaseConfigurationPipe
                     $config->set("services.$provider.redirect", $credentials['redirect']);
                 } else {
                     // Default redirect URL based on tenant's app URL
+                    $appUrl = $tenantConfig['app_url'] ?? $config->get('app.url');
+                    $config->set("services.$provider.redirect", "$appUrl/auth/provider/$provider/callback");
+                }
+            }
+        } elseif (isset($tenantConfig['socialite_providers']) && is_array($tenantConfig['socialite_providers'])) {
+            // Fallback: if providers are listed but credentials not in tenant config, use environment
+            foreach ($tenantConfig['socialite_providers'] as $provider) {
+                $envPrefix    = strtoupper($provider);
+                $clientId     = env("{$envPrefix}_CLIENT_ID");
+                $clientSecret = env("{$envPrefix}_CLIENT_SECRET");
+
+                if ($clientId && $clientSecret) {
+                    $config->set("services.$provider.client_id", $clientId);
+                    $config->set("services.$provider.client_secret", $clientSecret);
+
+                    // Set default redirect URL
                     $appUrl = $tenantConfig['app_url'] ?? $config->get('app.url');
                     $config->set("services.$provider.redirect", "$appUrl/auth/provider/$provider/callback");
                 }

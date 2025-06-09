@@ -51,7 +51,6 @@ class AuthServiceProvider extends ModuleServiceProvider
                     AuthConfigPipe::class,
                 );
 
-
                 // Register auth-specific seed config
                 $this->registerAuthConfigSeeders();
             });
@@ -69,11 +68,21 @@ class AuthServiceProvider extends ModuleServiceProvider
                 $authConfig = [
                     'session_cookie'      => 'quvel_session',
                     'socialite_providers' => ['google'],
+                    'oauth_credentials'   => [
+                            'google' => [
+                                'client_id'     => env('GOOGLE_CLIENT_ID', 'your-google-client-id'),
+                                'client_secret' => env('GOOGLE_CLIENT_SECRET', 'your-google-client-secret'),
+                            ],
+                        ],
                 ];
 
                 // Higher tiers get more providers
                 if (in_array($tier, ['premium', 'enterprise'])) {
-                    $authConfig['socialite_providers'][] = 'microsoft';
+                    $authConfig['socialite_providers'][]          = 'microsoft';
+                    $authConfig['oauth_credentials']['microsoft'] = [
+                        'client_id'     => env('MICROSOFT_CLIENT_ID', 'your-microsoft-client-id'),
+                        'client_secret' => env('MICROSOFT_CLIENT_SECRET', 'your-microsoft-client-secret'),
+                    ];
                 }
 
                 // Enterprise gets longer sessions
