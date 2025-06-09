@@ -94,4 +94,20 @@ class AuthConfigPipe extends BaseConfigurationPipe
     {
         return 50; // Run after core tenant pipes
     }
+
+    /**
+     * Resolve configuration values for frontend TenantConfig interface.
+     * Only returns fields that should be exposed to the frontend.
+     */
+    public function resolve(Tenant $tenant, array $tenantConfig): array
+    {
+        $resolved = [];
+
+        // Only return socialiteProviders for frontend
+        if (isset($tenantConfig['socialite_providers'])) {
+            $resolved['socialiteProviders'] = $tenantConfig['socialite_providers'];
+        }
+
+        return $resolved;
+    }
 }

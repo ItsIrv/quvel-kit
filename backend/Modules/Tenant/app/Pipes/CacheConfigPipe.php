@@ -70,20 +70,13 @@ class CacheConfigPipe extends BaseConfigurationPipe
     }
 
     /**
-     * Resolve cache configuration values without side effects.
+     * Resolve cache configuration values for frontend TenantConfig interface.
+     * Cache configuration is internal and not exposed to frontend.
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
-        $resolved = [];
-
-        // Include all cache config values that are explicitly set
-        foreach ($this->handles() as $key) {
-            if (isset($tenantConfig[$key])) {
-                $resolved[$key] = $tenantConfig[$key];
-            }
-        }
-
-        return $resolved;
+        // Cache configuration is internal - return nothing for frontend
+        return [];
     }
 
     public function handles(): array

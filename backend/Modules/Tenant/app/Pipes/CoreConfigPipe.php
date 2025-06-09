@@ -199,4 +199,35 @@ class CoreConfigPipe extends BaseConfigurationPipe
     {
         return 100;
     }
+
+    /**
+     * Resolve configuration values for frontend TenantConfig interface.
+     * Only returns fields that should be exposed to the frontend.
+     */
+    public function resolve(Tenant $tenant, array $tenantConfig): array
+    {
+        $resolved = [];
+
+        // Map backend config fields to frontend TenantConfig interface
+        if (isset($tenantConfig['app_url'])) {
+            $resolved['apiUrl'] = $tenantConfig['app_url'];
+        }
+        if (isset($tenantConfig['frontend_url'])) {
+            $resolved['appUrl'] = $tenantConfig['frontend_url'];
+        } elseif (isset($tenantConfig['app_url'])) {
+            // Fallback to app_url if frontend_url not set
+            $resolved['appUrl'] = $tenantConfig['app_url'];
+        }
+        if (isset($tenantConfig['app_name'])) {
+            $resolved['appName'] = $tenantConfig['app_name'];
+        }
+        if (isset($tenantConfig['pusher_app_key'])) {
+            $resolved['pusherAppKey'] = $tenantConfig['pusher_app_key'];
+        }
+        if (isset($tenantConfig['pusher_app_cluster'])) {
+            $resolved['pusherAppCluster'] = $tenantConfig['pusher_app_cluster'];
+        }
+
+        return $resolved;
+    }
 }

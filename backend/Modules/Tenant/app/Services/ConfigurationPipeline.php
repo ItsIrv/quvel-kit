@@ -143,6 +143,7 @@ class ConfigurationPipeline
     /**
      * Resolve configuration values from a configuration array without side effects.
      * This method works on merged configuration arrays and is the core resolution logic.
+     * Only returns TenantConfig interface fields for frontend consumption.
      *
      * @param Tenant $tenant The tenant context for resolution
      * @param array $configArray The merged configuration array to resolve
@@ -150,16 +151,23 @@ class ConfigurationPipeline
      */
     public function resolveFromArray(Tenant $tenant, array $configArray): array
     {
-        $resolvedConfig = $configArray;
+        // Start with empty array - only include what pipes explicitly resolve
+        $resolvedConfig = [];
 
         // Sort pipes by priority (higher priority first)
         $sortedPipes = $this->pipes->sortByDesc(fn (ConfigurationPipeInterface $pipe) => $pipe->priority());
 
-        // Apply each pipe's resolution
+        // Apply each pipe's resolution (pipes should only return TenantConfig fields)
         foreach ($sortedPipes as $pipe) {
-            $pipeResolved = $pipe->resolve($tenant, $resolvedConfig);
+            $pipeResolved = $pipe->resolve($tenant, $configArray);
             $resolvedConfig = array_merge($resolvedConfig, $pipeResolved);
         }
+
+        // Add tenant identity properties for frontend
+        // For child tenants, use parent's identity since they represent the same logical tenant
+        $identityTenant = $tenant->parent ?? $tenant;
+        $resolvedConfig['tenantId'] = $identityTenant->public_id;
+        $resolvedConfig['tenantName'] = $identityTenant->name;
 
         return $resolvedConfig;
     }

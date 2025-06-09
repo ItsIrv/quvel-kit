@@ -154,4 +154,20 @@ class ServicesConfigPipe extends BaseConfigurationPipe
     {
         return 35; // Run after logging pipe
     }
+
+    /**
+     * Resolve configuration values for frontend TenantConfig interface.
+     * Only returns fields that should be exposed to the frontend.
+     */
+    public function resolve(Tenant $tenant, array $tenantConfig): array
+    {
+        $resolved = [];
+
+        // Only return reCAPTCHA site key for frontend (not secret key)
+        if (isset($tenantConfig['recaptcha_site_key'])) {
+            $resolved['recaptchaGoogleSiteKey'] = $tenantConfig['recaptcha_site_key'];
+        }
+
+        return $resolved;
+    }
 }

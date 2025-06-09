@@ -160,36 +160,21 @@ class SessionConfigPipe extends BaseConfigurationPipe
     }
 
     /**
-     * Resolve session configuration values without side effects.
-     * Returns the final configuration values this pipe would apply, including calculated defaults.
+     * Resolve session configuration values for frontend TenantConfig interface.
+     * Only returns fields that should be exposed to the frontend.
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
         $resolved = [];
 
-        // Resolve session cookie - always provide a value
+        // Only return sessionCookie for frontend - no internal session config
         if (isset($tenantConfig['session_cookie'])) {
-            $resolved['session_cookie'] = $tenantConfig['session_cookie'];
+            $resolved['sessionCookie'] = $tenantConfig['session_cookie'];
         } else {
             // For child tenants, use parent's public_id to ensure session sharing
             // This allows api.domain and app.domain to share the same session
             $tenantForCookie = $tenant->parent ?? $tenant;
-            $resolved['session_cookie'] = "tenant_{$tenantForCookie->public_id}_session";
-        }
-
-        // Resolve session domain if not explicitly set
-        if (!isset($tenantConfig['session_domain'])) {
-            $sessionDomain = $this->extractSessionDomain($tenant, $tenantConfig);
-            if ($sessionDomain) {
-                $resolved['session_domain'] = $sessionDomain;
-            }
-        }
-
-        // Include other session config that has explicit values
-        foreach (['session_driver', 'session_lifetime', 'session_encrypt', 'session_path'] as $key) {
-            if (isset($tenantConfig[$key])) {
-                $resolved[$key] = $tenantConfig[$key];
-            }
+            $resolved['sessionCookie'] = "tenant_{$tenantForCookie->public_id}_session";
         }
 
         return $resolved;

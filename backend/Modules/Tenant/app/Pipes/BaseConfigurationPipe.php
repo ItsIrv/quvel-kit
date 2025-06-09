@@ -19,13 +19,6 @@ abstract class BaseConfigurationPipe implements ConfigurationPipeInterface
     {
         $resolved = [];
 
-        // Include all config values that are explicitly set and handled by this pipe
-        foreach ($this->handles() as $key) {
-            if (isset($tenantConfig[$key])) {
-                $resolved[$key] = $tenantConfig[$key];
-            }
-        }
-
         return $resolved;
     }
 }

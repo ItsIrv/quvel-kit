@@ -60,31 +60,23 @@ class TenantDumpResource extends JsonResource
         $pipeline = app(ConfigurationPipeline::class);
         $resolvedConfig = $pipeline->resolveFromArray($this->resource, $configArray);
 
-        // Merge base + resolved (resolved takes precedence for defaults)
-        $finalConfig = array_merge($baseConfig, $resolvedConfig);
-
-        // Add tenant identity properties (not stored in config)
-        // For child tenants, use parent's identity since they represent the same logical tenant
-        $identityTenant = $this->parent ?? $this->resource;
-        $finalConfig['tenantId'] = $identityTenant->public_id;
-        $finalConfig['tenantName'] = $identityTenant->name;
-
+        // Pipeline resolution now returns only TenantConfig fields
         // Build enhanced config with visibility
         $enhancedConfig = new DynamicTenantConfig();
         
-        // Add all config values with appropriate visibility
-        foreach ($finalConfig as $key => $value) {
+        // Add only the resolved frontend config values with appropriate visibility
+        foreach ($resolvedConfig as $key => $value) {
             $enhancedConfig->set($key, $value);
             
-            // Set visibility based on key patterns
-            if (in_array($key, ['tenantId', 'tenantName', 'app_url', 'frontend_url', 'app_name', 'socialite_providers', 'pusher_app_key', 'pusher_app_cluster', 'recaptcha_site_key'])) {
+            // Set visibility based on field type
+            if (in_array($key, ['tenantId', 'tenantName', 'apiUrl', 'appUrl', 'appName', 'socialiteProviders', 'pusherAppKey', 'pusherAppCluster', 'recaptchaGoogleSiteKey'])) {
                 $enhancedConfig->setVisibility($key, TenantConfigVisibility::PUBLIC);
             } else {
                 $enhancedConfig->setVisibility($key, TenantConfigVisibility::PROTECTED);
             }
         }
 
-        // Get protected config (public + protected visibility)
+        // Get the config (only safe fields from pipeline)
         $protectedConfig = $enhancedConfig->getProtectedConfig();
 
         // Build visibility array
