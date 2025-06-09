@@ -6,8 +6,20 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Models\Tenant;
 
+/**
+ * Handles third-party services configuration for tenants.
+ */
 class ServicesConfigPipe extends BaseConfigurationPipe
 {
+    /**
+     * Apply services configuration to Laravel config repository.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param ConfigRepository $config Laravel config repository
+     * @param array $tenantConfig The tenant configuration array
+     * @param callable $next The next pipe in the pipeline
+     * @return mixed Result of calling $next()
+     */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
         // Configure Stripe payment gateway
@@ -119,6 +131,11 @@ class ServicesConfigPipe extends BaseConfigurationPipe
         ]);
     }
 
+    /**
+     * Get the configuration keys that this pipe handles.
+     *
+     * @return array<string> Array of configuration keys
+     */
     public function handles(): array
     {
         return [
@@ -150,21 +167,28 @@ class ServicesConfigPipe extends BaseConfigurationPipe
         ];
     }
 
+    /**
+     * Get the priority for this pipe (higher = runs first).
+     *
+     * @return int Priority value
+     */
     public function priority(): int
     {
-        return 35; // Run after logging pipe
+        return 35;
     }
 
     /**
-     * Resolve configuration values for frontend TenantConfig interface.
-     * Only returns fields that should be exposed to the frontend.
+     * Resolve services configuration for frontend TenantConfig interface.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param array $tenantConfig The tenant configuration array
+     * @return array Resolved configuration values for frontend
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
         $resolved = [];
 
-        // Only return reCAPTCHA site key for frontend (not secret key)
-        if (isset($tenantConfig['recaptcha_site_key'])) {
+        if ($this->hasValue($tenantConfig, 'recaptcha_site_key')) {
             $resolved['recaptchaGoogleSiteKey'] = $tenantConfig['recaptcha_site_key'];
         }
 

@@ -10,12 +10,17 @@ use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles Redis configuration for tenants.
- * Octane-safe: No static state needed.
  */
 class RedisConfigPipe extends BaseConfigurationPipe
 {
     /**
-     * Apply Redis configuration.
+     * Apply Redis configuration to Laravel config repository.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param ConfigRepository $config Laravel config repository
+     * @param array $tenantConfig The tenant configuration array
+     * @param callable $next The next pipe in the pipeline
+     * @return mixed Result of calling $next()
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
@@ -75,7 +80,21 @@ class RedisConfigPipe extends BaseConfigurationPipe
     }
 
     /**
+     * Resolve Redis configuration for frontend TenantConfig interface.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param array $tenantConfig The tenant configuration array
+     * @return array Empty array - Redis configuration is internal only
+     */
+    public function resolve(Tenant $tenant, array $tenantConfig): array
+    {
+        return [];
+    }
+
+    /**
      * Check if Redis is available in the application.
+     *
+     * @return bool True if Redis is available
      */
     protected function isRedisAvailable(): bool
     {
@@ -114,11 +133,21 @@ class RedisConfigPipe extends BaseConfigurationPipe
         }
     }
 
+    /**
+     * Get the configuration keys that this pipe handles.
+     *
+     * @return array<string> Array of configuration keys
+     */
     public function handles(): array
     {
         return ['redis_client', 'redis_host', 'redis_password', 'redis_port', 'redis_prefix'];
     }
 
+    /**
+     * Get the priority for this pipe (higher = runs first).
+     *
+     * @return int Priority value
+     */
     public function priority(): int
     {
         return 84;

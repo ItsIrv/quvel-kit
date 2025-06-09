@@ -6,8 +6,20 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Models\Tenant;
 
+/**
+ * Handles broadcasting configuration for tenants.
+ */
 class BroadcastingConfigPipe extends BaseConfigurationPipe
 {
+    /**
+     * Apply broadcasting configuration to Laravel config repository.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param ConfigRepository $config Laravel config repository
+     * @param array $tenantConfig The tenant configuration array
+     * @param callable $next The next pipe in the pipeline
+     * @return mixed Result of calling $next()
+     */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
         // Apply default broadcaster
@@ -87,6 +99,33 @@ class BroadcastingConfigPipe extends BaseConfigurationPipe
         ]);
     }
 
+    /**
+     * Resolve broadcasting configuration for frontend TenantConfig interface.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param array $tenantConfig The tenant configuration array
+     * @return array Resolved configuration values for frontend
+     */
+    public function resolve(Tenant $tenant, array $tenantConfig): array
+    {
+        $resolved = [];
+
+        if ($this->hasValue($tenantConfig, 'pusher_app_key')) {
+            $resolved['pusherAppKey'] = $tenantConfig['pusher_app_key'];
+        }
+        
+        if ($this->hasValue($tenantConfig, 'pusher_app_cluster')) {
+            $resolved['pusherAppCluster'] = $tenantConfig['pusher_app_cluster'];
+        }
+
+        return $resolved;
+    }
+
+    /**
+     * Get the configuration keys that this pipe handles.
+     *
+     * @return array<string> Array of configuration keys
+     */
     public function handles(): array
     {
         return [
@@ -108,8 +147,13 @@ class BroadcastingConfigPipe extends BaseConfigurationPipe
         ];
     }
 
+    /**
+     * Get the priority for this pipe (higher = runs first).
+     *
+     * @return int Priority value
+     */
     public function priority(): int
     {
-        return 45; // Run after filesystem pipe
+        return 45;
     }
 }

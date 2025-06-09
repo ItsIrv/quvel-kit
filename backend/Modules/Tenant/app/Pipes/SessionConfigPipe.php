@@ -27,85 +27,69 @@ class SessionConfigPipe extends BaseConfigurationPipe
     }
 
     /**
-     * Apply session configuration.
+     * Apply session configuration to Laravel config repository.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param Repository $config Laravel config repository
+     * @param array $tenantConfig The tenant configuration array
+     * @param callable $next The next pipe in the pipeline
+     * @return mixed Result of calling $next()
      */
     public function handle(Tenant $tenant, Repository $config, array $tenantConfig, callable $next): mixed
     {
-        // Session configuration
-        $hasSessionChanges = false;
+        $hasChanges = false;
+        $oldCookie  = $config->get('session.cookie');
 
-        if (isset($tenantConfig['session_driver'])) {
-            $driver = $tenantConfig['session_driver'];
-            $config->set('session.driver', $driver);
-            $hasSessionChanges = true;
-
-            $this->logger->driverChanged($driver);
+        // Apply session configuration directly
+        if ($this->hasValue($tenantConfig, 'session_driver')) {
+            $config->set('session.driver', $tenantConfig['session_driver']);
+            $this->logger->driverChanged($tenantConfig['session_driver']);
+            $hasChanges = true;
         }
 
-        if (isset($tenantConfig['session_lifetime'])) {
-            $lifetime = $tenantConfig['session_lifetime'];
-            $config->set('session.lifetime', $lifetime);
-            $hasSessionChanges = true;
-
-            $this->logger->lifetimeChanged($lifetime);
+        if ($this->hasValue($tenantConfig, 'session_lifetime')) {
+            $config->set('session.lifetime', $tenantConfig['session_lifetime']);
+            $this->logger->lifetimeChanged($tenantConfig['session_lifetime']);
+            $hasChanges = true;
         }
 
-        if (isset($tenantConfig['session_encrypt'])) {
-            $encrypt = $tenantConfig['session_encrypt'] ? 'true' : 'false';
+        if ($this->hasValue($tenantConfig, 'session_encrypt')) {
             $config->set('session.encrypt', $tenantConfig['session_encrypt']);
-            $hasSessionChanges = true;
-
             $this->logger->encryptionChanged($tenantConfig['session_encrypt']);
+            $hasChanges = true;
         }
 
-        if (isset($tenantConfig['session_path'])) {
-            $path = $tenantConfig['session_path'];
-            $config->set('session.path', $path);
-            $hasSessionChanges = true;
-
-            $this->logger->pathChanged($path);
+        if ($this->hasValue($tenantConfig, 'session_path')) {
+            $config->set('session.path', $tenantConfig['session_path']);
+            $this->logger->pathChanged($tenantConfig['session_path']);
+            $hasChanges = true;
         }
 
-        if (isset($tenantConfig['session_domain'])) {
-            $domain = $tenantConfig['session_domain'];
-            $config->set('session.domain', $domain);
-            $hasSessionChanges = true;
-
-            $this->logger->domainChanged($domain);
+        // Session domain
+        if ($this->hasValue($tenantConfig, 'session_domain')) {
+            $config->set('session.domain', $tenantConfig['session_domain']);
+            $this->logger->domainChanged($tenantConfig['session_domain']);
+            $hasChanges = true;
         } else {
-            // Set tenant-safe session domain by default
             $sessionDomain = $this->extractSessionDomain($tenant, $tenantConfig);
             if ($sessionDomain) {
                 $config->set('session.domain', $sessionDomain);
-                $hasSessionChanges = true;
-
                 $this->logger->domainChanged($sessionDomain);
+                $hasChanges = true;
             }
         }
 
-        // Always set a tenant-specific session cookie name if not overridden
-        $oldCookie = $config->get('session.cookie');
-        if (isset($tenantConfig['session_cookie'])) {
-            $cookie = $tenantConfig['session_cookie'];
-            $config->set('session.cookie', $cookie);
-            $this->logger->cookieNameChanged($cookie, true);
-        } else {
-            // For child tenants, use parent's public_id to ensure session sharing
-            // This allows api.domain and app.domain to share the same session
-            $tenantForCookie = $tenant->parent ?? $tenant;
-            $cookie = "tenant_{$tenantForCookie->public_id}_session";
-            $config->set('session.cookie', $cookie);
+        // Session cookie - use same logic as resolve()
+        $newCookie = $this->calculateSessionCookie($tenant, $tenantConfig);
+        $config->set('session.cookie', $newCookie);
+        $isExplicit = $this->hasValue($tenantConfig, 'session_cookie');
+        $this->logger->cookieNameChanged($newCookie, $isExplicit);
 
-            $this->logger->cookieNameChanged($cookie, false);
-        }
-
-        // Log the change for debugging
-        if ($oldCookie !== $cookie) {
-            $hasSessionChanges = true;
-
+        if ($oldCookie !== $newCookie) {
+            $hasChanges = true;
             $this->logger->debug('Session cookie name changed', [
                 'old_cookie' => $oldCookie,
-                'new_cookie' => $cookie,
+                'new_cookie' => $newCookie,
             ]);
         }
 
@@ -113,41 +97,16 @@ class SessionConfigPipe extends BaseConfigurationPipe
         if ($config->get('session.driver') === 'database') {
             $dbConnection = $config->get('database.default');
             $config->set('session.connection', $dbConnection);
-            $hasSessionChanges = true;
-
+            $hasChanges = true;
             $this->logger->databaseConnectionChanged($dbConnection);
         }
 
         // Apply the configuration changes
-        if ($hasSessionChanges) {
-            $this->logger->applyingChanges(
-                count(
-                    array_intersect_key(
-                        $tenantConfig,
-                        array_flip($this->handles()),
-                    ),
-                ),
-            );
+        if ($hasChanges) {
+            $this->logger->applyingChanges(count(array_intersect_key($tenantConfig, array_flip($this->handles()))));
 
-            // Force the session manager to use the new configuration
-            // This is necessary because the session might be lazily initialized
-            if (app()->bound(SessionManager::class)) {
-                // Get the current session manager
-                $sessionManager = app(SessionManager::class);
-
-                // If it's using the cookie session handler, update the cookie name
-                if ($sessionManager && method_exists($sessionManager, 'driver')) {
-                    /** @var \Illuminate\Session\Store $driver */
-                    $driver = $sessionManager->driver();
-                    if ($driver && method_exists($driver, 'setName')) {
-                        $driver->setName($config->get('session.cookie'));
-
-                        $this->logger->debug('Updated session driver cookie name', [
-                            'cookie_name' => $config->get('session.cookie'),
-                        ]);
-                    }
-                }
-            }
+            // Update session manager
+            $this->updateSessionManager($config, $newCookie);
         } else {
             $this->logger->noChangesToApply();
         }
@@ -160,20 +119,20 @@ class SessionConfigPipe extends BaseConfigurationPipe
     }
 
     /**
-     * Resolve session configuration values for frontend TenantConfig interface.
-     * Only returns fields that should be exposed to the frontend.
+     * Resolve session configuration for frontend TenantConfig interface.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param array $tenantConfig The tenant configuration array
+     * @return array Resolved configuration values for frontend
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
         $resolved = [];
 
-        // Only return sessionCookie for frontend - no internal session config
-        if (isset($tenantConfig['session_cookie'])) {
+        if ($this->hasValue($tenantConfig, 'session_cookie')) {
             $resolved['sessionCookie'] = $tenantConfig['session_cookie'];
         } else {
-            // For child tenants, use parent's public_id to ensure session sharing
-            // This allows api.domain and app.domain to share the same session
-            $tenantForCookie = $tenant->parent ?? $tenant;
+            $tenantForCookie           = $tenant->parent ?? $tenant;
             $resolved['sessionCookie'] = "tenant_{$tenantForCookie->public_id}_session";
         }
 
@@ -181,7 +140,26 @@ class SessionConfigPipe extends BaseConfigurationPipe
     }
 
     /**
+     * Calculate session cookie name using the same logic as resolve().
+     *
+     * @param Tenant $tenant The tenant context
+     * @param array $tenantConfig The tenant configuration array
+     * @return string The calculated session cookie name
+     */
+    protected function calculateSessionCookie(Tenant $tenant, array $tenantConfig): string
+    {
+        if ($this->hasValue($tenantConfig, 'session_cookie')) {
+            return $tenantConfig['session_cookie'];
+        } else {
+            $tenantForCookie = $tenant->parent ?? $tenant;
+            return "tenant_{$tenantForCookie->public_id}_session";
+        }
+    }
+
+    /**
      * The configuration keys that this pipe handles.
+     *
+     * @return array<string> Array of configuration keys
      */
     public function handles(): array
     {
@@ -195,17 +173,51 @@ class SessionConfigPipe extends BaseConfigurationPipe
         ];
     }
 
+    /**
+     * Get the priority for this pipe (higher = runs first).
+     *
+     * @return int Priority value
+     */
     public function priority(): int
     {
-        // Session configuration must be set very early, before any services
-        // that might start or use sessions. This needs to run before
-        // any other pipes that might trigger session initialization.
         return 10;
     }
 
     /**
+     * Update the session manager with the new cookie name.
+     *
+     * @param Repository $config Laravel config repository
+     * @param string $cookieName The new cookie name
+     */
+    protected function updateSessionManager(Repository $config, string $cookieName): void
+    {
+        // Force the session manager to use the new configuration
+        // This is necessary because the session might be lazily initialized
+        if (app()->bound(SessionManager::class)) {
+            // Get the current session manager
+            $sessionManager = app(SessionManager::class);
+
+            // If it's using the cookie session handler, update the cookie name
+            if ($sessionManager && method_exists($sessionManager, 'driver')) {
+                /** @var \Illuminate\Session\Store $driver */
+                $driver = $sessionManager->driver();
+                if ($driver && method_exists($driver, 'setName')) {
+                    $driver->setName($cookieName);
+
+                    $this->logger->debug('Updated session driver cookie name', [
+                        'cookie_name' => $cookieName,
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
      * Extract the session domain from tenant configuration.
-     * This creates a tenant-safe session domain that works for both API and frontend.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param array $tenantConfig The tenant configuration array
+     * @return string|null The extracted session domain or null
      */
     protected function extractSessionDomain(Tenant $tenant, array $tenantConfig): ?string
     {

@@ -38,7 +38,6 @@ export function createTenantConfigFromEnv(): TenantConfigProtected {
  */
 export function filterTenantConfig(config: TenantConfigProtected): Record<string, unknown> {
   const publicConfig: Record<string, unknown> = {};
-  const publicVisibility: Record<string, string> = {};
 
   // First, build the filtered config with only public fields
   Object.entries(config.__visibility).forEach(([key, visibility]) => {
@@ -48,13 +47,9 @@ export function filterTenantConfig(config: TenantConfigProtected): Record<string
       // Only include the value if it exists
       if (value !== undefined && value !== null) {
         publicConfig[key] = value;
-        publicVisibility[key] = visibility;
       }
     }
   });
-
-  // Include the filtered visibility data
-  publicConfig.__visibility = publicVisibility;
 
   return publicConfig;
 }

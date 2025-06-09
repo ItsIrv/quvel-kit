@@ -14,7 +14,13 @@ use Modules\Tenant\Models\Tenant;
 class DatabaseConfigPipe extends BaseConfigurationPipe
 {
     /**
-     * Apply database configuration.
+     * Apply database configuration to Laravel config repository.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param ConfigRepository $config Laravel config repository
+     * @param array $tenantConfig The tenant configuration array
+     * @param callable $next The next pipe in the pipeline
+     * @return mixed Result of calling $next()
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
@@ -68,6 +74,23 @@ class DatabaseConfigPipe extends BaseConfigurationPipe
         ]);
     }
 
+    /**
+     * Resolve database configuration for frontend TenantConfig interface.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param array $tenantConfig The tenant configuration array
+     * @return array Empty array - database configuration is internal only
+     */
+    public function resolve(Tenant $tenant, array $tenantConfig): array
+    {
+        return [];
+    }
+
+    /**
+     * Get the configuration keys that this pipe handles.
+     *
+     * @return array<string> Array of configuration keys
+     */
     public function handles(): array
     {
         return [
@@ -80,6 +103,11 @@ class DatabaseConfigPipe extends BaseConfigurationPipe
         ];
     }
 
+    /**
+     * Get the priority for this pipe (higher = runs first).
+     *
+     * @return int Priority value
+     */
     public function priority(): int
     {
         return 90;

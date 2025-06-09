@@ -6,8 +6,20 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Models\Tenant;
 
+/**
+ * Handles queue configuration for tenants.
+ */
 class QueueConfigPipe extends BaseConfigurationPipe
 {
+    /**
+     * Apply queue configuration to Laravel config repository.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param ConfigRepository $config Laravel config repository
+     * @param array $tenantConfig The tenant configuration array
+     * @param callable $next The next pipe in the pipeline
+     * @return mixed Result of calling $next()
+     */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
         // Apply tenant-specific queue configuration
@@ -62,6 +74,23 @@ class QueueConfigPipe extends BaseConfigurationPipe
         ]);
     }
 
+    /**
+     * Resolve queue configuration for frontend TenantConfig interface.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param array $tenantConfig The tenant configuration array
+     * @return array Empty array - queue configuration is internal only
+     */
+    public function resolve(Tenant $tenant, array $tenantConfig): array
+    {
+        return [];
+    }
+
+    /**
+     * Get the configuration keys that this pipe handles.
+     *
+     * @return array<string> Array of configuration keys
+     */
     public function handles(): array
     {
         return [
@@ -79,8 +108,13 @@ class QueueConfigPipe extends BaseConfigurationPipe
         ];
     }
 
+    /**
+     * Get the priority for this pipe (higher = runs first).
+     *
+     * @return int Priority value
+     */
     public function priority(): int
     {
-        return 65; // Run after Redis pipe but before Mail pipe
+        return 65;
     }
 }

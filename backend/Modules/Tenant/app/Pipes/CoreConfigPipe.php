@@ -18,7 +18,13 @@ use Modules\Tenant\Models\Tenant;
 class CoreConfigPipe extends BaseConfigurationPipe
 {
     /**
-     * Apply core configuration.
+     * Apply core configuration to Laravel config repository.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param ConfigRepository $config Laravel config repository
+     * @param array $tenantConfig The tenant configuration array
+     * @param callable $next The next pipe in the pipeline
+     * @return mixed Result of calling $next()
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
@@ -28,73 +34,73 @@ class CoreConfigPipe extends BaseConfigurationPipe
         $hasLocaleChanges   = false;
 
         // App settings
-        if (isset($tenantConfig['app_name'])) {
+        if ($this->hasValue($tenantConfig, 'app_name')) {
             $config->set('app.name', $tenantConfig['app_name']);
         }
-        if (isset($tenantConfig['app_env'])) {
+        if ($this->hasValue($tenantConfig, 'app_env')) {
             $config->set('app.env', $tenantConfig['app_env']);
         }
-        if (isset($tenantConfig['app_key'])) {
+        if ($this->hasValue($tenantConfig, 'app_key')) {
             $config->set('app.key', $tenantConfig['app_key']);
         }
-        if (isset($tenantConfig['app_debug'])) {
+        if ($this->hasValue($tenantConfig, 'app_debug')) {
             $config->set('app.debug', $tenantConfig['app_debug']);
         }
-        if (isset($tenantConfig['app_url'])) {
+        if ($this->hasValue($tenantConfig, 'app_url')) {
             $config->set('app.url', $tenantConfig['app_url']);
             $hasUrlChanges = true;
         }
-        if (isset($tenantConfig['app_timezone'])) {
+        if ($this->hasValue($tenantConfig, 'app_timezone')) {
             $config->set('app.timezone', $tenantConfig['app_timezone']);
             $hasTimezoneChanges = true;
         }
 
         // Localization
-        if (isset($tenantConfig['app_locale'])) {
+        if ($this->hasValue($tenantConfig, 'app_locale')) {
             $config->set('app.locale', $tenantConfig['app_locale']);
             $hasLocaleChanges = true;
         }
-        if (isset($tenantConfig['app_fallback_locale'])) {
+        if ($this->hasValue($tenantConfig, 'app_fallback_locale')) {
             $config->set('app.fallback_locale', $tenantConfig['app_fallback_locale']);
             $hasLocaleChanges = true;
         }
 
         // Frontend URLs
-        if (isset($tenantConfig['frontend_url'])) {
+        if ($this->hasValue($tenantConfig, 'frontend_url')) {
             $config->set('frontend.url', $tenantConfig['frontend_url']);
             $hasUrlChanges = true;
         }
-        if (isset($tenantConfig['internal_api_url'])) {
+        if ($this->hasValue($tenantConfig, 'internal_api_url')) {
             $config->set('frontend.internal_api_url', $tenantConfig['internal_api_url']);
             $hasUrlChanges = true;
         }
-        if (isset($tenantConfig['capacitor_scheme'])) {
+        if ($this->hasValue($tenantConfig, 'capacitor_scheme')) {
             $config->set('frontend.capacitor_scheme', $tenantConfig['capacitor_scheme']);
         }
 
         // CORS - if frontend URL is set
-        if (isset($tenantConfig['app_url']) || isset($tenantConfig['frontend_url'])) {
+        if ($this->hasValue($tenantConfig, 'app_url') || $this->hasValue($tenantConfig, 'frontend_url')) {
             $allowedOrigins = [];
-            if (isset($tenantConfig['app_url'])) {
+            if ($this->hasValue($tenantConfig, 'app_url')) {
                 $allowedOrigins[] = $tenantConfig['app_url'];
             }
-            if (isset($tenantConfig['frontend_url'])) {
+            if ($this->hasValue($tenantConfig, 'frontend_url')) {
                 $allowedOrigins[] = $tenantConfig['frontend_url'];
             }
             $config->set('cors.allowed_origins', $allowedOrigins);
         }
 
         // Pusher/Broadcasting configuration
-        if (isset($tenantConfig['pusher_app_key'])) {
+        if ($this->hasValue($tenantConfig, 'pusher_app_key')) {
             $config->set('broadcasting.connections.pusher.key', $tenantConfig['pusher_app_key']);
         }
-        if (isset($tenantConfig['pusher_app_secret'])) {
+        if ($this->hasValue($tenantConfig, 'pusher_app_secret')) {
             $config->set('broadcasting.connections.pusher.secret', $tenantConfig['pusher_app_secret']);
         }
-        if (isset($tenantConfig['pusher_app_id'])) {
+        if ($this->hasValue($tenantConfig, 'pusher_app_id')) {
             $config->set('broadcasting.connections.pusher.app_id', $tenantConfig['pusher_app_id']);
         }
-        if (isset($tenantConfig['pusher_app_cluster'])) {
+        if ($this->hasValue($tenantConfig, 'pusher_app_cluster')) {
             $config->set('broadcasting.connections.pusher.options.cluster', $tenantConfig['pusher_app_cluster']);
         }
 
@@ -174,6 +180,11 @@ class CoreConfigPipe extends BaseConfigurationPipe
         }
     }
 
+    /**
+     * Get the configuration keys that this pipe handles.
+     *
+     * @return array<string> Array of configuration keys
+     */
     public function handles(): array
     {
         return [
@@ -195,36 +206,47 @@ class CoreConfigPipe extends BaseConfigurationPipe
         ];
     }
 
+    /**
+     * Get the priority for this pipe (higher = runs first).
+     *
+     * @return int Priority value
+     */
     public function priority(): int
     {
         return 100;
     }
 
     /**
-     * Resolve configuration values for frontend TenantConfig interface.
-     * Only returns fields that should be exposed to the frontend.
+     * Resolve core configuration for frontend TenantConfig interface.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param array $tenantConfig The tenant configuration array
+     * @return array Resolved configuration values for frontend
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
         $resolved = [];
 
-        // Map backend config fields to frontend TenantConfig interface
-        if (isset($tenantConfig['app_url'])) {
+        if ($this->hasValue($tenantConfig, 'app_url')) {
             $resolved['apiUrl'] = $tenantConfig['app_url'];
         }
-        if (isset($tenantConfig['frontend_url'])) {
+        
+        if ($this->hasValue($tenantConfig, 'frontend_url')) {
             $resolved['appUrl'] = $tenantConfig['frontend_url'];
-        } elseif (isset($tenantConfig['app_url'])) {
+        } elseif ($this->hasValue($tenantConfig, 'app_url')) {
             // Fallback to app_url if frontend_url not set
             $resolved['appUrl'] = $tenantConfig['app_url'];
         }
-        if (isset($tenantConfig['app_name'])) {
+        
+        if ($this->hasValue($tenantConfig, 'app_name')) {
             $resolved['appName'] = $tenantConfig['app_name'];
         }
-        if (isset($tenantConfig['pusher_app_key'])) {
+        
+        if ($this->hasValue($tenantConfig, 'pusher_app_key')) {
             $resolved['pusherAppKey'] = $tenantConfig['pusher_app_key'];
         }
-        if (isset($tenantConfig['pusher_app_cluster'])) {
+        
+        if ($this->hasValue($tenantConfig, 'pusher_app_cluster')) {
             $resolved['pusherAppCluster'] = $tenantConfig['pusher_app_cluster'];
         }
 

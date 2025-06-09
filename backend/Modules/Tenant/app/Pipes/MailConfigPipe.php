@@ -8,12 +8,17 @@ use Modules\Tenant\Models\Tenant;
 
 /**
  * Handles mail configuration for tenants.
- * Octane-safe: No static state needed.
  */
 class MailConfigPipe extends BaseConfigurationPipe
 {
     /**
-     * Apply mail configuration.
+     * Apply mail configuration to Laravel config repository.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param ConfigRepository $config Laravel config repository
+     * @param array $tenantConfig The tenant configuration array
+     * @param callable $next The next pipe in the pipeline
+     * @return mixed Result of calling $next()
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
@@ -54,6 +59,23 @@ class MailConfigPipe extends BaseConfigurationPipe
         ]);
     }
 
+    /**
+     * Resolve mail configuration for frontend TenantConfig interface.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param array $tenantConfig The tenant configuration array
+     * @return array Empty array - mail configuration is internal only
+     */
+    public function resolve(Tenant $tenant, array $tenantConfig): array
+    {
+        return [];
+    }
+
+    /**
+     * Get the configuration keys that this pipe handles.
+     *
+     * @return array<string> Array of configuration keys
+     */
     public function handles(): array
     {
         return [
@@ -68,6 +90,11 @@ class MailConfigPipe extends BaseConfigurationPipe
         ];
     }
 
+    /**
+     * Get the priority for this pipe (higher = runs first).
+     *
+     * @return int Priority value
+     */
     public function priority(): int
     {
         return 70;

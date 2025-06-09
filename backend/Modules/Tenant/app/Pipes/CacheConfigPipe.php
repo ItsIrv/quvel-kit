@@ -15,20 +15,25 @@ use Modules\Tenant\Models\Tenant;
 class CacheConfigPipe extends BaseConfigurationPipe
 {
     /**
-     * Apply cache configuration.
+     * Apply cache configuration to Laravel config repository.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param ConfigRepository $config Laravel config repository
+     * @param array $tenantConfig The tenant configuration array
+     * @param callable $next The next pipe in the pipeline
+     * @return mixed Result of calling $next()
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-        // Apply cache configuration
         $hasCacheChanges = false;
 
-        if (isset($tenantConfig['cache_store'])) {
+        if ($this->hasValue($tenantConfig, 'cache_store')) {
             $config->set('cache.default', $tenantConfig['cache_store']);
             $hasCacheChanges = true;
         }
 
         // Always set a tenant-specific cache prefix
-        if (isset($tenantConfig['cache_prefix'])) {
+        if ($this->hasValue($tenantConfig, 'cache_prefix')) {
             $config->set('cache.prefix', $tenantConfig['cache_prefix']);
             $hasCacheChanges = true;
         } else {
@@ -70,20 +75,32 @@ class CacheConfigPipe extends BaseConfigurationPipe
     }
 
     /**
-     * Resolve cache configuration values for frontend TenantConfig interface.
-     * Cache configuration is internal and not exposed to frontend.
+     * Resolve cache configuration for frontend TenantConfig interface.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param array $tenantConfig The tenant configuration array
+     * @return array Empty array - cache configuration is internal only
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
-        // Cache configuration is internal - return nothing for frontend
         return [];
     }
 
+    /**
+     * Get the configuration keys that this pipe handles.
+     *
+     * @return array<string> Array of configuration keys
+     */
     public function handles(): array
     {
         return ['cache_store', 'cache_prefix'];
     }
 
+    /**
+     * Get the priority for this pipe (higher = runs first).
+     *
+     * @return int Priority value
+     */
     public function priority(): int
     {
         return 85;

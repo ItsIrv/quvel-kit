@@ -6,8 +6,20 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Models\Tenant;
 
+/**
+ * Handles logging configuration for tenants.
+ */
 class LoggingConfigPipe extends BaseConfigurationPipe
 {
+    /**
+     * Apply logging configuration to Laravel config repository.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param ConfigRepository $config Laravel config repository
+     * @param array $tenantConfig The tenant configuration array
+     * @param callable $next The next pipe in the pipeline
+     * @return mixed Result of calling $next()
+     */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
         // Apply default log channel
@@ -99,6 +111,23 @@ class LoggingConfigPipe extends BaseConfigurationPipe
         ]);
     }
 
+    /**
+     * Resolve logging configuration for frontend TenantConfig interface.
+     *
+     * @param Tenant $tenant The tenant context
+     * @param array $tenantConfig The tenant configuration array
+     * @return array Empty array - logging configuration is internal only
+     */
+    public function resolve(Tenant $tenant, array $tenantConfig): array
+    {
+        return [];
+    }
+
+    /**
+     * Get the configuration keys that this pipe handles.
+     *
+     * @return array<string> Array of configuration keys
+     */
     public function handles(): array
     {
         return [
@@ -122,8 +151,13 @@ class LoggingConfigPipe extends BaseConfigurationPipe
         ];
     }
 
+    /**
+     * Get the priority for this pipe (higher = runs first).
+     *
+     * @return int Priority value
+     */
     public function priority(): int
     {
-        return 40; // Run after broadcasting pipe
+        return 40;
     }
 }
