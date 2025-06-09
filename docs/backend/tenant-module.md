@@ -8,8 +8,7 @@ QuVel Kit provides a powerful multi-tenancy system that allows a single applicat
 
 - **Dynamic Configuration System**: Flexible key-value configuration with no hard-coded properties
 - **Configuration Pipeline**: Modular architecture allowing modules to register configuration processors
-- **Tenant Tiers**: Support for different isolation levels (Basic, Standard, Premium, Enterprise)
-- **Configuration Providers**: Modules can dynamically add configuration to tenant API responses
+- **Configuration Pipes**: Modules can register pipes to process and expose tenant configuration
 - **Inheritance**: Child tenants automatically inherit parent configurations
 - **Visibility Control**: Three-tier security model (PUBLIC, PROTECTED, PRIVATE)
 
@@ -27,7 +26,7 @@ QuVel Kit provides a powerful multi-tenancy system that allows a single applicat
 | `DynamicTenantConfig` | Value object | Flexible key-value configuration storage with visibility control |
 | `DynamicTenantConfigCast` | Eloquent cast | Handles conversion between JSON and `DynamicTenantConfig` objects |
 | `ConfigurationPipeline` | Pipeline manager | Orchestrates configuration pipes for processing tenant configs |
-| `TenantConfigProviderRegistry` | Provider registry | Manages modules that provide additional tenant configuration |
+| `ConfigurationPipeInterface` | Pipe contract | Interface for creating configuration pipes |
 
 ## Dynamic Tenant Configuration System
 
@@ -38,7 +37,6 @@ The tenant configuration system uses a flexible, dynamic approach that allows yo
 - **Dynamic Properties**: No hard-coded configuration fields - add any key-value pairs as needed
 - **Module Extensibility**: Modules can register their own configuration processors via pipes
 - **Configuration Pipeline**: Chain of processors that apply tenant-specific settings
-- **Tiered Isolation**: Different levels of resource isolation based on tenant tier
 - **Runtime Overrides**: Override Laravel's configuration values at runtime
 - **Inheritance**: Child tenants automatically inherit parent configurations
 - **Visibility Control**: Three-tier security model for configuration exposure
@@ -62,16 +60,12 @@ Each pipe handles specific configuration domains and can be registered by any mo
 3. **ConfigurationPipeInterface**: Contract for creating configuration pipes
 4. **DynamicTenantConfigCast**: Handles database serialization
 
-#### Tenant Tiers (Optional)
+#### Configuration Resolution
 
-The tier system is **disabled by default**. When enabled via `TENANT_ENABLE_TIERS=true`, it provides different isolation levels:
+Configuration pipes implement two key methods:
 
-| Tier | Database | Cache | Redis | Description |
-|------|----------|-------|-------|-------------|
-| **Basic** | Shared | Shared | Shared | Row-level isolation only |
-| **Standard** | Shared | Dedicated | Dedicated | Row-level isolation with dedicated cache |
-| **Premium** | Dedicated | Dedicated | Dedicated | Full database and cache isolation |
-| **Enterprise** | Dedicated | Dedicated | Dedicated | Full isolation with custom infrastructure |
+1. **`handle()`**: Applies configuration to Laravel's config repository for backend use
+2. **`resolve()`**: Returns configuration values with visibility controls for frontend exposure
 
 ### Configuration Visibility
 
