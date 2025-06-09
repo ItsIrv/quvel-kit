@@ -2,10 +2,10 @@
 
 namespace Modules\Core\Providers;
 
-use Modules\Core\Enums\CoreHeader;
 use Modules\Core\Http\Middleware\Lang\SetRequestLocale;
 use Modules\Core\Http\Middleware\Trace\SetTraceId;
 use Modules\Core\Services\FrontendService;
+use Modules\Core\Services\Security\RequestPrivacy;
 use Modules\Core\Services\User\UserCreateService;
 use Modules\Core\Services\User\UserFindService;
 use Modules\Core\Contracts\Security\CaptchaVerifierInterface;
@@ -16,9 +16,6 @@ use Illuminate\Log\Context\Repository;
 use Illuminate\Support\Facades\Context;
 use Modules\Tenant\Enums\TenantConfigVisibility;
 use Modules\Tenant\Providers\TenantServiceProvider;
-use Illuminate\Contracts\Debug\ExceptionHandler;
-use Modules\Core\Enums\StatusEnum;
-use Throwable;
 
 use function app;
 use function config;
@@ -37,6 +34,9 @@ class CoreServiceProvider extends ModuleServiceProvider
         $this->app->register(RouteServiceProvider::class);
         $this->app->singleton(UserCreateService::class);
         $this->app->singleton(UserFindService::class);
+
+        $this->app->scoped(RequestPrivacy::class);
+
         $this->app->scoped(
             FrontendService::class,
             fn ($app) => (new FrontendService(
@@ -61,9 +61,6 @@ class CoreServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         parent::boot();
-
-        // Register exception handler
-        // $this->registerExceptionHandler();
 
         $this->app['url']->forceScheme('https');
 
@@ -218,47 +215,5 @@ class CoreServiceProvider extends ModuleServiceProvider
                 'pusher_app_cluster' => TenantConfigVisibility::PUBLIC ,
             ]
         );
-    }
-
-    /**
-     * Register the global exception handler.
-     */
-    protected function registerExceptionHandler(): void
-    {
-        $this->app->extend(ExceptionHandler::class, function ($handler, $app) {
-            return new class ($handler, $app) extends \Illuminate\Foundation\Exceptions\Handler
-            {
-                public function __construct(
-                    private readonly ExceptionHandler $originalHandler,
-                    private readonly \Illuminate\Foundation\Application $app,
-                ) {
-                }
-
-                public function render($request, Throwable $exception)
-                {
-                    // If AJAX or Capacitor, continue as normal
-                    if ($request->expectsJson() || $request->hasHeader(CoreHeader::CAPACITOR->value)) {
-                        return $this->originalHandler->render($request, $exception);
-                    }
-
-                    $this->originalHandler->report($exception);
-
-                    $frontendService = $this->app->make(FrontendService::class);
-
-                    return $frontendService->redirect(
-                        '',
-                        [
-                            'message' => StatusEnum::INTERNAL_ERROR->value,
-                        ],
-                    );
-                }
-
-                // Delegate all other methods to the original handler
-                public function __call($method, $parameters)
-                {
-                    return $this->originalHandler->$method(...$parameters);
-                }
-            };
-        });
     }
 }

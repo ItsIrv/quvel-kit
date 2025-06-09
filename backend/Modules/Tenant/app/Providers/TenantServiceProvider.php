@@ -8,7 +8,6 @@ use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
 use Modules\Tenant\Contracts\TenantResolver;
-use Modules\Core\Services\Security\RequestPrivacy;
 use Modules\Tenant\Services\ConfigurationPipeline;
 use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\TenantTableRegistry;
@@ -60,7 +59,6 @@ class TenantServiceProvider extends ModuleServiceProvider
         $this->app->singleton(TenantConfigSeederRegistry::class);
 
         $this->app->scoped(TenantContext::class);
-        $this->app->scoped(RequestPrivacy::class);
         $this->app->scoped(
             TenantResolver::class,
             fn (): TenantResolver => app(config('tenant.resolver'))
