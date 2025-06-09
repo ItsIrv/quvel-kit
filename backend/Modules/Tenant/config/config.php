@@ -3,20 +3,19 @@
 use Modules\Tenant\Services\HostResolver;
 
 return [
-    'name'         => 'Tenant',
-
+    'name'              => 'Tenant',
 
     /**
      * Tenant resolver.
      */
-    'resolver'     => HostResolver::class,
+    'resolver'          => HostResolver::class,
 
     /**
      * Paths that should bypass tenant resolution.
      * These paths will not have tenant context applied.
      * Modules should use TenantServiceProvider::excludePaths() to register paths dynamically.
      */
-    'excluded_paths' => [
+    'excluded_paths'    => [
         // Static exclusions can be added here if needed
     ],
 
@@ -33,7 +32,7 @@ return [
     /**
      * SSR tenant cache configuration.
      */
-    'tenant_cache' => [
+    'tenant_cache'      => [
         /**
          * Allows SSR to preload tenants on boot.
          */
@@ -50,34 +49,12 @@ return [
         'cache_ttl'    => env('TENANT_SSR_CACHE_TTL', 300),
     ],
 
-    'privacy'      => [
-        /**
-         * API key for SSR requests.
-         */
-        'ssr_api_key'       => env('TENANT_PRIVACY_SSR_API_KEY'),
-
-        /**
-         * IPs that are trusted to make internal requests.
-         */
-        'trusted_ips'       => explode(',', env('TENANT_PRIVACY_TRUSTED_INTERNAL_IPS', '127.0.0.1,::1')),
-
-        /**
-         * Whether to disable the key check.
-         */
-        'disable_key_check' => env('TENANT_PRIVACY_DISABLE_KEY_CHECK', false),
-
-        /**
-         * Whether to disable the IP check.
-         */
-        'disable_ip_check'  => env('TENANT_PRIVACY_DISABLE_IP_CHECK', false),
-    ],
-
     /**
      * Configuration pipeline pipes.
      * These are applied in order of priority (higher priority runs first).
      * Modules can register their own pipes in their service providers.
      */
-    'config_pipes' => [
+    'config_pipes'      => [
         \Modules\Tenant\Pipes\CoreConfigPipe::class,
         \Modules\Tenant\Pipes\DatabaseConfigPipe::class,
         \Modules\Tenant\Pipes\CacheConfigPipe::class,
@@ -91,13 +68,12 @@ return [
         \Modules\Tenant\Pipes\ServicesConfigPipe::class,
     ],
 
-
     /**
      * The tenant migration loops through each table and applies the tenant scope.
      * Modules should register their tables using TenantServiceProvider::registerTenantTable()
      * rather than adding them here.
      */
-    'tables'       => [
+    'tables'            => [
         'users' => [
             /**
              * Column after which the tenant_id should be added

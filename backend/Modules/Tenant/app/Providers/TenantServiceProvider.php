@@ -8,7 +8,7 @@ use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
 use Modules\Tenant\Contracts\TenantResolver;
-use Modules\Tenant\Services\RequestPrivacy;
+use Modules\Core\Services\Security\RequestPrivacy;
 use Modules\Tenant\Services\ConfigurationPipeline;
 use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\TenantTableRegistry;
@@ -56,7 +56,6 @@ class TenantServiceProvider extends ModuleServiceProvider
             return $pipeline;
         });
 
-
         // Register the tenant config seeder registry
         $this->app->singleton(TenantConfigSeederRegistry::class);
 
@@ -102,7 +101,6 @@ class TenantServiceProvider extends ModuleServiceProvider
     {
         app(ConfigurationPipeline::class)->register($pipe);
     }
-
 
     /**
      * Register a tenant-aware table.

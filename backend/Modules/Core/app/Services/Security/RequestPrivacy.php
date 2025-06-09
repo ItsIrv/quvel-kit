@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Tenant\Services;
+namespace Modules\Core\Services\Security;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Request;
-use Modules\Tenant\Enums\TenantHeader;
+use Modules\Core\Enums\CoreHeader;
 
 /**
  * Service to check if a request is internal.
@@ -33,12 +33,12 @@ class RequestPrivacy
      */
     private function isInternalIP(): bool
     {
-        if ($this->configRepository->get('tenant.privacy.disable_ip_check')) {
+        if ($this->configRepository->get('core.privacy.disable_ip_check')) {
             return true;
         }
 
         $ip         = $this->request->ip();
-        $trustedIps = $this->configRepository->get('tenant.privacy.trusted_ips');
+        $trustedIps = $this->configRepository->get('core.privacy.trusted_ips');
 
         return in_array($ip, $trustedIps, true);
     }
@@ -48,11 +48,11 @@ class RequestPrivacy
      */
     private function isCorrectApiKey(): bool
     {
-        if ($this->configRepository->get('tenant.privacy.disable_key_check')) {
+        if ($this->configRepository->get('core.privacy.disable_key_check')) {
             return true;
         }
 
-        return $this->request->header(TenantHeader::SSR_KEY->value)
-            === $this->configRepository->get('tenant.privacy.ssr_api_key');
+        return $this->request->header(CoreHeader::SSR_KEY->value)
+            === $this->configRepository->get('core.privacy.ssr_api_key');
     }
 }

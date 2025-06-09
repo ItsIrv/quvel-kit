@@ -1,13 +1,13 @@
 <?php
 
-namespace Modules\Tenant\Http\Middleware;
+namespace Modules\Core\Http\Middleware\Security;
 
 use Closure;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Modules\Core\Enums\StatusEnum;
-use Modules\Tenant\Services\RequestPrivacy;
+use Modules\Core\Services\Security\RequestPrivacy;
 
 /**
  * Middleware to check if the request is internal.

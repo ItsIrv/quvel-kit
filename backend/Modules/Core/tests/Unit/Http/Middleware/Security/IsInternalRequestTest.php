@@ -1,21 +1,21 @@
 <?php
 
-namespace Modules\Tenant\Tests\Unit\Http\Middleware;
+namespace Modules\Core\Tests\Unit\Http\Middleware\Security;
 
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Mockery;
 use Mockery\MockInterface;
-use Modules\Tenant\Http\Middleware\IsInternalRequest;
-use Modules\Tenant\Services\RequestPrivacy;
+use Modules\Core\Http\Middleware\Security\IsInternalRequest;
+use Modules\Core\Services\Security\RequestPrivacy;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
 #[CoversClass(IsInternalRequest::class)]
-#[Group('tenant-module')]
-#[Group('tenant-middleware')]
+#[Group('core-module')]
+#[Group('core-middleware')]
 final class IsInternalRequestTest extends TestCase
 {
     /**

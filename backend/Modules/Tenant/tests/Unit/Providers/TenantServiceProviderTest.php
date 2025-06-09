@@ -12,7 +12,7 @@ use Modules\Tenant\Providers\RouteServiceProvider;
 use Modules\Tenant\Providers\TenantServiceProvider;
 use Modules\Tenant\Services\ConfigurationPipeline;
 use Modules\Tenant\Services\FindService;
-use Modules\Tenant\Services\RequestPrivacy;
+use Modules\Core\Services\Security\RequestPrivacy;
 use Modules\Tenant\Services\TenantConfigProviderRegistry;
 use Modules\Tenant\Services\TenantConfigSeederRegistry;
 use Modules\Tenant\Services\TenantExclusionRegistry;
@@ -225,34 +225,34 @@ class TenantServiceProviderTest extends TestCase
     {
         // Create a mock of TenantConfigSeederRegistry
         $registry = Mockery::mock(TenantConfigSeederRegistry::class);
-        
+
         // Define test data
-        $tier = 'premium';
-        $seeder = function () {
+        $tier             = 'premium';
+        $seeder           = function () {
             return ['feature' => 'enabled'];
         };
-        $priority = 30;
+        $priority         = 30;
         $visibilitySeeder = function () {
             return ['feature_visible' => true];
         };
-        
+
         // Set expectations for the registry mock
         $registry->shouldReceive('registerSeeder')
             ->once()
             ->with($tier, Mockery::type('callable'), $priority, Mockery::type('callable'))
             ->andReturnNull();
-        
+
         // Replace the registry in the container
         $this->app->instance(TenantConfigSeederRegistry::class, $registry);
-        
+
         // Call the static method
         TenantServiceProvider::registerConfigSeeder(
             $tier,
             $seeder,
             $priority,
-            $visibilitySeeder
+            $visibilitySeeder,
         );
-        
+
         // Mockery will verify that the expectations were met
     }
 
@@ -263,34 +263,34 @@ class TenantServiceProviderTest extends TestCase
     {
         // Create a mock of TenantConfigSeederRegistry
         $registry = Mockery::mock(TenantConfigSeederRegistry::class);
-        
+
         // Define test data
-        $tiers = ['basic', 'premium'];
-        $seeder = function () {
+        $tiers            = ['basic', 'premium'];
+        $seeder           = function () {
             return ['key' => 'value'];
         };
-        $priority = 25;
+        $priority         = 25;
         $visibilitySeeder = function () {
             return ['visible' => true];
         };
-        
+
         // Set expectations for the registry mock
         $registry->shouldReceive('registerSeederForTiers')
             ->once()
             ->with($tiers, Mockery::type('callable'), $priority, Mockery::type('callable'))
             ->andReturnNull();
-        
+
         // Replace the registry in the container
         $this->app->instance(TenantConfigSeederRegistry::class, $registry);
-        
+
         // Call the static method
         TenantServiceProvider::registerConfigSeederForTiers(
             $tiers,
             $seeder,
             $priority,
-            $visibilitySeeder
+            $visibilitySeeder,
         );
-        
+
         // Mockery will verify that the expectations were met
     }
 }

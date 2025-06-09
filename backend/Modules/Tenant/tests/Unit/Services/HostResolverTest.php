@@ -16,7 +16,7 @@ use Modules\Tenant\Enums\TenantHeader;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\HostResolver;
-use Modules\Tenant\Services\RequestPrivacy;
+use Modules\Core\Services\Security\RequestPrivacy;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;

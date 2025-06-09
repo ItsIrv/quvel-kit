@@ -1,21 +1,21 @@
 <?php
 
-namespace Modules\Tenant\Tests\Unit\Services;
+namespace Modules\Core\Tests\Unit\Services\Security;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Request;
 use Mockery;
 use Mockery\MockInterface;
-use Modules\Tenant\Enums\TenantHeader;
-use Modules\Tenant\Services\RequestPrivacy;
+use Modules\Core\Enums\CoreHeader;
+use Modules\Core\Services\Security\RequestPrivacy;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
 #[CoversClass(RequestPrivacy::class)]
-#[Group('tenant-module')]
-#[Group('tenant-services')]
+#[Group('core-module')]
+#[Group('core-services')]
 final class RequestPrivacyTest extends TestCase
 {
     /**
@@ -55,24 +55,24 @@ final class RequestPrivacyTest extends TestCase
 
         $this->request->shouldReceive('header')
             ->once()
-            ->with(TenantHeader::SSR_KEY->value)
+            ->with(CoreHeader::SSR_KEY->value)
             ->andReturn($apiKey);
 
         // Mock config calls
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.disable_ip_check')
+            ->with('core.privacy.disable_ip_check')
             ->andReturn(false);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.trusted_ips')
+            ->with('core.privacy.trusted_ips')
             ->andReturn($trustedIps);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.disable_key_check')
+            ->with('core.privacy.disable_key_check')
             ->andReturn(false);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.ssr_api_key')
+            ->with('core.privacy.ssr_api_key')
             ->andReturn($apiKey);
 
         // Act
@@ -94,20 +94,20 @@ final class RequestPrivacyTest extends TestCase
 
         $this->request->shouldReceive('header')
             ->once()
-            ->with(TenantHeader::SSR_KEY->value)
+            ->with(CoreHeader::SSR_KEY->value)
             ->andReturn($apiKey);
 
         // Mock config calls
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.disable_ip_check')
+            ->with('core.privacy.disable_ip_check')
             ->andReturn(true);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.disable_key_check')
+            ->with('core.privacy.disable_key_check')
             ->andReturn(false);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.ssr_api_key')
+            ->with('core.privacy.ssr_api_key')
             ->andReturn($apiKey);
 
         // Act
@@ -134,15 +134,15 @@ final class RequestPrivacyTest extends TestCase
 
         // Mock config calls
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.disable_ip_check')
+            ->with('core.privacy.disable_ip_check')
             ->andReturn(false);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.trusted_ips')
+            ->with('core.privacy.trusted_ips')
             ->andReturn($trustedIps);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.disable_key_check')
+            ->with('core.privacy.disable_key_check')
             ->andReturn(true);
 
         // Act
@@ -167,24 +167,24 @@ final class RequestPrivacyTest extends TestCase
 
         $this->request->shouldReceive('header')
             ->never()
-            ->with(TenantHeader::SSR_KEY->value)
+            ->with(CoreHeader::SSR_KEY->value)
             ->andReturn($apiKey);
 
         // Mock config calls
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.disable_ip_check')
+            ->with('core.privacy.disable_ip_check')
             ->andReturn(false);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.trusted_ips')
+            ->with('core.privacy.trusted_ips')
             ->andReturn($trustedIps);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.disable_key_check')
+            ->with('core.privacy.disable_key_check')
             ->andReturn(false);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.ssr_api_key')
+            ->with('core.privacy.ssr_api_key')
             ->andReturn($apiKey);
 
         // Act
@@ -210,24 +210,24 @@ final class RequestPrivacyTest extends TestCase
 
         $this->request->shouldReceive('header')
             ->once()
-            ->with(TenantHeader::SSR_KEY->value)
+            ->with(CoreHeader::SSR_KEY->value)
             ->andReturn($apiKey);
 
         // Mock config calls
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.disable_ip_check')
+            ->with('core.privacy.disable_ip_check')
             ->andReturn(false);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.trusted_ips')
+            ->with('core.privacy.trusted_ips')
             ->andReturn($trustedIps);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.disable_key_check')
+            ->with('core.privacy.disable_key_check')
             ->andReturn(false);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.ssr_api_key')
+            ->with('core.privacy.ssr_api_key')
             ->andReturn($validApiKey);
 
         // Act
@@ -246,11 +246,11 @@ final class RequestPrivacyTest extends TestCase
 
         // Mock config calls
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.disable_ip_check')
+            ->with('core.privacy.disable_ip_check')
             ->andReturn(true);
 
         $this->config->shouldReceive('get')
-            ->with('tenant.privacy.disable_key_check')
+            ->with('core.privacy.disable_key_check')
             ->andReturn(true);
 
         // Act

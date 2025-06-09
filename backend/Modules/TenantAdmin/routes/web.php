@@ -5,7 +5,7 @@ use Modules\TenantAdmin\Http\Controllers\PageController;
 use Modules\TenantAdmin\Http\Controllers\InstallationController;
 use Modules\TenantAdmin\Http\Controllers\AuthController;
 use Modules\TenantAdmin\Http\Controllers\TenantController;
-use Modules\Tenant\Http\Middleware\IsInternalRequest;
+use Modules\Core\Http\Middleware\Security\IsInternalRequest;
 
 /*
 |--------------------------------------------------------------------------

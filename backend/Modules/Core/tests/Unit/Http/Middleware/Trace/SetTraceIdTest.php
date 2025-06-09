@@ -10,7 +10,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Modules\Core\Enums\CoreHeader;
 use Modules\Core\Http\Middleware\Trace\SetTraceId;
-use Modules\Tenant\Services\RequestPrivacy;
+use Modules\Core\Services\Security\RequestPrivacy;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -54,9 +54,9 @@ final class SetTraceIdTest extends TestCase
     {
         parent::setUp();
 
-        $this->request = Mockery::mock(Request::class);
+        $this->request        = Mockery::mock(Request::class);
         $this->requestPrivacy = Mockery::mock(RequestPrivacy::class);
-        $this->response = Mockery::mock(Response::class);
+        $this->response       = Mockery::mock(Response::class);
 
         // Properly mock the headers property
         $this->response->headers = Mockery::mock(ResponseHeaderBag::class);

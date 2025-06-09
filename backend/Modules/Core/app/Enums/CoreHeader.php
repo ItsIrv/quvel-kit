@@ -26,4 +26,10 @@ enum CoreHeader: string
      * Header for capacitor.
      */
     case CAPACITOR = 'X-Capacitor';
+
+    /**
+     * Set the SSR API key.
+     * Used when checking if the request is internal.
+     */
+    case SSR_KEY = 'X-SSR-Key';
 }

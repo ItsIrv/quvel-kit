@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Core\Http\Middleware\Config\CheckValue;
 use Modules\Tenant\Actions\TenantDump;
 use Modules\Tenant\Actions\TenantsDump;
-use Modules\Tenant\Http\Middleware\IsInternalRequest;
+use Modules\Core\Http\Middleware\Security\IsInternalRequest;
 
 /*
 | Tenant Web Routes
