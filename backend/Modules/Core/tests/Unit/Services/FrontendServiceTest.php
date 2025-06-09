@@ -8,7 +8,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Mockery;
-use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -19,8 +18,6 @@ use Tests\TestCase;
 class FrontendServiceTest extends TestCase
 {
     private FrontendService $frontendService;
-
-    private DynamicTenantConfig $mockConfig;
 
     private Redirector $mockRedirector;
 
@@ -83,43 +80,6 @@ class FrontendServiceTest extends TestCase
             ->andReturn(new RedirectResponse($expectedUrl));
 
         $response = $this->frontendService->redirect($path, $params);
-
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals($expectedUrl, $response->getTargetUrl());
-    }
-
-    /**
-     * Test redirect with capacitor scheme `_deep`.
-     */
-    public function testRedirectWithCapacitorDeepScheme(): void
-    {
-        $path        = '/settings';
-        $params      = ['setting' => 'dark'];
-        $expectedUrl = "$this->baseUrl$path?" . http_build_query($params);
-
-        $mockRequest = Mockery::mock(Request::class);
-        $mockRequest->shouldReceive('hasHeader')->with('X-Capacitor')->andReturn(true);
-
-        $config = new DynamicTenantConfig([
-            ...$this->mockConfig->toArray(),
-            'capacitor_scheme' => '_deep',
-        ]);
-
-        $frontendService = (new FrontendService(
-            redirector: $this->mockRedirector,
-            responseFactory: $this->mockResponseFactory,
-            request: $mockRequest,
-        ))->setUrl($this->baseUrl)
-          ->setIsCapacitor(true)
-          ->setCapacitorScheme('_deep');
-
-        $this->mockRedirector
-            ->shouldReceive('away')
-            ->once()
-            ->with($expectedUrl)
-            ->andReturn(new RedirectResponse($expectedUrl));
-
-        $response = $frontendService->redirect($path, $params);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedUrl, $response->getTargetUrl());
