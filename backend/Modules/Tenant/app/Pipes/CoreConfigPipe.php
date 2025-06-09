@@ -221,35 +221,41 @@ class CoreConfigPipe extends BaseConfigurationPipe
      *
      * @param Tenant $tenant The tenant context
      * @param array $tenantConfig The tenant configuration array
-     * @return array Resolved configuration values for frontend
+     * @return array ['values' => array, 'visibility' => array] Resolved values and visibility
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
-        $resolved = [];
+        $values = [];
+        $visibility = [];
 
         if ($this->hasValue($tenantConfig, 'app_url')) {
-            $resolved['apiUrl'] = $tenantConfig['app_url'];
+            $values['apiUrl'] = $tenantConfig['app_url'];
+            $visibility['apiUrl'] = 'public';
         }
         
         if ($this->hasValue($tenantConfig, 'frontend_url')) {
-            $resolved['appUrl'] = $tenantConfig['frontend_url'];
+            $values['appUrl'] = $tenantConfig['frontend_url'];
+            $visibility['appUrl'] = 'public';
         } elseif ($this->hasValue($tenantConfig, 'app_url')) {
-            // Fallback to app_url if frontend_url not set
-            $resolved['appUrl'] = $tenantConfig['app_url'];
+            $values['appUrl'] = $tenantConfig['app_url'];
+            $visibility['appUrl'] = 'public';
         }
         
         if ($this->hasValue($tenantConfig, 'app_name')) {
-            $resolved['appName'] = $tenantConfig['app_name'];
+            $values['appName'] = $tenantConfig['app_name'];
+            $visibility['appName'] = 'public';
         }
         
         if ($this->hasValue($tenantConfig, 'pusher_app_key')) {
-            $resolved['pusherAppKey'] = $tenantConfig['pusher_app_key'];
+            $values['pusherAppKey'] = $tenantConfig['pusher_app_key'];
+            $visibility['pusherAppKey'] = 'public';
         }
         
         if ($this->hasValue($tenantConfig, 'pusher_app_cluster')) {
-            $resolved['pusherAppCluster'] = $tenantConfig['pusher_app_cluster'];
+            $values['pusherAppCluster'] = $tenantConfig['pusher_app_cluster'];
+            $visibility['pusherAppCluster'] = 'public';
         }
 
-        return $resolved;
+        return ['values' => $values, 'visibility' => $visibility];
     }
 }

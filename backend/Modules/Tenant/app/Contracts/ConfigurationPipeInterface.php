@@ -15,7 +15,7 @@ interface ConfigurationPipeInterface
      *
      * @param Tenant $tenant The tenant context for resolution
      * @param array $tenantConfig The merged tenant configuration array
-     * @return array Resolved configuration values for frontend consumption
+     * @return array ['values' => array, 'visibility' => array] Resolved values and their visibility
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array;
 

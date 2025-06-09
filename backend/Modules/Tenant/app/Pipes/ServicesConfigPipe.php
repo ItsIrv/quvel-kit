@@ -182,16 +182,18 @@ class ServicesConfigPipe extends BaseConfigurationPipe
      *
      * @param Tenant $tenant The tenant context
      * @param array $tenantConfig The tenant configuration array
-     * @return array Resolved configuration values for frontend
+     * @return array ['values' => array, 'visibility' => array] Resolved values and visibility
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
-        $resolved = [];
+        $values = [];
+        $visibility = [];
 
         if ($this->hasValue($tenantConfig, 'recaptcha_site_key')) {
-            $resolved['recaptchaGoogleSiteKey'] = $tenantConfig['recaptcha_site_key'];
+            $values['recaptchaGoogleSiteKey'] = $tenantConfig['recaptcha_site_key'];
+            $visibility['recaptchaGoogleSiteKey'] = 'public';
         }
 
-        return $resolved;
+        return ['values' => $values, 'visibility' => $visibility];
     }
 }

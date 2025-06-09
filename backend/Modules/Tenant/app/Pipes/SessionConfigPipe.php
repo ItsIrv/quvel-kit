@@ -123,20 +123,22 @@ class SessionConfigPipe extends BaseConfigurationPipe
      *
      * @param Tenant $tenant The tenant context
      * @param array $tenantConfig The tenant configuration array
-     * @return array Resolved configuration values for frontend
+     * @return array ['values' => array, 'visibility' => array] Resolved values and visibility
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
-        $resolved = [];
+        $values = [];
+        $visibility = [];
 
         if ($this->hasValue($tenantConfig, 'session_cookie')) {
-            $resolved['sessionCookie'] = $tenantConfig['session_cookie'];
+            $values['sessionCookie'] = $tenantConfig['session_cookie'];
         } else {
-            $tenantForCookie           = $tenant->parent ?? $tenant;
-            $resolved['sessionCookie'] = "tenant_{$tenantForCookie->public_id}_session";
+            $tenantForCookie = $tenant->parent ?? $tenant;
+            $values['sessionCookie'] = "tenant_{$tenantForCookie->public_id}_session";
         }
+        $visibility['sessionCookie'] = 'protected';
 
-        return $resolved;
+        return ['values' => $values, 'visibility' => $visibility];
     }
 
     /**

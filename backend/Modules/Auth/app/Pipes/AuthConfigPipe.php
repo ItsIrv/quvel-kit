@@ -127,16 +127,18 @@ class AuthConfigPipe extends BaseConfigurationPipe
      *
      * @param Tenant $tenant The tenant context
      * @param array $tenantConfig The tenant configuration array
-     * @return array Resolved configuration values for frontend
+     * @return array ['values' => array, 'visibility' => array] Resolved values and visibility
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
-        $resolved = [];
+        $values = [];
+        $visibility = [];
 
         if ($this->hasValue($tenantConfig, 'socialite_providers')) {
-            $resolved['socialiteProviders'] = $tenantConfig['socialite_providers'];
+            $values['socialiteProviders'] = $tenantConfig['socialite_providers'];
+            $visibility['socialiteProviders'] = 'public';
         }
 
-        return $resolved;
+        return ['values' => $values, 'visibility' => $visibility];
     }
 }

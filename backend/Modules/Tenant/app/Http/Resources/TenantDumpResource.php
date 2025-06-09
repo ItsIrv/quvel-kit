@@ -47,33 +47,27 @@ class TenantDumpResource extends JsonResource
      */
     private function getFilteredConfig(): array
     {
-        // Get base tenant config (already merged with parent)
-        $baseConfig = $this->getEffectiveConfig()?->getProtectedConfig() ?? [];
-
         // Get the merged config array from getEffectiveConfig for pipeline resolution
         $tenantConfig = $this->getEffectiveConfig();
-        $configArray = $tenantConfig instanceof DynamicTenantConfig
+        $configArray  = $tenantConfig instanceof DynamicTenantConfig
             ? $tenantConfig->toArray()['config']
             : ($tenantConfig ? $tenantConfig->toArray() : []);
 
         // Resolve using the merged configuration array
         $pipeline = app(ConfigurationPipeline::class);
-        $resolvedConfig = $pipeline->resolveFromArray($this->resource, $configArray);
+        $resolved = $pipeline->resolveFromArray($this->resource, $configArray);
 
-        // Pipeline resolution now returns only TenantConfig fields
-        // Build enhanced config with visibility
+        // Build enhanced config with values and visibility from pipes
         $enhancedConfig = new DynamicTenantConfig();
-        
-        // Add only the resolved frontend config values with appropriate visibility
-        foreach ($resolvedConfig as $key => $value) {
+
+        // Set values from pipeline resolution
+        foreach ($resolved['values'] ?? [] as $key => $value) {
             $enhancedConfig->set($key, $value);
-            
-            // Set visibility based on field type
-            if (in_array($key, ['tenantId', 'tenantName', 'apiUrl', 'appUrl', 'appName', 'socialiteProviders', 'pusherAppKey', 'pusherAppCluster', 'recaptchaGoogleSiteKey'])) {
-                $enhancedConfig->setVisibility($key, TenantConfigVisibility::PUBLIC);
-            } else {
-                $enhancedConfig->setVisibility($key, TenantConfigVisibility::PROTECTED);
-            }
+        }
+
+        // Set visibility from pipeline resolution
+        foreach ($resolved['visibility'] ?? [] as $key => $visibility) {
+            $enhancedConfig->setVisibility($key, TenantConfigVisibility::from($visibility));
         }
 
         // Get the config (only safe fields from pipeline)

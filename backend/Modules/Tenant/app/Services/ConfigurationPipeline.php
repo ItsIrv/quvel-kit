@@ -116,20 +116,20 @@ class ConfigurationPipeline
      * This returns the final configuration values that pipes would apply, including calculated defaults.
      *
      * @param Tenant $tenant
-     * @return array
+     * @return array ['values' => array, 'visibility' => array]
      */
     public function resolve(Tenant $tenant): array
     {
         // Check if tenant context is bypassed
         $tenantContext = app(\Modules\Tenant\Contexts\TenantContext::class);
         if ($tenantContext->isBypassed()) {
-            return [];
+            return ['values' => [], 'visibility' => []];
         }
 
         $tenantConfig = $tenant->getEffectiveConfig();
 
         if (!$tenantConfig) {
-            return [];
+            return ['values' => [], 'visibility' => []];
         }
 
         // Convert to array for pipeline processing
@@ -143,33 +143,41 @@ class ConfigurationPipeline
     /**
      * Resolve configuration values from a configuration array without side effects.
      * This method works on merged configuration arrays and is the core resolution logic.
-     * Only returns TenantConfig interface fields for frontend consumption.
+     * Returns both values and visibility for frontend consumption.
      *
      * @param Tenant $tenant The tenant context for resolution
      * @param array $configArray The merged configuration array to resolve
-     * @return array
+     * @return array ['values' => array, 'visibility' => array]
      */
     public function resolveFromArray(Tenant $tenant, array $configArray): array
     {
-        // Start with empty array - only include what pipes explicitly resolve
-        $resolvedConfig = [];
+        $allValues = [];
+        $allVisibility = [];
 
         // Sort pipes by priority (higher priority first)
         $sortedPipes = $this->pipes->sortByDesc(fn (ConfigurationPipeInterface $pipe) => $pipe->priority());
 
-        // Apply each pipe's resolution (pipes should only return TenantConfig fields)
+        // Apply each pipe's resolution
         foreach ($sortedPipes as $pipe) {
-            $pipeResolved = $pipe->resolve($tenant, $configArray);
-            $resolvedConfig = array_merge($resolvedConfig, $pipeResolved);
+            $pipeResult = $pipe->resolve($tenant, $configArray);
+            
+            if (isset($pipeResult['values'])) {
+                $allValues = array_merge($allValues, $pipeResult['values']);
+            }
+            
+            if (isset($pipeResult['visibility'])) {
+                $allVisibility = array_merge($allVisibility, $pipeResult['visibility']);
+            }
         }
 
         // Add tenant identity properties for frontend
-        // For child tenants, use parent's identity since they represent the same logical tenant
         $identityTenant = $tenant->parent ?? $tenant;
-        $resolvedConfig['tenantId'] = $identityTenant->public_id;
-        $resolvedConfig['tenantName'] = $identityTenant->name;
+        $allValues['tenantId'] = $identityTenant->public_id;
+        $allValues['tenantName'] = $identityTenant->name;
+        $allVisibility['tenantId'] = 'public';
+        $allVisibility['tenantName'] = 'public';
 
-        return $resolvedConfig;
+        return ['values' => $allValues, 'visibility' => $allVisibility];
     }
 
     /**

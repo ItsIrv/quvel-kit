@@ -104,21 +104,24 @@ class BroadcastingConfigPipe extends BaseConfigurationPipe
      *
      * @param Tenant $tenant The tenant context
      * @param array $tenantConfig The tenant configuration array
-     * @return array Resolved configuration values for frontend
+     * @return array ['values' => array, 'visibility' => array] Resolved values and visibility
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
-        $resolved = [];
+        $values = [];
+        $visibility = [];
 
         if ($this->hasValue($tenantConfig, 'pusher_app_key')) {
-            $resolved['pusherAppKey'] = $tenantConfig['pusher_app_key'];
+            $values['pusherAppKey'] = $tenantConfig['pusher_app_key'];
+            $visibility['pusherAppKey'] = 'public';
         }
         
         if ($this->hasValue($tenantConfig, 'pusher_app_cluster')) {
-            $resolved['pusherAppCluster'] = $tenantConfig['pusher_app_cluster'];
+            $values['pusherAppCluster'] = $tenantConfig['pusher_app_cluster'];
+            $visibility['pusherAppCluster'] = 'public';
         }
 
-        return $resolved;
+        return ['values' => $values, 'visibility' => $visibility];
     }
 
     /**

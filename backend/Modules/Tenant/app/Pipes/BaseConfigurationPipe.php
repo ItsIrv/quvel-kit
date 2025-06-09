@@ -2,7 +2,6 @@
 
 namespace Modules\Tenant\Pipes;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
 use Modules\Tenant\Models\Tenant;
 
@@ -16,40 +15,11 @@ abstract class BaseConfigurationPipe implements ConfigurationPipeInterface
      *
      * @param Tenant $tenant The tenant context
      * @param array $tenantConfig The tenant configuration array
-     * @return array Empty array by default
+     * @return array ['values' => array, 'visibility' => array] Empty by default
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
-        return [];
-    }
-
-    /**
-     * Apply resolved internal fields to Laravel config.
-     *
-     * @param array $resolved Results from resolve() method
-     * @param ConfigRepository $config Laravel config repository
-     * @param array $mappings Array mapping resolved keys to config paths
-     */
-    protected function applyInternalFields(array $resolved, ConfigRepository $config, array $mappings): void
-    {
-        foreach ($mappings as $resolvedKey => $configPath) {
-            if (isset($resolved[$resolvedKey])) {
-                $config->set($configPath, $resolved[$resolvedKey]);
-            }
-        }
-    }
-
-    /**
-     * Filter frontend-safe fields from resolved config.
-     *
-     * @param array $resolved Results from resolve() method
-     * @return array Filtered array with only frontend fields
-     */
-    protected function getFrontendFields(array $resolved): array
-    {
-        return array_filter($resolved, function ($key) {
-            return !str_starts_with($key, '_internal_');
-        }, ARRAY_FILTER_USE_KEY);
+        return ['values' => [], 'visibility' => []];
     }
 
     /**
