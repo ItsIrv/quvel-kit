@@ -24,7 +24,7 @@ class DynamicTenantConfig implements Arrayable
     /**
      * Visibility settings for configuration keys.
      *
-     * @var array<string, TenantConfigVisibility>
+     * @var array<string, TenantConfigVisibility|string>
      */
     protected array $visibility;
 
@@ -39,7 +39,7 @@ class DynamicTenantConfig implements Arrayable
      * Create a new dynamic tenant configuration.
      *
      * @param array<string, mixed> $data
-     * @param array<string, TenantConfigVisibility> $visibility
+     * @param array<string, TenantConfigVisibility|string> $visibility
      * @param string|null $tier
      */
     public function __construct(array $data = [], array $visibility = [], ?string $tier = null)
@@ -105,17 +105,24 @@ class DynamicTenantConfig implements Arrayable
      */
     public function getVisibility(string $key): TenantConfigVisibility
     {
-        return $this->visibility[$key] ?? TenantConfigVisibility::PRIVATE;
+        $visibility = $this->visibility[$key] ?? TenantConfigVisibility::PRIVATE;
+
+        // Handle string values by converting to enum
+        if (is_string($visibility)) {
+            return TenantConfigVisibility::from($visibility);
+        }
+
+        return $visibility;
     }
 
     /**
      * Set the visibility for a configuration key.
      *
      * @param string $key
-     * @param TenantConfigVisibility $visibility
+     * @param TenantConfigVisibility|string $visibility
      * @return static
      */
-    public function setVisibility(string $key, TenantConfigVisibility $visibility): static
+    public function setVisibility(string $key, TenantConfigVisibility|string $visibility): static
     {
         $this->visibility[$key] = $visibility;
         return $this;
@@ -239,7 +246,7 @@ class DynamicTenantConfig implements Arrayable
         return [
             'config'     => $this->data,
             'visibility' => array_map(
-                fn (TenantConfigVisibility $v) => $v->value,
+                fn (TenantConfigVisibility|string $v) => $v instanceof TenantConfigVisibility ? $v->value : $v,
                 $this->visibility,
             ),
             'tier'       => $this->tier,

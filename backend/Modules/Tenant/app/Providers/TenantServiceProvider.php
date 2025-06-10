@@ -6,13 +6,13 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Support\Facades\Context;
 use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Tenant\Contexts\TenantContext;
-use Modules\Tenant\Contracts\ConfigurationPipeInterface;
 use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Services\ConfigurationPipeline;
 use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\TenantTableRegistry;
 use Modules\Tenant\Services\TenantConfigSeederRegistry;
 use Modules\Tenant\Services\TenantExclusionRegistry;
+use Modules\Tenant\Services\TenantModuleConfigLoader;
 use Illuminate\Log\Context\Repository;
 
 /**
@@ -30,33 +30,42 @@ class TenantServiceProvider extends ModuleServiceProvider
     {
         $this->app->register(RouteServiceProvider::class);
 
+        // Register core services
+        $this->app->singleton(TenantModuleConfigLoader::class);
         $this->app->singleton(FindService::class);
         $this->app->singleton(TenantExclusionRegistry::class);
 
-        // Register the tenant table registry
+        // Register the tenant table registry with module configs
         $this->app->singleton(TenantTableRegistry::class, function ($app) {
             $registry = new TenantTableRegistry();
+            $loader   = $app->make(TenantModuleConfigLoader::class);
 
-            // Load tables from config first
-            $configTables = config('tenant.tables', []);
-            $registry->registerTables($configTables);
+            // Load tables from all modules
+            foreach ($loader->getAllTables() as $tableName => $tableConfig) {
+                $registry->registerTable($tableName, $tableConfig);
+            }
 
             return $registry;
         });
 
-        // Register the configuration pipeline
+        // Register the configuration pipeline with module pipes
         $this->app->singleton(ConfigurationPipeline::class, function ($app) {
             $pipeline = new ConfigurationPipeline();
+            $loader   = $app->make(TenantModuleConfigLoader::class);
 
-            // Register pipes from config
-            $pipes = config('tenant.config_pipes', []);
+            // Load pipes from all modules
+            $pipes = $loader->getAllPipes();
             $pipeline->registerMany($pipes);
 
             return $pipeline;
         });
 
-        // Register the tenant config seeder registry
-        $this->app->singleton(TenantConfigSeederRegistry::class);
+        // Register seeder registry with lazy loading
+        $this->app->singleton(TenantConfigSeederRegistry::class, function ($app) {
+            return new TenantConfigSeederRegistry(
+                $app->make(TenantModuleConfigLoader::class),
+            );
+        });
 
         $this->app->scoped(TenantContext::class);
         $this->app->scoped(
@@ -72,7 +81,21 @@ class TenantServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
-        $this->registerTenantTables(config('tenant.tables', []));
+        // Load exclusions from all modules
+        $loader            = $this->app->make(TenantModuleConfigLoader::class);
+        $exclusionRegistry = $this->app->make(TenantExclusionRegistry::class);
+
+        // Register exclusion paths from all modules
+        $exclusionPaths = $loader->getAllExclusionPaths();
+        if (!empty($exclusionPaths)) {
+            $exclusionRegistry->excludePaths($exclusionPaths);
+        }
+
+        // Register exclusion patterns from all modules
+        $exclusionPatterns = $loader->getAllExclusionPatterns();
+        if (!empty($exclusionPatterns)) {
+            $exclusionRegistry->excludePatterns($exclusionPatterns);
+        }
 
         Context::dehydrating(function (Repository $context): void {
             $context->addHidden('tenant', app(TenantContext::class)->get());
@@ -86,118 +109,5 @@ class TenantServiceProvider extends ModuleServiceProvider
                 );
             }
         });
-    }
-
-    /**
-     * Register a configuration pipe.
-     * This method allows other modules to register their own configuration pipes.
-     *
-     * @param string|ConfigurationPipeInterface $pipe
-     * @return void
-     */
-    public static function registerConfigPipe(string|ConfigurationPipeInterface $pipe): void
-    {
-        app(ConfigurationPipeline::class)->register($pipe);
-    }
-
-    /**
-     * Register a tenant-aware table.
-     * This method allows other modules to register tables that need tenant isolation.
-     *
-     * @param string $tableName
-     * @param array $config Optional configuration for the table
-     * @return void
-     */
-    public static function registerTenantTable(string $tableName, array $config = []): void
-    {
-        app(TenantTableRegistry::class)->registerTable($tableName, $config);
-    }
-
-    /**
-     * Register multiple tenant-aware tables.
-     * This method allows other modules to register multiple tables at once.
-     *
-     * @param array $tables Array of table names or table => config pairs
-     * @return void
-     */
-    public static function registerTenantTables(array $tables): void
-    {
-        app(TenantTableRegistry::class)->registerTables($tables);
-    }
-
-    /**
-     * Register a config seeder for tenant seed data.
-     * This method allows modules to provide their own seed configuration.
-     *
-     * @param string $template The template to register for
-     * @param callable $seeder A callable that returns config array
-     * @param int $priority Lower numbers run first (default: 50)
-     * @param callable|null $visibilitySeeder Optional callable that returns visibility array
-     * @return void
-     */
-    public static function registerConfigSeeder(
-        string $template,
-        callable $seeder,
-        int $priority = 50,
-        ?callable $visibilitySeeder = null,
-    ): void {
-        app(TenantConfigSeederRegistry::class)->registerSeeder($template, $seeder, $priority, $visibilitySeeder);
-    }
-
-    /**
-     * Register a config seeder for all templates.
-     *
-     * @param callable $seeder A callable that returns config array
-     * @param int $priority Lower numbers run first (default: 50)
-     * @param callable|null $visibilitySeeder Optional callable that returns visibility array
-     * @return void
-     */
-    public static function registerConfigSeederForAllTemplates(
-        callable $seeder,
-        int $priority = 50,
-        ?callable $visibilitySeeder = null,
-    ): void {
-        app(TenantConfigSeederRegistry::class)->registerSeederForAllTemplates($seeder, $priority, $visibilitySeeder);
-    }
-
-    /**
-     * Register a config seeder for multiple templates.
-     *
-     * @param array $templates Array of template names
-     * @param callable $seeder A callable that returns config array
-     * @param int $priority Lower numbers run first (default: 50)
-     * @param callable|null $visibilitySeeder Optional callable that returns visibility array
-     * @return void
-     */
-    public static function registerConfigSeederForTemplates(
-        array $templates,
-        callable $seeder,
-        int $priority = 50,
-        ?callable $visibilitySeeder = null,
-    ): void {
-        app(TenantConfigSeederRegistry::class)->registerSeederForTemplates($templates, $seeder, $priority, $visibilitySeeder);
-    }
-
-
-    /**
-     * Register paths to exclude from tenant resolution.
-     *
-     * @param string|array $paths Exact paths to exclude
-     * @return void
-     */
-    public static function excludePaths(string|array $paths): void
-    {
-        app(TenantExclusionRegistry::class)->excludePaths($paths);
-    }
-
-    /**
-     * Register path patterns to exclude from tenant resolution.
-     *
-     * @param string|array $patterns Path patterns to exclude (supports wildcards)
-     * @return void
-     */
-    public static function excludePatterns(string|array $patterns): void
-    {
-        app(TenantExclusionRegistry::class)->excludePatterns($patterns);
     }
 }

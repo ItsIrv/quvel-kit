@@ -50,8 +50,6 @@ export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosIn
     throw new Error('No API URL found');
   }
 
-  console.log(baseURL);
-
   const axiosConfig: AxiosRequestConfig = {
     baseURL,
     withCredentials: true,

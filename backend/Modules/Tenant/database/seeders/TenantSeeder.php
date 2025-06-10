@@ -63,10 +63,10 @@ class TenantSeeder extends Seeder
                 apiDomain: $lanApiDomain,
                 appName: 'QuVel LAN',
                 overrides: [
-                    '_seed_capacitor_scheme'    => 'quvel',
-                    '_seed_mail_from_address'   => 'lan@quvel.app',
-                    '_seed_mail_from_name'      => 'QuVel LAN',
-                    'internal_api_url'          => 'http://api-lan:8000', // For SSR
+                    '_seed_capacitor_scheme'  => 'quvel',
+                    '_seed_mail_from_address' => 'lan@quvel.app',
+                    '_seed_mail_from_name'    => 'QuVel LAN',
+                    'internal_api_url'        => 'http://api-lan:8000', // For SSR
                 ],
             )->toArray(),
         );

@@ -5,92 +5,19 @@ namespace Modules\Tenant\Services;
 class TenantConfigSeederRegistry
 {
     /**
-     * Registered config seeders by template.
+     * Evaluated seeders cache by template.
      */
-    protected array $seeders = [
-        'basic'    => [],
-        'standard' => [],
-        'isolated' => [],
-    ];
+    private array $evaluatedSeeders = [];
 
     /**
-     * Registered visibility seeders by template.
+     * Evaluated visibility cache by template.
      */
-    protected array $visibilitySeeders = [
-        'basic'    => [],
-        'standard' => [],
-        'isolated' => [],
-    ];
+    private array $evaluatedVisibility = [];
 
-    /**
-     * Register a config seeder for a specific template.
-     *
-     * @param string $template The template to register for
-     * @param callable $seeder A callable that returns config array
-     * @param int $priority Lower numbers run first
-     * @param callable|null $visibilitySeeder Optional callable that returns visibility array
-     * @return void
-     */
-    public function registerSeeder(string $template, callable $seeder, int $priority = 50, ?callable $visibilitySeeder = null): void
-    {
-        if (!isset($this->seeders[$template])) {
-            $this->seeders[$template] = [];
-        }
+    public function __construct(
+        private TenantModuleConfigLoader $loader
+    ) {}
 
-        $this->seeders[$template][] = [
-            'seeder'   => $seeder,
-            'priority' => $priority,
-        ];
-
-        // Sort by priority
-        usort($this->seeders[$template], fn ($a, $b) => $a['priority'] <=> $b['priority']);
-
-        // Register visibility seeder if provided
-        if ($visibilitySeeder !== null) {
-            if (!isset($this->visibilitySeeders[$template])) {
-                $this->visibilitySeeders[$template] = [];
-            }
-
-            $this->visibilitySeeders[$template][] = [
-                'seeder'   => $visibilitySeeder,
-                'priority' => $priority,
-            ];
-
-            // Sort by priority
-            usort($this->visibilitySeeders[$template], fn ($a, $b) => $a['priority'] <=> $b['priority']);
-        }
-    }
-
-    /**
-     * Register a config seeder for all templates.
-     *
-     * @param callable $seeder A callable that returns config array
-     * @param int $priority Lower numbers run first
-     * @param callable|null $visibilitySeeder Optional callable that returns visibility array
-     * @return void
-     */
-    public function registerSeederForAllTemplates(callable $seeder, int $priority = 50, ?callable $visibilitySeeder = null): void
-    {
-        foreach (array_keys($this->seeders) as $template) {
-            $this->registerSeeder($template, $seeder, $priority, $visibilitySeeder);
-        }
-    }
-
-    /**
-     * Register config seeders for multiple templates.
-     *
-     * @param array $templates Array of templates
-     * @param callable $seeder A callable that returns config array
-     * @param int $priority Lower numbers run first
-     * @param callable|null $visibilitySeeder Optional callable that returns visibility array
-     * @return void
-     */
-    public function registerSeederForTemplates(array $templates, callable $seeder, int $priority = 50, ?callable $visibilitySeeder = null): void
-    {
-        foreach ($templates as $template) {
-            $this->registerSeeder($template, $seeder, $priority, $visibilitySeeder);
-        }
-    }
 
     /**
      * Get seeded config for a specific template.
@@ -101,14 +28,17 @@ class TenantConfigSeederRegistry
      */
     public function getSeedConfig(string $template, array $baseConfig = []): array
     {
-        $config = $baseConfig;
-
-        if (!isset($this->seeders[$template])) {
-            return $config;
+        if (!isset($this->evaluatedSeeders[$template])) {
+            $this->loadSeedersForTemplate($template);
         }
 
-        foreach ($this->seeders[$template] as $seederData) {
-            $seederConfig = call_user_func($seederData['seeder'], $template, $config);
+        $config = $baseConfig;
+
+        foreach ($this->evaluatedSeeders[$template] as $seederData) {
+            $seederConfig = is_callable($seederData['config'])
+                ? call_user_func($seederData['config'], $template, $config)
+                : $seederData['config'];
+
             if (is_array($seederConfig)) {
                 $config = array_merge($config, $seederConfig);
             }
@@ -127,19 +57,58 @@ class TenantConfigSeederRegistry
      */
     public function getSeedVisibility(string $template, array $baseVisibility = []): array
     {
-        $visibility = $baseVisibility;
-
-        if (!isset($this->visibilitySeeders[$template])) {
-            return $visibility;
+        if (!isset($this->evaluatedVisibility[$template])) {
+            $this->loadVisibilityForTemplate($template);
         }
 
-        foreach ($this->visibilitySeeders[$template] as $seederData) {
-            $seederVisibility = call_user_func($seederData['seeder'], $template, $visibility);
-            if (is_array($seederVisibility)) {
-                $visibility = array_merge($visibility, $seederVisibility);
+        $visibility = $baseVisibility;
+
+        foreach ($this->evaluatedVisibility[$template] as $visibilityData) {
+            if (is_array($visibilityData)) {
+                $visibility = array_merge($visibility, $visibilityData);
             }
         }
 
         return $visibility;
+    }
+
+    /**
+     * Load and cache seeders for a specific template.
+     *
+     * @param string $template
+     * @return void
+     */
+    private function loadSeedersForTemplate(string $template): void
+    {
+        $this->evaluatedSeeders[$template] = $this->loader->getSeedersForTemplate($template);
+    }
+
+    /**
+     * Load and cache visibility for a specific template.
+     *
+     * @param string $template
+     * @return void
+     */
+    private function loadVisibilityForTemplate(string $template): void
+    {
+        $visibility = [];
+
+        foreach ($this->loader->loadAllModuleConfigs() as $moduleConfig) {
+            // Add template-specific visibility
+            if (isset($moduleConfig['seeders'][$template]['visibility']) && is_array($moduleConfig['seeders'][$template]['visibility'])) {
+                $visibility[] = $moduleConfig['seeders'][$template]['visibility'];
+            }
+
+            // Add shared seeder visibility that applies to all templates
+            if (isset($moduleConfig['shared_seeders']) && is_array($moduleConfig['shared_seeders'])) {
+                foreach ($moduleConfig['shared_seeders'] as $sharedSeeder) {
+                    if (isset($sharedSeeder['visibility']) && is_array($sharedSeeder['visibility'])) {
+                        $visibility[] = $sharedSeeder['visibility'];
+                    }
+                }
+            }
+        }
+
+        $this->evaluatedVisibility[$template] = $visibility;
     }
 }

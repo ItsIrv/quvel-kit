@@ -23,23 +23,23 @@ class DynamicTenantConfigFactory
     ): DynamicTenantConfig {
         $baseConfig = [
             // Basic tenant identification
-            'domain' => $domain,
-            
+            'domain'                  => $domain,
+
             // Pass through parameters for Core module to use
-            '_seed_app_name' => $appName,
-            '_seed_mail_from_name' => $mailFromName,
+            '_seed_app_name'          => $appName,
+            '_seed_mail_from_name'    => $mailFromName,
             '_seed_mail_from_address' => $mailFromAddress,
         ];
 
         // Get module-specific config from registry
         $registry = app(TenantConfigSeederRegistry::class);
-        $config = $registry->getSeedConfig('basic', $baseConfig);
-        
+        $config   = $registry->getSeedConfig('basic', $baseConfig);
+
         // Remove seed parameters
         unset($config['_seed_app_name'], $config['_seed_mail_from_name'], $config['_seed_mail_from_address']);
 
         $baseVisibility = [];
-        $visibility = $registry->getSeedVisibility('basic', $baseVisibility);
+        $visibility     = $registry->getSeedVisibility('basic', $baseVisibility);
 
         return new DynamicTenantConfig($config, $visibility);
     }
@@ -59,26 +59,26 @@ class DynamicTenantConfigFactory
 
         $baseConfig = [
             // Standard tenant identification
-            'domain' => $apiDomain,
-            
+            'domain'                  => $apiDomain,
+
             // Dedicated cache configuration
-            'cache_prefix' => $cachePrefix ?? "tenant_{$tenantId}_",
-            
+            'cache_prefix'            => $cachePrefix ?? "tenant_{$tenantId}_",
+
             // Pass through parameters for Core module to use
-            '_seed_app_name' => $appName,
-            '_seed_mail_from_name' => $mailFromName,
+            '_seed_app_name'          => $appName,
+            '_seed_mail_from_name'    => $mailFromName,
             '_seed_mail_from_address' => $mailFromAddress,
         ];
 
         // Get module-specific config from registry
         $registry = app(TenantConfigSeederRegistry::class);
-        $config = $registry->getSeedConfig('standard', $baseConfig);
-        
+        $config   = $registry->getSeedConfig('standard', $baseConfig);
+
         // Remove seed parameters
         unset($config['_seed_app_name'], $config['_seed_mail_from_name'], $config['_seed_mail_from_address']);
 
         $baseVisibility = [];
-        $visibility = $registry->getSeedVisibility('standard', $baseVisibility);
+        $visibility     = $registry->getSeedVisibility('standard', $baseVisibility);
 
         return new DynamicTenantConfig($config, $visibility);
     }
@@ -105,40 +105,40 @@ class DynamicTenantConfigFactory
 
         $baseConfig = array_merge([
             // Isolated tenant identification
-            'domain' => $apiDomain,
-            
+            'domain'         => $apiDomain,
+
             // Dedicated database configuration
-            'db_connection' => 'mysql',
-            'db_host' => env('DB_HOST', '127.0.0.1'),
-            'db_port' => env('DB_PORT', 3306),
-            'db_database' => "tenant_{$tenantId}_db",
-            'db_username' => "tenant_{$tenantId}",
-            'db_password' => bin2hex(random_bytes(16)),
-            
+            'db_connection'  => 'mysql',
+            'db_host'        => env('DB_HOST', '127.0.0.1'),
+            'db_port'        => env('DB_PORT', 3306),
+            'db_database'    => "tenant_{$tenantId}_db",
+            'db_username'    => "tenant_{$tenantId}",
+            'db_password'    => bin2hex(random_bytes(16)),
+
             // Dedicated cache configuration
-            'cache_store' => 'redis',
-            'cache_prefix' => "tenant_{$tenantId}_",
-            
+            'cache_store'    => 'redis',
+            'cache_prefix'   => "tenant_{$tenantId}_",
+
             // Dedicated session configuration
             'session_driver' => 'redis',
-            
+
             // Redis configuration
-            'redis_host' => env('REDIS_HOST', '127.0.0.1'),
-            'redis_port' => env('REDIS_PORT', 6379),
-            
+            'redis_host'     => env('REDIS_HOST', '127.0.0.1'),
+            'redis_port'     => env('REDIS_PORT', 6379),
+
             // Mail configuration
-            'mail_mailer' => 'smtp',
-            'mail_host' => env('MAIL_HOST', 'smtp.mailgun.org'),
-            'mail_port' => env('MAIL_PORT', 587),
-            
+            'mail_mailer'    => 'smtp',
+            'mail_host'      => env('MAIL_HOST', 'smtp.mailgun.org'),
+            'mail_port'      => env('MAIL_PORT', 587),
+
             // Pass through parameters
             '_seed_app_name' => $appName,
         ], $overrides, $seedParams);
 
         // Get module-specific config from registry
         $registry = app(TenantConfigSeederRegistry::class);
-        $config = $registry->getSeedConfig('isolated', $baseConfig);
-        
+        $config   = $registry->getSeedConfig('isolated', $baseConfig);
+
         // Remove all seed parameters
         foreach (array_keys($config) as $key) {
             if (str_starts_with($key, '_seed_')) {
@@ -147,7 +147,7 @@ class DynamicTenantConfigFactory
         }
 
         $baseVisibility = [];
-        $visibility = $registry->getSeedVisibility('isolated', $baseVisibility);
+        $visibility     = $registry->getSeedVisibility('isolated', $baseVisibility);
 
         return new DynamicTenantConfig($config, $visibility);
     }
@@ -181,10 +181,10 @@ class DynamicTenantConfigFactory
 
         // Get module-specific config from registry
         $registry = app(TenantConfigSeederRegistry::class);
-        $config = $registry->getSeedConfig($template, $config);
+        $config   = $registry->getSeedConfig($template, $config);
 
         $baseVisibility = [];
-        $visibility = $registry->getSeedVisibility($template, $baseVisibility);
+        $visibility     = $registry->getSeedVisibility($template, $baseVisibility);
 
         return new DynamicTenantConfig($config, $visibility);
     }

@@ -3,7 +3,6 @@
 namespace Modules\TenantAdmin\Providers;
 
 use Modules\Core\Providers\ModuleServiceProvider;
-use Modules\Tenant\Providers\TenantServiceProvider;
 use Modules\TenantAdmin\Http\Middleware\CheckInstalled;
 use Modules\TenantAdmin\Http\Middleware\CheckNotInstalled;
 use Modules\TenantAdmin\Http\Middleware\TenantAdminAuth;
@@ -50,18 +49,10 @@ class TenantAdminServiceProvider extends ModuleServiceProvider
 
     /**
      * Register paths that should be excluded from tenant resolution.
+     * This is now handled by the config/tenant.php file.
      */
     protected function registerTenantExclusions(): void
     {
-        // Check if Tenant module is available
-        if (!class_exists(TenantServiceProvider::class)) {
-            return;
-        }
-
-        // Register admin routes to bypass tenant resolution
-        TenantServiceProvider::excludePatterns([
-            'admin/tenants*',
-            'api/admin/tenants*',
-        ]);
+        // Tenant exclusions are now managed via config/tenant.php
     }
 }

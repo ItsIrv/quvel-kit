@@ -51,58 +51,20 @@ return [
 
     /**
      * Configuration pipeline pipes.
-     * These are applied in order of priority (higher priority runs first).
-     * Modules can register their own pipes in their service providers.
+     * These are now loaded from module config/tenant.php files.
+     * This section is kept for reference but is no longer used.
      */
     'config_pipes'      => [
-        \Modules\Tenant\Pipes\CoreConfigPipe::class,
-        \Modules\Tenant\Pipes\DatabaseConfigPipe::class,
-        \Modules\Tenant\Pipes\CacheConfigPipe::class,
-        \Modules\Tenant\Pipes\RedisConfigPipe::class,
-        \Modules\Tenant\Pipes\SessionConfigPipe::class,
-        \Modules\Tenant\Pipes\MailConfigPipe::class,
-        \Modules\Tenant\Pipes\QueueConfigPipe::class,
-        \Modules\Tenant\Pipes\FilesystemConfigPipe::class,
-        \Modules\Tenant\Pipes\BroadcastingConfigPipe::class,
-        \Modules\Tenant\Pipes\LoggingConfigPipe::class,
-        \Modules\Tenant\Pipes\ServicesConfigPipe::class,
+        // Pipes are now automatically loaded from all modules
     ],
 
     /**
      * The tenant migration loops through each table and applies the tenant scope.
-     * Modules should register their tables using TenantServiceProvider::registerTenantTable()
-     * rather than adding them here.
+     * Tables are now loaded from module config/tenant.php files.
+     * This section is kept for reference but is no longer used.
      */
     'tables'            => [
-        'users' => [
-            /**
-             * Column after which the tenant_id should be added
-             */
-            'after'                     => 'id',
-
-            /**
-             * Whether tenant deletion cascades to this table
-             */
-            'cascade_delete'            => true,
-
-            /**
-             * List of individual unique constraints to drop before adding tenant-specific compound keys
-             */
-            'drop_uniques'              => [
-                ['email'],
-                ['provider_id'],
-            ],
-
-            /**
-             * Unique constraints that should include tenant_id
-             * Each entry is an array of columns that should be unique together within a tenant
-             */
-            'tenant_unique_constraints' => [
-                ['email'],
-                ['provider_id'],
-                ['email', 'provider_id'],
-            ],
-        ],
+        // Tables are now automatically loaded from all modules
     ],
 
 ];
