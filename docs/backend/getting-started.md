@@ -109,6 +109,9 @@ php artisan test
 # Run tests in parallel
 php artisan test -p
 
+# With Code Coverage
+php artisan test -p --coverage-html=storage/coverage
+
 # Run specific test groups
 php artisan test --group=tenant-module
 

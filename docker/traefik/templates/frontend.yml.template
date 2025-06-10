@@ -2,13 +2,13 @@
 http:
   routers:
     web:
-      rule: 'Host(`quvel.127.0.0.1.nip.io`) || Host(`quvel-two.127.0.0.1.nip.io`) || Host(`quvel.192.168.86.245.nip.io`) || Host(`quvel-two.192.168.86.245.nip.io`)'
+      rule: 'Host(`quvel.${LOCAL_IP}.nip.io`) || Host(`quvel-two.${LOCAL_IP}.nip.io`)${TENANT_DOMAINS}'
       entryPoints: websecure
       service: web
       tls: {}
 
     web-ws:
-      rule: '(Host(`quvel.127.0.0.1.nip.io`) || Host(`quvel-two.127.0.0.1.nip.io`) || Host(`quvel.192.168.86.245.nip.io`) || Host(`quvel-two.192.168.86.245.nip.io`)) && PathPrefix(`/hmr`)'
+      rule: '(Host(`quvel.${LOCAL_IP}.nip.io`) || Host(`quvel-two.${LOCAL_IP}.nip.io`)${TENANT_DOMAINS}) && PathPrefix(`/hmr`)'
       entryPoints: websecure
       service: web-ws
       tls: {}
@@ -16,7 +16,7 @@ http:
         - websocket-headers
 
     capacitor:
-      rule: 'Host(`cap-tenant.quvel.127.0.0.1.nip.io`) || Host(`cap-tenant.quvel.192.168.86.245.nip.io`)'
+      rule: 'Host(`cap-tenant.quvel.${LOCAL_IP}.nip.io`)${CAP_TENANT_DOMAINS}'
       entryPoints: websecure
       service: capacitor
       tls: {}
@@ -25,19 +25,19 @@ http:
     web:
       loadBalancer:
         servers:
-          - url: 'https://host.docker.internal:3000'
+          - url: '${FRONTEND_TARGET}'
         serversTransport: 'insecureTransport' # Supports self-signed certificates
 
     web-ws:
       loadBalancer:
         servers:
-          - url: 'https://host.docker.internal:3000'
+          - url: '${FRONTEND_WS_TARGET}'
         serversTransport: 'insecureTransport' # Supports self-signed certificates
 
     capacitor:
       loadBalancer:
         servers:
-          - url: 'https://host.docker.internal:3002'
+          - url: '${CAPACITOR_TARGET}'
         serversTransport: 'insecureTransport' # Supports self-signed certificates
 
   middlewares:

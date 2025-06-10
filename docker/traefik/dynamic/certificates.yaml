@@ -1,6 +1,4 @@
 tls:
   certificates:
-#    - certFile: "/Users/irv/Workspace/pdxapps.com/repos/quvel-kit/docker/certs/selfsigned.crt"
-#      keyFile: "/Users/irv/Workspace/pdxapps.com/repos/quvel-kit/docker/certs/selfsigned.key"
     - certFile: "/certs/selfsigned.crt"
       keyFile: "/certs/selfsigned.key"

@@ -23,4 +23,13 @@ QuVel Kit uses a modular architecture with clear separation between frontend and
 - **Backend**: Laravel 12 with modular structure (Auth, Tenant, Core, Notifications)
 - **Frontend**: Vue 3 + Quasar 2 with SSR, service container pattern, and TypeScript
 - **Multi-Tenancy**: Domain-based isolation with dynamic configuration
-- **Deployment**: Flexible modes from minimal (traefik-only) to full Docker
+- **Deployment**: Template-based configuration system with automatic mode switching
+
+## Configuration System
+
+QuVel Kit features an intelligent configuration system that automatically generates the correct settings for your deployment mode:
+
+- **Template-Based**: Dynamic generation from templates ensures correct paths and URLs
+- **Auto IP Detection**: Automatically includes both localhost and LAN IP domains
+- **Mode Switching**: Switch between deployment modes instantly with `./scripts/deploy-mode.sh`
+- **Path Intelligence**: Automatically uses Docker vs local paths based on where services run

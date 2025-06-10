@@ -24,12 +24,12 @@ tls:
   stores:
     default:
       defaultCertificate:
-        certFile: '/certs/selfsigned.crt'
-        keyFile: '/certs/selfsigned.key'
+        certFile: '${TRAEFIK_CERT_FILE}'
+        keyFile: '${TRAEFIK_KEY_FILE}'
 
 providers:
   file:
-    directory: /traefik
+    directory: ${TRAEFIK_DYNAMIC_DIR}
     watch: true
 
 serversTransports:

@@ -20,7 +20,7 @@
 - **Modern Stack** - Laravel 12, Vue 3, Quasar 2, TypeScript
 - **Service Architecture** - Modular backend and frontend with dependency injection
 - **Real-Time Features** - WebSocket support with Laravel Echo
-- **Flexible Deployment** - Docker, local, or hybrid deployment modes
+- **Flexible Deployment** - Automatic configuration generation for all deployment modes
 - **Developer Experience** - Hot reloading, TypeScript, comprehensive testing
 
 ## Documentation
@@ -38,15 +38,20 @@ For detailed documentation, see the following resources:
 git clone https://github.com/your-username/quvel-kit.git
 cd quvel-kit
 
-# Setup with traefik-only mode (default - most minimal setup)
+# Setup with automatic configuration generation (default: traefik-only)
 ./scripts/setup.sh
 
-# Or choose a different deployment mode
+# Or choose a specific deployment mode
 ./scripts/setup.sh --mode=docker   # Full Docker
 ./scripts/setup.sh --mode=minimal  # Traefik + databases in Docker
+./scripts/setup.sh --mode=local    # Everything local
+
+# Switch deployment modes anytime
+./scripts/deploy-mode.sh docker
+./scripts/deploy-mode.sh traefik-only
 ```
 
-After setup, access your application:
+After setup, access your application (supports both localhost and LAN IP automatically):
 
 - **Frontend**: [https://quvel.127.0.0.1.nip.io](https://quvel.127.0.0.1.nip.io)
 - **API**: [https://api.quvel.127.0.0.1.nip.io](https://api.quvel.127.0.0.1.nip.io)
