@@ -14,6 +14,9 @@ QuVel Kit uses a structured layout for clarity and maintainability. This documen
 │   ├── traefik/      # Reverse proxy configuration
 │   │   ├── dynamic/  # Dynamic routing configs
 ├── docs/             # Documentation
+│   ├── backend/      # Backend development guides
+│   ├── frontend/     # Frontend development guides
+│   ├── deployment/   # Infrastructure and deployment guides
 ├── scripts/          # Utility scripts
 ├── .github/          # CI/CD workflows
 ```
@@ -75,22 +78,54 @@ frontend/src/modules/{ModuleName}/
 
 ### Docs (`docs/`)
 
-- Setup and architecture documentation
-- Frontend and backend development guides
-- API references and usage examples
+Documentation is organized into focused sections:
+
+#### Main Documentation
+- **Getting Started**: Installation and setup guides
+- **Folder Structure**: Project organization overview (this document)
+- **Troubleshooting**: Common issues and solutions
+
+#### Development Guides (`docs/backend/`, `docs/frontend/`)
+- **Backend**: Laravel modules, authentication, testing, architecture
+- **Frontend**: Vue/Quasar development, services, state management
+
+#### Infrastructure (`docs/deployment/`)
+- **Deployment Options**: Different setup modes (traefik-only, minimal, docker, local)
+- **Traefik Configuration**: Reverse proxy and SSL setup
+- **Docker Setup**: Container configuration and orchestration
+- **Scripts**: Automation tools and development workflows
 
 ### Scripts (`scripts/`)
 
-- Automation scripts for common tasks
-- Setup, start, stop, and maintenance commands
-- Development workflow helpers
+Development automation tools:
+
+- **setup.sh**: Environment initialization with deployment mode support
+- **deploy-mode.sh**: Switch between deployment configurations  
+- **start.sh/stop.sh/restart.sh**: Service management
+- **ssl.sh**: SSL certificate generation
+- **log.sh**: View service logs
+- **reset.sh**: Complete environment reset
+- **capacitor.sh**: Mobile development configuration
 
 ## Development Environment
 
+### Deployment Flexibility
+
+QuVel Kit supports multiple deployment modes to match different development needs:
+
+- **Traefik-Only** (Default): Only Traefik in Docker, everything else local
+- **Minimal**: Traefik + databases in Docker, services local
+- **Full Docker**: All services in Docker containers
+- **Fully Local**: Everything local (including Traefik via Homebrew)
+
+### Development Tools
+
 - **Environment Variables**: `.env` files in both frontend and backend
-- **Hot Reloading**: Real-time updates during development
+- **Hot Reloading**: Real-time updates during development (all modes)
 - **Code Quality**: Configured linters and formatters
 - **Testing**: Vitest for frontend, PHPUnit for backend
+- **SSL**: Automatic HTTPS with self-signed certificates for development
+- **Multi-tenancy**: Built-in tenant isolation and configuration
 
 ---
 

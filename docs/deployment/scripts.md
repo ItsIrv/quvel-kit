@@ -6,28 +6,42 @@ This document provides a comprehensive guide to the utility scripts available in
 
 ### `setup.sh`
 
-The main setup script that initializes the entire QuVel Kit environment.
+The main setup script that initializes the QuVel Kit environment with support for different deployment modes.
 
 ```bash
+# Default minimal mode (Traefik in Docker, services local)
 ./scripts/setup.sh
+
+# Full Docker mode (all services in Docker)
+./scripts/setup.sh --mode=docker
+
+# Local mode (all services local)
+./scripts/setup.sh --mode=local
+
+# Show help
+./scripts/setup.sh --help
 ```
 
 **What it does:**
 
 - Creates `.env` files for both frontend and backend if they don't exist
 - Generates SSL certificates via `ssl.sh`
-- Builds and starts all Docker containers
-- Waits for the Laravel container to be ready
-- Generates Laravel APP_KEY
-- Waits for MySQL to be ready and verifies the connection
-- Runs database migrations with seed data
-- Sets up storage links
-- Generates initial PHPUnit coverage report
+- Configures Traefik routing based on selected deployment mode
+- Starts appropriate Docker containers based on mode
+- Sets up database and runs migrations (Docker mode only)
+- Provides next-step instructions for each mode
+
+**Deployment modes:**
+
+- **minimal**: Traefik, MySQL, Redis in Docker; backend/frontend local
+- **docker**: All services in Docker containers
+- **local**: All services local (requires local Traefik installation)
 
 **When to use:**
 
 - When setting up QuVel Kit for the first time
 - After running `reset.sh` to recreate the environment
+- When switching between deployment modes
 
 ### `ssl.sh`
 
@@ -145,6 +159,37 @@ Completely resets the QuVel Kit environment, removing all containers, volumes, a
 - When you want to start with a clean environment
 - When troubleshooting persistent issues
 - When major configuration changes require a fresh start
+
+### `deploy-mode.sh`
+
+Switches between different deployment configurations without running full setup.
+
+```bash
+# Switch to minimal resource mode
+./scripts/deploy-mode.sh minimal
+
+# Switch to full Docker mode
+./scripts/deploy-mode.sh docker
+
+# Switch to fully local mode
+./scripts/deploy-mode.sh local
+
+# Show current deployment mode
+./scripts/deploy-mode.sh current
+```
+
+**What it does:**
+
+- Updates Traefik configuration files to match the selected deployment mode
+- Comments/uncomments appropriate server URLs in backend.yml and frontend.yml
+- Provides instructions for manual service management after switching
+- Shows current deployment mode when called without arguments
+
+**When to use:**
+
+- When you want to switch deployment modes without full reset
+- To check which deployment mode is currently active
+- After changing development requirements or resource constraints
 
 ## Utility Scripts
 

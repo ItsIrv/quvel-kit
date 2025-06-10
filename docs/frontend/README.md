@@ -1,71 +1,55 @@
 # Frontend Documentation
 
-## Overview
-
-QuVel Kit's frontend is built with Vue 3 and Quasar 2, featuring server-side rendering (SSR) with SPA fallback and Capacitor support for native mobile/desktop builds. The architecture follows a modular, service-oriented approach with strict TypeScript typing throughout.
-
-## Technology Stack
-
-| Technology | Purpose | Version |
-|------------|---------|--------|
-| Vue 3 | UI Framework | 3.x |
-| TypeScript | Type Safety | 5.x |
-| Quasar 2 | UI Components & SSR | 2.x |
-| Pinia | State Management | 2.x |
-| Tailwind CSS | Utility Styling | 3.x |
-| Zod | Schema Validation | 3.x |
-| Axios | HTTP Client | 1.x |
-| Laravel Echo | WebSockets | 1.x |
+Vue 3 + Quasar 2 with SSR, TypeScript, and multi-platform deployment. Features a service container pattern with modular architecture and support for web, mobile (Capacitor), and desktop (Electron) builds.
 
 ## Architecture
 
-The frontend follows a modular architecture with a service-oriented approach:
+### Service Container Pattern
+The frontend uses dependency injection with a three-phase lifecycle:
+- **Construct** - Service initialization
+- **Boot** - Environment-specific setup (receives req/res in SSR)
+- **Register** - Service registration and composable setup
 
+### Module Structure
 ```text
-frontend/
-├── src/
-│   ├── modules/         # Feature modules
-│   │   ├── Core/        # Core functionality
-│   │   ├── Auth/        # Authentication
-│   │   ├── Notifications/ # Notification system
-│   │   ├── Catalog/     # Catalog management
-│   │   └── Quvel/       # Quvel-specific components
-│   ├── boot/            # Quasar boot files
-│   ├── i18n/            # Translations
-│   └── composables/     # Shared Vue composables
-└── src-ssr/            # Server-side rendering code
+src/modules/{ModuleName}/
+├── components/     # Vue components
+├── services/       # Module services  
+├── stores/         # Pinia stores
+├── models/         # TypeScript models
+├── composables/    # Vue composables
+└── validators/     # Zod validators
 ```
 
-## Documentation
+### Multi-Platform Support
+- **Web**: SSR with SPA fallback
+- **Mobile**: Capacitor for iOS/Android
+- **Desktop**: Electron builds
 
-### Core Services
+## Core Concepts
 
-- **[Service Container](./frontend-service-container.md)** - Dependency injection system
-- **[Configuration Service](./frontend-config-service.md)** - Application settings with tiered visibility
-- **[Environment Configs](./frontend-env-configs.md)** - Environment-specific configuration
-- **[Task Management](./frontend-task-management.md)** - Async operation orchestration
-- **[Logging](./frontend-logging.md)** - Application logging system
+### Services & Architecture
+- **[Service Container](./frontend-service-container.md)** - Dependency injection and lifecycle
+- **[Configuration Service](./frontend-config-service.md)** - Tiered configuration system
+- **[Environment Configs](./frontend-env-configs.md)** - Build-time configuration
 
-### State Management
-
-- **[State Management](./frontend-state-management.md)** - Pinia store patterns
+### State & Data Management  
+- **[State Management](./frontend-state-management.md)** - Pinia patterns and hydration
+- **[Task Management](./frontend-task-management.md)** - Async operation handling
 - **[Pagination](./frontend-pagination.md)** - Data pagination strategies
-- **[Notifications](./frontend-notifications.md)** - Notification system
 
-### UI & Interaction
-
+### UI Development
 - **[Composables](./frontend-composables.md)** - Reusable Vue composition functions
-- **[Validation](./frontend-validation.md)** - Form and data validation with Zod
-- **[Translations](./frontend-translations.md)** - Internationalization with Vue I18n
+- **[Validation](./frontend-validation.md)** - Form validation with Zod
+- **[Translations](./frontend-translations.md)** - Multi-language support
+
+### Real-Time Features
 - **[WebSockets](./frontend-websockets.md)** - Real-time communication
+- **[Notifications](./frontend-notifications.md)** - User notification system
 
-### Development
-
-- **[Environment Setup & Usage](./frontend-usage.md)** - Development workflow
-- **[PWA Limitations](./frontend-pwa-limitations.md)** - PWA limitations with multi-tenancy
-
-## Need Help?
-
-For troubleshooting, check the [Troubleshooting Guide](../troubleshooting.md) or open an issue in the project repository.
+### Development & Deployment
+- **[Usage Guide](./frontend-usage.md)** - Development workflow and setup
+- **[Logging](./frontend-logging.md)** - Debug and application logging
+- **[PWA Limitations](./frontend-pwa-limitations.md)** - Multi-tenancy constraints
 
 [← Back to Main Documentation](../README.md)

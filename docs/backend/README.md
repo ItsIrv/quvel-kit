@@ -1,46 +1,31 @@
 # Backend Documentation
 
-## Overview
+Laravel 12 API with modular architecture, multi-tenancy, and comprehensive testing. The backend provides a robust foundation for multi-platform applications with domain-based tenant isolation.
 
-QuVel Kit's backend is built with Laravel 12 and follows a modular architecture pattern. The backend provides a robust API for the frontend and supports multi-tenancy out of the box.
+## Architecture
 
-## Technology Stack
+The backend follows a modular pattern with dedicated modules for different concerns:
 
-| Component | Technology | Version |
-|-----------|------------|--------|
-| Framework | Laravel | 12.0 |
-| PHP | PHP | 8.3+ |
-| Database | MySQL | 8.0+ |
-| Cache | Redis | 6.0+ |
-| Queue | Redis | 6.0+ |
-| Authentication | Laravel Sanctum | Latest |
-| API Documentation | OpenAPI/Swagger | Latest |
+- **Core Module** - Base functionality, service container, middleware
+- **Tenant Module** - Multi-tenancy with dynamic configuration
+- **Auth Module** - Authentication with OAuth and Sanctum
+- **Notifications Module** - Real-time notifications and WebSockets
+- **Catalog Module** - Example business module demonstrating patterns
 
-## Documentation Sections
+## Module Development
 
-### Getting Started
+### Creating Modules
+- **[Module Development Guide](./module-development.md)** - Working with Laravel Modules
+- **[Code Quality Standards](./code-quality.md)** - Testing, linting, and best practices
 
-- [Getting Started](./getting-started.md) - Setup and basic usage
-
-### Modules
-
-- [Module Development](./module-development.md) - Working with Laravel Modules
-- [Multi-Tenancy System](./tenant-module.md) - Multi-tenancy architecture and configuration
-- [Auth Module](./auth-module.md) - Authentication and authorization
-- [Core Module](./core-module.md) - Core functionality and utilities
+### Core Modules
+- **[Multi-Tenancy System](./tenant-module.md)** - Architecture and dynamic configuration
+- **[Authentication](./auth-module.md)** - OAuth, Sanctum, and security
+- **[Core Module](./core-module.md)** - Base functionality and utilities
 
 ### Development Tools
-
-- [Code Quality](./code-quality.md) - Code quality standards and best practices
-- [Testing](./testing.md) - Testing and debugging
-
-## Key Features
-
-- **Modular Architecture** - Organized into reusable modules
-- **API-First Design** - Built for frontend consumption
-- **Multi-Tenancy** - Support for multiple tenants with domain isolation
-- **Comprehensive Testing** - Unit, feature, and module tests
-- **Authentication** - Secure authentication using Laravel Sanctum
+- **[Testing Guide](./testing.md)** - Unit, feature, and integration testing
+- **[Getting Started](./getting-started.md)** - Local development setup
 
 ---
 

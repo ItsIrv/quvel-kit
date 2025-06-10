@@ -1,5 +1,62 @@
 # Troubleshooting Guide
 
+This guide covers common issues across different deployment modes. Issues are organized by category with mode-specific solutions where applicable.
+
+## Deployment Mode Issues
+
+### Wrong Deployment Mode
+
+If services aren't working as expected, check your current deployment mode:
+
+```bash
+# Check current deployment mode
+./scripts/deploy-mode.sh current
+
+# Switch to traefik-only mode (most minimal)
+./scripts/deploy-mode.sh traefik-only
+
+# Switch to full Docker mode  
+./scripts/deploy-mode.sh docker
+```
+
+### Traefik-Only Mode Issues
+
+**Services not accessible:**
+```bash
+# Ensure local services are running
+brew services list | grep -E "(mysql|redis)"
+brew services start mysql
+brew services start redis
+
+# Check if backend is running
+curl http://127.0.0.1:8000/api/health
+
+# Check if frontend is running  
+curl http://127.0.0.1:3000
+```
+
+**Database connection issues:**
+```bash
+# Test local MySQL connection
+mysql -u root -p -h 127.0.0.1
+
+# Update backend .env for local database
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=quvel
+```
+
+### Full Docker Mode Issues
+
+**Resource constraints:**
+```bash
+# Check Docker resource usage
+docker stats
+
+# Consider switching to traefik-only mode
+./scripts/deploy-mode.sh traefik-only
+```
+
 ## SSL Certificate Issues
 
 ### Browser Security Warnings
@@ -84,6 +141,20 @@ docker system prune -a --volumes
 
 ### Connection Failures
 
+#### Traefik-Only Mode
+```bash
+# Check if local MySQL is running
+brew services list | grep mysql
+brew services start mysql
+
+# Test connection
+mysql -u root -p -h 127.0.0.1
+
+# Check backend .env configuration
+grep DB_ backend/.env
+```
+
+#### Full Docker Mode
 ```bash
 # Check if MySQL container is running
 docker ps | grep mysql
@@ -97,8 +168,19 @@ docker logs quvel-mysql
 
 ### Migration Errors
 
+#### Traefik-Only Mode
 ```bash
-# Run migrations with force flag
+# Run migrations locally
+cd backend
+php artisan migrate --force
+
+# Reset database completely
+php artisan migrate:fresh --seed
+```
+
+#### Full Docker Mode
+```bash
+# Run migrations in container
 docker exec -it quvel-app php artisan migrate --force
 
 # Reset database completely
@@ -109,6 +191,19 @@ docker exec -it quvel-app php artisan migrate:fresh --seed
 
 ### SSR Rendering Problems
 
+#### Traefik-Only Mode
+```bash
+# Check frontend process
+ps aux | grep "quasar dev"
+
+# Restart frontend development server
+cd frontend
+quasar dev --port 3000
+
+# Clear browser cache and cookies
+```
+
+#### Full Docker Mode
 ```bash
 # Check frontend logs
 docker logs -f quvel-frontend
@@ -121,13 +216,27 @@ docker restart quvel-frontend
 
 ### Vite/HMR Not Working
 
+#### All Modes
 ```bash
 # Check if WebSockets are working through Traefik
 docker logs quvel-traefik | grep websocket
 
-# Restart frontend development server
+# Test WebSocket connection
+curl -i -N -H "Connection: Upgrade" -H "Upgrade: websocket" \
+  https://quvel.127.0.0.1.nip.io/hmr
+```
+
+#### Traefik-Only Mode
+```bash
+# Restart frontend locally
 cd frontend
-yarn dev
+yarn dev --port 3000
+```
+
+#### Full Docker Mode
+```bash
+# Restart frontend container
+docker restart quvel-frontend
 ```
 
 ## Multi-Tenant Issues
@@ -168,6 +277,26 @@ cat docker/traefik/dynamic/frontend.yml
 
 When all troubleshooting fails, perform a complete reset:
 
+### Traefik-Only Mode
+```bash
+# Stop Docker services
+docker-compose -f docker/docker-compose.yml down
+
+# Stop local services
+brew services stop mysql
+brew services stop redis
+
+# Clear local backend cache
+cd backend
+php artisan cache:clear
+php artisan config:clear
+rm -rf vendor
+
+# Reinstall from scratch
+./scripts/setup.sh --mode=traefik-only
+```
+
+### Full Docker Mode
 ```bash
 # Stop all containers and remove volumes
 ./scripts/reset.sh
@@ -176,7 +305,22 @@ When all troubleshooting fails, perform a complete reset:
 ./scripts/log.sh
 
 # Reinstall from scratch
-./scripts/setup.sh
+./scripts/setup.sh --mode=docker
+```
+
+## Mode-Specific Quick Fixes
+
+### Switching Modes for Troubleshooting
+
+```bash
+# Try traefik-only mode (most minimal)
+./scripts/deploy-mode.sh traefik-only
+
+# Try full Docker mode (more isolated)
+./scripts/deploy-mode.sh docker
+
+# Check what mode you're currently using
+./scripts/deploy-mode.sh current
 ```
 
 ---
