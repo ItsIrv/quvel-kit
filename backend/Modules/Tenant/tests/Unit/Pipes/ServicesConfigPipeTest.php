@@ -30,6 +30,34 @@ class ServicesConfigPipeTest extends TestCase
         $this->pipe = new ServicesConfigPipe();
     }
 
+    public function testResolveReturnsCorrectValuesAndVisibility(): void
+    {
+        $tenant = $this->createMock(Tenant::class);
+        $tenantConfig = [
+            'recaptcha_site_key' => 'test-site-key',
+        ];
+
+        $result = $this->pipe->resolve($tenant, $tenantConfig);
+
+        $expectedValues = [
+            'recaptchaGoogleSiteKey' => 'test-site-key',
+        ];
+
+        $expectedVisibility = [
+            'recaptchaGoogleSiteKey' => 'public',
+        ];
+
+        $this->assertEquals($expectedValues, $result['values']);
+        $this->assertEquals($expectedVisibility, $result['visibility']);
+    }
+
+    public function testResolveWithEmptyConfig(): void
+    {
+        $tenant = $this->createMock(Tenant::class);
+        $result = $this->pipe->resolve($tenant, []);
+        $this->assertEquals(['values' => [], 'visibility' => []], $result);
+    }
+
 
 
     public function testHandleConfiguresStripe(): void

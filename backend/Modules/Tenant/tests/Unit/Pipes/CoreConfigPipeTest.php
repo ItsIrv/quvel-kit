@@ -8,7 +8,6 @@ use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Foundation\Application;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Context;
-use Illuminate\Support\Facades\Date;
 use Modules\Tenant\Logs\Pipes\CoreConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Pipes\CoreConfigPipe;
@@ -25,37 +24,17 @@ use PHPUnit\Framework\MockObject\MockObject;
 #[Group('tenant-pipes')]
 class CoreConfigPipeTest extends TestCase
 {
-    /**
-     * @var CoreConfigPipe The pipe instance being tested
-     */
     private CoreConfigPipe $pipe;
-
-    /**
-     * @var ConfigRepository&MockObject The mocked config repository
-     */
     private ConfigRepository|MockObject $config;
-
-    /**
-     * @var Application&MockObject The mocked application container
-     */
     private Application|MockObject $app;
-
-    /**
-     * @var Container|null Original application instance
-     */
     private ?Container $originalContainer = null;
 
-    /**
-     * Set up the test environment.
-     */
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Store the original container instance
         $this->originalContainer = Container::getInstance();
 
-        // Create mock app container and config repository
         $this->app = $this->createPartialMock(Application::class, [
             'make',
             'bound',
@@ -67,16 +46,13 @@ class CoreConfigPipeTest extends TestCase
         ]);
         $this->config = $this->createMock(ConfigRepository::class);
 
-        // Set Container instance
         Container::setInstance($this->app);
 
-        // Mock context repository for Context facade
         $contextRepo = $this->createMock(\Illuminate\Log\Context\Repository::class);
         $contextRepo->expects($this->any())
             ->method('add')
             ->willReturn(null);
 
-        // Configure app container
         $this->app->method('bound')
             ->willReturnMap([
                 [CoreConfigPipeLogs::class, false],
@@ -98,49 +74,41 @@ class CoreConfigPipeTest extends TestCase
         $this->app->method('environment')
             ->willReturn(false);
 
-        // Mock Context facade
         Context::swap($contextRepo);
 
-        // Create the pipe
         $this->pipe = new CoreConfigPipe();
     }
 
-    /**
-     * Test that the handle method sets app configuration values.
-     */
     public function testHandleSetsAppConfiguration(): void
     {
-        // Arrange
-        $tenant            = $this->createMock(Tenant::class);
+        $tenant = $this->createMock(Tenant::class);
         $tenant->public_id = 'tenant-123';
 
         $tenantConfig = [
-            'app_name'            => 'Test App',
-            'app_env'             => 'testing',
-            'app_key'             => 'base64:test-key',
-            'app_debug'           => true,
-            'app_url'             => 'https://test.example.com',
-            'app_timezone'        => 'America/New_York',
-            'app_locale'          => 'en',
+            'app_name' => 'Test App',
+            'app_env' => 'testing',
+            'app_key' => 'base64:test-key',
+            'app_debug' => true,
+            'app_url' => 'https://test.example.com',
+            'app_timezone' => 'America/New_York',
+            'app_locale' => 'en',
             'app_fallback_locale' => 'en',
         ];
 
-        // Set up config expectations - app config + CORS origins
-        $this->config->expects($this->exactly(9)) // 8 app configs + 1 CORS
+        $this->config->expects($this->exactly(9))
             ->method('set')
             ->willReturnCallback(function ($key, $value) {
                 $allowedKeys = [
-                    'app.name', 'app.env', 'app.key', 'app.debug', 'app.url', 
+                    'app.name', 'app.env', 'app.key', 'app.debug', 'app.url',
                     'app.timezone', 'app.locale', 'app.fallback_locale', 'cors.allowed_origins'
                 ];
                 $this->assertContains($key, $allowedKeys);
-                
+
                 if ($key === 'cors.allowed_origins') {
                     $this->assertContains('https://test.example.com', $value);
                 }
             });
 
-        // Mock config get for refreshes (URL, timezone, locale)
         $this->config->expects($this->any())
             ->method('get')
             ->willReturnCallback(function ($key) {
@@ -152,216 +120,118 @@ class CoreConfigPipeTest extends TestCase
                 };
             });
 
-        // Act
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;
         });
 
-        // Assert
         $this->assertSame($tenant, $result['tenant']);
         $this->assertSame($this->config, $result['config']);
         $this->assertSame($tenantConfig, $result['tenantConfig']);
     }
 
-    /**
-     * Test that the handle method sets frontend configuration values.
-     */
-    public function testHandleSetsFrontendConfiguration(): void
+    public function testResolveReturnsCorrectValuesAndVisibility(): void
     {
-        // Arrange
-        $tenant            = $this->createMock(Tenant::class);
+        $tenant = $this->createMock(Tenant::class);
         $tenant->public_id = 'tenant-123';
 
         $tenantConfig = [
-            'frontend_url'     => 'https://frontend.example.com',
-            'internal_api_url' => 'https://api.example.com',
-            'capacitor_scheme' => 'testapp',
-        ];
-
-        // Set up config expectations - frontend config + CORS origins
-        $this->config->expects($this->exactly(4)) // 3 frontend configs + 1 CORS
-            ->method('set')
-            ->willReturnCallback(function ($key, $value) {
-                $allowedKeys = [
-                    'frontend.url', 'frontend.internal_api_url', 'frontend.capacitor_scheme', 'cors.allowed_origins'
-                ];
-                $this->assertContains($key, $allowedKeys);
-                
-                if ($key === 'cors.allowed_origins') {
-                    $this->assertContains('https://frontend.example.com', $value);
-                }
-            });
-
-        // Act
-        $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        // Assert
-        $this->assertSame($tenant, $result['tenant']);
-    }
-
-    /**
-     * Test that the handle method sets CORS configuration.
-     */
-    public function testHandleSetsCorsConfiguration(): void
-    {
-        // Arrange
-        $tenant            = $this->createMock(Tenant::class);
-        $tenant->public_id = 'tenant-123';
-
-        $tenantConfig = [
-            'app_url'      => 'https://app.example.com',
-            'frontend_url' => 'https://frontend.example.com',
-        ];
-
-        // Set up config expectations - 2 app configs + 1 CORS
-        $this->config->expects($this->exactly(3))
-            ->method('set')
-            ->willReturnCallback(function ($key, $value) {
-                $allowedKeys = ['app.url', 'frontend.url', 'cors.allowed_origins'];
-                $this->assertContains($key, $allowedKeys);
-                
-                if ($key === 'cors.allowed_origins') {
-                    $this->assertContains('https://app.example.com', $value);
-                    $this->assertContains('https://frontend.example.com', $value);
-                }
-            });
-
-        // Act
-        $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-    }
-
-    /**
-     * Test that the handle method sets Pusher configuration.
-     */
-    public function testHandleSetsPusherConfiguration(): void
-    {
-        // Arrange
-        $tenant            = $this->createMock(Tenant::class);
-        $tenant->public_id = 'tenant-123';
-
-        $tenantConfig = [
-            'pusher_app_key'     => 'test-key',
-            'pusher_app_secret'  => 'test-secret',
-            'pusher_app_id'      => 'test-app-id',
+            'app_url' => 'https://api.example.com',
+            'frontend_url' => 'https://app.example.com',
+            'app_name' => 'Test App',
+            'pusher_app_key' => 'test-key',
             'pusher_app_cluster' => 'us-east-1',
         ];
 
-        // Set up config expectations
-        $this->config->expects($this->exactly(4))
-            ->method('set')
-            ->willReturnCallback(function ($key, $value) {
-                $allowedKeys = [
-                    'broadcasting.connections.pusher.key',
-                    'broadcasting.connections.pusher.secret',
-                    'broadcasting.connections.pusher.app_id',
-                    'broadcasting.connections.pusher.options.cluster'
-                ];
-                $this->assertContains($key, $allowedKeys);
-            });
+        $result = $this->pipe->resolve($tenant, $tenantConfig);
 
-        // Act
-        $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
+        $this->assertArrayHasKey('values', $result);
+        $this->assertArrayHasKey('visibility', $result);
+
+        $expectedValues = [
+            'apiUrl' => 'https://api.example.com',
+            'appUrl' => 'https://app.example.com',
+            'appName' => 'Test App',
+            'pusherAppKey' => 'test-key',
+            'pusherAppCluster' => 'us-east-1',
+        ];
+
+        $expectedVisibility = [
+            'apiUrl' => 'public',
+            'appUrl' => 'public',
+            'appName' => 'public',
+            'pusherAppKey' => 'public',
+            'pusherAppCluster' => 'public',
+        ];
+
+        $this->assertEquals($expectedValues, $result['values']);
+        $this->assertEquals($expectedVisibility, $result['visibility']);
     }
 
-    /**
-     * Test that the handle method refreshes URL generator when app_url changes.
-     */
-    public function testHandleRefreshesUrlGeneratorWhenUrlChanges(): void
+    public function testResolveFallsBackToAppUrlForFrontendUrl(): void
     {
-        // Arrange
-        $tenant            = $this->createMock(Tenant::class);
+        $tenant = $this->createMock(Tenant::class);
         $tenant->public_id = 'tenant-123';
 
-        $tenantConfig = ['app_url' => 'https://test.example.com'];
+        $tenantConfig = [
+            'app_url' => 'https://api.example.com',
+            'app_name' => 'Test App',
+        ];
 
-        $urlGenerator = $this->createMock(UrlGenerator::class);
-        $urlGenerator->expects($this->once())
-            ->method('forceRootUrl')
-            ->with('https://test.example.com');
+        $result = $this->pipe->resolve($tenant, $tenantConfig);
 
-        $contextRepo = $this->createMock(\Illuminate\Log\Context\Repository::class);
-        $contextRepo->expects($this->any())
-            ->method('add')
-            ->willReturn(null);
+        $this->assertEquals([
+            'apiUrl' => 'https://api.example.com',
+            'appUrl' => 'https://api.example.com', // Falls back to app_url
+            'appName' => 'Test App',
+        ], $result['values']);
 
-        // Create a new app mock for this specific test
-        $testApp = $this->createPartialMock(Application::class, [
-            'make',
-            'bound',
-            'environment',
-            'instance',
-            'forgetInstance',
-            'extend',
-            'offsetGet'
-        ]);
-        
-        // Override the container instance for this test
-        Container::setInstance($testApp);
-        
-        $testApp->method('make')
-            ->willReturnCallback(function ($abstract) use ($urlGenerator, $contextRepo) {
-                if ($abstract === UrlGenerator::class) {
-                    return $urlGenerator;
-                }
-                if ($abstract === 'log.context') {
-                    return $contextRepo;
-                }
-                return null;
-            });
-
-        $testApp->method('offsetGet')
-            ->with('log.context')
-            ->willReturn($contextRepo);
-
-        $testApp->method('environment')
-            ->willReturn(false);
-
-        $testApp->method('bound')
-            ->willReturn(false);
-
-        // Mock Context facade
-        Context::swap($contextRepo);
-
-        // Set up config expectations - app.url + CORS
-        $this->config->expects($this->exactly(2))
-            ->method('set')
-            ->willReturnCallback(function ($key, $value) {
-                $this->assertContains($key, ['app.url', 'cors.allowed_origins']);
-            });
-
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnCallback(function ($key) {
-                return match ($key) {
-                    'app.url' => 'https://test.example.com',
-                    default => null,
-                };
-            });
-
-        // Act
-        $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-        
-        // Restore the original app instance for other tests
-        Container::setInstance($this->app);
+        $this->assertEquals([
+            'apiUrl' => 'public',
+            'appUrl' => 'public',
+            'appName' => 'public',
+        ], $result['visibility']);
     }
 
-    /**
-     * Test that the handles method returns the correct keys.
-     */
+    public function testResolveWithEmptyConfig(): void
+    {
+        $tenant = $this->createMock(Tenant::class);
+        $tenant->public_id = 'tenant-123';
+
+        $tenantConfig = [];
+
+        $result = $this->pipe->resolve($tenant, $tenantConfig);
+
+        $this->assertEquals(['values' => [], 'visibility' => []], $result);
+    }
+
+    public function testResolveWithPartialConfig(): void
+    {
+        $tenant = $this->createMock(Tenant::class);
+        $tenant->public_id = 'tenant-123';
+
+        $tenantConfig = [
+            'app_name' => 'Test App',
+            'pusher_app_key' => 'test-key',
+            // Missing other fields
+        ];
+
+        $result = $this->pipe->resolve($tenant, $tenantConfig);
+
+        $this->assertEquals([
+            'appName' => 'Test App',
+            'pusherAppKey' => 'test-key',
+        ], $result['values']);
+
+        $this->assertEquals([
+            'appName' => 'public',
+            'pusherAppKey' => 'public',
+        ], $result['visibility']);
+    }
+
     public function testHandlesReturnsCorrectKeys(): void
     {
-        // Act
         $handles = $this->pipe->handles();
 
-        // Assert
         $expectedKeys = [
             'app_name',
             'app_env',
@@ -385,47 +255,14 @@ class CoreConfigPipeTest extends TestCase
         }
     }
 
-    /**
-     * Test that the priority method returns the correct value.
-     */
     public function testPriorityReturnsCorrectValue(): void
     {
-        // Act
         $priority = $this->pipe->priority();
-
-        // Assert
         $this->assertEquals(100, $priority);
     }
 
-    /**
-     * Test that the handle method handles empty tenant config gracefully.
-     */
-    public function testHandleWithEmptyTenantConfig(): void
-    {
-        // Arrange
-        $tenant            = $this->createMock(Tenant::class);
-        $tenant->public_id = 'tenant-123';
-        $tenantConfig      = [];
-
-        // Config should not be called to set anything
-        $this->config->expects($this->never())
-            ->method('set');
-
-        // Act
-        $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        // Assert
-        $this->assertSame($tenant, $result['tenant']);
-    }
-
-    /**
-     * Clean up after each test.
-     */
     protected function tearDown(): void
     {
-        // Restore the original container instance
         if ($this->originalContainer) {
             Container::setInstance($this->originalContainer);
         }

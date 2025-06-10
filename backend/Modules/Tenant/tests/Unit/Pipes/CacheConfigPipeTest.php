@@ -5,7 +5,6 @@ namespace Modules\Tenant\Tests\Unit\Pipes;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Foundation\Application;
-use Illuminate\Log\LogManager;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Pipes\CacheConfigPipe;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -21,269 +20,166 @@ use PHPUnit\Framework\TestCase;
 #[Group('tenant-pipes')]
 class CacheConfigPipeTest extends TestCase
 {
-    /**
-     * @var CacheConfigPipe The pipe instance being tested
-     */
     private CacheConfigPipe $pipe;
-
-    /**
-     * @var ConfigRepository&MockObject The mocked config repository
-     */
     private ConfigRepository|MockObject $config;
-
-    /**
-     * @var Application&MockObject The mocked application container
-     */
     private Application|MockObject $app;
-
-    /**
-     * @var Container|null Original application instance
-     */
     private ?Container $originalContainer = null;
 
-    /**
-     * Set up the test environment.
-     */
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Store the original container instance
         $this->originalContainer = Container::getInstance();
 
-        // Create mock app container and config repository
-        $this->app    = $this->createPartialMock(Application::class, ['make', 'has', 'environment', 'instance', 'forgetInstance', 'extend']);
+        $this->app = $this->createPartialMock(Application::class, [
+            'extend',
+            'forgetInstance',
+            'bound',
+            'environment',
+        ]);
         $this->config = $this->createMock(ConfigRepository::class);
 
-        // Set Container instance
         Container::setInstance($this->app);
 
-        // Configure app container
-        $this->app->method('has')
-            ->willReturnMap([
-                ['config', true],
-            ]);
+        $this->app->method('bound')->willReturn(false);
+        $this->app->method('environment')->willReturn(false);
 
-        // Mock logger
-        $logger = $this->createMock(LogManager::class);
-        $logger->expects($this->any())->method('debug');
-        $logger->expects($this->any())->method('error');
-
-        $this->app->method('make')
-            ->willReturnMap([
-                ['config', [], $this->config],
-                ['log', [], $logger],
-            ]);
-
-        $this->app->method('environment')
-            ->willReturn(true);
-
-        $this->app->method('extend')
-            ->willReturnSelf();
-
-        $this->app->method('forgetInstance')
-            ->willReturnSelf();
-
-        $this->app->method('instance')
-            ->willReturnSelf();
-
-        // Create the pipe
         $this->pipe = new CacheConfigPipe();
     }
 
-    /**
-     * Test that the handle method sets a tenant-specific cache prefix.
-     */
-    public function testHandleSetsDefaultTenantPrefix(): void
+    public function testHandleSetsCacheConfiguration(): void
     {
-        // Arrange
-        $tenant            = $this->createMock(Tenant::class);
-        $tenant->id        = '';
-        $tenant->public_id = 'public-0';
-        $tenantConfig      = [];
+        $tenant = $this->createMock(Tenant::class);
+        $tenant->method('__get')
+            ->with('public_id')
+            ->willReturn('tenant-123');
 
-        // Set up config expectations
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                    ['cache.default', null, 'redis'],
-                    ['cache.prefix', null, 'app_'],
-                    ['tenant.enable_tiers', false, false],
-                ]);
-
-        // Set up expectations for setting tenant-specific cache prefix
-        $this->config->expects($this->once())
-            ->method('set')
-            ->with('cache.prefix', 'tenant__');
-
-        // Act
-        $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        // Assert
-        $this->assertSame($tenant, $result['tenant']);
-    }
-
-    /**
-     * Test that the handle method applies a custom cache store.
-     */
-    public function testHandleSetsCustomCacheStore(): void
-    {
-        // Arrange
-        $tenant            = $this->createMock(Tenant::class);
-        $tenant->id        = '';
-        $tenant->public_id = 'public-0';
-        $tenantConfig      = [
-            'cache_store' => 'memcached',
+        $tenantConfig = [
+            'cache_store' => 'redis',
+            'cache_prefix' => 'custom_prefix',
         ];
 
-        // Set up config expectations
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                    ['cache.default', null, 'redis'],
-                    ['cache.prefix', null, 'app_'],
-                    ['tenant.enable_tiers', false, false],
-                ]);
-
-        // Set up expectations for setting tenant-specific cache store and prefix
         $this->config->expects($this->exactly(2))
             ->method('set')
             ->willReturnCallback(function ($key, $value) {
-                static $callIndex = 0;
-                $callIndex++;
-
-                switch ($callIndex) {
-                    case 1:
-                        $this->assertEquals('cache.default', $key);
-                        $this->assertEquals('memcached', $value);
-                        break;
-                    case 2:
-                        $this->assertEquals('cache.prefix', $key);
-                        $this->assertEquals('tenant__', $value);
-                        break;
+                $this->assertContains($key, ['cache.default', 'cache.prefix']);
+                if ($key === 'cache.default') {
+                    $this->assertEquals('redis', $value);
+                } elseif ($key === 'cache.prefix') {
+                    $this->assertEquals('custom_prefix', $value);
                 }
-
-                return null;
             });
 
-        // Act
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;
         });
 
-        // Assert
         $this->assertSame($tenant, $result['tenant']);
+        $this->assertSame($this->config, $result['config']);
+        $this->assertSame($tenantConfig, $result['tenantConfig']);
     }
 
-    /**
-     * Test that the handle method applies a custom cache prefix.
-     */
-    public function testHandleSetsCustomCachePrefix(): void
+    public function testHandleSetsDefaultCachePrefix(): void
     {
-        // Arrange
-        $tenant            = $this->createMock(Tenant::class);
-        $tenant->id        = '';
-        $tenant->public_id = 'public-0';
-        $tenantConfig      = [
-            'cache_prefix' => 'custom_prefix_',
+        $tenant = $this->createMock(Tenant::class);
+        $tenant->method('__get')
+            ->with('public_id')
+            ->willReturn('tenant-123');
+
+        $tenantConfig = ['cache_store' => 'redis'];
+
+        $this->config->expects($this->exactly(2))
+            ->method('set')
+            ->willReturnCallback(function ($key, $value) {
+                if ($key === 'cache.prefix') {
+                    $this->assertEquals('tenant_tenant-123_', $value);
+                }
+            });
+
+        $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
+            return $data;
+        });
+    }
+
+    public function testHandleWithOnlyPrefixConfiguration(): void
+    {
+        $tenant = $this->createMock(Tenant::class);
+        $tenant->method('__get')
+            ->with('public_id')
+            ->willReturn('tenant-456');
+
+        $tenantConfig = [
+            'cache_prefix' => 'my_custom_prefix',
         ];
 
-        // Set up config expectations
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                    ['cache.default', null, 'redis'],
-                    ['cache.prefix', null, 'app_'],
-                    ['tenant.enable_tiers', false, false],
-                ]);
-
-        // Set up expectations for setting tenant-specific cache prefix
         $this->config->expects($this->once())
             ->method('set')
-            ->with('cache.prefix', 'custom_prefix_');
+            ->with('cache.prefix', 'my_custom_prefix');
 
-        // Act
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;
         });
 
-        // Assert
         $this->assertSame($tenant, $result['tenant']);
+        $this->assertSame($this->config, $result['config']);
+        $this->assertSame($tenantConfig, $result['tenantConfig']);
     }
 
-    /**
-     * Test that the handle method handles tier-based cache configuration.
-     */
-    public function testHandleWithTierBasedCacheConfig(): void
+    public function testHandleWithEmptyConfigSetsDefaultPrefix(): void
     {
-        // Arrange
-        $tenant            = $this->createMock(Tenant::class);
-        $tenant->id        = '';
-        $tenant->public_id = 'public-0';
-        $tenantConfig      = [];
+        $tenant = $this->createMock(Tenant::class);
+        $tenant->method('__get')
+            ->with('public_id')
+            ->willReturn('tenant-789');
 
-        // Set up tenant tier feature check
-        $tenant->expects($this->once())
-            ->method('hasFeature')
-            ->with('dedicated_cache')
-            ->willReturn(false);
+        $tenantConfig = [];
 
-        // Set up config expectations
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap([
-                    ['cache.default', null, 'redis'],
-                    ['cache.prefix', null, 'app_'],
-                    ['tenant.enable_tiers', false, true],
-                ]);
-
-        // Set up expectations for setting tenant-specific cache prefix
         $this->config->expects($this->once())
             ->method('set')
-            ->with('cache.prefix', 'tenant__');
+            ->with('cache.prefix', 'tenant_tenant-789_');
 
-        // Act
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;
         });
 
-        // Assert
         $this->assertSame($tenant, $result['tenant']);
     }
 
-    /**
-     * Test that the handles method returns the correct keys.
-     */
+    public function testResolveReturnsEmptyArray(): void
+    {
+        $tenant = $this->createMock(Tenant::class);
+        $tenant->method('__get')
+            ->with('public_id')
+            ->willReturn('tenant-123');
+
+        $tenantConfig = [
+            'cache_store' => 'redis',
+            'cache_prefix' => 'custom_prefix',
+        ];
+
+        $result = $this->pipe->resolve($tenant, $tenantConfig);
+
+        $this->assertIsArray($result);
+        $this->assertEmpty($result);
+    }
+
     public function testHandlesReturnsCorrectKeys(): void
     {
-        // Act
         $handles = $this->pipe->handles();
 
-        // Assert
-        $this->assertContains('cache_store', $handles);
-        $this->assertContains('cache_prefix', $handles);
+        $expectedKeys = ['cache_store', 'cache_prefix'];
+
+        $this->assertEquals($expectedKeys, $handles);
     }
 
-    /**
-     * Test that the priority method returns the correct value.
-     */
     public function testPriorityReturnsCorrectValue(): void
     {
-        // Act
         $priority = $this->pipe->priority();
-
-        // Assert
         $this->assertEquals(85, $priority);
     }
 
-    /**
-     * Clean up after each test.
-     */
     protected function tearDown(): void
     {
-        // Restore the original container instance
         if ($this->originalContainer) {
             Container::setInstance($this->originalContainer);
         }

@@ -5,6 +5,7 @@ namespace Modules\Tenant\Services;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
+use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
@@ -71,7 +72,7 @@ class ConfigurationPipeline
     public function apply(Tenant $tenant, ConfigRepository $config): void
     {
         // Check if tenant context is bypassed
-        $tenantContext = app(\Modules\Tenant\Contexts\TenantContext::class);
+        $tenantContext = app(TenantContext::class);
         if ($tenantContext->isBypassed()) {
             return;
         }
@@ -121,7 +122,7 @@ class ConfigurationPipeline
     public function resolve(Tenant $tenant): array
     {
         // Check if tenant context is bypassed
-        $tenantContext = app(\Modules\Tenant\Contexts\TenantContext::class);
+        $tenantContext = app(TenantContext::class);
         if ($tenantContext->isBypassed()) {
             return ['values' => [], 'visibility' => []];
         }
@@ -151,7 +152,7 @@ class ConfigurationPipeline
      */
     public function resolveFromArray(Tenant $tenant, array $configArray): array
     {
-        $allValues = [];
+        $allValues     = [];
         $allVisibility = [];
 
         // Sort pipes by priority (higher priority first)
@@ -160,21 +161,21 @@ class ConfigurationPipeline
         // Apply each pipe's resolution
         foreach ($sortedPipes as $pipe) {
             $pipeResult = $pipe->resolve($tenant, $configArray);
-            
+
             if (isset($pipeResult['values'])) {
                 $allValues = array_merge($allValues, $pipeResult['values']);
             }
-            
+
             if (isset($pipeResult['visibility'])) {
                 $allVisibility = array_merge($allVisibility, $pipeResult['visibility']);
             }
         }
 
         // Add tenant identity properties for frontend
-        $identityTenant = $tenant->parent ?? $tenant;
-        $allValues['tenantId'] = $identityTenant->public_id;
-        $allValues['tenantName'] = $identityTenant->name;
-        $allVisibility['tenantId'] = 'public';
+        $identityTenant              = $tenant->parent ?? $tenant;
+        $allValues['tenantId']       = $identityTenant->public_id;
+        $allValues['tenantName']     = $identityTenant->name;
+        $allVisibility['tenantId']   = 'public';
         $allVisibility['tenantName'] = 'public';
 
         return ['values' => $allValues, 'visibility' => $allVisibility];
