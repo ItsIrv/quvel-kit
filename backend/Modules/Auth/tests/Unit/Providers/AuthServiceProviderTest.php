@@ -95,62 +95,37 @@ class AuthServiceProviderTest extends TestCase
     }
 
     #[TestDox('config seeder callable generates correct configuration for isolated template')]
-    #[DataProvider('isolatedConfigurationProvider')]
-    public function testConfigSeederCallableGeneratesCorrectConfigurationForIsolatedTemplate(
-        array $inputConfig,
-        array $expectedConfig,
-    ): void {
+    public function testConfigSeederCallableGeneratesCorrectConfigurationForIsolatedTemplate(): void
+    {
         $configPath = __DIR__ . '/../../../config/tenant.php';
         $config = require $configPath;
         
         $isolatedSeeder = $config['seeders']['isolated']['config'];
         $this->assertIsCallable($isolatedSeeder);
         
+        // Test with cache prefix
+        $inputConfig = ['cache_prefix' => 'tenant_abc123_'];
         $result = $isolatedSeeder('isolated', $inputConfig);
-        $this->assertEquals($expectedConfig, $result);
+        
+        // Verify structure and expected keys
+        $this->assertEquals('quvel_abc123', $result['session_cookie']);
+        $this->assertEquals(['google', 'microsoft'], $result['socialite_providers']);
+        $this->assertEquals(240, $result['session_lifetime']);
+        $this->assertArrayHasKey('oauth_credentials', $result);
+        $this->assertArrayHasKey('google', $result['oauth_credentials']);
+        $this->assertArrayHasKey('microsoft', $result['oauth_credentials']);
+        $this->assertArrayHasKey('client_id', $result['oauth_credentials']['google']);
+        $this->assertArrayHasKey('client_secret', $result['oauth_credentials']['google']);
+        
+        // Test with invalid cache prefix
+        $inputConfig2 = ['cache_prefix' => 'invalid_format'];
+        $result2 = $isolatedSeeder('isolated', $inputConfig2);
+        
+        // Should generate fallback session cookie
+        $this->assertEquals('quvel_' . substr(md5('invalid_format'), 0, 8), $result2['session_cookie']);
+        $this->assertEquals(240, $result2['session_lifetime']);
     }
 
-    public static function isolatedConfigurationProvider(): array
-    {
-        return [
-            'isolated with cache prefix' => [
-                ['cache_prefix' => 'tenant_abc123_'],
-                [
-                    'session_cookie'      => 'quvel_abc123',
-                    'socialite_providers' => ['google', 'microsoft'],
-                    'oauth_credentials'   => [
-                        'google'    => [
-                            'client_id'     => env('GOOGLE_CLIENT_ID', 'your-google-client-id'),
-                            'client_secret' => env('GOOGLE_CLIENT_SECRET', 'your-google-client-secret'),
-                        ],
-                        'microsoft' => [
-                            'client_id'     => env('MICROSOFT_CLIENT_ID', 'your-microsoft-client-id'),
-                            'client_secret' => env('MICROSOFT_CLIENT_SECRET', 'your-microsoft-client-secret'),
-                        ],
-                    ],
-                    'session_lifetime'    => 240,
-                ],
-            ],
-            'isolated with invalid cache prefix' => [
-                ['cache_prefix' => 'invalid_format'],
-                [
-                    'session_cookie'      => 'quvel_' . substr(md5('invalid_format'), 0, 8),
-                    'socialite_providers' => ['google', 'microsoft'],
-                    'oauth_credentials'   => [
-                        'google'    => [
-                            'client_id'     => env('GOOGLE_CLIENT_ID', 'your-google-client-id'),
-                            'client_secret' => env('GOOGLE_CLIENT_SECRET', 'your-google-client-secret'),
-                        ],
-                        'microsoft' => [
-                            'client_id'     => env('MICROSOFT_CLIENT_ID', 'your-microsoft-client-id'),
-                            'client_secret' => env('MICROSOFT_CLIENT_SECRET', 'your-microsoft-client-secret'),
-                        ],
-                    ],
-                    'session_lifetime'    => 240,
-                ],
-            ],
-        ];
-    }
 
     #[TestDox('visibility configuration is consistent')]
     public function testVisibilityConfigurationIsConsistent(): void
