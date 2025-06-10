@@ -102,8 +102,9 @@ defineExpose({
     <!-- Oauth providers -->
     <div class="tw:mt-4 tw:my-8 tw:w-full">
       <q-select
+        v-if="socialiteProviders?.length && socialiteProviders?.length > 0"
         :model-value="null"
-        :options="socialiteProviders.map(p => ({
+        :options="socialiteProviders?.map(p => ({
           label: $t('auth.forms.oauth.logInWith', {
             provider: $t(`auth.forms.oauth.providers.${p}`)
           }),
