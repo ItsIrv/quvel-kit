@@ -74,7 +74,7 @@ class TenantDumpResourceTest extends TestCase
      */
     public function testToArrayFiltersTenantConfigCorrectly(): void
     {
-        $tenantConfig = DynamicTenantConfigFactory::createStandardTier(
+        $tenantConfig = DynamicTenantConfigFactory::createBasic(
             domain: 'api.example.com',
             appName: 'Example App',
             mailFromName: 'Example Support',

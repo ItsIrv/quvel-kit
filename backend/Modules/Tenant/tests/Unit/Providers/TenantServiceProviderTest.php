@@ -14,6 +14,7 @@ use Modules\Tenant\Services\ConfigurationPipeline;
 use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\TenantConfigSeederRegistry;
 use Modules\Tenant\Services\TenantExclusionRegistry;
+use Modules\Tenant\Services\TenantModuleConfigLoader;
 use Modules\Tenant\Services\TenantTableRegistry;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -60,6 +61,7 @@ class TenantServiceProviderTest extends TestCase
         $provider->register();
 
         $expectedSingletons = [
+            strtolower(TenantModuleConfigLoader::class),
             strtolower(FindService::class),
             strtolower(TenantExclusionRegistry::class),
             strtolower(TenantTableRegistry::class),
@@ -210,81 +212,5 @@ class TenantServiceProviderTest extends TestCase
 
         // Execute the hydrated callback
         $hydratedCallback($contextRepository);
-    }
-
-    /**
-     * Test that registerConfigSeeder registers a seeder for a specific tier.
-     */
-    public function testRegisterConfigSeeder(): void
-    {
-        // Create a mock of TenantConfigSeederRegistry
-        $registry = Mockery::mock(TenantConfigSeederRegistry::class);
-
-        // Define test data
-        $tier             = 'standard';
-        $seeder           = function () {
-            return ['feature' => 'enabled'];
-        };
-        $priority         = 30;
-        $visibilitySeeder = function () {
-            return ['feature_visible' => true];
-        };
-
-        // Set expectations for the registry mock
-        $registry->shouldReceive('registerSeeder')
-            ->once()
-            ->with($tier, Mockery::type('callable'), $priority, Mockery::type('callable'))
-            ->andReturnNull();
-
-        // Replace the registry in the container
-        $this->app->instance(TenantConfigSeederRegistry::class, $registry);
-
-        // Call the static method
-        TenantServiceProvider::registerConfigSeeder(
-            $tier,
-            $seeder,
-            $priority,
-            $visibilitySeeder,
-        );
-
-        // Mockery will verify that the expectations were met
-    }
-
-    /**
-     * Test that registerConfigSeederForTemplates registers seeders for multiple templates.
-     */
-    public function testRegisterConfigSeederForTemplates(): void
-    {
-        // Create a mock of TenantConfigSeederRegistry
-        $registry = Mockery::mock(TenantConfigSeederRegistry::class);
-
-        // Define test data
-        $templates        = ['basic', 'isolated'];
-        $seeder           = function () {
-            return ['key' => 'value'];
-        };
-        $priority         = 25;
-        $visibilitySeeder = function () {
-            return ['visible' => true];
-        };
-
-        // Set expectations for the registry mock
-        $registry->shouldReceive('registerSeederForTemplates')
-            ->once()
-            ->with($templates, Mockery::type('callable'), $priority, Mockery::type('callable'))
-            ->andReturnNull();
-
-        // Replace the registry in the container
-        $this->app->instance(TenantConfigSeederRegistry::class, $registry);
-
-        // Call the static method
-        TenantServiceProvider::registerConfigSeederForTemplates(
-            $templates,
-            $seeder,
-            $priority,
-            $visibilitySeeder,
-        );
-
-        // Mockery will verify that the expectations were met
     }
 }

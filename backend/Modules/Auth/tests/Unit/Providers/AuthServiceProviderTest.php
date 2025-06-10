@@ -11,7 +11,6 @@ use Modules\Auth\Services\NonceSessionService;
 use Modules\Auth\Services\ServerTokenService;
 use Modules\Auth\Services\SocialiteService;
 use Modules\Auth\Services\UserAuthenticationService;
-use Modules\Tenant\Enums\TenantConfigVisibility;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
@@ -74,109 +73,80 @@ class AuthServiceProviderTest extends TestCase
         $this->assertEqualsCanonicalizing($expectedRegisters, $registers);
     }
 
-    #[TestDox('registers auth config seeders with correct configuration for all tiers')]
-    public function testRegistersAuthConfigSeedersWithCorrectConfigurationForAllTiers(): void
+    #[TestDox('tenant config file exists and has correct structure')]
+    public function testTenantConfigFileExistsAndHasCorrectStructure(): void
     {
-        // Call the private method using reflection
-        $method = new \ReflectionMethod(AuthServiceProvider::class, 'registerAuthConfigSeeders');
-        $method->setAccessible(true);
+        $configPath = __DIR__ . '/../../../config/tenant.php';
+        $this->assertFileExists($configPath, 'Tenant config file should exist');
 
-        // Since we can't easily intercept static method calls, we'll test the callback logic directly
-        // by simulating what TenantServiceProvider::registerConfigSeederForAllTiers would do
-
-        // Extract the callback by temporarily overriding the method
-        $capturedCallback           = null;
-        $capturedPriority           = null;
-        $capturedVisibilityCallback = null;
-
-        // We'll test the callback logic directly since it's what matters
-        $method->invoke($this->provider);
-
-        // Since we can't intercept the static call, we'll validate the behavior
-        // by testing a known implementation detail - that the method exists and can be called
-        $this->assertTrue(method_exists(AuthServiceProvider::class, 'registerAuthConfigSeeders'));
+        $config = require $configPath;
+        $this->assertIsArray($config, 'Config should return an array');
+        
+        // Verify structure
+        $this->assertArrayHasKey('seeders', $config);
+        $this->assertArrayHasKey('pipes', $config);
+        
+        // Verify templates exist
+        $this->assertArrayHasKey('basic', $config['seeders']);
+        $this->assertArrayHasKey('isolated', $config['seeders']);
+        
+        // Verify pipe registration
+        $this->assertContains(\Modules\Auth\Pipes\AuthConfigPipe::class, $config['pipes']);
     }
 
-    #[TestDox('config seeder generates correct configuration for different tiers')]
-    #[DataProvider('tierConfigurationProvider')]
-    public function testConfigSeederGeneratesCorrectConfigurationForDifferentTiers(
-        string $tier,
+    #[TestDox('config seeder callable generates correct configuration for isolated template')]
+    #[DataProvider('isolatedConfigurationProvider')]
+    public function testConfigSeederCallableGeneratesCorrectConfigurationForIsolatedTemplate(
         array $inputConfig,
         array $expectedConfig,
     ): void {
-        // We'll test the callback logic directly by simulating what it should produce
-        // This tests the business logic without needing to intercept static calls
-
-        $authConfig = [
-            'session_cookie'      => 'quvel_session',
-            'socialite_providers' => ['google'],
-        ];
-
-        // Higher tiers get more providers
-        if (in_array($tier, ['premium', 'enterprise'])) {
-            $authConfig['socialite_providers'][] = 'microsoft';
-        }
-
-        // Enterprise gets longer sessions
-        if ($tier === 'enterprise') {
-            $authConfig['session_lifetime'] = 240;
-        }
-
-        // Generate unique session cookie for standard+ tiers
-        if (in_array($tier, ['standard', 'premium', 'enterprise']) && isset($inputConfig['cache_prefix'])) {
-            if (preg_match('/tenant_([a-z0-9]+)_?/i', $inputConfig['cache_prefix'], $matches)) {
-                $tenantId                     = $matches[1];
-                $authConfig['session_cookie'] = "quvel_{$tenantId}";
-            } else {
-                $authConfig['session_cookie'] = 'quvel_' . substr(md5($inputConfig['cache_prefix']), 0, 8);
-            }
-        }
-
-        $this->assertEquals($expectedConfig, $authConfig);
+        $configPath = __DIR__ . '/../../../config/tenant.php';
+        $config = require $configPath;
+        
+        $isolatedSeeder = $config['seeders']['isolated']['config'];
+        $this->assertIsCallable($isolatedSeeder);
+        
+        $result = $isolatedSeeder('isolated', $inputConfig);
+        $this->assertEquals($expectedConfig, $result);
     }
 
-    public static function tierConfigurationProvider(): array
+    public static function isolatedConfigurationProvider(): array
     {
         return [
-            'basic tier'                              => [
-                'basic',
-                [],
-                [
-                    'session_cookie'      => 'quvel_session',
-                    'socialite_providers' => ['google'],
-                ],
-            ],
-            'standard tier with cache prefix'         => [
-                'standard',
+            'isolated with cache prefix' => [
                 ['cache_prefix' => 'tenant_abc123_'],
                 [
                     'session_cookie'      => 'quvel_abc123',
-                    'socialite_providers' => ['google'],
-                ],
-            ],
-            'premium tier with cache prefix'          => [
-                'premium',
-                ['cache_prefix' => 'tenant_xyz789_'],
-                [
-                    'session_cookie'      => 'quvel_xyz789',
                     'socialite_providers' => ['google', 'microsoft'],
-                ],
-            ],
-            'enterprise tier with cache prefix'       => [
-                'enterprise',
-                ['cache_prefix' => 'tenant_ent456_'],
-                [
-                    'session_cookie'      => 'quvel_ent456',
-                    'socialite_providers' => ['google', 'microsoft'],
+                    'oauth_credentials'   => [
+                        'google'    => [
+                            'client_id'     => env('GOOGLE_CLIENT_ID', 'your-google-client-id'),
+                            'client_secret' => env('GOOGLE_CLIENT_SECRET', 'your-google-client-secret'),
+                        ],
+                        'microsoft' => [
+                            'client_id'     => env('MICROSOFT_CLIENT_ID', 'your-microsoft-client-id'),
+                            'client_secret' => env('MICROSOFT_CLIENT_SECRET', 'your-microsoft-client-secret'),
+                        ],
+                    ],
                     'session_lifetime'    => 240,
                 ],
             ],
-            'standard tier with invalid cache prefix' => [
-                'standard',
+            'isolated with invalid cache prefix' => [
                 ['cache_prefix' => 'invalid_format'],
                 [
                     'session_cookie'      => 'quvel_' . substr(md5('invalid_format'), 0, 8),
-                    'socialite_providers' => ['google'],
+                    'socialite_providers' => ['google', 'microsoft'],
+                    'oauth_credentials'   => [
+                        'google'    => [
+                            'client_id'     => env('GOOGLE_CLIENT_ID', 'your-google-client-id'),
+                            'client_secret' => env('GOOGLE_CLIENT_SECRET', 'your-google-client-secret'),
+                        ],
+                        'microsoft' => [
+                            'client_id'     => env('MICROSOFT_CLIENT_ID', 'your-microsoft-client-id'),
+                            'client_secret' => env('MICROSOFT_CLIENT_SECRET', 'your-microsoft-client-secret'),
+                        ],
+                    ],
+                    'session_lifetime'    => 240,
                 ],
             ],
         ];
@@ -185,16 +155,21 @@ class AuthServiceProviderTest extends TestCase
     #[TestDox('visibility configuration is consistent')]
     public function testVisibilityConfigurationIsConsistent(): void
     {
-        // Test that visibility settings would be consistent
-        $expectedVisibility = [
-            'session_cookie'      => TenantConfigVisibility::PROTECTED ,
-            'socialite_providers' => TenantConfigVisibility::PUBLIC ,
-            'session_lifetime'    => TenantConfigVisibility::PROTECTED ,
-        ];
-
-        // Verify the visibility constants are used correctly
-        $this->assertEquals('protected', TenantConfigVisibility::PROTECTED ->value);
-        $this->assertEquals('public', TenantConfigVisibility::PUBLIC ->value);
+        $configPath = __DIR__ . '/../../../config/tenant.php';
+        $config = require $configPath;
+        
+        // Test basic visibility
+        $basicVisibility = $config['seeders']['basic']['visibility'];
+        $this->assertEquals('protected', $basicVisibility['session_cookie']);
+        $this->assertEquals('public', $basicVisibility['socialite_providers']);
+        $this->assertEquals('protected', $basicVisibility['session_lifetime']);
+        
+        // Test isolated visibility
+        $isolatedVisibility = $config['seeders']['isolated']['visibility'];
+        $this->assertEquals('protected', $isolatedVisibility['session_cookie']);
+        $this->assertEquals('public', $isolatedVisibility['socialite_providers']);
+        $this->assertEquals('private', $isolatedVisibility['oauth_credentials']);
+        $this->assertEquals('protected', $isolatedVisibility['session_lifetime']);
     }
 
     #[TestDox('regex pattern correctly extracts tenant ID from cache prefix')]

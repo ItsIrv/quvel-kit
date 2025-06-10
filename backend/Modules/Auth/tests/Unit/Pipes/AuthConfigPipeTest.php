@@ -68,19 +68,15 @@ class AuthConfigPipeTest extends TestCase
     public function testSetsSocialiteConfiguration(): void
     {
         $tenantConfig = [
-            'socialite_providers' => ['google', 'facebook'],
             'socialite_nonce_ttl' => 3600,
             'socialite_token_ttl' => 7200,
             'hmac_secret_key' => 'test-secret-key',
         ];
 
-        $this->config->expects($this->exactly(4))
+        $this->config->expects($this->exactly(3))
             ->method('set')
             ->willReturnCallback(function ($key, $value) use ($tenantConfig) {
                 switch ($key) {
-                    case 'auth.socialite.providers':
-                        $this->assertEquals($tenantConfig['socialite_providers'], $value);
-                        break;
                     case 'auth.socialite.nonce_ttl':
                         $this->assertEquals($tenantConfig['socialite_nonce_ttl'], $value);
                         break;
@@ -106,6 +102,24 @@ class AuthConfigPipeTest extends TestCase
             'config' => $this->config,
             'tenantConfig' => $tenantConfig,
         ], $result);
+    }
+
+    #[TestDox('sets socialite providers configuration')]
+    public function testSetsSocialiteProvidersConfiguration(): void
+    {
+        $tenantConfig = [
+            'socialite_providers' => ['google', 'facebook'],
+        ];
+
+        $this->config->expects($this->exactly(1))
+            ->method('set')
+            ->with('auth.socialite.providers', ['google', 'facebook']);
+
+        $next = function ($payload) {
+            return $payload;
+        };
+
+        $this->pipe->handle($this->tenantModel, $this->config, $tenantConfig, $next);
     }
 
     #[TestDox('sets OAuth credentials with explicit redirect URLs')]

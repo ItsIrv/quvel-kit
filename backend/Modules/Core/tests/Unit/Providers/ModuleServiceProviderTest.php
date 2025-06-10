@@ -86,8 +86,8 @@ class ModuleServiceProviderTest extends TestCase
     {
         $provider = $this->createMockedProvider();
 
-        $provider->shouldReceive('mergeConfigFrom')->once();
-        $provider->shouldReceive('publishes')->once();
+        $provider->shouldReceive('mergeConfigFrom')->twice();
+        $provider->shouldReceive('publishes')->twice();
 
         $provider->registerConfig();
     }

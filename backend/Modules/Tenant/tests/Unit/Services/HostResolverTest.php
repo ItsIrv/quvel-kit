@@ -181,7 +181,7 @@ final class HostResolverTest extends TestCase
             ->andReturn($host);
 
         $this->request->shouldReceive('header')
-            ->once()
+            ->twice()
             ->with(TenantHeader::TENANT_DOMAIN->value)
             ->andReturn('');
 
