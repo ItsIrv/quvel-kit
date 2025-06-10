@@ -45,8 +45,8 @@ class TenantContextTest extends TestCase
      */
     public function testGetConfig(): void
     {
-        $config = DynamicTenantConfigFactory::createStandardTier(
-            domain: 'api.example.com',
+        $config = DynamicTenantConfigFactory::createStandard(
+            apiDomain: 'api.example.com',
             appName: 'Example App'
         );
         
@@ -66,8 +66,8 @@ class TenantContextTest extends TestCase
      */
     public function testGetConfigValue(): void
     {
-        $config = DynamicTenantConfigFactory::createStandardTier(
-            domain: 'api.example.com',
+        $config = DynamicTenantConfigFactory::createStandard(
+            apiDomain: 'api.example.com',
             appName: 'Example App'
         );
         
@@ -84,8 +84,8 @@ class TenantContextTest extends TestCase
         );
 
         $this->assertEquals(
-            'standard',
-            $context->getConfigValue('tier'),
+            'Example App',
+            $context->getConfigValue('app_name'),
         );
     }
 
@@ -94,8 +94,8 @@ class TenantContextTest extends TestCase
      */
     public function testGetConfigValueReturnsDefaultWhenMissing(): void
     {
-        $config = DynamicTenantConfigFactory::createStandardTier(
-            domain: 'api.example.com',
+        $config = DynamicTenantConfigFactory::createStandard(
+            apiDomain: 'api.example.com',
             appName: 'Example App'
         );
         

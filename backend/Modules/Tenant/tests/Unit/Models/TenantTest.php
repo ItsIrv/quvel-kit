@@ -98,8 +98,8 @@ class TenantTest extends TestCase
     public function testGetEffectiveConfigInheritsParentConfig(): void
     {
         // Create a parent tenant with a config
-        $parentConfig = DynamicTenantConfigFactory::createStandardTier(
-            domain: 'api.example.com',
+        $parentConfig = DynamicTenantConfigFactory::createStandard(
+            apiDomain: 'api.example.com',
             appName: 'Example App'
         );
         
@@ -125,8 +125,8 @@ class TenantTest extends TestCase
         );
 
         $this->assertEquals(
-            'standard',
-            $childTenant->getEffectiveConfig()->get('tier'),
+            'api.example.com',
+            $childTenant->getEffectiveConfig()->get('domain'),
         );
     }
 
@@ -135,8 +135,8 @@ class TenantTest extends TestCase
      */
     public function testGetEffectiveConfigReturnsOwnConfig(): void
     {
-        $config = DynamicTenantConfigFactory::createStandardTier(
-            domain: 'api.example.com',
+        $config = DynamicTenantConfigFactory::createStandard(
+            apiDomain: 'api.example.com',
             appName: 'Example App'
         );
         
@@ -150,8 +150,8 @@ class TenantTest extends TestCase
         );
 
         $this->assertEquals(
-            'standard',
-            $tenant->getEffectiveConfig()->get('tier'),
+            'api.example.com',
+            $tenant->getEffectiveConfig()->get('domain'),
         );
     }
 
@@ -264,8 +264,8 @@ class TenantTest extends TestCase
      */
     public function testConfigCastsToTenantConfig(): void
     {
-        $config = DynamicTenantConfigFactory::createStandardTier(
-            domain: 'api.example.com',
+        $config = DynamicTenantConfigFactory::createStandard(
+            apiDomain: 'api.example.com',
             appName: 'Example App'
         );
         
@@ -275,6 +275,5 @@ class TenantTest extends TestCase
 
         $this->assertInstanceOf(DynamicTenantConfig::class, $tenant->config);
         $this->assertEquals('api.example.com', $tenant->config->get('domain'));
-        $this->assertEquals('standard', $tenant->config->get('tier'));
     }
 }

@@ -3,7 +3,6 @@
 namespace Modules\Tenant\Tests\Unit\Services;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
 use Modules\Tenant\Models\Tenant;
@@ -51,7 +50,7 @@ final class ConfigurationPipelineTest extends TestCase
     #[TestDox('Should register pipe by class name')]
     public function testRegisterPipeByClassName(): void
     {
-        $pipe = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe      = $this->createMock(ConfigurationPipeInterface::class);
         $pipeClass = get_class($pipe);
 
         $this->app->instance($pipeClass, $pipe);
@@ -66,10 +65,10 @@ final class ConfigurationPipelineTest extends TestCase
     #[TestDox('Should register multiple pipes')]
     public function testRegisterManyPipes(): void
     {
-        $pipe1 = $this->createMock(ConfigurationPipeInterface::class);
-        $pipe2 = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe1      = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe2      = $this->createMock(ConfigurationPipeInterface::class);
         $pipe3Class = 'TestPipeClass';
-        $pipe3 = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe3      = $this->createMock(ConfigurationPipeInterface::class);
 
         $this->app->instance($pipe3Class, $pipe3);
 
@@ -99,7 +98,7 @@ final class ConfigurationPipelineTest extends TestCase
     #[TestDox('Should apply pipeline with DynamicTenantConfig')]
     public function testApplyWithDynamicTenantConfig(): void
     {
-        $tenant = $this->createMock(Tenant::class);
+        $tenant       = $this->createMock(Tenant::class);
         $tenantConfig = new DynamicTenantConfig();
         $tenantConfig->set('test_key', 'test_value');
         $tenant->method('getEffectiveConfig')->willReturn($tenantConfig);
@@ -114,7 +113,7 @@ final class ConfigurationPipelineTest extends TestCase
                 $this->equalTo($tenant),
                 $this->equalTo($config),
                 $this->equalTo(['test_key' => 'test_value']),
-                $this->isInstanceOf(\Closure::class)
+                $this->isInstanceOf(\Closure::class),
             );
 
         $this->pipeline->register($pipe);
@@ -126,15 +125,16 @@ final class ConfigurationPipelineTest extends TestCase
     public function testApplyWithArrayConfig(): void
     {
         $tenant = $this->createMock(Tenant::class);
-        
+
         // Create a mock that has toArray method and extends DynamicTenantConfig
-        $tenantConfig = new class extends DynamicTenantConfig {
+        $tenantConfig = new class extends DynamicTenantConfig
+        {
             public function toArray(): array
             {
                 return ['config' => ['array_key' => 'array_value']];
             }
         };
-        
+
         $tenant->method('getEffectiveConfig')->willReturn($tenantConfig);
 
         $config = $this->createMock(ConfigRepository::class);
@@ -147,7 +147,7 @@ final class ConfigurationPipelineTest extends TestCase
                 $this->equalTo($tenant),
                 $this->equalTo($config),
                 $this->equalTo(['array_key' => 'array_value']),
-                $this->isInstanceOf(\Closure::class)
+                $this->isInstanceOf(\Closure::class),
             );
 
         $this->pipeline->register($pipe);
@@ -158,7 +158,7 @@ final class ConfigurationPipelineTest extends TestCase
     #[TestDox('Should sort pipes by priority in descending order')]
     public function testApplySortsPipesByPriority(): void
     {
-        $tenant = $this->createMock(Tenant::class);
+        $tenant       = $this->createMock(Tenant::class);
         $tenantConfig = new DynamicTenantConfig();
         $tenant->method('getEffectiveConfig')->willReturn($tenantConfig);
 
@@ -202,16 +202,44 @@ final class ConfigurationPipelineTest extends TestCase
     public function testGetDocumentation(): void
     {
         // Create actual classes to avoid mock collision issues
-        $pipe1 = new class implements ConfigurationPipeInterface {
-            public function priority(): int { return 10; }
-            public function handles(): array { return ['config.key1', 'config.key2']; }
-            public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed { return $next(); }
+        $pipe1 = new class implements ConfigurationPipeInterface
+        {
+            public function priority(): int
+            {
+                return 10;
+            }
+            public function handles(): array
+            {
+                return ['config.key1', 'config.key2'];
+            }
+            public function resolve(Tenant $tenant, array $tenantConfig): array
+            {
+                return ['values' => [], 'visibility' => []];
+            }
+            public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
+            {
+                return $next();
+            }
         };
 
-        $pipe2 = new class implements ConfigurationPipeInterface {
-            public function priority(): int { return 10; }
-            public function handles(): array { return ['config.key3']; }
-            public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed { return $next(); }
+        $pipe2 = new class implements ConfigurationPipeInterface
+        {
+            public function priority(): int
+            {
+                return 10;
+            }
+            public function handles(): array
+            {
+                return ['config.key3'];
+            }
+            public function resolve(Tenant $tenant, array $tenantConfig): array
+            {
+                return ['values' => [], 'visibility' => []];
+            }
+            public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
+            {
+                return $next();
+            }
         };
 
         $this->pipeline->register($pipe1);
@@ -237,7 +265,7 @@ final class ConfigurationPipelineTest extends TestCase
     #[TestDox('Should handle pipe that throws exception')]
     public function testApplyWithPipeThatThrowsException(): void
     {
-        $tenant = $this->createMock(Tenant::class);
+        $tenant       = $this->createMock(Tenant::class);
         $tenantConfig = new DynamicTenantConfig();
         $tenant->method('getEffectiveConfig')->willReturn($tenantConfig);
 
@@ -258,7 +286,7 @@ final class ConfigurationPipelineTest extends TestCase
     #[TestDox('Should handle multiple pipes with same priority')]
     public function testApplyWithSamePriorityPipes(): void
     {
-        $tenant = $this->createMock(Tenant::class);
+        $tenant       = $this->createMock(Tenant::class);
         $tenantConfig = new DynamicTenantConfig();
         $tenant->method('getEffectiveConfig')->willReturn($tenantConfig);
 
@@ -294,7 +322,7 @@ final class ConfigurationPipelineTest extends TestCase
     #[TestDox('Should handle pipe that modifies config')]
     public function testApplyWithConfigModifyingPipe(): void
     {
-        $tenant = $this->createMock(Tenant::class);
+        $tenant       = $this->createMock(Tenant::class);
         $tenantConfig = new DynamicTenantConfig();
         $tenantConfig->set('original_key', 'original_value');
         $tenant->method('getEffectiveConfig')->willReturn($tenantConfig);

@@ -114,6 +114,7 @@ class Tenant extends Model
         $mergedConfig = new DynamicTenantConfig(
             [], // Empty data array to start
             [], // Empty visibility array to start
+            $parentDynamic->getTier() // Start with parent tier
         );
 
         // Copy all parent values first
@@ -121,9 +122,24 @@ class Tenant extends Model
             $mergedConfig->set($key, $value);
         }
 
+        // Copy parent visibility
+        foreach ($parentDynamic->toArray()['visibility'] as $key => $visibility) {
+            $mergedConfig->setVisibility($key, \Modules\Tenant\Enums\TenantConfigVisibility::from($visibility));
+        }
+
         // Then override with child values
         foreach ($childDynamic->toArray()['config'] as $key => $value) {
             $mergedConfig->set($key, $value);
+        }
+
+        // Override with child visibility
+        foreach ($childDynamic->toArray()['visibility'] as $key => $visibility) {
+            $mergedConfig->setVisibility($key, \Modules\Tenant\Enums\TenantConfigVisibility::from($visibility));
+        }
+
+        // Child tier takes precedence if set
+        if ($childDynamic->getTier() !== null) {
+            $mergedConfig->setTier($childDynamic->getTier());
         }
 
         return $mergedConfig;

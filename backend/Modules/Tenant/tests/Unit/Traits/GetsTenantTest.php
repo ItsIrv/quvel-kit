@@ -57,6 +57,10 @@ final class GetsTenantTest extends TestCase
         // Arrange
         $tenant = Mockery::mock(Tenant::class);
 
+        $this->tenantContext->shouldReceive('isBypassed')
+            ->once()
+            ->andReturn(false);
+            
         $this->tenantContext->shouldReceive('get')
             ->once()
             ->andReturn($tenant);
@@ -79,6 +83,10 @@ final class GetsTenantTest extends TestCase
         $tenant->shouldReceive('getAttribute')->with('id')->andReturn(1);
 
         // Mock the context to return our tenant
+        $this->tenantContext->shouldReceive('isBypassed')
+            ->once()
+            ->andReturn(false);
+            
         $this->tenantContext->shouldReceive('get')
             ->once()
             ->andReturn($tenant);
@@ -101,6 +109,10 @@ final class GetsTenantTest extends TestCase
         $tenant->shouldReceive('getAttribute')->with('public_id')->andReturn('test-tenant-id');
 
         // Mock the context to return our tenant
+        $this->tenantContext->shouldReceive('isBypassed')
+            ->once()
+            ->andReturn(false);
+            
         $this->tenantContext->shouldReceive('get')
             ->once()
             ->andReturn($tenant);

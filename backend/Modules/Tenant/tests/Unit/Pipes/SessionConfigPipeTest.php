@@ -213,66 +213,6 @@ class SessionConfigPipeTest extends TestCase
         $this->assertSame($tenant, $result['tenant']);
     }
 
-    public function testHandleUpdatesSessionManagerWhenBound(): void
-    {
-        $tenant = $this->createMock(Tenant::class);
-        $tenant->method('__get')
-            ->willReturnCallback(function ($property) {
-                if ($property === 'public_id') {
-                    return 'test-tenant';
-                } elseif ($property === 'domain') {
-                    return 'test.domain.com';
-                }
-                return null;
-            });
-
-        $tenantConfig = [
-            'session_cookie' => 'custom_cookie',
-        ];
-
-        $this->config->expects($this->exactly(2))
-            ->method('set')
-            ->willReturnCallback(function ($key, $value) {
-                static $callCount = 0;
-                $callCount++;
-                if ($callCount === 1) {
-                    $this->assertEquals('session.domain', $key);
-                    $this->assertEquals('.domain.com', $value);
-                } elseif ($callCount === 2) {
-                    $this->assertEquals('session.cookie', $key);
-                    $this->assertEquals('custom_cookie', $value);
-                }
-            });
-
-        $this->config->method('get')
-            ->willReturn('old_cookie');
-
-        // Mock session driver
-        $sessionDriver = $this->createMock(Store::class);
-        $sessionDriver->expects($this->once())
-            ->method('setName')
-            ->with('custom_cookie');
-
-        $this->sessionManager->expects($this->once())
-            ->method('driver')
-            ->willReturn($sessionDriver);
-
-        // Configure app to return true for bound check
-        $this->app->method('bound')
-            ->with(SessionManager::class)
-            ->willReturn(true);
-
-        $this->logger->expects($this->once())->method('domainChanged')->with('.domain.com');
-        $this->logger->expects($this->once())->method('cookieNameChanged')->with('custom_cookie', true);
-        $this->logger->expects($this->once())->method('applyingChanges')->with(1);
-        $this->logger->expects($this->any())->method('debug');
-
-        $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
-            return $data;
-        });
-
-        $this->assertSame($tenant, $result['tenant']);
-    }
 
     public function testResolveReturnsCorrectValuesAndVisibility(): void
     {

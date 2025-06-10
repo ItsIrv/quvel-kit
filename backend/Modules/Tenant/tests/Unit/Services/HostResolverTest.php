@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Request as LaravelRequest;
 use Mockery;
 use Mockery\MockInterface;
-use Modules\Core\Services\FrontendService;
 use Modules\Tenant\Enums\TenantHeader;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Services\FindService;
@@ -50,11 +49,6 @@ final class HostResolverTest extends TestCase
     private Request $request;
 
     /**
-     * @var FrontendService|MockInterface
-     */
-    private FrontendService $frontendService;
-
-    /**
      * @var Application|MockInterface
      */
     private Application $application;
@@ -77,17 +71,15 @@ final class HostResolverTest extends TestCase
         $this->requestPrivacyService = Mockery::mock(RequestPrivacy::class);
         $this->cache                 = Mockery::mock(Repository::class);
         // Use Mockery::mock with LaravelRequest to avoid headers initialization issue
-        $this->request         = Mockery::mock(LaravelRequest::class);
-        $this->frontendService = Mockery::mock(FrontendService::class);
-        $this->application     = Mockery::mock(Application::class);
-        $this->config          = Mockery::mock(ConfigRepository::class);
+        $this->request     = Mockery::mock(LaravelRequest::class);
+        $this->application = Mockery::mock(Application::class);
+        $this->config      = Mockery::mock(ConfigRepository::class);
 
         $this->hostResolver = new HostResolver(
             $this->tenantFindService,
             $this->requestPrivacyService,
             $this->cache,
             $this->request,
-            $this->frontendService,
             $this->application,
             $this->config,
         );
@@ -185,7 +177,7 @@ final class HostResolverTest extends TestCase
             ->andReturn(true);
 
         $this->request->shouldReceive('getHost')
-            ->once()
+            ->twice()
             ->andReturn($host);
 
         $this->request->shouldReceive('header')
@@ -198,14 +190,10 @@ final class HostResolverTest extends TestCase
             ->with($host)
             ->andReturnNull();
 
-        $this->frontendService->shouldReceive('redirect')
-            ->once()
-            ->with('')
-            ->andReturn(new RedirectResponse('test'));
-
         // Act & Assert
         $this->expectException(HttpResponseException::class);
         $this->expectExceptionObject(new HttpResponseException(new RedirectResponse('test')));
+        $this->expectExceptionMessage("Tenant not found for hostname $host");
         $this->hostResolver->resolveTenant();
     }
 
