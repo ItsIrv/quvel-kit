@@ -133,15 +133,14 @@ config('yourmodule.options');
 
 ## Multi-Tenancy Integration
 
-QuVel Kit modules can integrate with the multi-tenancy system using a config-driven approach. Create a `config/tenant.php` file in your module to declare tenant integration:
+QuVel Kit modules can integrate with the multi-tenancy system using a simple config-driven approach. For full details, see the [Multi-Tenancy System](./tenant-module.md) documentation.
 
-### Creating config/tenant.php
+### Quick Integration
 
-Create this file in your module's config directory:
+1. **Create a tenant config file** in your module at `config/tenant.php`:
 
 ```php
 <?php
-// Modules/YourModule/config/tenant.php
 
 return [
     'seeders' => [
@@ -149,33 +148,13 @@ return [
             'config' => [
                 'your_module_enabled' => true,
                 'your_module_api_url' => 'https://api.example.com',
-                'your_module_setting' => 'default_value',
             ],
             'visibility' => [
                 'your_module_enabled' => 'public',
                 'your_module_api_url' => 'protected',
-                'your_module_setting' => 'public',
             ],
             'priority' => 50,
         ],
-        'isolated' => [
-            'config' => function (string $template, array $config): array {
-                // Generate tenant-specific configuration for isolated tenants
-                return [
-                    'your_module_enabled' => true,
-                    'your_module_api_url' => 'https://premium-api.example.com',
-                    'your_module_premium_feature' => true,
-                ];
-            },
-            'visibility' => [
-                'your_module_premium_feature' => 'public',
-            ],
-            'priority' => 50,
-        ],
-    ],
-    
-    'pipes' => [
-        \Modules\YourModule\Pipes\YourModuleConfigPipe::class,
     ],
     
     'tables' => [
@@ -187,9 +166,19 @@ return [
 ];
 ```
 
-### Using TenantContext
+2. **Make your models tenant-aware** using the `TenantScopedModel` trait:
 
-Access the current tenant in your controllers and services:
+```php
+use Modules\Tenant\Traits\TenantScopedModel;
+
+class YourModel extends Model
+{
+    use TenantScopedModel;
+    // Automatically handles tenant scoping
+}
+```
+
+3. **Access tenant context** in your services:
 
 ```php
 use Modules\Tenant\Contexts\TenantContext;
@@ -202,123 +191,13 @@ class YourController
     
     public function index()
     {
-        $currentTenant = $this->tenantContext->get();
-        
-        // Use tenant information
-        $tenantName = $currentTenant->name;
-        $tenantConfig = $currentTenant->config;
+        $tenant = $this->tenantContext->get();
+        $config = $tenant->config;
     }
 }
 ```
 
-### Creating Configuration Pipes
-
-Create pipes to process tenant configuration and apply it to Laravel's config:
-
-```php
-namespace Modules\YourModule\Pipes;
-
-use Modules\Tenant\Contracts\ConfigurationPipeInterface;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Modules\Tenant\Models\Tenant;
-
-class YourModuleConfigPipe implements ConfigurationPipeInterface
-{
-    public function handle(
-        Tenant $tenant, 
-        ConfigRepository $config, 
-        array $tenantConfig, 
-        callable $next
-    ): mixed {
-        // Apply your module's configuration to Laravel config
-        if (isset($tenantConfig['your_module_enabled'])) {
-            $config->set('your_module.enabled', $tenantConfig['your_module_enabled']);
-        }
-        
-        if (isset($tenantConfig['your_module_api_key'])) {
-            $config->set('your_module.api_key', $tenantConfig['your_module_api_key']);
-        }
-        
-        return $next([
-            'tenant' => $tenant,
-            'config' => $config,
-            'tenantConfig' => $tenantConfig,
-        ]);
-    }
-
-    public function handles(): array
-    {
-        return [
-            'your_module_enabled',
-            'your_module_api_key',
-            'your_module_settings',
-        ];
-    }
-
-    public function priority(): int
-    {
-        return 50; // Higher priority runs first
-    }
-    
-    public function resolve(Tenant $tenant, array $tenantConfig): array
-    {
-        $values = [];
-        $visibility = [];
-        
-        // Expose configuration to frontend based on visibility settings
-        if (isset($tenantConfig['your_module_enabled'])) {
-            $values['yourModuleEnabled'] = $tenantConfig['your_module_enabled'];
-            $visibility['yourModuleEnabled'] = 'public';
-        }
-        
-        return ['values' => $values, 'visibility' => $visibility];
-    }
-}
-```
-
-### Creating Tenant-Aware Models
-
-Make your models tenant-aware by using the `TenantScopedModel` trait:
-
-```php
-namespace Modules\YourModule\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Modules\Tenant\Traits\TenantScopedModel;
-
-class YourModel extends Model
-{
-    use TenantScopedModel;
-    
-    protected $fillable = [
-        'name',
-        'description',
-        // tenant_id is automatically handled
-    ];
-}
-```
-
-This automatically:
-- Filters queries by current tenant
-- Sets tenant_id when creating records
-- Prevents cross-tenant operations
-- Configures tenant-aware broadcast channels
-
-### Configuration System Benefits
-
-The config-driven approach provides several advantages:
-
-- **Zero Runtime Overhead**: Configurations loaded once at boot time for optimal performance
-- **Module Independence**: No need to import tenant enums or classes
-- **Automatic Registration**: Tables, pipes, and seeders declared in config files
-- **Template Support**: Different configurations for basic and isolated tenant templates
-
-### How It Works
-
-1. **Boot Time Loading**: The TenantModuleConfigLoader scans all modules for `config/tenant.php` files
-2. **Lazy Evaluation**: Configuration seeders with functions are only evaluated when needed
-3. **Automatic Registration**: Tables, pipes, and exclusions are registered from config declarations
-4. **Template-Based Seeding**: Different configurations based on tenant template (basic vs isolated)
+For advanced topics including configuration pipes, template systems, inheritance, and complete examples, see the [Multi-Tenancy System documentation](./tenant-module.md).
 
 ## Authentication Integration
 
@@ -370,124 +249,26 @@ php artisan test --group=tenant-module --testsuite=Feature
 
 ### 1. Service Registration
 
-- Register services as **scoped** when they need tenant context
-- Use **singleton** only for stateless services
-- Always check if the Tenant module exists before registering pipes/providers
+- Register services as **scoped** when they need request context
+- Use **singleton** for stateless services that can be shared across requests
+- Follow dependency injection principles for testability
 
 ### 2. Configuration Management
 
-- Use configuration pipes for runtime Laravel config overrides
-- Use configuration providers to expose settings to frontend
-- Follow visibility guidelines (PUBLIC, PROTECTED, PRIVATE)
+- Keep module-specific configuration in your module's `config` directory
+- Use environment variables for sensitive or deployment-specific settings
+- Document all configuration options in your module
 
 ### 3. Testing
 
-- Use `Modules\Tenant\Tests\TestCase` for tenant-aware tests
-- Group your tests with PHPUnit's `#[Group]` attribute
-- Test with multiple tenant configurations
+- Group your tests with PHPUnit's `#[Group]` attribute for easy execution
+- Create comprehensive unit and feature tests for your module
+- Use factories for consistent test data generation
 
 ### 4. Frontend Integration
 
-Your module's configuration will be available in the frontend:
+Your module can register frontend services and components following the same patterns as backend modules. Configuration is automatically available to the frontend through the tenant system.
 
-```javascript
-// In Vue components (PUBLIC visibility only)
-const features = window.__TENANT_CONFIG__.your_module_features;
-
-// In SSR context (PUBLIC and PROTECTED)
-const apiUrl = req.tenantConfig.your_module_api_url;
-```
-
-## Example: Complete Module Integration
-
-Here's a complete example of a module with tenant integration using the config-driven approach:
-
-```php
-// Modules/Billing/config/tenant.php
-<?php
-
-return [
-    'seeders' => [
-        'basic' => [
-            'config' => [
-                'billing_enabled' => true,
-                'payment_processors' => ['stripe'],
-                'invoice_template' => 'basic',
-            ],
-            'visibility' => [
-                'billing_enabled' => 'public',
-                'payment_processors' => 'public',
-                'invoice_template' => 'protected',
-            ],
-            'priority' => 50,
-        ],
-        'isolated' => [
-            'config' => function (string $template, array $config): array {
-                return [
-                    'billing_enabled' => true,
-                    'payment_processors' => ['stripe', 'paypal', 'bank_transfer'],
-                    'invoice_template' => 'premium',
-                    'billing_api_key' => env('BILLING_API_KEY'),
-                    'webhook_endpoints' => [
-                        'stripe' => "https://{$config['domain']}/webhooks/stripe",
-                        'paypal' => "https://{$config['domain']}/webhooks/paypal",
-                    ],
-                ];
-            },
-            'visibility' => [
-                'payment_processors' => 'public',
-                'billing_api_key' => 'private',
-                'webhook_endpoints' => 'protected',
-            ],
-            'priority' => 50,
-        ],
-    ],
-    
-    'pipes' => [
-        \Modules\Billing\Pipes\BillingConfigPipe::class,
-    ],
-    
-    'tables' => [
-        'invoices' => [
-            'after' => 'id',
-            'cascade_delete' => true,
-        ],
-        'payments' => [
-            'after' => 'id',
-            'cascade_delete' => true,
-        ],
-    ],
-];
-```
-
-```php
-// Modules/Billing/Providers/BillingServiceProvider.php
-namespace Modules\Billing\Providers;
-
-use Modules\Core\Providers\ModuleServiceProvider;
-
-class BillingServiceProvider extends ModuleServiceProvider
-{
-    protected string $name = 'Billing';
-    protected string $nameLower = 'billing';
-    
-    public function register(): void
-    {
-        $this->app->register(RouteServiceProvider::class);
-        
-        // Register scoped services
-        $this->app->scoped(BillingService::class);
-        $this->app->scoped(InvoiceService::class);
-    }
-    
-    public function boot(): void
-    {
-        parent::boot();
-        
-        // No manual registration needed - config file handles everything!
-    }
-}
-```
 
 ## Additional Resources
 
