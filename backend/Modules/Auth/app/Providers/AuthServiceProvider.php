@@ -62,9 +62,9 @@ class AuthServiceProvider extends ModuleServiceProvider
      */
     private function registerAuthConfigSeeders(): void
     {
-        // Add auth config to all tiers
-        TenantServiceProvider::registerConfigSeederForAllTiers(
-            function (string $tier, array $config) {
+        // Add basic auth config to all templates
+        TenantServiceProvider::registerConfigSeederForAllTemplates(
+            function (string $template, array $config) {
                 $authConfig = [
                     'session_cookie'      => 'quvel_session',
                     'socialite_providers' => ['google'],
@@ -76,22 +76,8 @@ class AuthServiceProvider extends ModuleServiceProvider
                         ],
                 ];
 
-                // Higher tiers get more providers
-                if (in_array($tier, ['premium', 'enterprise'])) {
-                    $authConfig['socialite_providers'][]          = 'microsoft';
-                    $authConfig['oauth_credentials']['microsoft'] = [
-                        'client_id'     => env('MICROSOFT_CLIENT_ID', 'your-microsoft-client-id'),
-                        'client_secret' => env('MICROSOFT_CLIENT_SECRET', 'your-microsoft-client-secret'),
-                    ];
-                }
-
-                // Enterprise gets longer sessions
-                if ($tier === 'enterprise') {
-                    $authConfig['session_lifetime'] = 240; // 4 hours
-                }
-
-                // Generate unique session cookie for standard+ tiers
-                if (in_array($tier, ['standard', 'premium', 'enterprise']) && isset($config['cache_prefix'])) {
+                // Generate unique session cookie for standard/isolated templates
+                if (in_array($template, ['standard', 'isolated']) && isset($config['cache_prefix'])) {
                     // Extract just the unique ID part from cache_prefix (e.g., "tenant_68337c1aad007_" -> "68337c1aad007")
                     if (preg_match('/tenant_([a-z0-9]+)_?/i', $config['cache_prefix'], $matches)) {
                         $tenantId = $matches[1];
@@ -106,12 +92,39 @@ class AuthServiceProvider extends ModuleServiceProvider
                 return $authConfig;
             },
             20, // Run early (priority 20)
-            function (string $tier, array $visibility) {
+            function (string $template, array $visibility) {
                 // Set visibility for auth config
                 return [
                     'session_cookie'      => TenantConfigVisibility::PROTECTED ,
                     'socialite_providers' => TenantConfigVisibility::PUBLIC ,
                     'session_lifetime'    => TenantConfigVisibility::PROTECTED ,
+                ];
+            }
+        );
+
+        // Add enhanced auth config for isolated template (enterprise-like features)
+        TenantServiceProvider::registerConfigSeeder(
+            'isolated',
+            function (string $template, array $config) {
+                return [
+                    'socialite_providers' => ['google', 'microsoft'],
+                    'oauth_credentials'   => [
+                        'google' => [
+                            'client_id'     => env('GOOGLE_CLIENT_ID', 'your-google-client-id'),
+                            'client_secret' => env('GOOGLE_CLIENT_SECRET', 'your-google-client-secret'),
+                        ],
+                        'microsoft' => [
+                            'client_id'     => env('MICROSOFT_CLIENT_ID', 'your-microsoft-client-id'),
+                            'client_secret' => env('MICROSOFT_CLIENT_SECRET', 'your-microsoft-client-secret'),
+                        ],
+                    ],
+                    'session_lifetime' => 240, // 4 hours for isolated tenants
+                ];
+            },
+            21, // Run after base auth config
+            function (string $template, array $visibility) {
+                return [
+                    'oauth_credentials' => TenantConfigVisibility::PRIVATE,
                 ];
             }
         );

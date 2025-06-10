@@ -129,54 +129,55 @@ class TenantServiceProvider extends ModuleServiceProvider
      * Register a config seeder for tenant seed data.
      * This method allows modules to provide their own seed configuration.
      *
-     * @param string $tier The tier to register for
+     * @param string $template The template to register for
      * @param callable $seeder A callable that returns config array
      * @param int $priority Lower numbers run first (default: 50)
      * @param callable|null $visibilitySeeder Optional callable that returns visibility array
      * @return void
      */
     public static function registerConfigSeeder(
-        string $tier,
+        string $template,
         callable $seeder,
         int $priority = 50,
         ?callable $visibilitySeeder = null,
     ): void {
-        app(TenantConfigSeederRegistry::class)->registerSeeder($tier, $seeder, $priority, $visibilitySeeder);
+        app(TenantConfigSeederRegistry::class)->registerSeeder($template, $seeder, $priority, $visibilitySeeder);
     }
 
     /**
-     * Register a config seeder for all tiers.
+     * Register a config seeder for all templates.
      *
      * @param callable $seeder A callable that returns config array
      * @param int $priority Lower numbers run first (default: 50)
      * @param callable|null $visibilitySeeder Optional callable that returns visibility array
      * @return void
      */
-    public static function registerConfigSeederForAllTiers(
+    public static function registerConfigSeederForAllTemplates(
         callable $seeder,
         int $priority = 50,
         ?callable $visibilitySeeder = null,
     ): void {
-        app(TenantConfigSeederRegistry::class)->registerSeederForAllTiers($seeder, $priority, $visibilitySeeder);
+        app(TenantConfigSeederRegistry::class)->registerSeederForAllTemplates($seeder, $priority, $visibilitySeeder);
     }
 
     /**
-     * Register a config seeder for multiple tiers.
+     * Register a config seeder for multiple templates.
      *
-     * @param array $tiers Array of tier names
+     * @param array $templates Array of template names
      * @param callable $seeder A callable that returns config array
      * @param int $priority Lower numbers run first (default: 50)
      * @param callable|null $visibilitySeeder Optional callable that returns visibility array
      * @return void
      */
-    public static function registerConfigSeederForTiers(
-        array $tiers,
+    public static function registerConfigSeederForTemplates(
+        array $templates,
         callable $seeder,
         int $priority = 50,
         ?callable $visibilitySeeder = null,
     ): void {
-        app(TenantConfigSeederRegistry::class)->registerSeederForTiers($tiers, $seeder, $priority, $visibilitySeeder);
+        app(TenantConfigSeederRegistry::class)->registerSeederForTemplates($templates, $seeder, $priority, $visibilitySeeder);
     }
+
 
     /**
      * Register paths to exclude from tenant resolution.

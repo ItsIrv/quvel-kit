@@ -28,8 +28,8 @@ class SocialiteServiceTest extends TestCase
     {
         parent::setUp();
 
-        $tenantConfig = DynamicTenantConfigFactory::createStandardTier(
-            domain: 'api.quvel.app'
+        $tenantConfig = DynamicTenantConfigFactory::createStandard(
+            apiDomain: 'api.quvel.app'
         );
 
         // Mock dependencies

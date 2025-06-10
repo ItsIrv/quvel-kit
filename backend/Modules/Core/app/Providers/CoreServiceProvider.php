@@ -104,9 +104,9 @@ class CoreServiceProvider extends ModuleServiceProvider
      */
     private function registerCoreConfigSeeders(): void
     {
-        // Add core config to all tiers
-        TenantServiceProvider::registerConfigSeederForAllTiers(
-            function (string $tier, array $config): array {
+        // Add core config to all templates
+        TenantServiceProvider::registerConfigSeederForAllTemplates(
+            function (string $template, array $config): array {
                 // Extract domain info from existing config
                 $domain      = $config['domain'] ?? 'example.com';
                 $apiUrl      = "https://$domain";
@@ -133,8 +133,8 @@ class CoreServiceProvider extends ModuleServiceProvider
                     $coreConfig['capacitor_scheme'] = $config['_seed_capacitor_scheme'];
                 }
 
-                // Add internal API URL for premium/enterprise tiers
-                if (in_array($tier, ['premium', 'enterprise'])) {
+                // Add internal API URL for isolated template
+                if ($template === 'isolated') {
                     if (!isset($config['internal_api_url'])) {
                         // Extract just the domain part for internal API
                         $internalDomain                 = str_replace(['https://', 'http://'], '', $apiUrl);
@@ -142,15 +142,15 @@ class CoreServiceProvider extends ModuleServiceProvider
                     }
                 }
 
-                // Special handling for specific enterprise domains (like the seeder does)
-                if ($tier === 'enterprise' && $domain === 'api-lan') {
+                // Special handling for specific isolated domains (like the seeder does)
+                if ($template === 'isolated' && $domain === 'api-lan') {
                     $coreConfig['internal_api_url'] = 'http://api-lan:8000';
                 }
 
                 return $coreConfig;
             },
             10, // Run very early (priority 10)
-            fn (string $tier, array $visibility): array => [
+            fn (string $template, array $visibility): array => [
                 'app_name'          => TenantConfigVisibility::PUBLIC ,
                 'app_url'           => TenantConfigVisibility::PUBLIC ,
                 'frontend_url'      => TenantConfigVisibility::PROTECTED ,
@@ -163,8 +163,8 @@ class CoreServiceProvider extends ModuleServiceProvider
 
         // Add reCAPTCHA config for tenants
         // Each tenant should have their own keys for proper isolation
-        TenantServiceProvider::registerConfigSeederForAllTiers(
-            function (string $tier, array $config): array {
+        TenantServiceProvider::registerConfigSeederForAllTemplates(
+            function (string $template, array $config): array {
                 $recaptchaConfig = [];
 
                 // Use seed parameters or environment variables
@@ -180,15 +180,15 @@ class CoreServiceProvider extends ModuleServiceProvider
                 return $recaptchaConfig;
             },
             15, // After core config
-            fn (string $tier, array $visibility): array => [
+            fn (string $template, array $visibility): array => [
                 'recaptcha_site_key'   => TenantConfigVisibility::PUBLIC ,
                 'recaptcha_secret_key' => TenantConfigVisibility::PRIVATE ,
             ]
         );
 
         // Add Pusher config for tenants
-        TenantServiceProvider::registerConfigSeederForAllTiers(
-            function (string $tier, array $config): array {
+        TenantServiceProvider::registerConfigSeederForAllTemplates(
+            function (string $template, array $config): array {
                 $pusherConfig = [];
 
                 // Use seed parameters or environment variables
@@ -208,7 +208,7 @@ class CoreServiceProvider extends ModuleServiceProvider
                 return $pusherConfig;
             },
             15, // After core config
-            fn (string $tier, array $visibility): array => [
+            fn (string $template, array $visibility): array => [
                 'pusher_app_key'     => TenantConfigVisibility::PUBLIC ,
                 'pusher_app_secret'  => TenantConfigVisibility::PRIVATE ,
                 'pusher_app_id'      => TenantConfigVisibility::PRIVATE ,

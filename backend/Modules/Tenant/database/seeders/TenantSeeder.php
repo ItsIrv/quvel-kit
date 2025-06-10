@@ -23,31 +23,39 @@ class TenantSeeder extends Seeder
 
         // Create simple tenants for development
 
-        // Basic tenant with minimal config
+        // Basic tenant with minimal config (using basic template)
         $basicTenant = $this->createTenant(
-            'basic.example.com',
+            'api.quvel-two.127.0.0.1.nip.io',
             'Basic Tenant',
             DynamicTenantConfigFactory::createBasic(
-                domain: 'basic.example.com',
+                domain: 'api.quvel-two.127.0.0.1.nip.io',
                 appName: 'Basic QuVel App',
                 mailFromName: 'Basic Support',
-                mailFromAddress: 'support@basic.example.com',
+                mailFromAddress: 'support@quvel-two.127.0.0.1.nip.io',
             )->toArray(),
         );
 
-        // Main API tenant with standard config
+        // Child tenant for the basic tenant
+        $this->createTenant(
+            'quvel-two.127.0.0.1.nip.io',
+            'Basic Frontend',
+            null,
+            $basicTenant,
+        );
+
+        // Main API tenant with basic config (using basic template)
         $mainTenant = $this->createTenant(
             $apiDomain,
             'Main API Tenant',
-            DynamicTenantConfigFactory::createStandard(
-                apiDomain: $apiDomain,
+            DynamicTenantConfigFactory::createBasic(
+                domain: $apiDomain,
                 appName: 'QuVel App',
                 mailFromName: 'QuVel Support',
                 mailFromAddress: 'support@quvel.app',
             )->toArray(),
         );
 
-        // LAN API tenant with full isolation
+        // LAN API tenant with full isolation (using isolated template)
         $lanTenant = $this->createTenant(
             $lanApiDomain,
             'LAN API Tenant',

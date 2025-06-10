@@ -64,27 +64,27 @@ final class TenantConfigSeederRegistryTest extends TestCase
         $this->assertEquals(['test_key' => 'public'], $visibility);
     }
 
-    #[TestDox('Should register seeder for all tiers')]
-    public function testRegisterSeederForAllTiers(): void
+    #[TestDox('Should register seeder for all templates')]
+    public function testRegisterSeederForAllTemplates(): void
     {
-        $seeder = fn($tier, $config) => ['global_key' => "value_for_{$tier}"];
+        $seeder = fn($template, $config) => ['global_key' => "value_for_{$template}"];
 
-        $this->registry->registerSeederForAllTiers($seeder);
+        $this->registry->registerSeederForAllTemplates($seeder);
 
         $basicConfig = $this->registry->getSeedConfig('basic');
-        $premiumConfig = $this->registry->getSeedConfig('premium');
+        $isolatedConfig = $this->registry->getSeedConfig('isolated');
 
         $this->assertEquals(['global_key' => 'value_for_basic'], $basicConfig);
-        $this->assertEquals(['global_key' => 'value_for_premium'], $premiumConfig);
+        $this->assertEquals(['global_key' => 'value_for_isolated'], $isolatedConfig);
     }
 
-    #[TestDox('Should register seeder for all tiers with visibility')]
-    public function testRegisterSeederForAllTiersWithVisibility(): void
+    #[TestDox('Should register seeder for all templates with visibility')]
+    public function testRegisterSeederForAllTemplatesWithVisibility(): void
     {
-        $seeder = fn($tier, $config) => ['global_key' => "value_for_{$tier}"];
-        $visibilitySeeder = fn($tier, $visibility) => ['global_key' => 'private'];
+        $seeder = fn($template, $config) => ['global_key' => "value_for_{$template}"];
+        $visibilitySeeder = fn($template, $visibility) => ['global_key' => 'private'];
 
-        $this->registry->registerSeederForAllTiers($seeder, 50, $visibilitySeeder);
+        $this->registry->registerSeederForAllTemplates($seeder, 50, $visibilitySeeder);
 
         $basicConfig = $this->registry->getSeedConfig('basic');
         $basicVisibility = $this->registry->getSeedVisibility('basic');
@@ -93,20 +93,20 @@ final class TenantConfigSeederRegistryTest extends TestCase
         $this->assertEquals(['global_key' => 'private'], $basicVisibility);
     }
 
-    #[TestDox('Should register seeder for multiple specific tiers')]
-    public function testRegisterSeederForMultipleTiers(): void
+    #[TestDox('Should register seeder for multiple specific templates')]
+    public function testRegisterSeederForMultipleTemplates(): void
     {
-        $seeder = fn($tier, $config) => ['multi_key' => "multi_value_{$tier}"];
-        $tiers = ['standard', 'premium'];
+        $seeder = fn($template, $config) => ['multi_key' => "multi_value_{$template}"];
+        $templates = ['standard', 'isolated'];
 
-        $this->registry->registerSeederForTiers($tiers, $seeder);
+        $this->registry->registerSeederForTemplates($templates, $seeder);
 
         $standardConfig = $this->registry->getSeedConfig('standard');
-        $premiumConfig = $this->registry->getSeedConfig('premium');
+        $isolatedConfig = $this->registry->getSeedConfig('isolated');
         $basicConfig = $this->registry->getSeedConfig('basic');
 
         $this->assertEquals(['multi_key' => 'multi_value_standard'], $standardConfig);
-        $this->assertEquals(['multi_key' => 'multi_value_premium'], $premiumConfig);
+        $this->assertEquals(['multi_key' => 'multi_value_isolated'], $isolatedConfig);
         $this->assertEquals([], $basicConfig); // Should not be affected
     }
 
