@@ -53,4 +53,14 @@ class CoreConfigPipeLogs extends BaseLogger
     {
         $this->error("Failed to reset core resources: {$message}");
     }
+
+    public function forwardedPrefixApplied(string $prefix): void
+    {
+        $this->debug("Applied X-Forwarded-Prefix to URL generator: {$prefix}");
+    }
+
+    public function forwardedPrefixFailed(string $message): void
+    {
+        $this->error("Failed to apply X-Forwarded-Prefix: {$message}");
+    }
 }

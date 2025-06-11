@@ -61,15 +61,7 @@ class CoreServiceProvider extends ModuleServiceProvider
         parent::boot();
 
         $this->app['url']->forceScheme('https');
-
-        $request = $this->app['request'];
-        $request->server->set('HTTPS', 'on');
-
-        if ($request->isFromTrustedProxy() && ($prefix = $request->header('X-Forwarded-Prefix'))) {
-            $this->app['url']->forceRootUrl(
-                $request->getSchemeAndHttpHost() . $prefix
-            );
-        }
+        $this->app['request']->server->set('HTTPS', 'on');
 
         $this->app['router']->pushMiddlewareToGroup('web', SetRequestLocale::class);
         $this->app['router']->pushMiddlewareToGroup('api', SetRequestLocale::class);

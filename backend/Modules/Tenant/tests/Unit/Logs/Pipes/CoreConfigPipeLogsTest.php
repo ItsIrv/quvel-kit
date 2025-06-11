@@ -133,6 +133,30 @@ class CoreConfigPipeLogsTest extends TestCase
         $this->logger->resourcesResetFailed($errorMessage);
     }
 
+    #[TestDox('logs forwarded prefix applied debug message')]
+    public function testForwardedPrefixApplied(): void
+    {
+        $prefix = '/app';
+
+        $this->channel->expects($this->once())
+            ->method('log')
+            ->with('debug', "Applied X-Forwarded-Prefix to URL generator: {$prefix}", []);
+
+        $this->logger->forwardedPrefixApplied($prefix);
+    }
+
+    #[TestDox('logs forwarded prefix failure error message')]
+    public function testForwardedPrefixFailed(): void
+    {
+        $errorMessage = 'Unable to apply prefix';
+
+        $this->channel->expects($this->once())
+            ->method('log')
+            ->with('error', "Failed to apply X-Forwarded-Prefix: {$errorMessage}", []);
+
+        $this->logger->forwardedPrefixFailed($errorMessage);
+    }
+
     #[TestDox('extends BaseLogger')]
     public function testExtendsBaseLogger(): void
     {

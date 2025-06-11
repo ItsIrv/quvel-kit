@@ -4,6 +4,7 @@ namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Http\Request;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Context;
@@ -111,6 +112,9 @@ class CoreConfigPipe extends BaseConfigurationPipe
             $this->refreshUrlGenerator($config);
         }
 
+        // Handle X-Forwarded-Prefix for proxy setups
+        $this->handleForwardedPrefix();
+
         if ($hasTimezoneChanges) {
             $this->refreshTimezone($config);
         }
@@ -184,7 +188,41 @@ class CoreConfigPipe extends BaseConfigurationPipe
     }
 
     /**
+     * Handle X-Forwarded-Prefix header for proxy setups.
+     * This ensures the URL generator respects the proxy prefix path.
+     */
+    protected function handleForwardedPrefix(): void
+    {
+        try {
+            // Only proceed if we have a request (not in testing/CLI contexts)
+            if (!app()->bound('request') || !app('request') instanceof Request) {
+                return;
+            }
+
+            $request = app('request');
+
+            if ($request->isFromTrustedProxy() && ($prefix = $request->header('X-Forwarded-Prefix'))) {
+                $urlGenerator = app(UrlGenerator::class);
+                $urlGenerator->forceRootUrl(
+                    $request->getSchemeAndHttpHost() . $prefix
+                );
+
+                if (app()->environment(['local', 'development', 'testing']) && app()->bound(CoreConfigPipeLogs::class)) {
+                    app(CoreConfigPipeLogs::class)->forwardedPrefixApplied($prefix);
+                }
+            }
+        } catch (\Exception $e) {
+            if (app()->bound(CoreConfigPipeLogs::class)) {
+                app(CoreConfigPipeLogs::class)->forwardedPrefixFailed($e->getMessage());
+            }
+        }
+    }
+
+    /**
      * Get the configuration keys that this pipe handles.
+     *
+     * Note: This pipe also handles X-Forwarded-Prefix header processing
+     * for proxy setups, which doesn't require a specific config key.
      *
      * @return array<string> Array of configuration keys
      */

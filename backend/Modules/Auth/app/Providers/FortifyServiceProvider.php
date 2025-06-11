@@ -52,7 +52,7 @@ class FortifyServiceProvider extends ServiceProvider
         RateLimiter::for(
             'password.email',
             fn (Request $request) =>
-            Limit::perMinutes(60, 3)->by($request->input('email')) . '|' . $request->ip()
+            Limit::perMinutes(60, 3)->by($request->input('email') . '|' . $request->ip())
         );
 
         RateLimiter::for(

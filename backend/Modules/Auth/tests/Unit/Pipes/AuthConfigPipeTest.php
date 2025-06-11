@@ -396,4 +396,159 @@ class AuthConfigPipeTest extends TestCase
         $this->assertTrue($nextCalled);
         $this->assertEquals('next-result', $result);
     }
+    
+    #[TestDox('resolves socialite providers for frontend')]
+    public function testResolveSocialiteProvidersForFrontend(): void
+    {
+        $tenantConfig = [
+            'socialite_providers' => ['google', 'github', 'facebook'],
+        ];
+
+        $result = $this->pipe->resolve($this->tenantModel, $tenantConfig);
+
+        $this->assertArrayHasKey('values', $result);
+        $this->assertArrayHasKey('visibility', $result);
+        
+        $this->assertArrayHasKey('socialiteProviders', $result['values']);
+        $this->assertEquals(['google', 'github', 'facebook'], $result['values']['socialiteProviders']);
+        
+        $this->assertArrayHasKey('socialiteProviders', $result['visibility']);
+        $this->assertEquals('public', $result['visibility']['socialiteProviders']);
+    }
+    
+    #[TestDox('resolve returns empty arrays when no socialite providers')]
+    public function testResolveReturnsEmptyArraysWhenNoSocialiteProviders(): void
+    {
+        $tenantConfig = [
+            'some_other_config' => 'value',
+        ];
+
+        $result = $this->pipe->resolve($this->tenantModel, $tenantConfig);
+
+        $this->assertArrayHasKey('values', $result);
+        $this->assertArrayHasKey('visibility', $result);
+        
+        $this->assertEmpty($result['values']);
+        $this->assertEmpty($result['visibility']);
+    }
+    
+    #[TestDox('sets OAuth credentials from environment variables when providers specified but no explicit credentials')]
+    public function testSetsOAuthCredentialsFromEnvironmentVariables(): void
+    {
+        $tenantConfig = [
+            'app_url' => 'https://tenant.example.com',
+            'socialite_providers' => ['github'],
+        ];
+        
+        // Mock environment variables
+        putenv('GITHUB_CLIENT_ID=env-github-client-id');
+        putenv('GITHUB_CLIENT_SECRET=env-github-client-secret');
+        
+        $this->config->expects($this->exactly(4))
+            ->method('set')
+            ->willReturnCallback(function ($key, $value) {
+                switch ($key) {
+                    case 'auth.socialite.providers':
+                        $this->assertEquals(['github'], $value);
+                        break;
+                    case 'services.github.client_id':
+                        $this->assertEquals('env-github-client-id', $value);
+                        break;
+                    case 'services.github.client_secret':
+                        $this->assertEquals('env-github-client-secret', $value);
+                        break;
+                    case 'services.github.redirect':
+                        $this->assertEquals('https://tenant.example.com/auth/provider/github/callback', $value);
+                        break;
+                    default:
+                        $this->fail("Unexpected config key: $key");
+                }
+            });
+        
+        $next = function ($payload) {
+            return $payload;
+        };
+        
+        $this->pipe->handle($this->tenantModel, $this->config, $tenantConfig, $next);
+        
+        // Clean up environment
+        putenv('GITHUB_CLIENT_ID');
+        putenv('GITHUB_CLIENT_SECRET');
+    }
+    
+    #[TestDox('sets OAuth credentials from environment using default app URL when tenant app URL not provided')]
+    public function testSetsOAuthCredentialsFromEnvironmentUsingDefaultAppUrl(): void
+    {
+        $tenantConfig = [
+            // No app_url in tenant config
+            'socialite_providers' => ['facebook'],
+        ];
+        
+        // Mock environment variables
+        putenv('FACEBOOK_CLIENT_ID=env-facebook-client-id');
+        putenv('FACEBOOK_CLIENT_SECRET=env-facebook-client-secret');
+        
+        $this->config->expects($this->exactly(4))
+            ->method('set')
+            ->willReturnCallback(function ($key, $value) {
+                switch ($key) {
+                    case 'auth.socialite.providers':
+                        $this->assertEquals(['facebook'], $value);
+                        break;
+                    case 'services.facebook.client_id':
+                        $this->assertEquals('env-facebook-client-id', $value);
+                        break;
+                    case 'services.facebook.client_secret':
+                        $this->assertEquals('env-facebook-client-secret', $value);
+                        break;
+                    case 'services.facebook.redirect':
+                        $this->assertEquals('https://default.app.url/auth/provider/facebook/callback', $value);
+                        break;
+                    default:
+                        $this->fail("Unexpected config key: $key");
+                }
+            });
+        
+        $this->config->expects($this->once())
+            ->method('get')
+            ->with('app.url')
+            ->willReturn('https://default.app.url');
+        
+        $next = function ($payload) {
+            return $payload;
+        };
+        
+        $this->pipe->handle($this->tenantModel, $this->config, $tenantConfig, $next);
+        
+        // Clean up environment
+        putenv('FACEBOOK_CLIENT_ID');
+        putenv('FACEBOOK_CLIENT_SECRET');
+    }
+    
+    #[TestDox('skips environment OAuth credentials when environment variables not set')]
+    public function testSkipsEnvironmentOAuthCredentialsWhenEnvironmentVariablesNotSet(): void
+    {
+        $tenantConfig = [
+            'socialite_providers' => ['missing_provider'],
+        ];
+        
+        // Ensure environment variables are not set
+        putenv('MISSING_PROVIDER_CLIENT_ID');
+        putenv('MISSING_PROVIDER_CLIENT_SECRET');
+        
+        // We expect one call for setting the socialite providers
+        $this->config->expects($this->once())
+            ->method('set')
+            ->with('auth.socialite.providers', ['missing_provider']);
+        
+        // Should not call get() for app.url since no credentials are set
+        $this->config->expects($this->never())
+            ->method('get');
+        
+        $next = function ($payload) {
+            return $payload;
+        };
+        
+        $this->pipe->handle($this->tenantModel, $this->config, $tenantConfig, $next);
+    }
 }
