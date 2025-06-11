@@ -111,7 +111,7 @@ class VerificationNotificationTest extends TestCase
             ->andReturn($this->redirectResponse);
 
         $result = ($this->action)($this->request);
-        
+
         $this->assertInstanceOf(RedirectResponse::class, $result);
     }
 
@@ -134,7 +134,7 @@ class VerificationNotificationTest extends TestCase
             ->andReturn($this->redirectResponse);
 
         $result = ($this->action)($this->request);
-        
+
         $this->assertInstanceOf(RedirectResponse::class, $result);
     }
 
@@ -156,7 +156,7 @@ class VerificationNotificationTest extends TestCase
             ->andReturn($this->redirectResponse);
 
         $result = ($this->action)($this->request);
-        
+
         $this->assertInstanceOf(RedirectResponse::class, $result);
     }
 
@@ -179,7 +179,7 @@ class VerificationNotificationTest extends TestCase
             ->andReturn($this->redirectResponse);
 
         $result = ($this->action)($this->request);
-        
+
         $this->assertInstanceOf(RedirectResponse::class, $result);
     }
 

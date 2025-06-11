@@ -247,7 +247,7 @@ class SessionConfigPipeLogsTest extends TestCase
         $reflection = new \ReflectionClass($this->logger);
         $property = $reflection->getProperty('contextPrefix');
         $property->setAccessible(true);
-        
+
         $this->assertEquals('tenant_session', $property->getValue($this->logger));
     }
 }

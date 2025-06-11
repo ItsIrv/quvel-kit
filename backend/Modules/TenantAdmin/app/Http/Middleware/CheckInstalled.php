@@ -11,7 +11,8 @@ class CheckInstalled
 {
     public function __construct(
         private InstallationService $installationService
-    ) {}
+    ) {
+    }
 
     /**
      * Handle an incoming request.

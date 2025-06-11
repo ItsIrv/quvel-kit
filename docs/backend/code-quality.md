@@ -25,7 +25,7 @@ Laravel Pint is included for code formatting based on PSR-12 standards:
 ./vendor/bin/pint --test
 
 # Apply code formatting
-./vendor/bin/pint --fix
+./vendor/bin/pint
 ```
 
 A default configuration is provided in `pint.json`.

@@ -9,7 +9,8 @@ class AuthenticationService
 {
     public function __construct(
         private InstallationService $installationService
-    ) {}
+    ) {
+    }
 
     /**
      * Authenticate user against configured credentials

@@ -88,7 +88,7 @@ final class TenantMiddlewareTest extends TestCase
         $this->exclusionRegistry->shouldReceive('getExcludedPaths')
             ->once()
             ->andReturn([]);
-        
+
         $this->exclusionRegistry->shouldReceive('getExcludedPatterns')
             ->once()
             ->andReturn([]);
@@ -97,7 +97,7 @@ final class TenantMiddlewareTest extends TestCase
         $this->config->shouldReceive('get')
             ->with('tenant.excluded_paths', [])
             ->andReturn([]);
-        
+
         $this->config->shouldReceive('get')
             ->with('tenant.excluded_patterns', [])
             ->andReturn([]);

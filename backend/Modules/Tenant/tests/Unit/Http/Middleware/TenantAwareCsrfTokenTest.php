@@ -12,7 +12,6 @@ use Illuminate\Http\Response;
 use Illuminate\Session\Store;
 use Mockery;
 use Mockery\MockInterface;
-use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Http\Middleware\TenantAwareCsrfToken;
 use Modules\Tenant\Models\Tenant;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -294,7 +293,7 @@ final class TenantAwareCsrfTokenTest extends TestCase
         // CookieValuePrefix::remove() may return empty string if there's no valid prefix
         // The actual decrypted token needs to contain a proper cookie prefix
         $decryptedWithPrefix = 'eyJpdiI6IjEyMyIsInZhbHVlIjoiZGVjcnlwdGVkLXRva2VuLTc4OSIsIm1hYyI6Ijk4NyJ9';
-        
+
         $this->encrypter->shouldReceive('decrypt')
             ->once()
             ->with('encrypted-xsrf-token', false)

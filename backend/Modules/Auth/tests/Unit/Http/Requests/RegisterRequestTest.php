@@ -4,7 +4,6 @@ namespace Modules\Auth\Tests\Unit\Http\Requests;
 
 use Illuminate\Support\Facades\Validator;
 use Modules\Auth\Http\Requests\RegisterRequest;
-use Modules\Auth\Rules\EmailRule;
 use Modules\Auth\Rules\NameRule;
 use Modules\Auth\Rules\PasswordRule;
 use PHPUnit\Framework\Attributes\CoversClass;

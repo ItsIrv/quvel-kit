@@ -24,7 +24,7 @@ class CaptchaServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->verifier = $this->createMock(CaptchaVerifierInterface::class);
         $this->service = new CaptchaService($this->verifier);
     }
@@ -34,14 +34,14 @@ class CaptchaServiceTest extends TestCase
     {
         $token = 'valid-token';
         $ip = '192.168.1.1';
-        
+
         $this->verifier->expects($this->once())
             ->method('verify')
             ->with($token, $ip)
             ->willReturn(true);
-            
+
         $result = $this->service->verify($token, $ip);
-        
+
         $this->assertTrue($result);
     }
 
@@ -49,14 +49,14 @@ class CaptchaServiceTest extends TestCase
     public function testVerifiesTokenWithNullIp(): void
     {
         $token = 'valid-token';
-        
+
         $this->verifier->expects($this->once())
             ->method('verify')
             ->with($token, null)
             ->willReturn(true);
-            
+
         $result = $this->service->verify($token);
-        
+
         $this->assertTrue($result);
     }
 
@@ -65,14 +65,14 @@ class CaptchaServiceTest extends TestCase
     {
         $token = 'invalid-token';
         $ip = '192.168.1.1';
-        
+
         $this->verifier->expects($this->once())
             ->method('verify')
             ->with($token, $ip)
             ->willReturn(false);
-            
+
         $result = $this->service->verify($token, $ip);
-        
+
         $this->assertFalse($result);
     }
 
@@ -81,7 +81,7 @@ class CaptchaServiceTest extends TestCase
     {
         $token = 'test-token';
         $ip = '10.0.0.1';
-        
+
         // Test that it properly delegates to the verifier
         $this->verifier->expects($this->once())
             ->method('verify')
@@ -90,7 +90,7 @@ class CaptchaServiceTest extends TestCase
                 $this->identicalTo($ip)
             )
             ->willReturn(true);
-            
+
         $this->service->verify($token, $ip);
     }
 
@@ -98,15 +98,15 @@ class CaptchaServiceTest extends TestCase
     public function testWorksWithDifferentVerifierImplementations(): void
     {
         // Create a custom verifier implementation
-        $customVerifier = new class implements CaptchaVerifierInterface {
+        $customVerifier = new class () implements CaptchaVerifierInterface {
             public function verify(string $token, ?string $ip = null): bool
             {
                 return $token === 'special-token';
             }
         };
-        
+
         $service = new CaptchaService($customVerifier);
-        
+
         $this->assertTrue($service->verify('special-token'));
         $this->assertFalse($service->verify('regular-token'));
     }

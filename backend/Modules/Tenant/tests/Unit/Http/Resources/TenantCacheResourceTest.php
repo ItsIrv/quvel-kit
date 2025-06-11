@@ -24,10 +24,10 @@ class TenantCacheResourceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->pipeline = $this->createMock(ConfigurationPipeline::class);
         $this->request = new Request();
-        
+
         $this->app->instance(ConfigurationPipeline::class, $this->pipeline);
     }
 
@@ -116,7 +116,7 @@ class TenantCacheResourceTest extends TestCase
     public function testGetFilteredConfigHandlesNullEffectiveConfig(): void
     {
         $tenant = $this->createMock(Tenant::class);
-        
+
         // Set properties directly on the mock
         $tenant->public_id = 'test-id';
         $tenant->name = 'Test';
@@ -157,7 +157,7 @@ class TenantCacheResourceTest extends TestCase
         ]);
 
         $tenant = $this->createMock(Tenant::class);
-        
+
         // Set properties directly on the mock
         $tenant->public_id = 'dynamic-id';
         $tenant->name = 'Dynamic';
@@ -212,7 +212,7 @@ class TenantCacheResourceTest extends TestCase
         $updatedAt = Carbon::now();
 
         $tenant = $this->createMock(Tenant::class);
-        
+
         // Set properties directly on the mock
         $tenant->public_id = 'fallback-id';
         $tenant->name = 'Fallback';
@@ -259,7 +259,7 @@ class TenantCacheResourceTest extends TestCase
                 ],
                 'visibility' => [
                     'public_key' => 'public',
-                    'protected_key' => 'protected', 
+                    'protected_key' => 'protected',
                     'private_key' => 'private'
                 ]
             ]);
@@ -421,7 +421,7 @@ class TenantCacheResourceTest extends TestCase
             ]);
 
         $resource = new TenantCacheResource($tenant);
-        
+
         // This should throw an exception due to invalid TenantConfigVisibility enum value
         $this->expectException(\ValueError::class);
         $resource->toArray($this->request);
@@ -471,7 +471,7 @@ class TenantCacheResourceTest extends TestCase
         $this->assertEquals('real-public-id', $result['id']);
         $this->assertEquals('Real Tenant', $result['name']);
         $this->assertEquals('real.example.com', $result['domain']);
-        
+
         $config = $result['config'];
         $this->assertEquals('Real App Enhanced', $config['app_name']);
         $this->assertEquals('https://enhanced.real.app', $config['app_url']);
@@ -491,7 +491,7 @@ class TenantCacheResourceTest extends TestCase
         $mockConfig = new DynamicTenantConfig(['existing_key' => 'existing_value']);
 
         $tenant = $this->createMock(Tenant::class);
-        
+
         // Set properties directly on the mock
         $tenant->public_id = 'test-public-id';
         $tenant->name = 'Test Tenant';

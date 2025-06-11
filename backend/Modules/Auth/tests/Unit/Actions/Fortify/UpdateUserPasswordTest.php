@@ -98,7 +98,7 @@ class UpdateUserPasswordTest extends TestCase
             ->andReturn(true);
 
         $this->action->update($this->user, $input);
-        
+
         // Assert the test completed without throwing an exception
         $this->assertTrue(true);
     }
@@ -241,13 +241,13 @@ class UpdateUserPasswordTest extends TestCase
         $this->user
             ->shouldReceive('forceFill')
             ->andReturnSelf();
-        
+
         $this->user
             ->shouldReceive('save')
             ->andReturn(true);
 
         $this->action->update($this->user, $input);
-        
+
         // Assert the validation was called with the correct bag name
         $this->assertTrue(true);
     }
@@ -287,13 +287,13 @@ class UpdateUserPasswordTest extends TestCase
         $this->user
             ->shouldReceive('forceFill')
             ->andReturnSelf();
-        
+
         $this->user
             ->shouldReceive('save')
             ->andReturn(true);
 
         $this->action->update($this->user, $input);
-        
+
         // Assert the test used the expected password rules
         $this->assertTrue(true);
     }
@@ -333,13 +333,13 @@ class UpdateUserPasswordTest extends TestCase
         $this->user
             ->shouldReceive('forceFill')
             ->andReturnSelf();
-        
+
         $this->user
             ->shouldReceive('save')
             ->andReturn(true);
 
         $this->action->update($this->user, $input);
-        
+
         // Assert the custom message was included
         $this->assertTrue(true);
     }

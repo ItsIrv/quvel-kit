@@ -20,7 +20,7 @@ class TenantUpdateRequest extends FormRequest
     public function rules(): array
     {
         $tenantId = $this->route('tenant');
-        
+
         return [
             'name' => ['nullable', 'string', 'min:3', 'max:255'],
             'domain' => ['nullable', 'string', 'min:3', 'max:255', "unique:tenants,domain,{$tenantId}"],

@@ -8,7 +8,6 @@ use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
 use Modules\Auth\Actions\Fortify\UpdateUserProfileInformation;
-use Modules\Auth\Rules\EmailRule;
 use Modules\Auth\Rules\NameRule;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -89,7 +88,7 @@ class UpdateUserProfileInformationTest extends TestCase
             ->andReturn(true);
 
         $this->action->update($user, $input);
-        
+
         // Assert the test completed without throwing an exception
         $this->assertTrue(true);
     }
@@ -127,7 +126,7 @@ class UpdateUserProfileInformationTest extends TestCase
         $this->expectException(ValidationException::class);
 
         $this->action->update($user, $input);
-        
+
         // Assert the test completed without throwing an exception
         $this->assertTrue(true);
     }
@@ -158,12 +157,12 @@ class UpdateUserProfileInformationTest extends TestCase
 
         $user->shouldReceive('forceFill')
             ->andReturnSelf();
-        
+
         $user->shouldReceive('save')
             ->andReturn(true);
 
         $this->action->update($user, $input);
-        
+
         // Assert the test completed without throwing an exception
         $this->assertTrue(true);
     }
@@ -198,12 +197,12 @@ class UpdateUserProfileInformationTest extends TestCase
 
         $user->shouldReceive('forceFill')
             ->andReturnSelf();
-        
+
         $user->shouldReceive('save')
             ->andReturn(true);
 
         $this->action->update($user, $input);
-        
+
         // Assert the test completed without throwing an exception
         $this->assertTrue(true);
     }
@@ -244,7 +243,7 @@ class UpdateUserProfileInformationTest extends TestCase
             ->once();
 
         $method->invoke($this->action, $verifiableUser, $input);
-        
+
         // Assert the test completed without throwing an exception
         $this->assertTrue(true);
     }

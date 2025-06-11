@@ -71,9 +71,9 @@ class ShowProxyInfoActionTest extends TestCase
         $response = $this->action->__invoke($request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        
+
         $data = $response->getData(true);
-        
+
         // Verify response structure
         $this->assertArrayHasKey('environment', $data);
         $this->assertArrayHasKey('request_info', $data);
@@ -122,9 +122,9 @@ class ShowProxyInfoActionTest extends TestCase
         $response = $this->action->__invoke($request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        
+
         $data = $response->getData(true);
-        
+
         // Should handle null values gracefully
         $this->assertNull($data['environment']['APP_ENV']);
         $this->assertNull($data['environment']['TRUST_PROXIES']);

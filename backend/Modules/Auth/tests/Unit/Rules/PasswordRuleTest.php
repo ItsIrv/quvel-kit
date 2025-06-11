@@ -21,7 +21,7 @@ class PasswordRuleTest extends TestCase
         $rule = PasswordRule::default();
 
         $this->assertInstanceOf(Password::class, $rule);
-        
+
         // Test with a password shorter than 8 characters (should fail)
         $validator = validator(['password' => 'short'], ['password' => $rule]);
         $this->assertTrue($validator->fails());

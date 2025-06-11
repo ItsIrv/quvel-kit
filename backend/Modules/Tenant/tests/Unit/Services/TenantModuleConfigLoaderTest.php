@@ -52,7 +52,7 @@ final class TenantModuleConfigLoaderTest extends TestCase
 
         // Check priority order: 5, 15, 20, 30, 50
         // Note: array_column returns null for missing keys, so we need to use the default
-        $priorities = array_map(fn($seeder) => $seeder['priority'] ?? 50, $basicSeeders);
+        $priorities = array_map(fn ($seeder) => $seeder['priority'] ?? 50, $basicSeeders);
         $this->assertEquals([5, 15, 20, 30, 50], $priorities);
 
         $this->assertEquals('value3', $basicSeeders[0]['config']['key3']);

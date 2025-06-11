@@ -199,17 +199,18 @@ class TenantContextTest extends TestCase
         $mockConfig = new \stdClass();
         $mockConfig->app_name = 'Mock App';
         $mockConfig->domain = 'mock.example.com';
-        
+
         $tenant = Tenant::factory()->make();
-        
+
         // Create a custom context that overrides getConfigValue to bypass the instanceof check
-        $context = new class extends TenantContext {
+        $context = new class () extends TenantContext {
             private $mockConfig;
-            
-            public function setMockConfig($config) {
+
+            public function setMockConfig($config)
+            {
                 $this->mockConfig = $config;
             }
-            
+
             public function getConfigValue(string $key, mixed $default = null): mixed
             {
                 $config = $this->mockConfig;
@@ -221,7 +222,7 @@ class TenantContextTest extends TestCase
                 return $config->{$key} ?? $default;
             }
         };
-        
+
         $context->setMockConfig($mockConfig);
         $context->set($tenant);
 

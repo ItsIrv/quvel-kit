@@ -5,7 +5,6 @@ namespace Modules\TenantAdmin\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 use Modules\TenantAdmin\Http\Requests\LoginRequest;
 use Modules\TenantAdmin\Services\AuthenticationService;
 
@@ -13,7 +12,8 @@ class AuthController extends Controller
 {
     public function __construct(
         private AuthenticationService $authService
-    ) {}
+    ) {
+    }
 
     /**
      * Handle login request
@@ -21,7 +21,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->validated();
-        
+
         $result = $this->authService->authenticate(
             $credentials['username'],
             $credentials['password']

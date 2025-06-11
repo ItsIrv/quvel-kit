@@ -114,9 +114,9 @@ final class DynamicTenantConfigTest extends TestCase
         $visibility = ['key1' => TenantConfigVisibility::PUBLIC , 'key2' => TenantConfigVisibility::PROTECTED];
         $config     = new DynamicTenantConfig([], $visibility);
 
-        $this->assertEquals(TenantConfigVisibility::PUBLIC , $config->getVisibility('key1'));
-        $this->assertEquals(TenantConfigVisibility::PROTECTED , $config->getVisibility('key2'));
-        $this->assertEquals(TenantConfigVisibility::PRIVATE , $config->getVisibility('nonexistent')); // Default
+        $this->assertEquals(TenantConfigVisibility::PUBLIC, $config->getVisibility('key1'));
+        $this->assertEquals(TenantConfigVisibility::PROTECTED, $config->getVisibility('key2'));
+        $this->assertEquals(TenantConfigVisibility::PRIVATE, $config->getVisibility('nonexistent')); // Default
     }
 
     #[TestDox('Should set visibility for key')]
@@ -127,7 +127,7 @@ final class DynamicTenantConfigTest extends TestCase
         $result = $config->setVisibility('key1', TenantConfigVisibility::PUBLIC);
 
         $this->assertSame($config, $result); // Fluent interface
-        $this->assertEquals(TenantConfigVisibility::PUBLIC , $config->getVisibility('key1'));
+        $this->assertEquals(TenantConfigVisibility::PUBLIC, $config->getVisibility('key1'));
     }
 
     #[TestDox('Should get and set tier')]
@@ -176,9 +176,9 @@ final class DynamicTenantConfigTest extends TestCase
         $this->assertEquals(['key2' => 'new_value2', 'key3' => 'value3'], $config1->get('config'));
 
         $this->assertEquals('premium', $config1->getTier()); // Updated tier
-        $this->assertEquals(TenantConfigVisibility::PUBLIC , $config1->getVisibility('key1')); // Original visibility
-        $this->assertEquals(TenantConfigVisibility::PROTECTED , $config1->getVisibility('key2')); // Updated visibility
-        $this->assertEquals(TenantConfigVisibility::PUBLIC , $config1->getVisibility('key3')); // New visibility
+        $this->assertEquals(TenantConfigVisibility::PUBLIC, $config1->getVisibility('key1')); // Original visibility
+        $this->assertEquals(TenantConfigVisibility::PROTECTED, $config1->getVisibility('key2')); // Updated visibility
+        $this->assertEquals(TenantConfigVisibility::PUBLIC, $config1->getVisibility('key3')); // New visibility
     }
 
     #[TestDox('Should merge with array')]
@@ -197,9 +197,9 @@ final class DynamicTenantConfigTest extends TestCase
         $this->assertEquals('new_value2', $config->get('key2')); // Overwritten
         $this->assertEquals('value3', $config->get('key3')); // New
         $this->assertEquals('basic', $config->getTier()); // Unchanged
-        $this->assertEquals(TenantConfigVisibility::PUBLIC , $config->getVisibility('key1')); // Unchanged
-        $this->assertEquals(TenantConfigVisibility::PRIVATE , $config->getVisibility('key2')); // Default
-        $this->assertEquals(TenantConfigVisibility::PRIVATE , $config->getVisibility('key3')); // Default
+        $this->assertEquals(TenantConfigVisibility::PUBLIC, $config->getVisibility('key1')); // Unchanged
+        $this->assertEquals(TenantConfigVisibility::PRIVATE, $config->getVisibility('key2')); // Default
+        $this->assertEquals(TenantConfigVisibility::PRIVATE, $config->getVisibility('key3')); // Default
     }
 
     #[TestDox('Should merge with config that has null tier')]
@@ -261,8 +261,8 @@ final class DynamicTenantConfigTest extends TestCase
 
         $this->assertEquals('value1', $config->get('key1'));
         $this->assertEquals('value2', $config->get('key2'));
-        $this->assertEquals(TenantConfigVisibility::PUBLIC , $config->getVisibility('key1'));
-        $this->assertEquals(TenantConfigVisibility::PROTECTED , $config->getVisibility('key2'));
+        $this->assertEquals(TenantConfigVisibility::PUBLIC, $config->getVisibility('key1'));
+        $this->assertEquals(TenantConfigVisibility::PROTECTED, $config->getVisibility('key2'));
         $this->assertEquals('premium', $config->getTier());
     }
 
@@ -276,7 +276,7 @@ final class DynamicTenantConfigTest extends TestCase
 
         $config = DynamicTenantConfig::fromArray($data);
 
-        $this->assertEquals(TenantConfigVisibility::PRIVATE , $config->getVisibility('key1')); // Default to PRIVATE
+        $this->assertEquals(TenantConfigVisibility::PRIVATE, $config->getVisibility('key1')); // Default to PRIVATE
     }
 
     #[TestDox('Should handle enum visibility when creating from array')]
@@ -289,7 +289,7 @@ final class DynamicTenantConfigTest extends TestCase
 
         $config = DynamicTenantConfig::fromArray($data);
 
-        $this->assertEquals(TenantConfigVisibility::PUBLIC , $config->getVisibility('key1'));
+        $this->assertEquals(TenantConfigVisibility::PUBLIC, $config->getVisibility('key1'));
     }
 
     #[TestDox('Should handle missing data when creating from array')]
@@ -427,7 +427,7 @@ final class DynamicTenantConfigTest extends TestCase
 
         $this->assertSame($config, $result);
         $this->assertEquals('value1', $config->get('key1'));
-        $this->assertEquals(TenantConfigVisibility::PUBLIC , $config->getVisibility('key1'));
+        $this->assertEquals(TenantConfigVisibility::PUBLIC, $config->getVisibility('key1'));
         $this->assertEquals('premium', $config->getTier());
         $this->assertFalse($config->has('key2'));
     }

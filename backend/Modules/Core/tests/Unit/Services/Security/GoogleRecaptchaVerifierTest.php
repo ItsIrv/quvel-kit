@@ -22,7 +22,7 @@ class GoogleRecaptchaVerifierTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Use the real HTTP client from the container
         $this->verifier = new GoogleRecaptchaVerifier(
             app(Request::class),
@@ -42,7 +42,7 @@ class GoogleRecaptchaVerifierTest extends TestCase
         $result = $this->verifier->verify('test-token');
 
         $this->assertFalse($result);
-        
+
         // Verify no HTTP requests were made
         Http::assertNothingSent();
     }
@@ -62,7 +62,7 @@ class GoogleRecaptchaVerifierTest extends TestCase
         $result = $this->verifier->verify('test-token');
 
         $this->assertTrue($result);
-        
+
         // Verify the correct request was made
         Http::assertSent(function ($request) {
             return $request->url() === 'https://www.google.com/recaptcha/api/siteverify' &&
@@ -88,7 +88,7 @@ class GoogleRecaptchaVerifierTest extends TestCase
         $result = $this->verifier->verify('test-token', '10.0.0.1');
 
         $this->assertTrue($result);
-        
+
         // Verify the correct request was made with provided IP
         Http::assertSent(function ($request) {
             return $request->url() === 'https://www.google.com/recaptcha/api/siteverify' &&

@@ -81,15 +81,15 @@ class AuthServiceProviderTest extends TestCase
 
         $config = require $configPath;
         $this->assertIsArray($config, 'Config should return an array');
-        
+
         // Verify structure
         $this->assertArrayHasKey('seeders', $config);
         $this->assertArrayHasKey('pipes', $config);
-        
+
         // Verify templates exist
         $this->assertArrayHasKey('basic', $config['seeders']);
         $this->assertArrayHasKey('isolated', $config['seeders']);
-        
+
         // Verify pipe registration
         $this->assertContains(\Modules\Auth\Pipes\AuthConfigPipe::class, $config['pipes']);
     }
@@ -99,14 +99,14 @@ class AuthServiceProviderTest extends TestCase
     {
         $configPath = __DIR__ . '/../../../config/tenant.php';
         $config = require $configPath;
-        
+
         $isolatedSeeder = $config['seeders']['isolated']['config'];
         $this->assertIsCallable($isolatedSeeder);
-        
+
         // Test with cache prefix
         $inputConfig = ['cache_prefix' => 'tenant_abc123_'];
         $result = $isolatedSeeder('isolated', $inputConfig);
-        
+
         // Verify structure and expected keys
         $this->assertEquals('quvel_abc123', $result['session_cookie']);
         $this->assertEquals(['google', 'microsoft'], $result['socialite_providers']);
@@ -116,11 +116,11 @@ class AuthServiceProviderTest extends TestCase
         $this->assertArrayHasKey('microsoft', $result['oauth_credentials']);
         $this->assertArrayHasKey('client_id', $result['oauth_credentials']['google']);
         $this->assertArrayHasKey('client_secret', $result['oauth_credentials']['google']);
-        
+
         // Test with invalid cache prefix
         $inputConfig2 = ['cache_prefix' => 'invalid_format'];
         $result2 = $isolatedSeeder('isolated', $inputConfig2);
-        
+
         // Should generate fallback session cookie
         $this->assertEquals('quvel_' . substr(md5('invalid_format'), 0, 8), $result2['session_cookie']);
         $this->assertEquals(240, $result2['session_lifetime']);
@@ -132,13 +132,13 @@ class AuthServiceProviderTest extends TestCase
     {
         $configPath = __DIR__ . '/../../../config/tenant.php';
         $config = require $configPath;
-        
+
         // Test basic visibility
         $basicVisibility = $config['seeders']['basic']['visibility'];
         $this->assertEquals('protected', $basicVisibility['session_cookie']);
         $this->assertEquals('public', $basicVisibility['socialite_providers']);
         $this->assertEquals('protected', $basicVisibility['session_lifetime']);
-        
+
         // Test isolated visibility
         $isolatedVisibility = $config['seeders']['isolated']['visibility'];
         $this->assertEquals('protected', $isolatedVisibility['session_cookie']);

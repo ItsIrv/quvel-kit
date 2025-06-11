@@ -11,7 +11,8 @@ class TenantAdminAuth
 {
     public function __construct(
         private AuthenticationService $authService
-    ) {}
+    ) {
+    }
 
     /**
      * Handle an incoming request.

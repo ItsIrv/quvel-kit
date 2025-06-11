@@ -29,8 +29,7 @@ class BaseLoggerTest extends TestCase
         $this->logManager = $this->createMock(LogManager::class);
 
         // Create a concrete implementation for testing
-        $this->logger = new class ($this->logManager) extends BaseLogger
-        {
+        $this->logger = new class ($this->logManager) extends BaseLogger {
             protected string $channel = 'test';
             protected string $contextPrefix = 'test_prefix';
         };
@@ -217,8 +216,7 @@ class BaseLoggerTest extends TestCase
     #[TestDox('accepts stringable messages')]
     public function testAcceptsStringableMessages(): void
     {
-        $stringable = new class
-        {
+        $stringable = new class () {
             public function __toString(): string
             {
                 return 'Stringable message';
@@ -241,8 +239,7 @@ class BaseLoggerTest extends TestCase
     #[TestDox('uses default channel when not overridden')]
     public function testUsesDefaultChannelWhenNotOverridden(): void
     {
-        $defaultLogger = new class ($this->logManager) extends BaseLogger
-        {
+        $defaultLogger = new class ($this->logManager) extends BaseLogger {
             // Uses default 'stack' channel
         };
 
@@ -264,8 +261,7 @@ class BaseLoggerTest extends TestCase
     {
         Context::add('trace_id', 'test-trace-123');
 
-        $loggerWithEnrichment = new class ($this->logManager) extends BaseLogger
-        {
+        $loggerWithEnrichment = new class ($this->logManager) extends BaseLogger {
             protected string $channel = 'test';
 
             // Override log method to test enrichContext
@@ -296,8 +292,7 @@ class BaseLoggerTest extends TestCase
     #[TestDox('adds prefix to context keys')]
     public function testAddsPrefixToContextKeys(): void
     {
-        $loggerWithPrefix = new class ($this->logManager) extends BaseLogger
-        {
+        $loggerWithPrefix = new class ($this->logManager) extends BaseLogger {
             protected string $channel = 'test';
             protected string $contextPrefix = 'app.module';
 
@@ -328,8 +323,7 @@ class BaseLoggerTest extends TestCase
     #[TestDox('returns empty context unchanged with prefix')]
     public function testReturnsEmptyContextUnchangedWithPrefix(): void
     {
-        $loggerWithPrefix = new class ($this->logManager) extends BaseLogger
-        {
+        $loggerWithPrefix = new class ($this->logManager) extends BaseLogger {
             protected string $channel = 'test';
             protected string $contextPrefix = 'prefix';
 
@@ -357,8 +351,7 @@ class BaseLoggerTest extends TestCase
     #[TestDox('returns context unchanged without prefix')]
     public function testReturnsContextUnchangedWithoutPrefix(): void
     {
-        $loggerWithoutPrefix = new class ($this->logManager) extends BaseLogger
-        {
+        $loggerWithoutPrefix = new class ($this->logManager) extends BaseLogger {
             protected string $channel = 'test';
             protected string $contextPrefix = '';
 

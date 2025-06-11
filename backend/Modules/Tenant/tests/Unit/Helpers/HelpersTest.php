@@ -12,7 +12,6 @@ use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase as BaseTestCase;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Illuminate\Contracts\Foundation\Application;
 
 #[Group('tenant-module')]
 #[Group('tenant-helpers')]
@@ -26,17 +25,17 @@ class HelpersTest extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->testTenant = Tenant::factory()->make([
             'id' => 123,
             'domain' => 'test.example.com',
             'config' => new DynamicTenantConfig(['test_key' => 'test_value'])
         ]);
-        
+
         $this->findService = $this->createMock(FindService::class);
         $this->mockTenantContext = $this->createMock(TenantContext::class);
         $this->configPipeline = $this->createMock(ConfigurationPipeline::class);
-        
+
         $this->app->instance(FindService::class, $this->findService);
         $this->app->instance(TenantContext::class, $this->mockTenantContext);
         $this->app->instance(ConfigurationPipeline::class, $this->configPipeline);

@@ -20,10 +20,11 @@ class LoginRequestTest extends TestCase
         // Arrange - use reflection to access rules method without executing the class
         $reflection = new \ReflectionClass(LoginRequest::class);
         $method = $reflection->getMethod('rules');
-        
+
         // Create instance but don't initialize Laravel-specific parts
-        $request = new class extends LoginRequest {
-            public function __construct() {
+        $request = new class () extends LoginRequest {
+            public function __construct()
+            {
                 // Don't call parent constructor to avoid Laravel dependencies
             }
         };
@@ -35,12 +36,12 @@ class LoginRequestTest extends TestCase
         $this->assertIsArray($rules);
         $this->assertArrayHasKey('email', $rules);
         $this->assertArrayHasKey('password', $rules);
-        
+
         // Check email rules
         $this->assertIsArray($rules['email']);
         $this->assertContains('required', $rules['email']);
         $this->assertContains('string', $rules['email']);
-        
+
         // Check password rules
         $this->assertIsArray($rules['password']);
         $this->assertContains('required', $rules['password']);

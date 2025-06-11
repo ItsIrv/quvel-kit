@@ -127,8 +127,7 @@ final class ConfigurationPipelineTest extends TestCase
         $tenant = $this->createMock(Tenant::class);
 
         // Create a mock that has toArray method and extends DynamicTenantConfig
-        $tenantConfig = new class extends DynamicTenantConfig
-        {
+        $tenantConfig = new class () extends DynamicTenantConfig {
             public function toArray(): array
             {
                 return ['config' => ['array_key' => 'array_value']];
@@ -202,8 +201,7 @@ final class ConfigurationPipelineTest extends TestCase
     public function testGetDocumentation(): void
     {
         // Create actual classes to avoid mock collision issues
-        $pipe1 = new class implements ConfigurationPipeInterface
-        {
+        $pipe1 = new class () implements ConfigurationPipeInterface {
             public function priority(): int
             {
                 return 10;
@@ -222,8 +220,7 @@ final class ConfigurationPipelineTest extends TestCase
             }
         };
 
-        $pipe2 = new class implements ConfigurationPipeInterface
-        {
+        $pipe2 = new class () implements ConfigurationPipeInterface {
             public function priority(): int
             {
                 return 10;
@@ -377,7 +374,7 @@ final class ConfigurationPipelineTest extends TestCase
 
         $this->assertArrayHasKey('values', $result);
         $this->assertArrayHasKey('visibility', $result);
-        
+
         // Should include tenant identity
         $this->assertEquals('tenant-123', $result['values']['tenantId']);
         $this->assertEquals('Test Tenant', $result['values']['tenantName']);
@@ -456,7 +453,7 @@ final class ConfigurationPipelineTest extends TestCase
         $this->assertEquals('pipe1_value', $result['values']['pipe1_key']);
         $this->assertEquals('pipe2_value', $result['values']['pipe2_key']);
         $this->assertEquals('pipe3_value', $result['values']['pipe3_key']);
-        
+
         // Later pipes in priority order should override shared_key (pipe1 runs after pipe3 due to array_merge)
         $this->assertEquals('pipe1_shared', $result['values']['shared_key']);
         $this->assertEquals('private', $result['visibility']['shared_key']);
@@ -599,7 +596,7 @@ final class ConfigurationPipelineTest extends TestCase
 
         // Should call in priority order: pipe2 (15), pipe3 (10), pipe1 (5)
         $this->assertEquals(['pipe2', 'pipe3', 'pipe1'], $callOrder);
-        
+
         // All values should be present
         $this->assertEquals('value1', $result['values']['pipe1']);
         $this->assertEquals('value2', $result['values']['pipe2']);

@@ -290,8 +290,7 @@ final class SetTraceIdTest extends TestCase
     public function testCoversLine42WhenCustomSubclassAllowsEmptyHeaderAcceptance(): void
     {
         // Create a custom middleware that overrides shouldAcceptTraceHeader to return true for empty
-        $middleware = new class ($this->requestPrivacy) extends SetTraceId
-        {
+        $middleware = new class ($this->requestPrivacy) extends SetTraceId {
             protected function shouldAcceptTraceHeader(?string $traceId): bool
             {
                 // Always accept, even if empty - this allows us to test line 42
