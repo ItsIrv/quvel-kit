@@ -107,7 +107,7 @@ services:
     image: nginx:latest
     container_name: quvel-coverage
     volumes:
-      - ../backend/storage/debug/coverage:/usr/share/nginx/html:ro # Serve PHPUnit reports as static files
+      - ../backend/storage/coverage:/usr/share/nginx/html:ro # Serve PHPUnit reports as static files
     labels:
       - 'traefik.enable=true' # Enable Traefik proxy for this service
       - 'traefik.http.routers.coverage.rule=Host(`coverage-api.quvel.127.0.0.1.nip.io`)' # Route requests to coverage

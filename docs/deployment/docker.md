@@ -5,6 +5,7 @@ QuVel Kit includes comprehensive Docker support for both development and product
 ## Overview
 
 The Docker configuration supports flexible deployment scenarios:
+
 - **Full containerization**: All services in Docker
 - **Hybrid setup**: Traefik in Docker, services local
 - **Development tools**: Coverage reports, testing, and monitoring
@@ -62,6 +63,7 @@ traefik:
 ```
 
 **Purpose:**
+
 - SSL termination for all services
 - Domain-based routing
 - WebSocket proxying
@@ -82,6 +84,7 @@ app:
 ```
 
 **Features:**
+
 - Live code reloading
 - Composer dependency management
 - Artisan command access
@@ -102,6 +105,7 @@ frontend:
 ```
 
 **Features:**
+
 - Hot Module Replacement (HMR)
 - SSR development server
 - Yarn dependency management
@@ -136,7 +140,7 @@ redis:
 coverage:
   image: nginx:latest
   volumes:
-    - ../backend/storage/debug/coverage:/usr/share/nginx/html:ro
+    - ../backend/storage/coverage:/usr/share/nginx/html:ro
   labels:
     - 'traefik.http.routers.coverage.rule=Host(`coverage-api.quvel.127.0.0.1.nip.io`)'
 ```
@@ -213,15 +217,18 @@ COPY . .
 ### Standard Development (Hybrid Setup)
 
 **Services in Docker:**
+
 - Traefik (reverse proxy)
 - MySQL (database)
 - Redis (cache)
 
 **Services Local:**
+
 - Laravel (`php artisan serve`)
 - Quasar (`quasar dev`)
 
 **Commands:**
+
 ```bash
 # Start infrastructure
 ./scripts/start.sh
@@ -238,6 +245,7 @@ cd frontend && quasar dev --port 3000
 **All services in Docker containers**
 
 **Commands:**
+
 ```bash
 # Update traefik configuration (uncomment Docker URLs)
 # Edit: docker/traefik/dynamic/backend.yml
@@ -348,6 +356,7 @@ networks:
 ```
 
 **Service Communication:**
+
 - Internal: Service names (`quvel-app`, `quvel-mysql`)
 - External: Host ports (3306, 6379, 8080)
 - Web: Traefik routing (*.nip.io domains)
@@ -393,6 +402,7 @@ VITE_APP_URL=https://quvel.127.0.0.1.nip.io
 ### Development Performance
 
 1. **Keep dependencies in containers:**
+
    ```yaml
    volumes:
      - /var/www/vendor      # Don't sync to host
@@ -400,6 +410,7 @@ VITE_APP_URL=https://quvel.127.0.0.1.nip.io
    ```
 
 2. **Use bind mounts for source code:**
+
    ```yaml
    volumes:
      - ../backend:/var/www   # Live editing
@@ -407,6 +418,7 @@ VITE_APP_URL=https://quvel.127.0.0.1.nip.io
    ```
 
 3. **Exclude heavy directories:**
+
    ```dockerfile
    # .dockerignore
    node_modules
@@ -437,6 +449,7 @@ services:
 ### Common Issues
 
 #### 1. Permission Problems
+
 ```bash
 # Fix Laravel permissions
 docker exec quvel-app chown -R www-data:www-data /var/www/storage
@@ -444,6 +457,7 @@ docker exec quvel-app chmod -R 775 /var/www/storage
 ```
 
 #### 2. Port Conflicts
+
 ```bash
 # Check port usage
 lsof -i :3306
@@ -455,6 +469,7 @@ brew services stop redis
 ```
 
 #### 3. Volume Mount Issues
+
 ```bash
 # Check volume mounts
 docker inspect quvel-app | grep Mounts -A 10
@@ -465,6 +480,7 @@ docker-compose up -d
 ```
 
 #### 4. Network Connectivity
+
 ```bash
 # Test internal connectivity
 docker exec quvel-app ping quvel-mysql
@@ -500,6 +516,7 @@ docker-compose ps
 ### Security Considerations
 
 1. **Remove development tools:**
+
    ```yaml
    # Remove from production:
    # - vitest-ui
@@ -508,12 +525,14 @@ docker-compose ps
    ```
 
 2. **Environment security:**
+
    ```bash
    # Use Docker secrets
    echo "password123" | docker secret create mysql_password -
    ```
 
 3. **Network isolation:**
+
    ```yaml
    networks:
      frontend:

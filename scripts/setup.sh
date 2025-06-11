@@ -140,7 +140,7 @@ if [ "$DEPLOY_MODE" = "docker" ]; then
   docker exec -it quvel-app php artisan storage:link
 
   echo "📊 Generating initial PHPUnit coverage report..."
-  docker exec -it quvel-app php artisan test --coverage-html=storage/debug/coverage
+  docker exec -it quvel-app php artisan test --coverage-html=storage/coverage
 
 elif [ "$DEPLOY_MODE" = "traefik-only" ]; then
   # Traefik-only mode - everything else runs locally
