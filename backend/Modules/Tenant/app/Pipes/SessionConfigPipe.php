@@ -4,7 +4,6 @@ namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Session\SessionManager;
-use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Logs\Pipes\SessionConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 

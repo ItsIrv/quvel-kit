@@ -25,7 +25,7 @@ use Modules\Auth\Traits\UseAuthModuleNotifications;
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Modules\Tenant\Database\Factories\TenantFactory> */
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
 
     use Notifiable;

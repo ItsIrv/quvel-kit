@@ -49,7 +49,7 @@ class TenantContextTest extends TestCase
             domain: 'api.example.com',
             appName: 'Example App'
         );
-        
+
         $tenant = Tenant::factory()->make([
             'config' => $config,
         ]);
@@ -70,7 +70,7 @@ class TenantContextTest extends TestCase
             domain: 'api.example.com',
             appName: 'Example App'
         );
-        
+
         $tenant = Tenant::factory()->make([
             'config' => $config,
         ]);
@@ -80,7 +80,7 @@ class TenantContextTest extends TestCase
 
         // Check the actual available keys first
         $allConfig = $context->getConfig()->toArray()['config'];
-        
+
         $this->assertEquals(
             'api.example.com',
             $context->getConfigValue('domain'),
@@ -107,7 +107,7 @@ class TenantContextTest extends TestCase
             domain: 'api.example.com',
             appName: 'Example App'
         );
-        
+
         $tenant = Tenant::factory()->make([
             'config' => $config,
         ]);

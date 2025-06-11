@@ -60,7 +60,7 @@ final class GetsTenantTest extends TestCase
         $this->tenantContext->shouldReceive('isBypassed')
             ->once()
             ->andReturn(false);
-            
+
         $this->tenantContext->shouldReceive('get')
             ->once()
             ->andReturn($tenant);
@@ -86,7 +86,7 @@ final class GetsTenantTest extends TestCase
         $this->tenantContext->shouldReceive('isBypassed')
             ->once()
             ->andReturn(false);
-            
+
         $this->tenantContext->shouldReceive('get')
             ->once()
             ->andReturn($tenant);
@@ -112,7 +112,7 @@ final class GetsTenantTest extends TestCase
         $this->tenantContext->shouldReceive('isBypassed')
             ->once()
             ->andReturn(false);
-            
+
         $this->tenantContext->shouldReceive('get')
             ->once()
             ->andReturn($tenant);

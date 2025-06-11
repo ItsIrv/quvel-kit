@@ -2,6 +2,7 @@
 
 namespace Modules\Core\Http\Actions\Debug;
 
+use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Modules\Core\Services\FrontendService;
@@ -18,6 +19,7 @@ class ShowProxyInfoAction
      */
     public function __construct(
         private readonly FrontendService $frontendService,
+        private readonly Config $config,
     ) {
     }
 
@@ -27,17 +29,17 @@ class ShowProxyInfoAction
     public function __invoke(Request $request): JsonResponse
     {
         // Only show this endpoint when APP_DEBUG is true
-        if (!config('app.debug')) {
+        if (!$this->config->get('app.debug')) {
             abort(404);
         }
 
         return response()->json([
             'environment'       => [
-                'APP_DEBUG'         => config('app.debug'),
-                'APP_ENV'           => config('app.env'),
-                'TRUST_PROXIES'     => env('TRUST_PROXIES'),
-                'TRUSTED_PROXY_IPS' => env('TRUSTED_PROXY_IPS'),
-                'OCTANE_SERVER'     => env('OCTANE_SERVER'),
+                'APP_DEBUG'         => $this->config->get('app.debug'),
+                'APP_ENV'           => $this->config->get('app.env'),
+                'TRUST_PROXIES'     => $this->config->get('trustedproxy.proxies'),
+                'TRUSTED_PROXY_IPS' => $this->config->get('trustedproxy.headers'),
+                'OCTANE_SERVER'     => $this->config->get('octane.server'),
             ],
             'request_info'      => [
                 'method'      => $request->method(),
@@ -72,7 +74,7 @@ class ShowProxyInfoAction
                 'REQUEST_URI'    => $request->server('REQUEST_URI'),
             ],
             'url_generation'    => [
-                'app_url'      => config('app.url'),
+                'app_url'      => $this->config->get('app.url'),
                 'url_helper'   => url('/'),
                 'asset_helper' => asset('test.css'),
                 'route_helper' => route('login') ?? 'No login route found',

@@ -142,7 +142,7 @@ class DatabaseConfigPipeTest extends TestCase
 
         // Should not set any config
         $this->config->expects($this->never())->method('set');
-        
+
         // Should not interact with database manager
         $this->dbManager->expects($this->never())->method('getConnections');
         $this->dbManager->expects($this->never())->method('purge');

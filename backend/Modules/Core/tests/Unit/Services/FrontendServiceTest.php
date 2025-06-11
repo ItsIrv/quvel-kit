@@ -141,4 +141,45 @@ class FrontendServiceTest extends TestCase
         $reflectionValue->setAccessible(true);
         $this->assertTrue($reflectionValue->getValue($this->frontendService));
     }
+
+    /**
+     * Test getUrl method returns the correct URL.
+     */
+    public function testGetUrl(): void
+    {
+        $url = 'https://example.com';
+        $this->frontendService->setUrl($url);
+        $this->assertEquals($url, $this->frontendService->getUrl());
+    }
+
+    /**
+     * Test getCapacitorScheme method returns the correct scheme.
+     */
+    public function testGetCapacitorScheme(): void
+    {
+        $scheme = 'myapp';
+        $this->frontendService->setCapacitorScheme($scheme);
+        $this->assertEquals($scheme, $this->frontendService->getCapacitorScheme());
+
+        // Test with null scheme
+        $this->frontendService->setCapacitorScheme(null);
+        $this->assertNull($this->frontendService->getCapacitorScheme());
+    }
+
+    /**
+     * Test getIsCapacitor method returns the correct boolean value.
+     */
+    public function testGetIsCapacitor(): void
+    {
+        // Default should be false from setUp
+        $this->assertFalse($this->frontendService->getIsCapacitor());
+
+        // Set to true and verify
+        $this->frontendService->setIsCapacitor(true);
+        $this->assertTrue($this->frontendService->getIsCapacitor());
+
+        // Set back to false and verify
+        $this->frontendService->setIsCapacitor(false);
+        $this->assertFalse($this->frontendService->getIsCapacitor());
+    }
 }

@@ -6,7 +6,6 @@ use Illuminate\Container\Container;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Foundation\Application;
 use Illuminate\Session\SessionManager;
-use Illuminate\Session\Store;
 use Modules\Tenant\Logs\Pipes\SessionConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Pipes\SessionConfigPipe;

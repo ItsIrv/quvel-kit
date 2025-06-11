@@ -35,14 +35,14 @@ class DynamicTenantConfigCast implements CastsAttributes
         if (isset($data['__visibility'])) {
             $visibility = [];
             foreach ($data['__visibility'] as $key => $vis) {
-                $visibility[$key] = is_string($vis) 
+                $visibility[$key] = is_string($vis)
                     ? TenantConfigVisibility::tryFrom($vis) ?? TenantConfigVisibility::PRIVATE
                     : $vis;
             }
             unset($data['__visibility']);
             return new DynamicTenantConfig($data, $visibility);
         }
-        
+
         // Assume it's a direct config array
         return new DynamicTenantConfig($data);
     }

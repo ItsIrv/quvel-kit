@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
+use Symfony\Component\Uid\Ulid;
 use Tests\TestCase;
 
 #[CoversClass(UserCreateService::class)]
@@ -61,6 +62,36 @@ class UserCreateServiceTest extends TestCase
         $this->assertEquals($email, $user->email);
 
         // Assert it exists in the database
+        $this->assertDatabaseHas('users', [
+            'public_id' => $user->public_id,
+            'name'      => $name,
+            'email'     => $email,
+        ]);
+    }
+
+    /**
+     * Test that create automatically generates a public_id when not provided.
+     */
+    public function testCreateUserAutoGeneratesPublicId(): void
+    {
+        $name  = $this->faker->name;
+        $email = $this->faker->email;
+
+        $userData = [
+            'name'     => $name,
+            'email'    => $email,
+            'password' => 'password123',
+        ];
+
+        // Create the user without providing public_id
+        $user = $this->userCreateService->create($userData, false); // Disable event to simplify test
+
+        $this->assertNotNull($user->public_id);
+        $this->assertInstanceOf(Ulid::class, $user->public_id);
+        $this->assertEquals($name, $user->name);
+        $this->assertEquals($email, $user->email);
+
+        // Assert it exists in the database with the auto-generated public_id
         $this->assertDatabaseHas('users', [
             'public_id' => $user->public_id,
             'name'      => $name,

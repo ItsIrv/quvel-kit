@@ -3,7 +3,6 @@
 namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Models\Tenant;
 
 /**

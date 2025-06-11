@@ -70,7 +70,7 @@ class TenantConfigCastTest extends TestCase
         $this->assertTrue($result->get('app_debug'));
         $this->assertEquals('Example', $result->get('mail_from_name'));
         $this->assertEquals('no-reply@example.com', $result->get('mail_from_address'));
-        
+
         // Check visibility
         $this->assertEquals(
             TenantConfigVisibility::PUBLIC,

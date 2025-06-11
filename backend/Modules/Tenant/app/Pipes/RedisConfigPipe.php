@@ -4,7 +4,6 @@ namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Redis\Factory as RedisFactory;
-use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Logs\Pipes\RedisConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 

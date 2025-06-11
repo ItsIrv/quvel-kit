@@ -4,7 +4,6 @@ namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Database\DatabaseManager;
-use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Logs\Pipes\DatabaseConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 

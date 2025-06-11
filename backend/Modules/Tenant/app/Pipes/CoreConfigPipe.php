@@ -8,7 +8,6 @@ use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Date;
-use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Logs\Pipes\CoreConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 

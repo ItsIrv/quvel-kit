@@ -27,6 +27,7 @@ class UserFindServiceTest extends TestCase
             'name'      => 'John Doe',
             'email'     => 'johndoe@example.com',
             'tenant_id' => $this->tenant->id,
+            'public_id' => 'user_123456789',
         ]);
     }
 
@@ -65,6 +66,25 @@ class UserFindServiceTest extends TestCase
     public function testFindByEmailReturnsNullWhenUserNotFound(): void
     {
         $foundUser = $this->userFindService->findByEmail('nonexistent@example.com');
+        $this->assertNull($foundUser);
+    }
+
+    /**
+     * Test finding a user by public ID.
+     */
+    public function testFindByPublicIdReturnsUser(): void
+    {
+        $foundUser = $this->userFindService->findByPublicId($this->user->public_id);
+        $this->assertInstanceOf(User::class, $foundUser);
+        $this->assertEquals($this->user->public_id, $foundUser->public_id);
+    }
+
+    /**
+     * Test findByPublicId returns null when user is not found.
+     */
+    public function testFindByPublicIdReturnsNullWhenUserNotFound(): void
+    {
+        $foundUser = $this->userFindService->findByPublicId('nonexistent_public_id');
         $this->assertNull($foundUser);
     }
 

@@ -73,6 +73,26 @@ php artisan test --coverage --min=80
 ./vendor/bin/phpstan --memory-limit=1G   # Increase memory limit
 ```
 
+## Composer Shortcuts
+
+QuVel Kit provides convenient composer shortcuts for common development tasks:
+
+```bash
+# Testing Shortcuts
+composer test                            # Run all tests in parallel
+composer test-coverage                   # Run tests with HTML coverage report
+composer test-filter FilterName          # Run filtered tests
+
+# Code Quality Shortcuts
+composer lint                            # Run Laravel Pint formatter
+composer lint-fix                       # Run Pint with auto-fix
+composer analyse                        # Run PHPStan analysis
+composer quality                        # Run all quality checks (lint + analyse + test)
+
+# Development
+composer dev                            # Start development servers (Laravel, queue, logs, Vite)
+```
+
 ## Artisan Make Commands
 
 ```bash

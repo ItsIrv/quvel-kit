@@ -16,7 +16,8 @@ class TenantConfigSeederRegistry
 
     public function __construct(
         private TenantModuleConfigLoader $loader
-    ) {}
+    ) {
+    }
 
 
     /**

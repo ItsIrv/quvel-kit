@@ -3,7 +3,6 @@
 namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Modules\Tenant\Pipes\BaseConfigurationPipe;
 use Modules\Tenant\Models\Tenant;
 
 /**
@@ -115,7 +114,7 @@ class BroadcastingConfigPipe extends BaseConfigurationPipe
             $values['pusherAppKey'] = $tenantConfig['pusher_app_key'];
             $visibility['pusherAppKey'] = 'public';
         }
-        
+
         if ($this->hasValue($tenantConfig, 'pusher_app_cluster')) {
             $values['pusherAppCluster'] = $tenantConfig['pusher_app_cluster'];
             $visibility['pusherAppCluster'] = 'public';

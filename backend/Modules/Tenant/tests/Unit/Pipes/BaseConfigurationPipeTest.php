@@ -65,7 +65,7 @@ class BaseConfigurationPipeTest extends TestCase
         $this->assertFalse($this->pipe->testHasValue($tenantConfig, 'empty_string'));
         $this->assertFalse($this->pipe->testHasValue($tenantConfig, 'null_value'));
         $this->assertFalse($this->pipe->testHasValue($tenantConfig, 'missing_key'));
-        
+
         // Zero is considered a valid value
         $this->assertTrue($this->pipe->testHasValue($tenantConfig, 'zero'));
     }
