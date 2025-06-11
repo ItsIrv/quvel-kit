@@ -362,4 +362,247 @@ final class ConfigurationPipelineTest extends TestCase
         $this->assertSame($pipe2, $pipes->get(1));
         $this->assertSame($pipe3, $pipes->get(2));
     }
+
+    #[TestDox('Should resolve configuration from array with no pipes')]
+    public function testResolveFromArrayWithNoPipes(): void
+    {
+        $tenant = new Tenant();
+        $tenant->public_id = 'tenant-123';
+        $tenant->name = 'Test Tenant';
+        $tenant->parent = null;
+
+        $configArray = ['test_key' => 'test_value'];
+
+        $result = $this->pipeline->resolveFromArray($tenant, $configArray);
+
+        $this->assertArrayHasKey('values', $result);
+        $this->assertArrayHasKey('visibility', $result);
+        
+        // Should include tenant identity
+        $this->assertEquals('tenant-123', $result['values']['tenantId']);
+        $this->assertEquals('Test Tenant', $result['values']['tenantName']);
+        $this->assertEquals('public', $result['visibility']['tenantId']);
+        $this->assertEquals('public', $result['visibility']['tenantName']);
+    }
+
+    #[TestDox('Should resolve configuration from array with single pipe')]
+    public function testResolveFromArrayWithSinglePipe(): void
+    {
+        $tenant = new Tenant();
+        $tenant->public_id = 'tenant-456';
+        $tenant->name = 'Single Pipe Tenant';
+        $tenant->parent = null;
+
+        $configArray = ['config_key' => 'config_value'];
+
+        $pipe = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe->method('priority')->willReturn(10);
+        $pipe->expects($this->once())
+            ->method('resolve')
+            ->with($tenant, $configArray)
+            ->willReturn([
+                'values' => ['pipe_key' => 'pipe_value'],
+                'visibility' => ['pipe_key' => 'private']
+            ]);
+
+        $this->pipeline->register($pipe);
+
+        $result = $this->pipeline->resolveFromArray($tenant, $configArray);
+
+        $this->assertEquals('pipe_value', $result['values']['pipe_key']);
+        $this->assertEquals('private', $result['visibility']['pipe_key']);
+        $this->assertEquals('tenant-456', $result['values']['tenantId']);
+        $this->assertEquals('Single Pipe Tenant', $result['values']['tenantName']);
+    }
+
+    #[TestDox('Should resolve configuration from array with multiple pipes')]
+    public function testResolveFromArrayWithMultiplePipes(): void
+    {
+        $tenant = new Tenant();
+        $tenant->public_id = 'tenant-789';
+        $tenant->name = 'Multi Pipe Tenant';
+        $tenant->parent = null;
+
+        $configArray = ['app_config' => 'app_value'];
+
+        $pipe1 = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe1->method('priority')->willReturn(15);
+        $pipe1->method('resolve')->willReturn([
+            'values' => ['pipe1_key' => 'pipe1_value', 'shared_key' => 'pipe1_shared'],
+            'visibility' => ['pipe1_key' => 'public', 'shared_key' => 'private']
+        ]);
+
+        $pipe2 = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe2->method('priority')->willReturn(10);
+        $pipe2->method('resolve')->willReturn([
+            'values' => ['pipe2_key' => 'pipe2_value'],
+            'visibility' => ['pipe2_key' => 'internal']
+        ]);
+
+        $pipe3 = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe3->method('priority')->willReturn(20);
+        $pipe3->method('resolve')->willReturn([
+            'values' => ['pipe3_key' => 'pipe3_value', 'shared_key' => 'pipe3_shared'],
+            'visibility' => ['pipe3_key' => 'public', 'shared_key' => 'public']
+        ]);
+
+        $this->pipeline->register($pipe1);
+        $this->pipeline->register($pipe2);
+        $this->pipeline->register($pipe3);
+
+        $result = $this->pipeline->resolveFromArray($tenant, $configArray);
+
+        // Should include values from all pipes
+        $this->assertEquals('pipe1_value', $result['values']['pipe1_key']);
+        $this->assertEquals('pipe2_value', $result['values']['pipe2_key']);
+        $this->assertEquals('pipe3_value', $result['values']['pipe3_key']);
+        
+        // Later pipes in priority order should override shared_key (pipe1 runs after pipe3 due to array_merge)
+        $this->assertEquals('pipe1_shared', $result['values']['shared_key']);
+        $this->assertEquals('private', $result['visibility']['shared_key']);
+    }
+
+    #[TestDox('Should resolve configuration with parent tenant identity')]
+    public function testResolveFromArrayWithParentTenant(): void
+    {
+        $parentTenant = new Tenant();
+        $parentTenant->public_id = 'parent-123';
+        $parentTenant->name = 'Parent Tenant';
+
+        $tenant = new Tenant();
+        $tenant->public_id = 'child-456';
+        $tenant->name = 'Child Tenant';
+        $tenant->parent = $parentTenant;
+
+        $configArray = [];
+
+        $result = $this->pipeline->resolveFromArray($tenant, $configArray);
+
+        // Should use parent tenant for identity
+        $this->assertEquals('parent-123', $result['values']['tenantId']);
+        $this->assertEquals('Parent Tenant', $result['values']['tenantName']);
+        $this->assertEquals('public', $result['visibility']['tenantId']);
+        $this->assertEquals('public', $result['visibility']['tenantName']);
+    }
+
+    #[TestDox('Should handle pipe that returns only values')]
+    public function testResolveFromArrayWithPipeReturningOnlyValues(): void
+    {
+        $tenant = new Tenant();
+        $tenant->public_id = 'tenant-values-only';
+        $tenant->name = 'Values Only Tenant';
+        $tenant->parent = null;
+
+        $configArray = [];
+
+        $pipe = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe->method('priority')->willReturn(10);
+        $pipe->method('resolve')->willReturn([
+            'values' => ['values_only_key' => 'values_only_value']
+            // No visibility key
+        ]);
+
+        $this->pipeline->register($pipe);
+
+        $result = $this->pipeline->resolveFromArray($tenant, $configArray);
+
+        $this->assertEquals('values_only_value', $result['values']['values_only_key']);
+        $this->assertArrayNotHasKey('values_only_key', $result['visibility']);
+    }
+
+    #[TestDox('Should handle pipe that returns only visibility')]
+    public function testResolveFromArrayWithPipeReturningOnlyVisibility(): void
+    {
+        $tenant = new Tenant();
+        $tenant->public_id = 'tenant-visibility-only';
+        $tenant->name = 'Visibility Only Tenant';
+        $tenant->parent = null;
+
+        $configArray = [];
+
+        $pipe = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe->method('priority')->willReturn(10);
+        $pipe->method('resolve')->willReturn([
+            'visibility' => ['visibility_only_key' => 'private']
+            // No values key
+        ]);
+
+        $this->pipeline->register($pipe);
+
+        $result = $this->pipeline->resolveFromArray($tenant, $configArray);
+
+        $this->assertEquals('private', $result['visibility']['visibility_only_key']);
+        $this->assertArrayNotHasKey('visibility_only_key', $result['values']);
+    }
+
+    #[TestDox('Should handle pipe that returns empty result')]
+    public function testResolveFromArrayWithPipeReturningEmptyResult(): void
+    {
+        $tenant = new Tenant();
+        $tenant->public_id = 'tenant-empty';
+        $tenant->name = 'Empty Result Tenant';
+        $tenant->parent = null;
+
+        $configArray = [];
+
+        $pipe = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe->method('priority')->willReturn(10);
+        $pipe->method('resolve')->willReturn([]);
+
+        $this->pipeline->register($pipe);
+
+        $result = $this->pipeline->resolveFromArray($tenant, $configArray);
+
+        // Should only have tenant identity
+        $this->assertEquals(['tenantId' => 'tenant-empty', 'tenantName' => 'Empty Result Tenant'], $result['values']);
+        $this->assertEquals(['tenantId' => 'public', 'tenantName' => 'public'], $result['visibility']);
+    }
+
+    #[TestDox('Should sort pipes by priority when resolving')]
+    public function testResolveFromArraySortsPipesByPriority(): void
+    {
+        $tenant = new Tenant();
+        $tenant->public_id = 'tenant-priority';
+        $tenant->name = 'Priority Test Tenant';
+        $tenant->parent = null;
+
+        $configArray = [];
+        $callOrder = [];
+
+        $pipe1 = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe1->method('priority')->willReturn(5);
+        $pipe1->method('resolve')->willReturnCallback(function () use (&$callOrder) {
+            $callOrder[] = 'pipe1';
+            return ['values' => ['pipe1' => 'value1'], 'visibility' => []];
+        });
+
+        $pipe2 = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe2->method('priority')->willReturn(15);
+        $pipe2->method('resolve')->willReturnCallback(function () use (&$callOrder) {
+            $callOrder[] = 'pipe2';
+            return ['values' => ['pipe2' => 'value2'], 'visibility' => []];
+        });
+
+        $pipe3 = $this->createMock(ConfigurationPipeInterface::class);
+        $pipe3->method('priority')->willReturn(10);
+        $pipe3->method('resolve')->willReturnCallback(function () use (&$callOrder) {
+            $callOrder[] = 'pipe3';
+            return ['values' => ['pipe3' => 'value3'], 'visibility' => []];
+        });
+
+        // Register in random order
+        $this->pipeline->register($pipe1);
+        $this->pipeline->register($pipe2);
+        $this->pipeline->register($pipe3);
+
+        $result = $this->pipeline->resolveFromArray($tenant, $configArray);
+
+        // Should call in priority order: pipe2 (15), pipe3 (10), pipe1 (5)
+        $this->assertEquals(['pipe2', 'pipe3', 'pipe1'], $callOrder);
+        
+        // All values should be present
+        $this->assertEquals('value1', $result['values']['pipe1']);
+        $this->assertEquals('value2', $result['values']['pipe2']);
+        $this->assertEquals('value3', $result['values']['pipe3']);
+    }
 }

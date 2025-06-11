@@ -113,35 +113,6 @@ class ConfigurationPipeline
     }
 
     /**
-     * Resolve configuration values for a tenant without side effects.
-     * This returns the final configuration values that pipes would apply, including calculated defaults.
-     *
-     * @param Tenant $tenant
-     * @return array ['values' => array, 'visibility' => array]
-     */
-    public function resolve(Tenant $tenant): array
-    {
-        // Check if tenant context is bypassed
-        $tenantContext = app(TenantContext::class);
-        if ($tenantContext->isBypassed()) {
-            return ['values' => [], 'visibility' => []];
-        }
-
-        $tenantConfig = $tenant->getEffectiveConfig();
-
-        if (!$tenantConfig) {
-            return ['values' => [], 'visibility' => []];
-        }
-
-        // Convert to array for pipeline processing
-        $configArray = $tenantConfig instanceof DynamicTenantConfig
-            ? $tenantConfig->toArray()['config']
-            : $tenantConfig->toArray();
-
-        return $this->resolveFromArray($tenant, $configArray);
-    }
-
-    /**
      * Resolve configuration values from a configuration array without side effects.
      * This method works on merged configuration arrays and is the core resolution logic.
      * Returns both values and visibility for frontend consumption.
