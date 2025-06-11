@@ -5,15 +5,18 @@ This section covers deployment options, infrastructure setup, and development en
 ## Documentation Overview
 
 ### Setup & Configuration
-- **[Getting Started](./getting-started.md)** – Quick setup and environment configuration
+
+- **[Getting Started](../getting-started.md)** – Quick setup and environment configuration
 - **[Deployment Options](./deployment-options.md)** – Choose the right setup for your needs
 
 ### Infrastructure Components
+
 - **[Traefik Configuration](./traefik.md)** – Reverse proxy and SSL setup
 - **[Docker Setup](./docker.md)** – Container configuration and orchestration
 - **[Development Scripts](./scripts.md)** – Automation tools and configuration generation
 
 ### Platform Deployment
+
 - **[Local Development](./local-development.md)** – Development environment setup
 - **[Production Deployment](./production.md)** – Production hosting guide
 - **[Mobile Development](./mobile.md)** – iOS and Android development setup
@@ -53,22 +56,26 @@ This section covers deployment options, infrastructure setup, and development en
 QuVel Kit uses a template-based configuration system that automatically generates the correct settings for your deployment mode:
 
 #### What Gets Generated
+
 - **`traefik.yml`**: Main Traefik configuration with correct paths (Docker vs local)
 - **`frontend.yml`**: Frontend service routing with proper targets
 - **`backend.yml`**: Backend API routing with correct upstream services
 - **`certificates.yaml`**: SSL certificate configuration with proper paths
 
 #### Smart Path Detection
+
 - **Docker Modes**: Uses container paths (`/certs/`, `/traefik`, `quvel-frontend:9000`)
 - **Local Mode**: Uses absolute local paths (`/full/path/to/docker/certs/`)
 - **Hybrid Modes**: Uses `host.docker.internal` for Docker-to-local communication
 
 #### Network Intelligence
+
 - **Auto IP Detection**: Automatically detects and includes your LAN IP
 - **Multi-Device Access**: Generates domains for both `127.0.0.1.nip.io` and `{your-ip}.nip.io`
 - **WebSocket Support**: Proper WebSocket routing for hot module replacement
 
 #### Template Locations
+
 ```
 docker/traefik/templates/
 ├── traefik.yml.template      # Main Traefik config

@@ -5,14 +5,17 @@ Complete documentation for QuVel Kit - a full-stack SaaS framework with multi-te
 ## Quick Navigation
 
 ### 🚀 Getting Started
+
 - **[Setup & Installation](./getting-started.md)** - Quick start with deployment modes
 - **[Project Structure](./folder-structure.md)** - Architecture and organization
 
 ### 💻 Development
+
 - **[Backend Guide](./backend/README.md)** - Laravel modules, API, and architecture
 - **[Frontend Guide](./frontend/README.md)** - Vue, Quasar, TypeScript, and SSR
 
 ### 🏗️ Deployment & Infrastructure
+
 - **[Deployment Options](./deployment/README.md)** - Docker, local, and hybrid setups
 - **[Troubleshooting](./troubleshooting.md)** - Common issues and solutions
 

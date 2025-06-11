@@ -15,17 +15,20 @@ The backend follows a modular pattern with dedicated modules for different conce
 ## Module Development
 
 ### Creating Modules
+
 - **[Module Development Guide](./module-development.md)** - Working with Laravel Modules
 - **[Code Quality Standards](./code-quality.md)** - Testing, linting, and best practices
 
 ### Core Modules
+
 - **[Multi-Tenancy System](./tenant-module.md)** - Architecture and dynamic configuration
 - **[Authentication](./auth-module.md)** - OAuth, Sanctum, and security
 - **[Core Module](./core-module.md)** - Base functionality and utilities
 
 ### Development Tools
+
+- **[Common Commands](./common-commands.md)** - Quick reference for Laravel commands
 - **[Testing Guide](./testing.md)** - Unit, feature, and integration testing
-- **[Getting Started](./getting-started.md)** - Local development setup
 
 ---
 

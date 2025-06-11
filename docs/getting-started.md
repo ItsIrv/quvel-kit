@@ -3,6 +3,7 @@
 ## Prerequisites
 
 ### Base Requirements (All Modes)
+
 - Node.js 18.0+
 - Yarn 1.22+  
 - mkcert (for SSL certificates)
@@ -44,9 +45,9 @@ cd quvel-kit
 
 Once setup is complete:
 
-- **Frontend**: https://quvel.127.0.0.1.nip.io
-- **API**: https://api.quvel.127.0.0.1.nip.io  
-- **Traefik Dashboard**: http://localhost:8080
+- **Frontend**: <https://quvel.127.0.0.1.nip.io>
+- **API**: <https://api.quvel.127.0.0.1.nip.io>  
+- **Traefik Dashboard**: <http://localhost:8080>
 
 Your LAN IP is automatically included, so you can also access via `https://quvel.{your-ip}.nip.io` from other devices.
 
