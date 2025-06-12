@@ -67,8 +67,8 @@ The Octane configuration is already set up in `config/octane.php` with optimized
     'tenants' => [
         'rows' => env('TENANT_MEMORY_CACHE_MAX_SIZE', 1000),
         'columns' => [
-            ['name' => 'tenant', 'type' => 'string', 'size' => 10000],
-            ['name' => 'expires_at', 'type' => 'int'],
+            'tenant'     => 'string:10000',
+            'expires_at' => 'int',
         ],
     ],
 ],
