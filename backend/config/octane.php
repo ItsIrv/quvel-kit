@@ -152,10 +152,6 @@ return [
             'tenant'     => 'string:10000',
             'expires_at' => 'int',
         ],
-        'example:1000' => [
-            'name'  => 'string:1000',
-            'votes' => 'int',
-        ],
     ],
 
     /*
