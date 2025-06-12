@@ -15,6 +15,7 @@ use Modules\Tenant\Enums\TenantHeader;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\HostResolver;
+use Modules\Tenant\Services\TenantMemoryCache;
 use Modules\Core\Services\Security\RequestPrivacy;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -59,6 +60,11 @@ final class HostResolverTest extends TestCase
     private ConfigRepository $config;
 
     /**
+     * @var TenantMemoryCache|MockInterface
+     */
+    private TenantMemoryCache $memoryCache;
+
+    /**
      * @var HostResolver
      */
     private HostResolver $hostResolver;
@@ -74,6 +80,7 @@ final class HostResolverTest extends TestCase
         $this->request     = Mockery::mock(LaravelRequest::class);
         $this->application = Mockery::mock(Application::class);
         $this->config      = Mockery::mock(ConfigRepository::class);
+        $this->memoryCache = Mockery::mock(TenantMemoryCache::class);
 
         $this->hostResolver = new HostResolver(
             $this->tenantFindService,
@@ -82,6 +89,7 @@ final class HostResolverTest extends TestCase
             $this->request,
             $this->application,
             $this->config,
+            $this->memoryCache,
         );
     }
 
@@ -92,6 +100,11 @@ final class HostResolverTest extends TestCase
         $host     = 'example.com';
         $tenant   = Mockery::mock(Tenant::class);
         $cacheTtl = 3600;
+
+        $this->memoryCache->shouldReceive('getTenant')
+            ->once()
+            ->with($host)
+            ->andReturn(null);
 
         $this->application->shouldReceive('environment')
             ->once()
@@ -111,6 +124,10 @@ final class HostResolverTest extends TestCase
             ->once()
             ->with($host)
             ->andReturn($tenant);
+
+        $this->memoryCache->shouldReceive('cacheTenant')
+            ->once()
+            ->with($host, $tenant);
 
         // Act
         $result = $this->hostResolver->resolveTenant();

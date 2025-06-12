@@ -50,6 +50,16 @@ return [
     ],
 
     /**
+     * Memory cache configuration for Octane environments.
+     */
+    'memory_cache'      => [
+        /**
+         * Maximum number of tenants to cache in memory.
+         */
+        'max_size' => env('TENANT_MEMORY_CACHE_MAX_SIZE', 1000),
+    ],
+
+    /**
      * Configuration pipeline pipes.
      * These are now loaded from module config/tenant.php files.
      * This section is kept for reference but is no longer used.

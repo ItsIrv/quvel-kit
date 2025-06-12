@@ -14,6 +14,7 @@ use Modules\Tenant\Services\ConfigurationPipeline;
 use Modules\Tenant\Services\FindService;
 use Modules\Tenant\Services\TenantConfigSeederRegistry;
 use Modules\Tenant\Services\TenantExclusionRegistry;
+use Modules\Tenant\Services\TenantMemoryCache;
 use Modules\Tenant\Services\TenantModuleConfigLoader;
 use Modules\Tenant\Services\TenantTableRegistry;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -64,6 +65,7 @@ class TenantServiceProviderTest extends TestCase
             strtolower(TenantModuleConfigLoader::class),
             strtolower(FindService::class),
             strtolower(TenantExclusionRegistry::class),
+            strtolower(TenantMemoryCache::class),
             strtolower(TenantTableRegistry::class),
             strtolower(ConfigurationPipeline::class),
             strtolower(TenantConfigSeederRegistry::class),

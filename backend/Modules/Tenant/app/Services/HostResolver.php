@@ -25,17 +25,31 @@ class HostResolver implements TenantResolver
         private readonly Request $request,
         private readonly Application $app,
         private readonly ConfigRepository $config,
+        private readonly TenantMemoryCache $memoryCache,
     ) {
     }
 
     /**
-     * Resolve the tenant from cache or database.
+     * Resolve the tenant from memory cache, regular cache, or database.
      */
     public function resolveTenant(): Tenant
     {
-        return $this->app->environment('local')
+        $domain = $this->getHost();
+
+        // First try memory cache (Octane)
+        if ($tenant = $this->memoryCache->getTenant($domain)) {
+            return $tenant;
+        }
+
+        // Fallback to regular resolution
+        $tenant = $this->app->environment('local')
             ? $this->resolveTenantFromDatabase()
             : $this->resolveTenantFromCache();
+
+        // Cache in memory for future requests
+        $this->memoryCache->cacheTenant($domain, $tenant);
+
+        return $tenant;
     }
 
     protected function resolveTenantFromCache(): ?Tenant

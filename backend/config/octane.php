@@ -12,13 +12,10 @@ use Laravel\Octane\Events\WorkerErrorOccurred;
 use Laravel\Octane\Events\WorkerStarting;
 use Laravel\Octane\Events\WorkerStopping;
 use Laravel\Octane\Listeners\CloseMonologHandlers;
-use Laravel\Octane\Listeners\CollectGarbage;
-use Laravel\Octane\Listeners\DisconnectFromDatabases;
 use Laravel\Octane\Listeners\EnsureUploadedFilesAreValid;
 use Laravel\Octane\Listeners\EnsureUploadedFilesCanBeMoved;
 use Laravel\Octane\Listeners\FlushOnce;
 use Laravel\Octane\Listeners\FlushTemporaryContainerInstances;
-use Laravel\Octane\Listeners\FlushUploadedFiles;
 use Laravel\Octane\Listeners\ReportException;
 use Laravel\Octane\Listeners\StopWorkerIfNecessary;
 use Laravel\Octane\Octane;
@@ -38,7 +35,7 @@ return [
     |
     */
 
-    'server' => env('OCTANE_SERVER', 'roadrunner'),
+    'server'             => env('OCTANE_SERVER', 'roadrunner'),
 
     /*
     |--------------------------------------------------------------------------
@@ -51,7 +48,7 @@ return [
     |
     */
 
-    'https' => env('OCTANE_HTTPS', false),
+    'https'              => env('OCTANE_HTTPS', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -64,41 +61,41 @@ return [
     |
     */
 
-    'listeners' => [
-        WorkerStarting::class => [
+    'listeners'          => [
+        WorkerStarting::class      => [
             EnsureUploadedFilesAreValid::class,
             EnsureUploadedFilesCanBeMoved::class,
         ],
 
-        RequestReceived::class => [
+        RequestReceived::class     => [
             ...Octane::prepareApplicationForNextOperation(),
             ...Octane::prepareApplicationForNextRequest(),
             //
         ],
 
-        RequestHandled::class => [
+        RequestHandled::class      => [
             //
         ],
 
-        RequestTerminated::class => [
+        RequestTerminated::class   => [
             // FlushUploadedFiles::class,
         ],
 
-        TaskReceived::class => [
+        TaskReceived::class        => [
             ...Octane::prepareApplicationForNextOperation(),
             //
         ],
 
-        TaskTerminated::class => [
+        TaskTerminated::class      => [
             //
         ],
 
-        TickReceived::class => [
+        TickReceived::class        => [
             ...Octane::prepareApplicationForNextOperation(),
             //
         ],
 
-        TickTerminated::class => [
+        TickTerminated::class      => [
             //
         ],
 
@@ -114,7 +111,7 @@ return [
             StopWorkerIfNecessary::class,
         ],
 
-        WorkerStopping::class => [
+        WorkerStopping::class      => [
             CloseMonologHandlers::class,
         ],
     ],
@@ -130,11 +127,12 @@ return [
     |
     */
 
-    'warm' => [
+    'warm'               => [
         ...Octane::defaultServicesToWarm(),
+        \Modules\Tenant\Services\TenantMemoryCache::class,
     ],
 
-    'flush' => [
+    'flush'              => [
         //
     ],
 
@@ -149,9 +147,16 @@ return [
     |
     */
 
-    'tables' => [
+    'tables'             => [
+        'tenants'      => [
+            'rows'    => env('TENANT_MEMORY_CACHE_MAX_SIZE', 1000),
+            'columns' => [
+                ['name' => 'tenant', 'type' => 'string', 'size' => 10000],
+                ['name' => 'expires_at', 'type' => 'int'],
+            ],
+        ],
         'example:1000' => [
-            'name' => 'string:1000',
+            'name'  => 'string:1000',
             'votes' => 'int',
         ],
     ],
@@ -167,8 +172,8 @@ return [
     |
     */
 
-    'cache' => [
-        'rows' => 1000,
+    'cache'              => [
+        'rows'  => 1000,
         'bytes' => 10000,
     ],
 
@@ -183,7 +188,7 @@ return [
     |
     */
 
-    'watch' => [
+    'watch'              => [
         'app',
         'bootstrap',
         'config/**/*.php',
@@ -206,7 +211,7 @@ return [
     |
     */
 
-    'garbage' => 50,
+    'garbage'            => 50,
 
     /*
     |--------------------------------------------------------------------------

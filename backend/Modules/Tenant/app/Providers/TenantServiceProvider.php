@@ -9,6 +9,7 @@ use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Contracts\TenantResolver;
 use Modules\Tenant\Services\ConfigurationPipeline;
 use Modules\Tenant\Services\FindService;
+use Modules\Tenant\Services\TenantMemoryCache;
 use Modules\Tenant\Services\TenantTableRegistry;
 use Modules\Tenant\Services\TenantConfigSeederRegistry;
 use Modules\Tenant\Services\TenantExclusionRegistry;
@@ -34,6 +35,7 @@ class TenantServiceProvider extends ModuleServiceProvider
         $this->app->singleton(TenantModuleConfigLoader::class);
         $this->app->singleton(FindService::class);
         $this->app->singleton(TenantExclusionRegistry::class);
+        $this->app->singleton(TenantMemoryCache::class);
 
         // Register the tenant table registry with module configs
         $this->app->singleton(TenantTableRegistry::class, function ($app) {
