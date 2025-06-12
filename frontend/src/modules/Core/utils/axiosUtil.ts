@@ -80,9 +80,6 @@ export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosIn
     if (isValidSessionToken(sessionToken)) {
       api.defaults.headers.Cookie = `${sessionCookie}=${sessionToken}`;
     }
-
-    api.defaults.headers['X-Tenant-Domain'] = ssrServiceOptions.req?.tenantConfig?.apiUrl ?? '';
-    api.defaults.headers['X-SSR-Key'] = process.env.SSR_API_KEY ?? '';
   } else {
     // TODO: On browser, add interceptors for XSRF expired/missing
   }
