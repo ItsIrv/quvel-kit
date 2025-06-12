@@ -148,12 +148,9 @@ return [
     */
 
     'tables'             => [
-        'tenants'      => [
-            'rows'    => env('TENANT_MEMORY_CACHE_MAX_SIZE', 1000),
-            'columns' => [
-                'tenant'     => 'string:10000',
-                'expires_at' => 'int',
-            ],
+        'tenants:' . env('TENANT_MEMORY_CACHE_MAX_SIZE', 1000) => [
+            'tenant'     => 'string:10000',
+            'expires_at' => 'int',
         ],
         'example:1000' => [
             'name'  => 'string:1000',

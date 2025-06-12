@@ -64,12 +64,9 @@ The Octane configuration is already set up in `config/octane.php` with optimized
 
 ```php
 'tables' => [
-    'tenants' => [
-        'rows' => env('TENANT_MEMORY_CACHE_MAX_SIZE', 1000),
-        'columns' => [
-            'tenant'     => 'string:10000',
-            'expires_at' => 'int',
-        ],
+    'tenants:' . env('TENANT_MEMORY_CACHE_MAX_SIZE', 1000) => [
+        'tenant'     => 'string:10000',
+        'expires_at' => 'int',
     ],
 ],
 ```
