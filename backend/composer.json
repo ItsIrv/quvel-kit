@@ -100,7 +100,7 @@
             "vendor/bin/pint --repair"
         ],
         "analyse": [
-            "vendor/bin/phpstan analyse"
+            "vendor/bin/phpstan analyse --memory-limit=256M"
         ],
         "quality": [
             "@lint",
