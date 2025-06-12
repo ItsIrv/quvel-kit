@@ -5,6 +5,7 @@ namespace Modules\Tenant\Providers;
 use Illuminate\Foundation\Configuration\Middleware;
 use Modules\Tenant\Http\Middleware\TenantAwareCsrfToken;
 use Modules\Tenant\Http\Middleware\TenantMiddleware;
+use Modules\Tenant\Http\Middleware\ValidateTenantSession;
 
 class TenantMiddlewareProvider
 {
@@ -21,8 +22,9 @@ class TenantMiddlewareProvider
             \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
         ]);
 
-        // Add our tenant-aware version to web groum
+        // Add our tenant-aware middlewares to web group
         $middleware->web(append: [
+            ValidateTenantSession::class,
             TenantAwareCsrfToken::class,
         ]);
     }
