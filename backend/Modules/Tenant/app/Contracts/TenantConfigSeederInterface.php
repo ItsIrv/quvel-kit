@@ -28,12 +28,4 @@ interface TenantConfigSeederInterface
      */
     public function getVisibility(): array;
 
-    /**
-     * Get the priority for this seeder.
-     *
-     * Lower numbers run first (e.g., 10 runs before 20).
-     *
-     * @return int The priority level
-     */
-    public function getPriority(): int;
 }

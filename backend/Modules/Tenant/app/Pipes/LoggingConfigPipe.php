@@ -122,41 +122,4 @@ class LoggingConfigPipe extends BaseConfigurationPipe
         return [];
     }
 
-    /**
-     * Get the configuration keys that this pipe handles.
-     *
-     * @return array<string> Array of configuration keys
-     */
-    public function handles(): array
-    {
-        return [
-            'log_channel',
-            'log_deprecations_channel',
-            'log_single_path',
-            'log_daily_path',
-            'log_daily_days',
-            'log_level',
-            'log_slack_webhook_url',
-            'log_slack_channel',
-            'log_slack_username',
-            'sentry_dsn',
-            'sentry_level',
-            'sentry_environment',
-            'log_custom_driver',
-            'log_custom_path',
-            'log_custom_level',
-            'log_custom_days',
-            'log_stack_channels',
-        ];
-    }
-
-    /**
-     * Get the priority for this pipe (higher = runs first).
-     *
-     * @return int Priority value
-     */
-    public function priority(): int
-    {
-        return 40;
-    }
 }

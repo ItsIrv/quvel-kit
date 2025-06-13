@@ -85,23 +85,4 @@ class CacheConfigPipe extends BaseConfigurationPipe
         return [];
     }
 
-    /**
-     * Get the configuration keys that this pipe handles.
-     *
-     * @return array<string> Array of configuration keys
-     */
-    public function handles(): array
-    {
-        return ['cache_store', 'cache_prefix'];
-    }
-
-    /**
-     * Get the priority for this pipe (higher = runs first).
-     *
-     * @return int Priority value
-     */
-    public function priority(): int
-    {
-        return 85;
-    }
 }

@@ -132,23 +132,4 @@ class RedisConfigPipe extends BaseConfigurationPipe
         }
     }
 
-    /**
-     * Get the configuration keys that this pipe handles.
-     *
-     * @return array<string> Array of configuration keys
-     */
-    public function handles(): array
-    {
-        return ['redis_client', 'redis_host', 'redis_password', 'redis_port', 'redis_prefix'];
-    }
-
-    /**
-     * Get the priority for this pipe (higher = runs first).
-     *
-     * @return int Priority value
-     */
-    public function priority(): int
-    {
-        return 84;
-    }
 }

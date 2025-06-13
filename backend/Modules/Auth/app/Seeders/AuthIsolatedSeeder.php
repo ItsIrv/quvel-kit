@@ -24,10 +24,10 @@ class AuthIsolatedSeeder implements TenantConfigSeederInterface
         $sessionCookie = $this->generateSessionCookie($baseConfig);
 
         return [
-            'session_cookie' => $sessionCookie,
+            'session_cookie'      => $sessionCookie,
             'socialite_providers' => ['google', 'microsoft'],
-            'oauth_credentials' => $this->buildOAuthCredentials(),
-            'session_lifetime' => 240, // 4 hours for isolated tenants
+            'oauth_credentials'   => $this->buildOAuthCredentials(),
+            'session_lifetime'    => 240, // 4 hours for isolated tenants
         ];
     }
 
@@ -39,21 +39,11 @@ class AuthIsolatedSeeder implements TenantConfigSeederInterface
     public function getVisibility(): array
     {
         return [
-            'session_cookie' => 'protected',
+            'session_cookie'      => 'protected',
             'socialite_providers' => 'public',
-            'oauth_credentials' => 'private',
-            'session_lifetime' => 'protected',
+            'oauth_credentials'   => 'private',
+            'session_lifetime'    => 'protected',
         ];
-    }
-
-    /**
-     * Get the priority for this seeder.
-     *
-     * @return int The priority level
-     */
-    public function getPriority(): int
-    {
-        return 20;
     }
 
     /**
@@ -89,12 +79,12 @@ class AuthIsolatedSeeder implements TenantConfigSeederInterface
     private function buildOAuthCredentials(): array
     {
         return [
-            'google' => [
-                'client_id' => env('GOOGLE_CLIENT_ID', 'your-google-client-id'),
+            'google'    => [
+                'client_id'     => env('GOOGLE_CLIENT_ID', 'your-google-client-id'),
                 'client_secret' => env('GOOGLE_CLIENT_SECRET', 'your-google-client-secret'),
             ],
             'microsoft' => [
-                'client_id' => env('MICROSOFT_CLIENT_ID', 'your-microsoft-client-id'),
+                'client_id'     => env('MICROSOFT_CLIENT_ID', 'your-microsoft-client-id'),
                 'client_secret' => env('MICROSOFT_CLIENT_SECRET', 'your-microsoft-client-secret'),
             ],
         ];

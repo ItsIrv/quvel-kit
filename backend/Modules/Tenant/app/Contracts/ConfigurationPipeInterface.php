@@ -29,18 +29,4 @@ interface ConfigurationPipeInterface
      * @return mixed Result of calling $next()
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed;
-
-    /**
-     * Get the configuration keys that this pipe handles.
-     *
-     * @return array<string> Array of configuration keys this pipe processes
-     */
-    public function handles(): array;
-
-    /**
-     * Get the priority for this pipe (higher = runs first).
-     *
-     * @return int Priority value (higher numbers run first)
-     */
-    public function priority(): int;
 }

@@ -131,52 +131,6 @@ class ServicesConfigPipe extends BaseConfigurationPipe
     }
 
     /**
-     * Get the configuration keys that this pipe handles.
-     *
-     * @return array<string> Array of configuration keys
-     */
-    public function handles(): array
-    {
-        return [
-            'stripe_key',
-            'stripe_secret',
-            'stripe_webhook_secret',
-            'paypal_client_id',
-            'paypal_secret',
-            'paypal_mode',
-            'twilio_sid',
-            'twilio_token',
-            'twilio_from',
-            'sendgrid_api_key',
-            'mailgun_domain',
-            'mailgun_secret',
-            'mailgun_endpoint',
-            'postmark_token',
-            'ses_key',
-            'ses_secret',
-            'ses_region',
-            'algolia_app_id',
-            'algolia_secret',
-            'google_analytics_id',
-            'google_maps_key',
-            'bugsnag_api_key',
-            'slack_webhook_url',
-            'custom_api_endpoints',
-            'custom_api_keys',
-        ];
-    }
-
-    /**
-     * Get the priority for this pipe (higher = runs first).
-     *
-     * @return int Priority value
-     */
-    public function priority(): int
-    {
-        return 35;
-    }
-
-    /**
      * Resolve services configuration for frontend TenantConfig interface.
      *
      * @param Tenant $tenant The tenant context
@@ -185,11 +139,11 @@ class ServicesConfigPipe extends BaseConfigurationPipe
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
-        $values = [];
+        $values     = [];
         $visibility = [];
 
         if ($this->hasValue($tenantConfig, 'recaptcha_site_key')) {
-            $values['recaptchaGoogleSiteKey'] = $tenantConfig['recaptcha_site_key'];
+            $values['recaptchaGoogleSiteKey']     = $tenantConfig['recaptcha_site_key'];
             $visibility['recaptchaGoogleSiteKey'] = 'public';
         }
 

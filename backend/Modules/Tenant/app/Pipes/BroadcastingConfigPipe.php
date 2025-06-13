@@ -123,39 +123,4 @@ class BroadcastingConfigPipe extends BaseConfigurationPipe
         return ['values' => $values, 'visibility' => $visibility];
     }
 
-    /**
-     * Get the configuration keys that this pipe handles.
-     *
-     * @return array<string> Array of configuration keys
-     */
-    public function handles(): array
-    {
-        return [
-            'broadcast_driver',
-            'pusher_app_id',
-            'pusher_app_key',
-            'pusher_app_secret',
-            'pusher_app_cluster',
-            'pusher_scheme',
-            'pusher_host',
-            'pusher_port',
-            'reverb_app_id',
-            'reverb_app_key',
-            'reverb_app_secret',
-            'reverb_host',
-            'reverb_port',
-            'redis_broadcast_prefix',
-            'ably_key',
-        ];
-    }
-
-    /**
-     * Get the priority for this pipe (higher = runs first).
-     *
-     * @return int Priority value
-     */
-    public function priority(): int
-    {
-        return 45;
-    }
 }

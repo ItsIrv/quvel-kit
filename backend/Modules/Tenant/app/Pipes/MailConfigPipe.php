@@ -70,32 +70,4 @@ class MailConfigPipe extends BaseConfigurationPipe
         return [];
     }
 
-    /**
-     * Get the configuration keys that this pipe handles.
-     *
-     * @return array<string> Array of configuration keys
-     */
-    public function handles(): array
-    {
-        return [
-            'mail_mailer',
-            'mail_host',
-            'mail_port',
-            'mail_username',
-            'mail_password',
-            'mail_encryption',
-            'mail_from_address',
-            'mail_from_name',
-        ];
-    }
-
-    /**
-     * Get the priority for this pipe (higher = runs first).
-     *
-     * @return int Priority value
-     */
-    public function priority(): int
-    {
-        return 70;
-    }
 }

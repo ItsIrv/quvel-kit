@@ -44,22 +44,24 @@ class TenantModuleConfigLoader
      */
     public function getSeedersForTemplate(string $template): array
     {
-        $seeders = [];
+        $seeders      = [];
+        $currentIndex = 0;
 
         foreach ($this->loadAllModuleConfigs() as $moduleConfig) {
             // Add template-specific seeders
             if (isset($moduleConfig['seeders'][$template])) {
                 $seederConfig = $moduleConfig['seeders'][$template];
-                
+
                 // Handle new class-based seeders
                 if (is_string($seederConfig)) {
                     $seeders[] = [
                         'seeder_class' => $seederConfig,
-                        'priority' => $this->getSeederPriority($seederConfig),
+                        'array_index'  => $currentIndex++,
                     ];
                 } else {
                     // Legacy array configuration
-                    $seeders[] = $seederConfig;
+                    $seederConfig['array_index'] = $currentIndex++;
+                    $seeders[]                   = $seederConfig;
                 }
             }
 
@@ -70,21 +72,22 @@ class TenantModuleConfigLoader
                     if (is_string($sharedSeeder)) {
                         $seeders[] = [
                             'shared_seeder_class' => $sharedSeeder,
-                            'priority' => $this->getSharedSeederPriority($sharedSeeder),
+                            'array_index'         => $currentIndex++,
                         ];
                     } else {
                         // Legacy array configuration
-                        $seeders[] = $sharedSeeder;
+                        $sharedSeeder['array_index'] = $currentIndex++;
+                        $seeders[]                   = $sharedSeeder;
                     }
                 }
             }
         }
 
-        // Sort by priority (lower numbers first)
+        // Sort by priority (higher numbers first, defaults to array index)
         usort($seeders, function ($a, $b) {
-            $aPriority = $a['priority'] ?? $this->getSeederClassPriority($a) ?? 50;
-            $bPriority = $b['priority'] ?? $this->getSeederClassPriority($b) ?? 50;
-            return $aPriority <=> $bPriority;
+            $aPriority = $this->getSeederPriorityUnified($a);
+            $bPriority = $this->getSeederPriorityUnified($b);
+            return $bPriority <=> $aPriority; // Higher priority first (like pipes)
         });
 
         return $seeders;
@@ -154,7 +157,7 @@ class TenantModuleConfigLoader
         foreach ($this->loadAllModuleConfigs() as $moduleConfig) {
             if (isset($moduleConfig['exclusions'])) {
                 $exclusions = $moduleConfig['exclusions'];
-                
+
                 // Handle class references
                 if (is_string($exclusions) && class_exists($exclusions)) {
                     $instance = app($exclusions);
@@ -166,7 +169,7 @@ class TenantModuleConfigLoader
                 elseif ($exclusions instanceof \Modules\Tenant\ValueObjects\TenantExclusionConfig) {
                     $exclusions = $exclusions->toArray();
                 }
-                
+
                 // Extract paths
                 $exclusionPaths = \Illuminate\Support\Arr::get($exclusions, 'paths', []);
                 if (is_array($exclusionPaths)) {
@@ -190,7 +193,7 @@ class TenantModuleConfigLoader
         foreach ($this->loadAllModuleConfigs() as $moduleConfig) {
             if (isset($moduleConfig['exclusions'])) {
                 $exclusions = $moduleConfig['exclusions'];
-                
+
                 // Handle class references
                 if (is_string($exclusions) && class_exists($exclusions)) {
                     $instance = app($exclusions);
@@ -202,7 +205,7 @@ class TenantModuleConfigLoader
                 elseif ($exclusions instanceof \Modules\Tenant\ValueObjects\TenantExclusionConfig) {
                     $exclusions = $exclusions->toArray();
                 }
-                
+
                 // Extract patterns
                 $exclusionPatterns = \Illuminate\Support\Arr::get($exclusions, 'patterns', []);
                 if (is_array($exclusionPatterns)) {
@@ -244,18 +247,57 @@ class TenantModuleConfigLoader
     }
 
     /**
-     * Get priority for a template-specific seeder class.
+     * Get unified priority for any seeder configuration.
+     * Uses array index as default (converted to higher-first system).
+     *
+     * @param array $seederData
+     * @return int
+     */
+    private function getSeederPriorityUnified(array $seederData): int
+    {
+        // Check for explicit priority in array config
+        if (isset($seederData['priority'])) {
+            return $seederData['priority'];
+        }
+
+        // Check for priority method in seeder class
+        if (isset($seederData['seeder_class'])) {
+            $classPriority = $this->getSeederClassPriority($seederData['seeder_class']);
+            if ($classPriority !== 500) { // 500 is our "no explicit priority" marker
+                return $classPriority;
+            }
+        }
+
+        if (isset($seederData['shared_seeder_class'])) {
+            $classPriority = $this->getSharedSeederClassPriority($seederData['shared_seeder_class']);
+            if ($classPriority !== 500) { // 500 is our "no explicit priority" marker
+                return $classPriority;
+            }
+        }
+
+        // Use array index as priority (convert to higher-first system)
+        // Array index 0 gets highest priority (1000), index 1 gets 999, etc.
+        if (isset($seederData['array_index'])) {
+            return 1000 - $seederData['array_index'];
+        }
+
+        // Final fallback
+        return 500;
+    }
+
+    /**
+     * Get priority for a seeder class (template-specific or shared).
      *
      * @param string $seederClass
      * @return int
      */
-    private function getSeederPriority(string $seederClass): int
+    private function getSeederClassPriority(string $seederClass): int
     {
         try {
             $instance = app($seederClass);
-            return $instance->getPriority();
+            return method_exists($instance, 'getPriority') ? $instance->getPriority() : 500;
         } catch (\Exception) {
-            return 50; // Default priority
+            return 500; // Default priority
         }
     }
 
@@ -265,32 +307,13 @@ class TenantModuleConfigLoader
      * @param string $seederClass
      * @return int
      */
-    private function getSharedSeederPriority(string $seederClass): int
+    private function getSharedSeederClassPriority(string $seederClass): int
     {
         try {
             $instance = app($seederClass);
-            return $instance->getPriority();
+            return method_exists($instance, 'getPriority') ? $instance->getPriority() : 500;
         } catch (\Exception) {
-            return 50; // Default priority
+            return 500; // Default priority
         }
-    }
-
-    /**
-     * Get priority from a seeder data array that might contain class info.
-     *
-     * @param array $seederData
-     * @return int|null
-     */
-    private function getSeederClassPriority(array $seederData): ?int
-    {
-        if (isset($seederData['seeder_class'])) {
-            return $this->getSeederPriority($seederData['seeder_class']);
-        }
-        
-        if (isset($seederData['shared_seeder_class'])) {
-            return $this->getSharedSeederPriority($seederData['shared_seeder_class']);
-        }
-        
-        return null;
     }
 }

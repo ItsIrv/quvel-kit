@@ -102,7 +102,7 @@ class SessionConfigPipe extends BaseConfigurationPipe
 
         // Apply the configuration changes
         if ($hasChanges) {
-            $this->logger->applyingChanges(count(array_intersect_key($tenantConfig, array_flip($this->handles()))));
+            $this->logger->applyingChanges();
 
             // Update session manager
             $this->updateSessionManager($config, $newCookie);
@@ -126,13 +126,13 @@ class SessionConfigPipe extends BaseConfigurationPipe
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
-        $values = [];
+        $values     = [];
         $visibility = [];
 
         if ($this->hasValue($tenantConfig, 'session_cookie')) {
             $values['sessionCookie'] = $tenantConfig['session_cookie'];
         } else {
-            $tenantForCookie = $tenant->parent ?? $tenant;
+            $tenantForCookie         = $tenant->parent ?? $tenant;
             $values['sessionCookie'] = "tenant_{$tenantForCookie->public_id}_session";
         }
         $visibility['sessionCookie'] = 'protected';
@@ -155,33 +155,6 @@ class SessionConfigPipe extends BaseConfigurationPipe
             $tenantForCookie = $tenant->parent ?? $tenant;
             return "tenant_{$tenantForCookie->public_id}_session";
         }
-    }
-
-    /**
-     * The configuration keys that this pipe handles.
-     *
-     * @return array<string> Array of configuration keys
-     */
-    public function handles(): array
-    {
-        return [
-            'session_driver',
-            'session_lifetime',
-            'session_encrypt',
-            'session_path',
-            'session_domain',
-            'session_cookie',
-        ];
-    }
-
-    /**
-     * Get the priority for this pipe (higher = runs first).
-     *
-     * @return int Priority value
-     */
-    public function priority(): int
-    {
-        return 10;
     }
 
     /**

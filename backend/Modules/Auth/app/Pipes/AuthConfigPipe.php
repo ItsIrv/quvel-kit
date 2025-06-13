@@ -93,36 +93,6 @@ class AuthConfigPipe extends BaseConfigurationPipe
     }
 
     /**
-     * Get the configuration keys this pipe handles.
-     *
-     * @return array<string> Array of configuration keys
-     */
-    public function handles(): array
-    {
-        return [
-            'socialite_providers',
-            'socialite_nonce_ttl',
-            'socialite_token_ttl',
-            'hmac_secret_key',
-            'oauth_credentials',
-            'disable_socialite',
-            'verify_email_before_login',
-            'password_min_length',
-            'session_timeout',
-        ];
-    }
-
-    /**
-     * Get the priority for this pipe (higher = runs first).
-     *
-     * @return int Priority value
-     */
-    public function priority(): int
-    {
-        return 50; // Run after core tenant pipes
-    }
-
-    /**
      * Resolve authentication configuration for frontend TenantConfig interface.
      *
      * @param Tenant $tenant The tenant context
@@ -131,11 +101,11 @@ class AuthConfigPipe extends BaseConfigurationPipe
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
-        $values = [];
+        $values     = [];
         $visibility = [];
 
         if ($this->hasValue($tenantConfig, 'socialite_providers')) {
-            $values['socialiteProviders'] = $tenantConfig['socialite_providers'];
+            $values['socialiteProviders']     = $tenantConfig['socialite_providers'];
             $visibility['socialiteProviders'] = 'public';
         }
 

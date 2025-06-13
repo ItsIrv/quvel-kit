@@ -85,35 +85,4 @@ class QueueConfigPipe extends BaseConfigurationPipe
         return [];
     }
 
-    /**
-     * Get the configuration keys that this pipe handles.
-     *
-     * @return array<string> Array of configuration keys
-     */
-    public function handles(): array
-    {
-        return [
-            'queue_default',
-            'queue_connection',
-            'queue_database_table',
-            'queue_name',
-            'queue_retry_after',
-            'queue_failed_table',
-            'redis_queue_database',
-            'aws_sqs_queue',
-            'aws_sqs_region',
-            'aws_sqs_key',
-            'aws_sqs_secret',
-        ];
-    }
-
-    /**
-     * Get the priority for this pipe (higher = runs first).
-     *
-     * @return int Priority value
-     */
-    public function priority(): int
-    {
-        return 65;
-    }
 }

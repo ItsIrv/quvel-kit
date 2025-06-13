@@ -102,35 +102,4 @@ class FilesystemConfigPipe extends BaseConfigurationPipe
         return [];
     }
 
-    /**
-     * Get the configuration keys that this pipe handles.
-     *
-     * @return array<string> Array of configuration keys
-     */
-    public function handles(): array
-    {
-        return [
-            'filesystem_default',
-            'filesystem_cloud',
-            'filesystem_local_root',
-            'filesystem_public_root',
-            'aws_s3_bucket',
-            'aws_s3_path_prefix',
-            'aws_s3_key',
-            'aws_s3_secret',
-            'aws_s3_region',
-            'aws_s3_url',
-            'disable_temp_isolation',
-        ];
-    }
-
-    /**
-     * Get the priority for this pipe (higher = runs first).
-     *
-     * @return int Priority value
-     */
-    public function priority(): int
-    {
-        return 55;
-    }
 }

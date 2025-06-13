@@ -84,11 +84,9 @@ class SessionConfigPipeLogs extends BaseLogger
     /**
      * Log session configuration changes being applied.
      */
-    public function applyingChanges(int $changesCount): void
+    public function applyingChanges(): void
     {
-        $this->debug("Applying session configuration changes", [
-            'changes_count' => $changesCount,
-        ]);
+        $this->debug("Applying session configuration changes");
     }
 
     /**

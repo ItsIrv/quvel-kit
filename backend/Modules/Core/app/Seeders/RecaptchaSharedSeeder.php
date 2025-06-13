@@ -24,11 +24,11 @@ class RecaptchaSharedSeeder implements TenantSharedSeederInterface
 
         // Use seed parameters or environment variables
         if (isset($baseConfig['_seed_recaptcha_site_key'])) {
-            $recaptchaConfig['recaptcha_site_key'] = $baseConfig['_seed_recaptcha_site_key'];
+            $recaptchaConfig['recaptcha_site_key']   = $baseConfig['_seed_recaptcha_site_key'];
             $recaptchaConfig['recaptcha_secret_key'] = $baseConfig['_seed_recaptcha_secret_key'] ?? '';
         } elseif (env('RECAPTCHA_GOOGLE_SITE_KEY')) {
             // Fallback to env for development
-            $recaptchaConfig['recaptcha_site_key'] = env('RECAPTCHA_GOOGLE_SITE_KEY');
+            $recaptchaConfig['recaptcha_site_key']   = env('RECAPTCHA_GOOGLE_SITE_KEY');
             $recaptchaConfig['recaptcha_secret_key'] = env('RECAPTCHA_GOOGLE_SECRET', '');
         }
 
@@ -43,18 +43,9 @@ class RecaptchaSharedSeeder implements TenantSharedSeederInterface
     public function getVisibility(): array
     {
         return [
-            'recaptcha_site_key' => 'public',
+            'recaptcha_site_key'   => 'public',
             'recaptcha_secret_key' => 'private',
         ];
     }
 
-    /**
-     * Get the priority for this shared seeder.
-     *
-     * @return int The priority level
-     */
-    public function getPriority(): int
-    {
-        return 15;
-    }
 }

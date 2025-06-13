@@ -218,44 +218,6 @@ class CoreConfigPipe extends BaseConfigurationPipe
         }
     }
 
-    /**
-     * Get the configuration keys that this pipe handles.
-     *
-     * Note: This pipe also handles X-Forwarded-Prefix header processing
-     * for proxy setups, which doesn't require a specific config key.
-     *
-     * @return array<string> Array of configuration keys
-     */
-    public function handles(): array
-    {
-        return [
-            'app_name',
-            'app_env',
-            'app_key',
-            'app_debug',
-            'app_url',
-            'app_timezone',
-            'app_locale',
-            'app_fallback_locale',
-            'frontend_url',
-            'internal_api_url',
-            'capacitor_scheme',
-            'pusher_app_key',
-            'pusher_app_secret',
-            'pusher_app_id',
-            'pusher_app_cluster',
-        ];
-    }
-
-    /**
-     * Get the priority for this pipe (higher = runs first).
-     *
-     * @return int Priority value
-     */
-    public function priority(): int
-    {
-        return 100;
-    }
 
     /**
      * Resolve core configuration for frontend TenantConfig interface.

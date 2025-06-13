@@ -22,14 +22,14 @@ class CoreIsolatedSeeder implements TenantConfigSeederInterface
     public function getConfig(string $template, array $baseConfig): array
     {
         // Extract domain info from existing config
-        $domain = $baseConfig['domain'] ?? 'example.com';
-        $apiUrl = "https://$domain";
+        $domain      = $baseConfig['domain'] ?? 'example.com';
+        $apiUrl      = "https://$domain";
         $frontendUrl = 'https://' . str_replace('api.', '', $domain);
 
         // Core configuration
         $coreConfig = [
-            'app_name' => $baseConfig['_seed_app_name'] ?? $baseConfig['app_name'] ?? 'QuVel',
-            'app_url' => $apiUrl,
+            'app_name'     => $baseConfig['_seed_app_name'] ?? $baseConfig['app_name'] ?? 'QuVel',
+            'app_url'      => $apiUrl,
             'frontend_url' => $frontendUrl,
         ];
 
@@ -63,24 +63,14 @@ class CoreIsolatedSeeder implements TenantConfigSeederInterface
     public function getVisibility(): array
     {
         return [
-            'app_name' => 'public',
-            'app_url' => 'public',
-            'frontend_url' => 'protected',
-            'mail_from_name' => 'private',
+            'app_name'          => 'public',
+            'app_url'           => 'public',
+            'frontend_url'      => 'protected',
+            'mail_from_name'    => 'private',
             'mail_from_address' => 'private',
-            'capacitor_scheme' => 'protected',
-            'internal_api_url' => 'protected',
+            'capacitor_scheme'  => 'protected',
+            'internal_api_url'  => 'protected',
         ];
-    }
-
-    /**
-     * Get the priority for this seeder.
-     *
-     * @return int The priority level
-     */
-    public function getPriority(): int
-    {
-        return 10; // Run very early
     }
 
     /**

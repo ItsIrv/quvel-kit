@@ -88,11 +88,15 @@ class ConfigurationPipeline
             ? $tenantConfig->toArray()['config']
             : $tenantConfig->toArray();
 
-        // Sort pipes by priority (higher priority first)
+        // Sort pipes by priority (higher priority first, defaults to array index)
         $sortedPipes = $this->pipes
-            ->sortByDesc(fn (ConfigurationPipeInterface $pipe) => $pipe->priority())
-            ->map(fn (ConfigurationPipeInterface $pipe) => function ($passable, $next) use ($pipe) {
-                return $pipe->handle(
+            ->map(fn (ConfigurationPipeInterface $pipe, int $index) => [
+                'pipe'     => $pipe,
+                'priority' => method_exists($pipe, 'priority') ? $pipe->priority() : (1000 - $index)
+            ])
+            ->sortByDesc('priority')
+            ->map(fn (array $item) => function ($passable, $next) use ($item) {
+                return $item['pipe']->handle(
                     $passable['tenant'],
                     $passable['config'],
                     $passable['tenantConfig'],
@@ -126,8 +130,14 @@ class ConfigurationPipeline
         $allValues     = [];
         $allVisibility = [];
 
-        // Sort pipes by priority (higher priority first)
-        $sortedPipes = $this->pipes->sortByDesc(fn (ConfigurationPipeInterface $pipe) => $pipe->priority());
+        // Sort pipes by priority (higher priority first, defaults to array index)
+        $sortedPipes = $this->pipes
+            ->map(fn (ConfigurationPipeInterface $pipe, int $index) => [
+                'pipe'     => $pipe,
+                'priority' => method_exists($pipe, 'priority') ? $pipe->priority() : (1000 - $index)
+            ])
+            ->sortByDesc('priority')
+            ->pluck('pipe');
 
         // Apply each pipe's resolution
         foreach ($sortedPipes as $pipe) {
@@ -162,19 +172,4 @@ class ConfigurationPipeline
         return $this->pipes;
     }
 
-    /**
-     * Get documentation for all registered pipes.
-     *
-     * @return array<string, array<string>>
-     */
-    public function getDocumentation(): array
-    {
-        $docs = [];
-
-        foreach ($this->pipes as $pipe) {
-            $docs[get_class($pipe)] = $pipe->handles();
-        }
-
-        return $docs;
-    }
 }

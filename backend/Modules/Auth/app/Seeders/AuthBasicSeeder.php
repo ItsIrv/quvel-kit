@@ -21,9 +21,9 @@ class AuthBasicSeeder implements TenantConfigSeederInterface
     public function getConfig(string $template, array $baseConfig): array
     {
         return [
-            'session_cookie' => 'quvel_session',
+            'session_cookie'      => 'quvel_session',
             'socialite_providers' => [],
-            'oauth_credentials' => [],
+            'oauth_credentials'   => [],
         ];
     }
 
@@ -35,19 +35,9 @@ class AuthBasicSeeder implements TenantConfigSeederInterface
     public function getVisibility(): array
     {
         return [
-            'session_cookie' => 'protected',
+            'session_cookie'      => 'protected',
             'socialite_providers' => 'public',
-            'session_lifetime' => 'protected',
+            'session_lifetime'    => 'protected',
         ];
-    }
-
-    /**
-     * Get the priority for this seeder.
-     *
-     * @return int The priority level
-     */
-    public function getPriority(): int
-    {
-        return 20;
     }
 }

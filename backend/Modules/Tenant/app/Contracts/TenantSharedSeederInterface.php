@@ -29,12 +29,4 @@ interface TenantSharedSeederInterface
      */
     public function getVisibility(): array;
 
-    /**
-     * Get the priority for this shared seeder.
-     *
-     * Lower numbers run first (e.g., 10 runs before 20).
-     *
-     * @return int The priority level
-     */
-    public function getPriority(): int;
 }
