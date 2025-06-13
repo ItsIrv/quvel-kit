@@ -32,11 +32,6 @@ class ValidateTenantSession
             return $next($request);
         }
 
-        // Skip if no tenant is set
-        if (!$this->tenantContext->has()) {
-            return $next($request);
-        }
-
         $currentTenant = $this->tenantContext->get();
         $session       = $request->session();
 
