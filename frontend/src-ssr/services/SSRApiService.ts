@@ -1,24 +1,22 @@
 import { SSRService } from './SSRService';
 import type { SSRServiceContainer } from './SSRServiceContainer';
-import type { SSRRegisterService, SSRServiceOptions, SSRSsrAwareService } from '../types/service.types';
+import type { SSRSingletonService } from '../types/service.types';
 import { SSRLogService } from './SSRLogService';
-import type { Request, Response } from 'express';
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { createAxios } from '../utils/createAxios';
 
 /**
- * SSR-specific API service
+ * SSR-specific API service (Singleton)
  * Provides HTTP client without browser dependencies
+ * This is a stateless singleton service - request context is passed as method parameters
  */
-export class SSRApiService extends SSRService implements SSRRegisterService, SSRSsrAwareService {
+export class SSRApiService extends SSRService implements SSRSingletonService {
   private api!: AxiosInstance;
   private logger!: SSRLogService;
-  private req: Request | undefined;
-  private res: Response | undefined;
 
   override register(container: SSRServiceContainer): void {
     this.logger = container.get(SSRLogService);
-    
+
     // Setup interceptors after logger is available
     this.setupInterceptors();
   }
@@ -35,47 +33,13 @@ export class SSRApiService extends SSRService implements SSRRegisterService, SSR
     });
   }
 
-  override boot(options?: SSRServiceOptions): void {
-    if (options) {
-      this.req = options.req;
-      this.res = options.res;
-      
-      // Update base URL if tenant config is available
-      if (options.req?.tenantConfig?.internalApiUrl) {
-        this.api.defaults.baseURL = options.req.tenantConfig.internalApiUrl;
-      }
-    }
-  }
-
   private setupInterceptors(): void {
-    if (!this.api) {
-      console.warn('SSRApiService: Cannot setup interceptors, axios instance not created yet');
-      return;
-    }
-
     // Add request interceptor
     this.api.interceptors.request.use(
       (config) => {
-        // Forward headers from SSR request if available
-        if (this.req) {
-          // Forward trace ID
-          if (this.req.headers['x-trace-id']) {
-            config.headers['X-Trace-ID'] = this.req.headers['x-trace-id'];
-          }
-          // Forward user agent
-          if (this.req.headers['user-agent']) {
-            config.headers['User-Agent'] = `SSR/${this.req.headers['user-agent']}`;
-          }
-          // Add tenant domain if available
-          if (this.req.tenantConfig?.apiUrl) {
-            config.headers['X-Tenant-Domain'] = this.req.tenantConfig.apiUrl;
-          }
-        }
-
         this.logger.debug('SSR API Request', {
           method: config.method?.toUpperCase(),
           url: config.url,
-          headers: this.sanitizeHeaders(config.headers as Record<string, string | string[]>),
         });
 
         return config;
@@ -108,27 +72,6 @@ export class SSRApiService extends SSRService implements SSRRegisterService, SSR
       },
     );
   }
-
-  /**
-   * Sanitizes headers to avoid logging sensitive information
-   */
-  private sanitizeHeaders(
-    headers: Record<string, string | string[]>,
-  ): Record<string, string | string[]> {
-    const sanitized: Record<string, string | string[]> = {};
-    const sensitiveHeaders = ['authorization', 'cookie', 'x-api-key', 'x-auth-token'];
-
-    for (const [key, value] of Object.entries(headers)) {
-      if (sensitiveHeaders.includes(key.toLowerCase())) {
-        sanitized[key] = '[REDACTED]';
-      } else {
-        sanitized[key] = value;
-      }
-    }
-
-    return sanitized;
-  }
-
   /**
    * Get request
    */

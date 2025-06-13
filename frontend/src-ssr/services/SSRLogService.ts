@@ -1,27 +1,25 @@
 import { SSRService } from './SSRService';
-import type { SSRSsrAwareService } from '../types/service.types';
+import type { SSRSingletonService } from '../types/service.types';
 import type { ILogger } from '../types/logger.types';
 import { LoggerFactory } from '../factories/LoggerFactory';
-import { LoggerType } from 'src/modules/Core/models/Logging/LoggerType';
-import { LogLevel } from 'src/modules/Core/models/Logging/LogLevel';
 
 /**
- * SSR-specific logging service
+ * SSR-specific logging service (Singleton)
  * Provides centralized logging for the SSR system
+ * This is a stateless singleton service that doesn't store request-specific data
  */
-export class SSRLogService extends SSRService implements SSRSsrAwareService, ILogger {
-  private logger: ILogger;
+export class SSRLogService extends SSRService implements SSRSingletonService, ILogger {
+  private readonly logger: ILogger;
 
   constructor() {
     super();
-    // Start with a null logger until boot is called
-    this.logger = LoggerFactory.createLogger(LoggerType.NULL, LogLevel.INFO);
+    // Initialize logger immediately since this is a singleton
+    this.logger = LoggerFactory.createFromEnv('SSR');
   }
 
-  override boot(): void {
-    // Create logger from environment configuration
-    this.logger = LoggerFactory.createFromEnv('SSR');
-    this.logger.info('SSR Logger initialized', { 
+  override register(): void {
+    // Log initialization after service is registered
+    this.logger.info('SSR Logger service registered', { 
       type: process.env.SSR_LOG_TYPE || 'console',
       level: process.env.SSR_LOG_LEVEL || 'info',
     });

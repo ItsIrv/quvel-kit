@@ -2,7 +2,7 @@ import type { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { SSRService } from './SSRService';
 import type { SSRServiceContainer } from './SSRServiceContainer';
-import type { SSRRegisterService } from '../types/service.types';
+import type { SSRSingletonService } from '../types/service.types';
 import { SSRLogService } from './SSRLogService';
 import { TenantConfigProtected } from '../types/tenant.types';
 import { createTenantConfigFromEnv, filterTenantConfig } from '../utils/tenantConfigUtil';
@@ -18,7 +18,7 @@ export interface SSRRequestContext {
   traceInfo: TraceInfo;
 }
 
-export class SSRRequestHandler extends SSRService implements SSRRegisterService {
+export class SSRRequestHandler extends SSRService implements SSRSingletonService {
   private tenantResolver!: TenantResolver;
   private logger!: SSRLogService;
 

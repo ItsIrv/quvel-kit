@@ -1,6 +1,6 @@
 import { SSRService } from './SSRService';
 import type { SSRServiceContainer } from './SSRServiceContainer';
-import type { SSRRegisterService } from '../types/service.types';
+import type { SSRSingletonService } from '../types/service.types';
 import { SSRLogService } from './SSRLogService';
 import { SSRTenantCacheService } from './SSRTenantCacheService';
 import { TenantConfigProtected } from '../types/tenant.types';
@@ -8,7 +8,7 @@ import { TenantConfigProtected } from '../types/tenant.types';
 /**
  * Simple tenant resolver service that delegates to cache
  */
-export class TenantResolver extends SSRService implements SSRRegisterService {
+export class TenantResolver extends SSRService implements SSRSingletonService {
   private logger!: SSRLogService;
   private cache!: SSRTenantCacheService;
 

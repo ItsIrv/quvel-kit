@@ -17,7 +17,7 @@ export type SSRServiceClassGeneric = SSRServiceClass<SSRService>;
 export type SSRServiceInstance = SSRService;
 
 /**
- * SSR service options passed during boot
+ * SSR service options passed during scoped service boot
  */
 export interface SSRServiceOptions {
   req?: Request;
@@ -25,15 +25,18 @@ export interface SSRServiceOptions {
 }
 
 /**
- * Interface for services that can be registered with the container
+ * Interface for singleton services (stateless, shared across requests)
+ * These services are registered once and reused across all requests
  */
-export interface SSRRegisterService extends SSRService {
+export interface SSRSingletonService extends SSRService {
   register(container: unknown): void | Promise<void>;
 }
 
 /**
- * Interface for services that are SSR-aware and can receive request context
+ * Interface for scoped services (request-specific instances)
+ * These services are created per-request via container.scoped() method
  */
-export interface SSRSsrAwareService extends SSRService {
+export interface SSRScopedService extends SSRService {
+  register(container: unknown): void | Promise<void>;
   boot(options?: SSRServiceOptions): void | Promise<void>;
 }

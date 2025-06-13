@@ -1,6 +1,6 @@
 import { SSRService } from './SSRService';
 import type { SSRServiceContainer } from './SSRServiceContainer';
-import type { SSRRegisterService } from '../types/service.types';
+import type { SSRSingletonService } from '../types/service.types';
 import { SSRLogService } from './SSRLogService';
 import { SSRApiService } from './SSRApiService';
 import { CachedTenantConfig, Tenant, TenantConfigProtected } from '../types/tenant.types';
@@ -9,7 +9,7 @@ import { CachedTenantConfig, Tenant, TenantConfigProtected } from '../types/tena
  * SSR Tenant Cache Service
  * Manages tenant configuration caching with preload support
  */
-export class SSRTenantCacheService extends SSRService implements SSRRegisterService {
+export class SSRTenantCacheService extends SSRService implements SSRSingletonService {
   private logger!: SSRLogService;
   private api!: SSRApiService;
   

@@ -1,10 +1,10 @@
-import type { 
-  SSRServiceClass, 
-  SSRServiceInstance, 
+import type {
+  SSRServiceClass,
+  SSRServiceInstance,
   SSRServiceOptions,
-  SSRRegisterService,
-  SSRSsrAwareService,
-  SSRServiceClassGeneric
+  SSRSingletonService,
+  SSRScopedService,
+  SSRServiceClassGeneric,
 } from '../types/service.types';
 
 /**
@@ -15,12 +15,8 @@ export class SSRServiceContainer {
   private readonly services: Map<string, SSRServiceInstance> = new Map();
   private readonly serviceClassToKey: Map<SSRServiceClassGeneric, string> = new Map();
 
-  constructor(
-    private readonly ssrServiceOptions?: SSRServiceOptions,
-    serviceClasses: Map<string, SSRServiceClassGeneric> = new Map(),
-  ) {
+  constructor(serviceClasses: Map<string, SSRServiceClassGeneric> = new Map()) {
     this.initializeServices(serviceClasses);
-    this.bootServices();
     this.registerServices();
   }
 
@@ -37,45 +33,14 @@ export class SSRServiceContainer {
   }
 
   /**
-   * Boot SSR-aware services with the SSR context
-   */
-  private bootServices(): void {
-    for (const [name, service] of this.services) {
-      if (this.hasBoot(service)) {
-        try {
-          const result = service.boot(this.ssrServiceOptions);
-          if (result instanceof Promise) {
-            // Handle async boot methods
-            result.catch((error) => {
-              console.error(`Failed to boot service ${name}:`, error);
-            });
-          }
-        } catch (error) {
-          console.error(`Failed to boot service ${name}:`, error);
-          throw new Error(
-            `Service boot failed for ${name}: ${error instanceof Error ? error.message : String(error)}`,
-          );
-        }
-      }
-    }
-  }
-
-  /**
    * Register all services
    */
   private registerServices(): void {
     for (const [name, service] of this.services) {
-      if (this.isRegisterable(service)) {
+      if (this.isSingleton(service)) {
         try {
-          const result = service.register(this);
-          if (result instanceof Promise) {
-            // Handle async register methods
-            result.catch((error) => {
-              console.error(`Failed to register service ${name}:`, error);
-            });
-          }
+          void service.register(this);
         } catch (error) {
-          console.error(`Failed to register service ${name}:`, error);
           throw new Error(
             `Service registration failed for ${name}: ${error instanceof Error ? error.message : String(error)}`,
           );
@@ -104,24 +69,23 @@ export class SSRServiceContainer {
   }
 
   /**
-   * Check if service has boot method
+   * Check if service is a singleton service
    */
-  private hasBoot(service: SSRServiceInstance): service is SSRSsrAwareService {
-    return typeof (service as SSRSsrAwareService).boot === 'function';
+  private isSingleton(service: SSRServiceInstance): service is SSRSingletonService {
+    return (
+      typeof (service as SSRSingletonService).register === 'function' &&
+      typeof (service as SSRScopedService).boot !== 'function'
+    );
   }
 
   /**
-   * Check if service has register method
+   * Check if service is a scoped service
    */
-  private isRegisterable(service: SSRServiceInstance): service is SSRRegisterService {
-    return typeof (service as SSRRegisterService).register === 'function';
-  }
-
-  /**
-   * Get all service names
-   */
-  getServiceNames(): string[] {
-    return Array.from(this.services.keys());
+  private isScoped(service: SSRServiceInstance): service is SSRScopedService {
+    return (
+      typeof (service as SSRScopedService).register === 'function' &&
+      typeof (service as SSRScopedService).boot === 'function'
+    );
   }
 
   /**
@@ -132,22 +96,33 @@ export class SSRServiceContainer {
   }
 
   /**
-   * Destroy all services
+   * Create a scoped instance of a service with request context
+   * This is used for services that need request-specific state
    */
-  destroy(): void {
-    for (const [name, service] of this.services) {
-      if (typeof service.destroy === 'function') {
-        try {
-          const result = service.destroy();
-          if (result instanceof Promise) {
-            result.catch((error) => {
-              console.error(`Failed to destroy service ${name}:`, error);
-            });
-          }
-        } catch (error) {
-          console.error(`Failed to destroy service ${name}:`, error);
-        }
+  scoped<T extends SSRServiceInstance>(
+    ServiceClass: SSRServiceClass<T>,
+    options?: SSRServiceOptions,
+  ): T {
+    // Create a new instance of the service
+    const instance = new ServiceClass();
+
+    // Register it with this container for dependency injection
+    if (this.isSingleton(instance) || this.isScoped(instance)) {
+      void instance.register(this);
+    }
+
+    // Boot it with the provided options if it's a scoped service
+    if (this.isScoped(instance) && options) {
+      const result = instance.boot(options);
+      if (result instanceof Promise) {
+        console.warn(
+          `Scoped service ${ServiceClass.name} has async boot method - this may cause issues`,
+        );
       }
     }
+
+    return instance;
   }
+
+  // isSsrAware method removed - replaced with isScoped() method above
 }
