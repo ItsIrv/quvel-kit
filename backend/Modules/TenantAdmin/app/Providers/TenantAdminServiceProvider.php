@@ -30,9 +30,6 @@ class TenantAdminServiceProvider extends ModuleServiceProvider
 
         // Register middleware aliases
         $this->registerMiddleware();
-
-        // Register TenantAdmin routes to be excluded from tenant resolution
-        $this->registerTenantExclusions();
     }
 
     /**
@@ -45,14 +42,5 @@ class TenantAdminServiceProvider extends ModuleServiceProvider
         $router->aliasMiddleware('check_installed', CheckInstalled::class);
         $router->aliasMiddleware('check_not_installed', CheckNotInstalled::class);
         $router->aliasMiddleware('tenant_admin_auth', TenantAdminAuth::class);
-    }
-
-    /**
-     * Register paths that should be excluded from tenant resolution.
-     * This is now handled by the config/tenant.php file.
-     */
-    protected function registerTenantExclusions(): void
-    {
-        // Tenant exclusions are now managed via config/tenant.php
     }
 }

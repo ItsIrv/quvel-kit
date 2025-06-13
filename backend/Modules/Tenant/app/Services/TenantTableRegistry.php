@@ -2,6 +2,8 @@
 
 namespace Modules\Tenant\Services;
 
+use Modules\Tenant\ValueObjects\TenantTableConfig;
+
 class TenantTableRegistry
 {
     /**
@@ -13,19 +15,22 @@ class TenantTableRegistry
      * Register a table to be made tenant-aware.
      *
      * @param string $tableName The name of the table
-     * @param array $config Configuration for the table
+     * @param array|TenantTableConfig|string $config Configuration for the table
      * @return void
      */
-    public function registerTable(string $tableName, array $config = []): void
+    public function registerTable(string $tableName, array|TenantTableConfig|string $config = []): void
     {
-        $defaultConfig = [
-            'after'                     => 'id',
-            'cascade_delete'            => true,
-            'drop_uniques'              => [],
-            'tenant_unique_constraints' => [],
-        ];
-
-        $this->tables[$tableName] = array_merge($defaultConfig, $config);
+        if ($config instanceof TenantTableConfig) {
+            $this->tables[$tableName] = $config;
+        } elseif (is_string($config) && class_exists($config)) {
+            // Handle class references
+            $instance = app($config);
+            if ($instance instanceof \Modules\Tenant\Contracts\TenantTableConfigInterface) {
+                $this->tables[$tableName] = $instance->getConfig();
+            }
+        } else {
+            $this->tables[$tableName] = TenantTableConfig::fromArray($config);
+        }
     }
 
     /**
@@ -55,11 +60,23 @@ class TenantTableRegistry
      * Get configuration for a specific table.
      *
      * @param string $tableName
-     * @return array|null
+     * @return TenantTableConfig|null
      */
-    public function getTableConfig(string $tableName): ?array
+    public function getTableConfig(string $tableName): ?TenantTableConfig
     {
         return $this->tables[$tableName] ?? null;
+    }
+
+    /**
+     * Get configuration for a specific table as array (backward compatibility).
+     *
+     * @param string $tableName
+     * @return array|null
+     */
+    public function getTableConfigArray(string $tableName): ?array
+    {
+        $config = $this->getTableConfig($tableName);
+        return $config ? $config->toArray() : null;
     }
 
     /**

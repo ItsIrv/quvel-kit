@@ -1,5 +1,7 @@
 <?php
 
+use Modules\Tenant\Factories\TenantConfigFactory;
+
 return [
     'seeders'    => [
         // Tenant module doesn't contribute tenant-specific seeders
@@ -22,43 +24,11 @@ return [
     ],
 
     'tables'     => [
-        'users' => [
-            /**
-             * Column after which the tenant_id should be added
-             */
-            'after'                     => 'id',
-
-            /**
-             * Whether tenant deletion cascades to this table
-             */
-            'cascade_delete'            => true,
-
-            /**
-             * List of individual unique constraints to drop before adding tenant-specific compound keys
-             */
-            'drop_uniques'              => [
-                ['email'],
-                ['provider_id'],
-            ],
-
-            /**
-             * Unique constraints that should include tenant_id
-             * Each entry is an array of columns that should be unique together within a tenant
-             */
-            'tenant_unique_constraints' => [
-                ['email'],
-                ['provider_id'],
-                ['email', 'provider_id'],
-            ],
-        ],
+        'users' => \Modules\Tenant\Tables\UsersTableConfig::class,
     ],
 
     'exclusions' => [
-        'paths'    => [
-            // Tenant-specific paths that should bypass tenant resolution
-        ],
-        'patterns' => [
-            // Tenant-specific patterns that should bypass tenant resolution
-        ],
+        'paths'    => [],
+        'patterns' => [],
     ],
 ];

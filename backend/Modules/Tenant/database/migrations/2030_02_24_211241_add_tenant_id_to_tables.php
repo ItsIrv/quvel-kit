@@ -5,15 +5,22 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Modules\Tenant\Services\TenantTableRegistry;
 
-return new class () extends Migration {
+return new class () extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        $tables = app(TenantTableRegistry::class)->getTables();
+        $registry = app(TenantTableRegistry::class);
+        $tables   = $registry->getTables();
 
-        foreach ($tables as $tableName => $settings) {
+        foreach ($tables as $tableName => $tableConfig) {
+            // Convert value object to array for migration compatibility
+            $settings = $tableConfig instanceof \Modules\Tenant\ValueObjects\TenantTableConfig
+                ? $tableConfig->toArray()
+                : $tableConfig;
+
             Schema::table($tableName, static function (Blueprint $table) use ($settings): void {
                 $tenantIdColumn = $table->foreignId('tenant_id')
                     ->after($settings['after'] ?? 'id')
@@ -42,9 +49,15 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        $tables = app(TenantTableRegistry::class)->getTables();
+        $registry = app(TenantTableRegistry::class);
+        $tables   = $registry->getTables();
 
-        foreach ($tables as $tableName => $settings) {
+        foreach ($tables as $tableName => $tableConfig) {
+            // Convert value object to array for migration compatibility
+            $settings = $tableConfig instanceof \Modules\Tenant\ValueObjects\TenantTableConfig
+                ? $tableConfig->toArray()
+                : $tableConfig;
+
             Schema::table($tableName, static function (Blueprint $table) use ($settings): void {
                 $table->dropConstrainedForeignId('tenant_id');
 

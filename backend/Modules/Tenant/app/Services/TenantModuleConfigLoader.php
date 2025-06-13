@@ -49,19 +49,43 @@ class TenantModuleConfigLoader
         foreach ($this->loadAllModuleConfigs() as $moduleConfig) {
             // Add template-specific seeders
             if (isset($moduleConfig['seeders'][$template])) {
-                $seeders[] = $moduleConfig['seeders'][$template];
+                $seederConfig = $moduleConfig['seeders'][$template];
+                
+                // Handle new class-based seeders
+                if (is_string($seederConfig)) {
+                    $seeders[] = [
+                        'seeder_class' => $seederConfig,
+                        'priority' => $this->getSeederPriority($seederConfig),
+                    ];
+                } else {
+                    // Legacy array configuration
+                    $seeders[] = $seederConfig;
+                }
             }
 
             // Add shared seeders that apply to all templates
             if (isset($moduleConfig['shared_seeders']) && is_array($moduleConfig['shared_seeders'])) {
-                foreach ($moduleConfig['shared_seeders'] as $sharedSeeder) {
-                    $seeders[] = $sharedSeeder;
+                foreach ($moduleConfig['shared_seeders'] as $sharedSeederKey => $sharedSeeder) {
+                    // Handle new class-based shared seeders
+                    if (is_string($sharedSeeder)) {
+                        $seeders[] = [
+                            'shared_seeder_class' => $sharedSeeder,
+                            'priority' => $this->getSharedSeederPriority($sharedSeeder),
+                        ];
+                    } else {
+                        // Legacy array configuration
+                        $seeders[] = $sharedSeeder;
+                    }
                 }
             }
         }
 
         // Sort by priority (lower numbers first)
-        usort($seeders, fn ($a, $b) => ($a['priority'] ?? 50) <=> ($b['priority'] ?? 50));
+        usort($seeders, function ($a, $b) {
+            $aPriority = $a['priority'] ?? $this->getSeederClassPriority($a) ?? 50;
+            $bPriority = $b['priority'] ?? $this->getSeederClassPriority($b) ?? 50;
+            return $aPriority <=> $bPriority;
+        });
 
         return $seeders;
     }
@@ -95,7 +119,23 @@ class TenantModuleConfigLoader
 
         foreach ($this->loadAllModuleConfigs() as $moduleConfig) {
             if (isset($moduleConfig['tables']) && is_array($moduleConfig['tables'])) {
-                $tables = array_merge($tables, $moduleConfig['tables']);
+                foreach ($moduleConfig['tables'] as $tableName => $tableConfig) {
+                    // Handle class references
+                    if (is_string($tableConfig) && class_exists($tableConfig)) {
+                        $instance = app($tableConfig);
+                        if ($instance instanceof \Modules\Tenant\Contracts\TenantTableConfigInterface) {
+                            $tables[$tableName] = $instance->getConfig()->toArray();
+                        }
+                    }
+                    // Handle value objects
+                    elseif ($tableConfig instanceof \Modules\Tenant\ValueObjects\TenantTableConfig) {
+                        $tables[$tableName] = $tableConfig->toArray();
+                    }
+                    // Handle legacy arrays
+                    elseif (is_array($tableConfig)) {
+                        $tables[$tableName] = $tableConfig;
+                    }
+                }
             }
         }
 
@@ -112,8 +152,26 @@ class TenantModuleConfigLoader
         $paths = [];
 
         foreach ($this->loadAllModuleConfigs() as $moduleConfig) {
-            if (isset($moduleConfig['exclusions']['paths']) && is_array($moduleConfig['exclusions']['paths'])) {
-                $paths = array_merge($paths, $moduleConfig['exclusions']['paths']);
+            if (isset($moduleConfig['exclusions'])) {
+                $exclusions = $moduleConfig['exclusions'];
+                
+                // Handle class references
+                if (is_string($exclusions) && class_exists($exclusions)) {
+                    $instance = app($exclusions);
+                    if ($instance instanceof \Modules\Tenant\Contracts\TenantExclusionConfigInterface) {
+                        $exclusions = $instance->getConfig()->toArray();
+                    }
+                }
+                // Handle value objects
+                elseif ($exclusions instanceof \Modules\Tenant\ValueObjects\TenantExclusionConfig) {
+                    $exclusions = $exclusions->toArray();
+                }
+                
+                // Extract paths
+                $exclusionPaths = \Illuminate\Support\Arr::get($exclusions, 'paths', []);
+                if (is_array($exclusionPaths)) {
+                    $paths = array_merge($paths, $exclusionPaths);
+                }
             }
         }
 
@@ -130,8 +188,26 @@ class TenantModuleConfigLoader
         $patterns = [];
 
         foreach ($this->loadAllModuleConfigs() as $moduleConfig) {
-            if (isset($moduleConfig['exclusions']['patterns']) && is_array($moduleConfig['exclusions']['patterns'])) {
-                $patterns = array_merge($patterns, $moduleConfig['exclusions']['patterns']);
+            if (isset($moduleConfig['exclusions'])) {
+                $exclusions = $moduleConfig['exclusions'];
+                
+                // Handle class references
+                if (is_string($exclusions) && class_exists($exclusions)) {
+                    $instance = app($exclusions);
+                    if ($instance instanceof \Modules\Tenant\Contracts\TenantExclusionConfigInterface) {
+                        $exclusions = $instance->getConfig()->toArray();
+                    }
+                }
+                // Handle value objects
+                elseif ($exclusions instanceof \Modules\Tenant\ValueObjects\TenantExclusionConfig) {
+                    $exclusions = $exclusions->toArray();
+                }
+                
+                // Extract patterns
+                $exclusionPatterns = \Illuminate\Support\Arr::get($exclusions, 'patterns', []);
+                if (is_array($exclusionPatterns)) {
+                    $patterns = array_merge($patterns, $exclusionPatterns);
+                }
             }
         }
 
@@ -165,5 +241,56 @@ class TenantModuleConfigLoader
         }
 
         return $visibility;
+    }
+
+    /**
+     * Get priority for a template-specific seeder class.
+     *
+     * @param string $seederClass
+     * @return int
+     */
+    private function getSeederPriority(string $seederClass): int
+    {
+        try {
+            $instance = app($seederClass);
+            return $instance->getPriority();
+        } catch (\Exception) {
+            return 50; // Default priority
+        }
+    }
+
+    /**
+     * Get priority for a shared seeder class.
+     *
+     * @param string $seederClass
+     * @return int
+     */
+    private function getSharedSeederPriority(string $seederClass): int
+    {
+        try {
+            $instance = app($seederClass);
+            return $instance->getPriority();
+        } catch (\Exception) {
+            return 50; // Default priority
+        }
+    }
+
+    /**
+     * Get priority from a seeder data array that might contain class info.
+     *
+     * @param array $seederData
+     * @return int|null
+     */
+    private function getSeederClassPriority(array $seederData): ?int
+    {
+        if (isset($seederData['seeder_class'])) {
+            return $this->getSeederPriority($seederData['seeder_class']);
+        }
+        
+        if (isset($seederData['shared_seeder_class'])) {
+            return $this->getSharedSeederPriority($seederData['shared_seeder_class']);
+        }
+        
+        return null;
     }
 }

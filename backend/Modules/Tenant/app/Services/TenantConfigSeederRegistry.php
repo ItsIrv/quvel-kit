@@ -2,6 +2,9 @@
 
 namespace Modules\Tenant\Services;
 
+use Modules\Tenant\Contracts\TenantConfigSeederInterface;
+use Modules\Tenant\Contracts\TenantSharedSeederInterface;
+
 class TenantConfigSeederRegistry
 {
     /**
@@ -13,6 +16,16 @@ class TenantConfigSeederRegistry
      * Evaluated visibility cache by template.
      */
     private array $evaluatedVisibility = [];
+
+    /**
+     * Instantiated seeder classes cache.
+     */
+    private array $seederInstances = [];
+
+    /**
+     * Instantiated shared seeder classes cache.
+     */
+    private array $sharedSeederInstances = [];
 
     public function __construct(
         private TenantModuleConfigLoader $loader
@@ -36,9 +49,22 @@ class TenantConfigSeederRegistry
         $config = $baseConfig;
 
         foreach ($this->evaluatedSeeders[$template] as $seederData) {
-            $seederConfig = is_callable($seederData['config'])
-                ? call_user_func($seederData['config'], $template, $config)
-                : $seederData['config'];
+            // Handle new class-based seeders
+            if (isset($seederData['seeder_class'])) {
+                $seeder = $this->getSeederInstance($seederData['seeder_class']);
+                $seederConfig = $seeder->getConfig($template, $config);
+            } 
+            // Handle shared seeders
+            elseif (isset($seederData['shared_seeder_class'])) {
+                $seeder = $this->getSharedSeederInstance($seederData['shared_seeder_class']);
+                $seederConfig = $seeder->getSharedConfig($template, $config);
+            }
+            // Legacy closure support (backward compatibility)
+            else {
+                $seederConfig = is_callable($seederData['config'])
+                    ? call_user_func($seederData['config'], $template, $config)
+                    : $seederData['config'];
+            }
 
             if (is_array($seederConfig)) {
                 $config = array_merge($config, $seederConfig);
@@ -65,7 +91,24 @@ class TenantConfigSeederRegistry
         $visibility = $baseVisibility;
 
         foreach ($this->evaluatedVisibility[$template] as $visibilityData) {
-            if (is_array($visibilityData)) {
+            // Handle class-based visibility from seeders
+            if (isset($visibilityData['seeder_class'])) {
+                $seeder = $this->getSeederInstance($visibilityData['seeder_class']);
+                $seederVisibility = $seeder->getVisibility();
+                if (is_array($seederVisibility)) {
+                    $visibility = array_merge($visibility, $seederVisibility);
+                }
+            }
+            // Handle shared seeder visibility
+            elseif (isset($visibilityData['shared_seeder_class'])) {
+                $seeder = $this->getSharedSeederInstance($visibilityData['shared_seeder_class']);
+                $seederVisibility = $seeder->getVisibility();
+                if (is_array($seederVisibility)) {
+                    $visibility = array_merge($visibility, $seederVisibility);
+                }
+            }
+            // Legacy array visibility
+            elseif (is_array($visibilityData)) {
                 $visibility = array_merge($visibility, $visibilityData);
             }
         }
@@ -111,5 +154,35 @@ class TenantConfigSeederRegistry
         }
 
         $this->evaluatedVisibility[$template] = $visibility;
+    }
+
+    /**
+     * Get a seeder instance, creating and caching it if necessary.
+     *
+     * @param string $seederClass
+     * @return TenantConfigSeederInterface
+     */
+    private function getSeederInstance(string $seederClass): TenantConfigSeederInterface
+    {
+        if (!isset($this->seederInstances[$seederClass])) {
+            $this->seederInstances[$seederClass] = app($seederClass);
+        }
+
+        return $this->seederInstances[$seederClass];
+    }
+
+    /**
+     * Get a shared seeder instance, creating and caching it if necessary.
+     *
+     * @param string $seederClass
+     * @return TenantSharedSeederInterface
+     */
+    private function getSharedSeederInstance(string $seederClass): TenantSharedSeederInterface
+    {
+        if (!isset($this->sharedSeederInstances[$seederClass])) {
+            $this->sharedSeederInstances[$seederClass] = app($seederClass);
+        }
+
+        return $this->sharedSeederInstances[$seederClass];
     }
 }

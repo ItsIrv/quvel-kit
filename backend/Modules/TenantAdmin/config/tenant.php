@@ -1,12 +1,5 @@
 <?php
 
 return [
-    'exclusions' => [
-        'paths'    => [
-        ],
-        'patterns' => [
-            'admin/tenants*',
-            'api/admin/tenants*',
-        ],
-    ],
+    'exclusions' => \Modules\TenantAdmin\Exclusions\TenantAdminExclusionConfig::class,
 ];
