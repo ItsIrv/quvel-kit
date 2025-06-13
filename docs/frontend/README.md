@@ -29,7 +29,8 @@ src/modules/{ModuleName}/
 ## Core Concepts
 
 ### Services & Architecture
-- **[Service Container](./frontend-service-container.md)** - Dependency injection and lifecycle
+- **[Service Container](./frontend-service-container.md)** - Quasar application dependency injection
+- **[Express Container](./frontend-ssr-services.md)** - Express server service architecture
 - **[Configuration Service](./frontend-config-service.md)** - Tiered configuration system
 - **[Environment Configs](./frontend-env-configs.md)** - Build-time configuration
 

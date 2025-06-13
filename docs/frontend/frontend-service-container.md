@@ -4,6 +4,8 @@
 
 The Service Container in QuVel Kit implements a dependency injection pattern that orchestrates core and dynamic services throughout the application lifecycle. This architecture provides a centralized access point for essential services like API communication, validation, internationalization, task management, and real-time WebSocket communication. All core services work in both server and client environments with SSR support built-in.
 
+> **Warning**: This documentation covers the **Quasar application container** (`src/modules/Core/`). There is a separate **Express container** (`src-ssr/`) for framework-level services. See [Express and Quasar Service Containers](./frontend-ssr-services.md) for details on the Express container architecture.
+
 ## Key Features
 
 - **Strongly Typed Services** – TypeScript interfaces ensure type safety
@@ -203,10 +205,11 @@ if (container.hasService(NotificationService)) {
 
 ### SSR Considerations
 
-- SSR-aware services receive request/response objects in boot()
+- This Quasar container runs inside SSR requests (not the Express server level)
+- SSR-aware services receive request/response objects in boot() during SSR
 - Non-SSR services work the same in both server and client
 - The container handles SSR context automatically - no manual checks needed
-- Dynamic services added after container creation still follow the full lifecycle
+- For Express server-level services, see [Express Container documentation](./frontend-ssr-services.md)
 
 ### Error Handling
 
@@ -239,15 +242,5 @@ export interface RegisterService {
 // Service class type for container
 export type ServiceClass<T extends Service = Service> = new () => T;
 ```
-
-## Source Files
-
-- [ServiceContainer.ts](../../frontend/src/modules/Core/services/ServiceContainer.ts) - Main container implementation
-- [service.types.ts](../../frontend/src/modules/Core/types/service.types.ts) - Service type definitions
-- [containerUtil.ts](../../frontend/src/modules/Core/utils/containerUtil.ts) - Container creation utility
-- [container.ts](../../frontend/src/boot/container.ts) - Quasar boot file for container initialization
-- [serviceContainer.ts](../../frontend/src/modules/Core/stores/plugins/serviceContainer.ts) - Pinia plugin for store integration
-
----
 
 [← Back to Frontend Docs](./README.md)

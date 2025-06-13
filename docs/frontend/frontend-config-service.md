@@ -212,7 +212,7 @@ function getMyModuleConfig(config: ConfigService): MyModuleConfig {
 - **[ConfigService.ts](../../frontend/src/modules/Core/services/ConfigService.ts)** – Core configuration service
 - **[tenant.types.ts](../../frontend/src/modules/Core/types/tenant.types.ts)** – Configuration type definitions
 - **[render.ts](../../frontend/src-ssr/middlewares/render.ts)** – SSR middleware for configuration filtering
-- **[TenantCache.ts](../../frontend/src-ssr/services/TenantCache.ts)** – Tenant configuration cache service
+- **[SSRTenantCacheService.ts](../../frontend/src-ssr/services/SSRTenantCacheService.ts)** – Tenant configuration cache service
 
 ### Backend
 - **[DynamicTenantConfig.php](../../backend/Modules/Tenant/app/ValueObjects/DynamicTenantConfig.php)** – Dynamic configuration value object
