@@ -18,7 +18,7 @@ trait UseAuthModuleNotifications
 
     public function sendPasswordResetNotification($token): void
     {
-        if ($this->provider_id) {
+        if ($this->provider_id !== null) {
             abort(403, StatusEnum::INTERNAL_ERROR->value);
         }
 

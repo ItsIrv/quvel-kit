@@ -233,7 +233,8 @@ class DynamicTenantConfig implements Arrayable
             }
         }
 
-        return new self($config, $visibilityEnums, $tier);
+        /** @phpstan-ignore-next-line */
+        return new static($config, $visibilityEnums, $tier);
     }
 
     /**

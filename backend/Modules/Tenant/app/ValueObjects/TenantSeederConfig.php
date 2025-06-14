@@ -49,7 +49,8 @@ class TenantSeederConfig
      */
     public static function fromArray(array $config): static
     {
-        return new self(
+        /** @phpstan-ignore-next-line */
+        return new static(
             config: $config['config'] ?? [],
             visibility: $config['visibility'] ?? [],
             priority: $config['priority'] ?? 50

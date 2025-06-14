@@ -94,15 +94,15 @@ class Tenant extends Model
         $config       = $this->config;
         $parentConfig = $this->parent?->config;
 
-        if (!$config && !$parentConfig) {
+        if ($config === null && $parentConfig === null) {
             return null;
         }
 
-        if (!$parentConfig) {
+        if ($parentConfig === null) {
             return $config;
         }
 
-        if (!$config) {
+        if ($config === null) {
             return $parentConfig;
         }
 

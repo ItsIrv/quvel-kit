@@ -201,7 +201,8 @@ class CoreConfigPipe extends BaseConfigurationPipe
 
             $request = app('request');
 
-            if ($request->isFromTrustedProxy() && ($prefix = $request->header('X-Forwarded-Prefix'))) {
+            $prefix = $request->header('X-Forwarded-Prefix');
+            if ($request->isFromTrustedProxy() && $prefix !== null) {
                 $urlGenerator = app(UrlGenerator::class);
                 /** @phpstan-ignore-next-line Using deprecated method until Laravel provides stable replacement */
                 $urlGenerator->forceRootUrl(

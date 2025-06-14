@@ -43,7 +43,8 @@ class TenantExclusionConfig
      */
     public static function fromArray(array $config): static
     {
-        return new self(
+        /** @phpstan-ignore-next-line */
+        return new static(
             paths: $config['paths'] ?? [],
             patterns: $config['patterns'] ?? []
         );
@@ -67,7 +68,8 @@ class TenantExclusionConfig
      */
     public function merge(TenantExclusionConfig $other): static
     {
-        return new self(
+        /** @phpstan-ignore-next-line */
+        return new static(
             paths: array_unique(array_merge($this->paths, $other->paths)),
             patterns: array_unique(array_merge($this->patterns, $other->patterns)),
         );

@@ -56,7 +56,8 @@ readonly class TenantTableConfig
      */
     public static function fromArray(array $config): static
     {
-        return new self(
+        /** @phpstan-ignore-next-line */
+        return new static(
             after: $config['after'] ?? 'id',
             cascadeDelete: $config['cascade_delete'] ?? true,
             dropUniques: $config['drop_uniques'] ?? [],

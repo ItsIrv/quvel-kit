@@ -76,7 +76,7 @@ class TenantTableRegistry
     public function getTableConfigArray(string $tableName): ?array
     {
         $config = $this->getTableConfig($tableName);
-        return $config ? $config->toArray() : null;
+        return $config !== null ? $config->toArray() : null;
     }
 
     /**

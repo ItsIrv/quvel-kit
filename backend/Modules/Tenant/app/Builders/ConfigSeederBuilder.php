@@ -25,7 +25,8 @@ class ConfigSeederBuilder implements ConfigSeederBuilderInterface
      */
     public static function create(): static
     {
-        return new self();
+        /** @phpstan-ignore-next-line */
+        return new static();
     }
 
     /**

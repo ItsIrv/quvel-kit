@@ -33,7 +33,7 @@ class EmailVerificationRequest extends BaseEmailVerificationRequest
         if ($verifyBeforeLogin) {
             try {
                 $user = app(UserFindService::class)->findByPublicId($publicId);
-                if (!$user || !hash_equals($hash, sha1($user->getEmailForVerification()))) {
+                if ($user === null || !hash_equals($hash, sha1($user->getEmailForVerification()))) {
                     return false;
                 }
 
@@ -71,7 +71,7 @@ class EmailVerificationRequest extends BaseEmailVerificationRequest
     {
         $user = $this->verificationUser;
 
-        if ($user && !$user->hasVerifiedEmail()) {
+        if ($user !== null && !$user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
         }
     }

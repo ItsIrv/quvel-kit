@@ -35,7 +35,8 @@ class LoginAction
         $loginData = $request->validated();
 
         // Find the user by email
-        if (!$user = $this->userFindService->findByEmail($loginData['email'])) {
+        $user = $this->userFindService->findByEmail($loginData['email']);
+        if ($user === null) {
             $this->logs->loginFailedUserNotFound(
                 $loginData['email'],
                 $request->ip(),
@@ -46,7 +47,7 @@ class LoginAction
         }
 
         // Check the user signed up with password
-        if (!$user->password || $user->provider_id) {
+        if ($user->password === null || $user->provider_id !== null) {
             $this->logs->loginFailedInvalidCredentials(
                 $loginData['email'],
                 $request->ip(),

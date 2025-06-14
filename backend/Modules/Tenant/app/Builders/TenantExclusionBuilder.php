@@ -23,7 +23,8 @@ class TenantExclusionBuilder implements ExclusionBuilderInterface
      */
     public static function create(): static
     {
-        return new self();
+        /** @phpstan-ignore-next-line */
+        return new static();
     }
 
     /**

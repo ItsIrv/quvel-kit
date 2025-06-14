@@ -38,7 +38,7 @@ if (!function_exists('setTenant')) {
             throw new TenantNotFoundException('Tenant not found.');
         }
 
-        if (!$tenant) {
+        if ($tenant === null) {
             throw new TenantNotFoundException('Tenant not found');
         }
 
@@ -83,7 +83,7 @@ if (!function_exists('setTenantContext')) {
             throw new TenantNotFoundException('Tenant not found.');
         }
 
-        if (!$tenant) {
+        if ($tenant === null) {
             throw new TenantNotFoundException('Tenant not found');
         }
 

@@ -146,7 +146,7 @@ class FrontendService
         }
 
         // Handle capacitor schemes
-        if ($this->isCapacitor && $this->capacitorScheme && $this->capacitorScheme !== '_deep') {
+        if ($this->isCapacitor && $this->capacitorScheme !== null && $this->capacitorScheme !== '_deep') {
             $url = \preg_replace('#^https?://#', "{$this->capacitorScheme}://", $url);
         }
 

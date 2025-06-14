@@ -40,7 +40,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
     public function update(User $user, array $input): void
     {
         // Validate the profile information
-        $this->validator->make($input, [
+        $validator = $this->validator->make($input, [
             'name' => ['required', ...NameRule::RULES],
             // 'email' => [
             //     'required',
@@ -48,13 +48,12 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             //     EmailRule::default(),
             //     Rule::unique('users')->ignore($user->id),
             // ],
-        ])->validateWithBag('updateProfileInformation');
+        ]);
+        
+        $validator->validate();
 
         // Handle email verification if email has changed
-        if (
-            $input['email'] !== $user->email &&
-            $user instanceof MustVerifyEmail
-        ) {
+        if ($input['email'] !== $user->email) {
             $this->updateVerifiedUser($user, $input);
         } else {
             // Update the user's profile information

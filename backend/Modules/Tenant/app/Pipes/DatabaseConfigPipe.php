@@ -54,7 +54,8 @@ class DatabaseConfigPipe extends BaseConfigurationPipe
             }
 
             // Purge the connection if it was previously established
-            if ($dbManager->getConnections() && array_key_exists($connection, $dbManager->getConnections())) {
+            $connections = $dbManager->getConnections();
+            if ($connections !== [] && array_key_exists($connection, $connections)) {
                 $dbManager->purge($connection);
             }
 

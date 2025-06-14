@@ -56,7 +56,7 @@ class UserAuthenticationService
             $providerUser->getEmail() ?? ''
         );
 
-        if ($user) {
+        if ($user !== null) {
             // Ensure provider ID consistency (avoid hijacking)
             if ($user->provider_id !== $providerIdentifier) {
                 return [$user, OAuthStatusEnum::EMAIL_TAKEN];

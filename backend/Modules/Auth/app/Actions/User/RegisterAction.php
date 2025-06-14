@@ -38,7 +38,7 @@ class RegisterAction
         $registerData = $request->validated();
 
         // Check if user already exists
-        if ($this->userFindService->findByEmail($registerData['email'])) {
+        if ($this->userFindService->findByEmail($registerData['email']) !== null) {
             throw new RegisterActionException(
                 AuthStatusEnum::EMAIL_ALREADY_IN_USE,
             );

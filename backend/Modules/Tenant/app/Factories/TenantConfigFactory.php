@@ -27,7 +27,7 @@ class TenantConfigFactory
     {
         $builder = TenantTableBuilder::create();
 
-        if ($callback) {
+        if ($callback !== null) {
             $callback($builder);
         }
 

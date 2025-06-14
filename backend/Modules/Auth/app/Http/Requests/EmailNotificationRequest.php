@@ -28,7 +28,7 @@ class EmailNotificationRequest extends FormRequest
 
         $user = $this->user();
 
-        if (!$user) {
+        if ($user === null) {
             throw new HttpResponseException(
                 app(FrontendService::class)->redirect(),
             );
@@ -42,7 +42,7 @@ class EmailNotificationRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -65,7 +65,7 @@ class EmailNotificationRequest extends FormRequest
             $user = $userFindService->findByEmail($this->input('email'));
         }
 
-        if (!$user || $user->hasVerifiedEmail()) {
+        if ($user === null || $user->hasVerifiedEmail()) {
             return;
         }
 

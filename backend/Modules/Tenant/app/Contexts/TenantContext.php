@@ -85,10 +85,6 @@ class TenantContext
     {
         $config = $this->tenant->config;
 
-        if ($config instanceof DynamicTenantConfig) {
-            return $config->get($key, $default);
-        }
-
-        return $config->{$key} ?? $default;
+        return $config->get($key, $default);
     }
 }

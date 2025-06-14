@@ -71,7 +71,7 @@ class SessionConfigPipe extends BaseConfigurationPipe
             $hasChanges = true;
         } else {
             $sessionDomain = $this->extractSessionDomain($tenant, $tenantConfig);
-            if ($sessionDomain) {
+            if ($sessionDomain !== null) {
                 $config->set('session.domain', $sessionDomain);
                 $this->logger->domainChanged($sessionDomain);
                 $hasChanges = true;
@@ -172,10 +172,10 @@ class SessionConfigPipe extends BaseConfigurationPipe
             $sessionManager = app(SessionManager::class);
 
             // If it's using the cookie session handler, update the cookie name
-            if ($sessionManager && method_exists($sessionManager, 'driver')) {
+            if (method_exists($sessionManager, 'driver')) {
                 /** @var \Illuminate\Session\Store $driver */
                 $driver = $sessionManager->driver();
-                if ($driver && method_exists($driver, 'setName')) {
+                if (method_exists($driver, 'setName')) {
                     $driver->setName($cookieName);
 
                     $this->logger->debug('Updated session driver cookie name', [

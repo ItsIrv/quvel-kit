@@ -79,7 +79,7 @@ class ConfigurationPipeline
 
         $tenantConfig = $tenant->getEffectiveConfig();
 
-        if (!$tenantConfig) {
+        if ($tenantConfig === null) {
             return;
         }
 

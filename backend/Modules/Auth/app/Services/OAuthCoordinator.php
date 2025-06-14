@@ -106,7 +106,7 @@ class OAuthCoordinator
         $userId = $this->clientNonceService->getUserIdFromNonce($nonce);
         $this->clientNonceService->forget($nonce);
 
-        if (!$userId) {
+        if ($userId === null) {
             throw new OAuthException(OAuthStatusEnum::INTERNAL_ERROR);
         }
 

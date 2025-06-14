@@ -86,14 +86,14 @@ class ClientNonceService
     {
         $nonce = $this->hmacService->extractAndVerify($signedNonce);
 
-        if (!$nonce) {
+        if ($nonce === null) {
             throw new OAuthException(OAuthStatusEnum::INVALID_NONCE);
         }
 
         $key   = $this->getCacheKey($nonce);
         $value = $this->cache->get($key);
 
-        if ($expectedState && $value !== $expectedState) {
+        if ($expectedState !== null && $value !== $expectedState) {
             throw new OAuthException(OAuthStatusEnum::INVALID_NONCE);
         }
 

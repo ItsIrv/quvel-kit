@@ -92,7 +92,7 @@ class ServerTokenService
     {
         $serverToken = $this->hmacService->extractAndVerify($signedServerToken);
 
-        if (!$serverToken) {
+        if ($serverToken === null) {
             throw new OAuthException(OAuthStatusEnum::INVALID_TOKEN);
         }
 

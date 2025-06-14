@@ -16,7 +16,7 @@ class FindService
             ->orWhereHas('parent', fn ($query) => $query->where('domain', '=', $domain))
             ->first();
 
-        if ($tenant?->parent) {
+        if ($tenant !== null && $tenant->parent !== null) {
             return $tenant->parent; // Always return the parent
         }
 

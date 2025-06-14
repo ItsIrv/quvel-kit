@@ -37,7 +37,8 @@ class HostResolver implements TenantResolver
         $domain = $this->getHost();
 
         // First try memory cache (Octane)
-        if ($tenant = $this->memoryCache->getTenant($domain)) {
+        $tenant = $this->memoryCache->getTenant($domain);
+        if ($tenant !== null) {
             return $tenant;
         }
 
@@ -79,7 +80,7 @@ class HostResolver implements TenantResolver
         $host       = $this->request->getHost();
         $customHost = $this->request->header(TenantHeader::TENANT_DOMAIN->value);
 
-        if ($customHost && $this->requestPrivacyService->isInternalRequest()) {
+        if ($customHost !== null && $this->requestPrivacyService->isInternalRequest()) {
             $customHost = parse_url($customHost, PHP_URL_HOST);
 
             if ($customHost !== null && $customHost !== '' && $customHost !== '0') {
