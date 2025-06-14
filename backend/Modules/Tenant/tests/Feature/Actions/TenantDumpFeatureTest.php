@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Tenant\Actions\TenantDump;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
-use Tests\TestCase;
+use Modules\Tenant\Tests\TestCase;
 
 #[CoversClass(TenantDump::class)]
 #[Group('tenant-module')]
@@ -19,6 +19,9 @@ class TenantDumpFeatureTest extends TestCase
      */
     public function testTenantDumpSuccess(): void
     {
+        // Disable the privacy checks to bypass the IsInternalRequest middleware
+        config(['core.privacy.disable_ip_check' => true, 'core.privacy.disable_key_check' => true]);
+
         $response = $this->getJson(
             route('tenant'),
         );
@@ -38,8 +41,14 @@ class TenantDumpFeatureTest extends TestCase
      */
     public function testTenantDumpThrowsExceptionWithoutTenant(): void
     {
-        // Simulate incorrect tenant by deleting all.
+        // Disable the privacy checks to bypass the IsInternalRequest middleware
+        config(['core.privacy.disable_ip_check' => true, 'core.privacy.disable_key_check' => true]);
+
+        // Simulate incorrect tenant by deleting all and clearing the context
         DB::table('tenants')->delete();
+        
+        // Create a new empty tenant context to simulate no tenant being found
+        $this->app->instance(\Modules\Tenant\Contexts\TenantContext::class, new \Modules\Tenant\Contexts\TenantContext());
 
         $this->withoutExceptionHandling();
         $this->expectException(HttpResponseException::class);

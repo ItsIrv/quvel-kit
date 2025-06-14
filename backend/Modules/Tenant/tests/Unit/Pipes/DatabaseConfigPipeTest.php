@@ -103,7 +103,7 @@ class DatabaseConfigPipeTest extends TestCase
             });
 
         // Database manager expectations
-        $this->dbManager->expects($this->exactly(2))
+        $this->dbManager->expects($this->once())
             ->method('getConnections')
             ->willReturn(['pgsql' => 'connection']);
 

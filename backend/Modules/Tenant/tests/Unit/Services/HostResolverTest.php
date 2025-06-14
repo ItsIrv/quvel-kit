@@ -112,13 +112,17 @@ final class HostResolverTest extends TestCase
             ->andReturn(true);
 
         $this->request->shouldReceive('getHost')
-            ->once()
+            ->times(3)
             ->andReturn($host);
 
         $this->request->shouldReceive('header')
-            ->once()
+            ->times(3)
             ->with(TenantHeader::TENANT_DOMAIN->value)
             ->andReturn('');
+
+        $this->requestPrivacyService->shouldReceive('isInternalRequest')
+            ->times(3)
+            ->andReturn(false);
 
         $this->tenantFindService->shouldReceive('findTenantByDomain')
             ->once()
@@ -158,6 +162,15 @@ final class HostResolverTest extends TestCase
             ->with(TenantHeader::TENANT_DOMAIN->value)
             ->andReturn('');
 
+        $this->requestPrivacyService->shouldReceive('isInternalRequest')
+            ->twice()
+            ->andReturn(false);
+
+        $this->memoryCache->shouldReceive('getTenant')
+            ->once()
+            ->with($host)
+            ->andReturn(null);
+
         $this->config->shouldReceive('get')
             ->once()
             ->with('tenant.tenant_cache.resolver_ttl')
@@ -174,6 +187,10 @@ final class HostResolverTest extends TestCase
             ->once()
             ->with($host)
             ->andReturn($tenant);
+
+        $this->memoryCache->shouldReceive('cacheTenant')
+            ->once()
+            ->with($host, $tenant);
 
         // Act
         $result = $this->hostResolver->resolveTenant();
@@ -194,13 +211,22 @@ final class HostResolverTest extends TestCase
             ->andReturn(true);
 
         $this->request->shouldReceive('getHost')
-            ->twice()
+            ->times(3)
             ->andReturn($host);
 
         $this->request->shouldReceive('header')
-            ->twice()
+            ->times(3)
             ->with(TenantHeader::TENANT_DOMAIN->value)
             ->andReturn('');
+
+        $this->requestPrivacyService->shouldReceive('isInternalRequest')
+            ->times(3)
+            ->andReturn(false);
+
+        $this->memoryCache->shouldReceive('getTenant')
+            ->once()
+            ->with($host)
+            ->andReturn(null);
 
         $this->tenantFindService->shouldReceive('findTenantByDomain')
             ->once()
@@ -250,13 +276,22 @@ final class HostResolverTest extends TestCase
             ->with('HTTP_HOST', $customHost);
 
         $this->requestPrivacyService->shouldReceive('isInternalRequest')
-            ->once()
+            ->times(3)
             ->andReturn(true);
+
+        $this->memoryCache->shouldReceive('getTenant')
+            ->once()
+            ->with($customHost)
+            ->andReturn(null);
 
         $this->tenantFindService->shouldReceive('findTenantByDomain')
             ->once()
             ->with($customHost)
             ->andReturn($tenant);
+
+        $this->memoryCache->shouldReceive('cacheTenant')
+            ->once()
+            ->with($customHost, $tenant);
 
         // Act
         $result = $this->hostResolver->resolveTenant();
@@ -289,13 +324,22 @@ final class HostResolverTest extends TestCase
             ->andReturn($customHostHeader);
 
         $this->requestPrivacyService->shouldReceive('isInternalRequest')
-            ->once()
+            ->twice()
             ->andReturn(false);
+
+        $this->memoryCache->shouldReceive('getTenant')
+            ->once()
+            ->with($defaultHost)
+            ->andReturn(null);
 
         $this->tenantFindService->shouldReceive('findTenantByDomain')
             ->once()
             ->with($defaultHost)
             ->andReturn($tenant);
+
+        $this->memoryCache->shouldReceive('cacheTenant')
+            ->once()
+            ->with($defaultHost, $tenant);
 
         // Act
         $result = $this->hostResolver->resolveTenant();
@@ -329,15 +373,24 @@ final class HostResolverTest extends TestCase
 
         // Since parse_url will return false for invalid URL, no host will be extracted
         // So the request should proceed with the default host
+        
+        $this->requestPrivacyService->shouldReceive('isInternalRequest')
+            ->twice()
+            ->andReturn(true);
+
+        $this->memoryCache->shouldReceive('getTenant')
+            ->once()
+            ->with($defaultHost)
+            ->andReturn(null);
 
         $this->tenantFindService->shouldReceive('findTenantByDomain')
             ->once()
             ->with($defaultHost)
             ->andReturn($tenant);
 
-        $this->requestPrivacyService->shouldReceive('isInternalRequest')
+        $this->memoryCache->shouldReceive('cacheTenant')
             ->once()
-            ->andReturn(false);
+            ->with($defaultHost, $tenant);
 
         // Act
         $result = $this->hostResolver->resolveTenant();

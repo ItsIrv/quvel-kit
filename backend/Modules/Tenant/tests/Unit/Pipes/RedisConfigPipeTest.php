@@ -43,6 +43,11 @@ class RedisConfigPipeTest extends TestCase
     private ?Container $originalContainer = null;
 
     /**
+     * @var bool Controls whether Redis should be available in tests
+     */
+    private bool $redisAvailable = true;
+
+    /**
      * Set up the test environment.
      */
     protected function setUp(): void
@@ -66,12 +71,15 @@ class RedisConfigPipeTest extends TestCase
         // Set Container instance
         Container::setInstance($this->app);
 
-        // Configure app container defaults
+        // Configure app container defaults  
         $this->app->method('bound')
-            ->willReturnMap([
-                [RedisFactory::class, true],
-                [RedisConfigPipeLogs::class, false],
-            ]);
+            ->willReturnCallback(function ($abstract) {
+                return match ($abstract) {
+                    RedisFactory::class => $this->redisAvailable,
+                    RedisConfigPipeLogs::class => false,
+                    default => false,
+                };
+            });
 
         $this->app->method('environment')
             ->willReturn(false);
@@ -86,8 +94,12 @@ class RedisConfigPipeTest extends TestCase
     public function testHandleSetsRedisConfiguration(): void
     {
         // Arrange
-        $tenant     = $this->createMock(Tenant::class);
-        $tenant->id = 123;
+        $tenant = $this->createMock(Tenant::class);
+        $tenant->method('__get')
+            ->willReturnMap([
+                ['id', 123],
+                ['public_id', '123'],
+            ]);
 
         $tenantConfig = [
             'redis_client'   => 'predis',
@@ -134,8 +146,12 @@ class RedisConfigPipeTest extends TestCase
     public function testHandleSetsCustomRedisPrefix(): void
     {
         // Arrange
-        $tenant     = $this->createMock(Tenant::class);
-        $tenant->id = 123;
+        $tenant = $this->createMock(Tenant::class);
+        $tenant->method('__get')
+            ->willReturnMap([
+                ['id', 123],
+                ['public_id', '123'],
+            ]);
 
         $tenantConfig = [
             'redis_prefix' => 'custom_prefix:',
@@ -171,7 +187,11 @@ class RedisConfigPipeTest extends TestCase
     {
         // Arrange
         $tenant     = $this->createMock(Tenant::class);
-        $tenant->id = 456;
+        $tenant->method('__get')
+            ->willReturnMap([
+                ['id', 456],
+                ['public_id', '456'],
+            ]);
 
         $tenantConfig = []; // No redis_prefix specified
 
@@ -203,18 +223,20 @@ class RedisConfigPipeTest extends TestCase
      */
     public function testHandleSkipsWhenRedisNotAvailable(): void
     {
+        // Set Redis as unavailable for this test
+        $this->redisAvailable = false;
+        
         // Arrange
-        $tenant     = $this->createMock(Tenant::class);
-        $tenant->id = 123;
+        $tenant = $this->createMock(Tenant::class);
+        $tenant->method('__get')
+            ->willReturnMap([
+                ['id', 123],
+                ['public_id', '123'],
+            ]);
 
         $tenantConfig = [
             'redis_host' => '127.0.0.1',
         ];
-
-        // Mock Redis as not available
-        $this->app->method('bound')
-            ->with(RedisFactory::class)
-            ->willReturn(false);
 
         // Config should not be called to set anything
         $this->config->expects($this->never())
@@ -235,15 +257,19 @@ class RedisConfigPipeTest extends TestCase
     public function testHandleRefreshesRedisConnections(): void
     {
         // Arrange
-        $tenant     = $this->createMock(Tenant::class);
-        $tenant->id = 123;
+        $tenant = $this->createMock(Tenant::class);
+        $tenant->method('__get')
+            ->willReturnMap([
+                ['id', 123],
+                ['public_id', '123'],
+            ]);
 
         $tenantConfig = [
             'redis_host' => '127.0.0.1',
         ];
 
-        // Set up config expectations
-        $this->config->expects($this->exactly(2))
+        // Set up config expectations (host + default.prefix + cache.prefix)
+        $this->config->expects($this->exactly(3))
             ->method('set');
 
         // Expect Redis connections to be refreshed
@@ -273,8 +299,12 @@ class RedisConfigPipeTest extends TestCase
     public function testHandleWithEmptyTenantConfig(): void
     {
         // Arrange
-        $tenant       = $this->createMock(Tenant::class);
-        $tenant->id   = 123;
+        $tenant = $this->createMock(Tenant::class);
+        $tenant->method('__get')
+            ->willReturnMap([
+                ['id', 123],
+                ['public_id', '123'],
+            ]);
         $tenantConfig = [];
 
         // Should still set default tenant prefix
@@ -311,10 +341,13 @@ class RedisConfigPipeTest extends TestCase
         }
 
         $this->app->method('bound')
-            ->willReturnMap([
-                [RedisFactory::class, true],
-                [RedisConfigPipeLogs::class, false],
-            ]);
+            ->willReturnCallback(function ($abstract) {
+                return match ($abstract) {
+                    RedisFactory::class => true,
+                    RedisConfigPipeLogs::class => false,
+                    default => false,
+                };
+            });
     }
 
     /**

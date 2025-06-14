@@ -68,13 +68,12 @@ final class TenantsDumpFeatureTest extends TestCase
         DB::table('tenants')->delete();
 
         // Act
-        // We expect a redirect or error response since there's no tenant to serve
         $response = $this->getJson(
             route('tenants.cache'),
         );
 
-        // Assert - We should get a non-200 response (either redirect or error)
-        $this->assertNotEquals(200, $response->getStatusCode(), 'Should not return OK status when no tenants exist');
+        // Assert - Should return 204 (No Content) status when no tenants exist
+        $response->assertNoContent();
     }
 
     #[TestDox('It should cache tenant data for subsequent requests')]

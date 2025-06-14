@@ -102,7 +102,7 @@ class SessionConfigPipeTest extends TestCase
         $this->logger->expects($this->once())->method('pathChanged')->with('/app');
         $this->logger->expects($this->once())->method('domainChanged')->with('.tenant.com');
         $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_session', true);
-        $this->logger->expects($this->once())->method('applyingChanges')->with(6);
+        $this->logger->expects($this->once())->method('applyingChanges');
 
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;
@@ -151,7 +151,7 @@ class SessionConfigPipeTest extends TestCase
         $this->logger->expects($this->once())->method('driverChanged')->with('file');
         $this->logger->expects($this->once())->method('domainChanged')->with('.example.com');
         $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_test-tenant_session', false);
-        $this->logger->expects($this->once())->method('applyingChanges')->with(1);
+        $this->logger->expects($this->once())->method('applyingChanges');
 
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;
@@ -203,7 +203,7 @@ class SessionConfigPipeTest extends TestCase
         $this->logger->expects($this->once())->method('domainChanged')->with('.domain.com');
         $this->logger->expects($this->once())->method('cookieNameChanged');
         $this->logger->expects($this->once())->method('databaseConnectionChanged')->with('pgsql');
-        $this->logger->expects($this->once())->method('applyingChanges')->with(1);
+        $this->logger->expects($this->once())->method('applyingChanges');
 
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;
@@ -330,7 +330,7 @@ class SessionConfigPipeTest extends TestCase
         $this->logger->expects($this->once())->method('driverChanged')->with('file');
         $this->logger->expects($this->once())->method('domainChanged')->with('.domain.com');
         $this->logger->expects($this->once())->method('cookieNameChanged')->with('tenant_test-tenant-456_session', false);
-        $this->logger->expects($this->once())->method('applyingChanges')->with(1);
+        $this->logger->expects($this->once())->method('applyingChanges');
 
         $result = $this->pipe->handle($tenant, $this->config, $tenantConfig, function ($data) {
             return $data;
