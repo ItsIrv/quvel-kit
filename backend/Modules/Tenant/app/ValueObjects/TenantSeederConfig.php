@@ -49,7 +49,7 @@ class TenantSeederConfig
      */
     public static function fromArray(array $config): static
     {
-        return new static(
+        return new self(
             config: $config['config'] ?? [],
             visibility: $config['visibility'] ?? [],
             priority: $config['priority'] ?? 50

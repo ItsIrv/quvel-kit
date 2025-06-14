@@ -31,7 +31,7 @@ class TenantMemoryCache
             $table = app(Octane::class)->table('tenants');
             $data  = $table->get($domain);
 
-            if ($data && $this->isValidCacheEntry($data)) {
+            if ($data !== null && $this->isValidCacheEntry($data)) {
                 return unserialize($data['tenant']);
             }
 
@@ -157,7 +157,7 @@ class TenantMemoryCache
      */
     private function evictOldestFallbackEntry(): void
     {
-        if (empty(self::$fallbackCache)) {
+        if (self::$fallbackCache === []) {
             return;
         }
 

@@ -20,7 +20,7 @@ class GoogleRecaptchaVerifier implements CaptchaVerifierInterface
         $secretKey = config('recaptcha_secret_key');
 
         // If no secret key is configured, validation fails
-        if (empty($secretKey)) {
+        if ($secretKey === null || $secretKey === '' || $secretKey === '0') {
             return false;
         }
 

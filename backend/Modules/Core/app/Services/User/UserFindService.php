@@ -14,7 +14,6 @@ class UserFindService
      */
     public function findById(int|string $id): User
     {
-        /** @phpstan-ignore-next-line TODO: */
         return User::where('id', '=', $id)->firstOrFail();
     }
 
@@ -23,7 +22,6 @@ class UserFindService
      */
     public function findByEmail(string $email): ?User
     {
-        /** @phpstan-ignore-next-line TODO: */
         return User::where('email', '=', $email)->first();
     }
 
@@ -32,7 +30,6 @@ class UserFindService
      */
     public function findByPublicId(string $publicId): ?User
     {
-        /** @phpstan-ignore-next-line TODO: */
         return User::where('public_id', '=', $publicId)->first();
     }
 
@@ -41,7 +38,6 @@ class UserFindService
      */
     public function findByField(string $field, string $value): ?User
     {
-        /** @phpstan-ignore-next-line TODO: */
         return User::where($field, '=', $value)->first();
     }
 }

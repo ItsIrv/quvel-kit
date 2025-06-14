@@ -20,7 +20,7 @@ class DynamicTenantConfigCast implements CastsAttributes
      */
     public function get($model, string $key, mixed $value, array $attributes): DynamicTenantConfig|null
     {
-        if (empty($value)) {
+        if ($value === null || $value === '' || $value === '0') {
             return null;
         }
 
@@ -34,8 +34,8 @@ class DynamicTenantConfigCast implements CastsAttributes
         // Check if it has __visibility key (legacy format)
         if (isset($data['__visibility'])) {
             $visibility = [];
-            foreach ($data['__visibility'] as $key => $vis) {
-                $visibility[$key] = is_string($vis)
+            foreach ($data['__visibility'] as $visKey => $vis) {
+                $visibility[$visKey] = is_string($vis)
                     ? TenantConfigVisibility::tryFrom($vis) ?? TenantConfigVisibility::PRIVATE
                     : $vis;
             }

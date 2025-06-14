@@ -47,7 +47,7 @@ class OAuthCoordinator
     public function buildRedirectResponse(string $provider, ?string $requestNonce): RedirectResponse
     {
         $serverToken = '';
-        if (!empty($requestNonce)) {
+        if ($requestNonce !== null && $requestNonce !== '' && $requestNonce !== '0') {
             $clientNonce = $this->clientNonceService->getNonce(
                 $requestNonce,
                 ClientNonceService::TOKEN_CREATED,

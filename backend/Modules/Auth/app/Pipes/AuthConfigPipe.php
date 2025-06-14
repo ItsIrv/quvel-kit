@@ -57,10 +57,10 @@ class AuthConfigPipe extends BaseConfigurationPipe
             // Fallback: if providers are listed but credentials not in tenant config, use environment
             foreach ($tenantConfig['socialite_providers'] as $provider) {
                 $envPrefix    = strtoupper($provider);
-                $clientId     = env("{$envPrefix}_CLIENT_ID");
-                $clientSecret = env("{$envPrefix}_CLIENT_SECRET");
+                $clientId     = $config->get("services.{$provider}.client_id");
+                $clientSecret = $config->get("services.{$provider}.client_secret");
 
-                if ($clientId && $clientSecret) {
+                if ($clientId !== null && $clientSecret !== null) {
                     $config->set("services.$provider.client_id", $clientId);
                     $config->set("services.$provider.client_secret", $clientSecret);
 

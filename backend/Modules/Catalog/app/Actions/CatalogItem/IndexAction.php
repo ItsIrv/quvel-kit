@@ -25,7 +25,7 @@ class IndexAction
             $filters['is_public'] = true;
         }
 
-        if (!empty($filters['search'])) {
+        if (isset($filters['search']) && $filters['search'] !== '' && $filters['search'] !== '0') {
             $search = $filters['search'];
 
             $query->where(function ($q) use ($search) {

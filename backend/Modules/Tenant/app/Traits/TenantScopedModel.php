@@ -86,7 +86,7 @@ trait TenantScopedModel
         $tenantId        = $this->getTenantId();
         $currentTenantId = $this->getAttribute('tenant_id');
 
-        if ($currentTenantId !== null && (int) $currentTenantId !== (int) $tenantId) {
+        if ($currentTenantId !== null && $currentTenantId !== $tenantId) {
             throw new TenantMismatchException();
         } else {
             $this->setAttribute('tenant_id', $tenantId);

@@ -12,7 +12,6 @@ class FindService
      */
     public function findTenantByDomain(string $domain): ?Tenant
     {
-        /** @phpstan-ignore-next-line TODO */
         $tenant = Tenant::where('domain', '=', $domain)
             ->orWhereHas('parent', fn ($query) => $query->where('domain', '=', $domain))
             ->first();

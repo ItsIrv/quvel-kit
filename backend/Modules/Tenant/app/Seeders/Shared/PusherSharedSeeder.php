@@ -28,12 +28,12 @@ class PusherSharedSeeder implements TenantSharedSeederInterface
             $pusherConfig['pusher_app_secret']  = $baseConfig['pusher_app_secret'] ?? '';
             $pusherConfig['pusher_app_id']      = $baseConfig['pusher_app_id'] ?? '';
             $pusherConfig['pusher_app_cluster'] = $baseConfig['pusher_app_cluster'] ?? 'mt1';
-        } elseif (env('PUSHER_APP_KEY')) {
-            // Fallback to env for development
-            $pusherConfig['pusher_app_key']     = env('PUSHER_APP_KEY');
-            $pusherConfig['pusher_app_secret']  = env('PUSHER_APP_SECRET', '');
-            $pusherConfig['pusher_app_id']      = env('PUSHER_APP_ID', '');
-            $pusherConfig['pusher_app_cluster'] = env('PUSHER_APP_CLUSTER', 'mt1');
+        } elseif (config('broadcasting.connections.pusher.key') !== null) {
+            // Fallback to config for development
+            $pusherConfig['pusher_app_key']     = config('broadcasting.connections.pusher.key');
+            $pusherConfig['pusher_app_secret']  = config('broadcasting.connections.pusher.secret', '');
+            $pusherConfig['pusher_app_id']      = config('broadcasting.connections.pusher.app_id', '');
+            $pusherConfig['pusher_app_cluster'] = config('broadcasting.connections.pusher.options.cluster', 'mt1');
         }
 
         return $pusherConfig;

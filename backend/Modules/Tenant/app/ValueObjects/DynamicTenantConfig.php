@@ -233,7 +233,7 @@ class DynamicTenantConfig implements Arrayable
             }
         }
 
-        return new static($config, $visibilityEnums, $tier);
+        return new self($config, $visibilityEnums, $tier);
     }
 
     /**

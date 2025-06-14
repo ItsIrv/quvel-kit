@@ -3,8 +3,8 @@
 namespace Modules\Auth\Providers;
 
 use Modules\Auth\Actions\Fortify\PasswordReset;
-use App\Actions\Fortify\UpdateUserPassword;
-use App\Actions\Fortify\UpdateUserProfileInformation;
+use Modules\Auth\Actions\Fortify\UpdateUserPassword;
+use Modules\Auth\Actions\Fortify\UpdateUserProfileInformation;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;

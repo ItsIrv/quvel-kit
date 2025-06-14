@@ -22,7 +22,6 @@ class UserCreateService
             $data['public_id'] = Str::ulid();
         }
 
-        /** @phpstan-ignore-next-line Laravel provides create */
         $user = User::create($data);
 
         if ($event) {

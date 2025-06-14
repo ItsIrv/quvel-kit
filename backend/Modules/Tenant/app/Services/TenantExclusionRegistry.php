@@ -54,7 +54,7 @@ class TenantExclusionRegistry
     public function isExcluded(string $path): bool
     {
         // Check exact matches
-        if (in_array($path, $this->excludedPaths)) {
+        if (in_array($path, $this->excludedPaths, true)) {
             return true;
         }
 

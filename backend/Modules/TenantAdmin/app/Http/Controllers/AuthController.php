@@ -76,7 +76,7 @@ class AuthController extends Controller
     {
         $user = $request->session()->get('tenant_admin_user');
 
-        if (!$user) {
+        if ($user === null) {
             return response()->json([
                 'message' => 'Not authenticated.',
             ], 401);

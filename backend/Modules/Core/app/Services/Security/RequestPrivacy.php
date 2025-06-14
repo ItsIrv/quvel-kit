@@ -33,7 +33,7 @@ class RequestPrivacy
      */
     private function isInternalIP(): bool
     {
-        if ($this->configRepository->get('core.privacy.disable_ip_check')) {
+        if ((bool) $this->configRepository->get('core.privacy.disable_ip_check')) {
             return true;
         }
 
@@ -48,7 +48,7 @@ class RequestPrivacy
      */
     private function isCorrectApiKey(): bool
     {
-        if ($this->configRepository->get('core.privacy.disable_key_check')) {
+        if ((bool) $this->configRepository->get('core.privacy.disable_key_check')) {
             return true;
         }
 

@@ -23,7 +23,7 @@ class InstallationService
         $username = config('tenantadmin.admin_username');
         $password = config('tenantadmin.admin_password');
 
-        return !empty($username) && !empty($password);
+        return ($username !== null && $username !== '' && $username !== '0') && ($password !== null && $password !== '' && $password !== '0');
     }
 
     /**

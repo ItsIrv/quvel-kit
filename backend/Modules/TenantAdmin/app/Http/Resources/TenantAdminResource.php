@@ -18,18 +18,18 @@ class TenantAdminResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'         => $this->id,
-            'public_id'  => $this->public_id,
-            'name'       => $this->name,
-            'domain'     => $this->domain,
-            'parent_id'  => $this->parent_id,
-            'tier'       => $this->tier,
-            'config'     => $this->config ? $this->config->toArray()['config'] : null,
-            'visibility' => $this->config ? $this->config->toArray()['visibility'] : null,
-            'is_active'  => $this->is_active,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'deleted_at' => $this->deleted_at,
+            'id'         => $this->resource->id,
+            'public_id'  => $this->resource->public_id,
+            'name'       => $this->resource->name,
+            'domain'     => $this->resource->domain,
+            'parent_id'  => $this->resource->parent_id,
+            'tier'       => $this->resource->tier,
+            'config'     => $this->resource->config ? $this->resource->config->toArray()['config'] : null,
+            'visibility' => $this->resource->config ? $this->resource->config->toArray()['visibility'] : null,
+            'is_active'  => $this->resource->is_active,
+            'created_at' => $this->resource->created_at,
+            'updated_at' => $this->resource->updated_at,
+            'deleted_at' => $this->resource->deleted_at,
         ];
     }
 }

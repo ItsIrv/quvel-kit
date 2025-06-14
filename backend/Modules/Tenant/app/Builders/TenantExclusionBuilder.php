@@ -23,7 +23,7 @@ class TenantExclusionBuilder implements ExclusionBuilderInterface
      */
     public static function create(): static
     {
-        return new static();
+        return new self();
     }
 
     /**

@@ -117,7 +117,7 @@ abstract class BaseLogger implements LoggerInterface
         }
 
         // Add context prefix if specified
-        if ($this->contextPrefix && !empty($context)) {
+        if ($this->contextPrefix !== '' && count($context) > 0) {
             $prefixedContext = [];
 
             foreach ($context as $key => $value) {

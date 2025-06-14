@@ -52,12 +52,12 @@ class AuthIsolatedSeeder implements TenantConfigSeederInterface
     {
         return [
             'google'    => [
-                'client_id'     => env('GOOGLE_CLIENT_ID', 'your-google-client-id'),
-                'client_secret' => env('GOOGLE_CLIENT_SECRET', 'your-google-client-secret'),
+                'client_id'     => config('services.google.client_id', 'your-google-client-id'),
+                'client_secret' => config('services.google.client_secret', 'your-google-client-secret'),
             ],
             'microsoft' => [
-                'client_id'     => env('MICROSOFT_CLIENT_ID', 'your-microsoft-client-id'),
-                'client_secret' => env('MICROSOFT_CLIENT_SECRET', 'your-microsoft-client-secret'),
+                'client_id'     => config('services.microsoft.client_id', 'your-microsoft-client-id'),
+                'client_secret' => config('services.microsoft.client_secret', 'your-microsoft-client-secret'),
             ],
         ];
     }

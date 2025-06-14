@@ -29,7 +29,7 @@ class ShowProxyInfoAction
     public function __invoke(Request $request): JsonResponse
     {
         // Only show this endpoint when APP_DEBUG is true
-        if (!$this->config->get('app.debug')) {
+        if (!((bool) $this->config->get('app.debug'))) {
             abort(404);
         }
 

@@ -26,7 +26,7 @@ class SetRequestLocale
         $allowedLocales = app(ConfigRepository::class)->get('frontend.allowed_locales', ['en-US']);
         $header         = $request->header(CoreHeader::ACCEPT_LANGUAGE->value);
 
-        if ($header && in_array($header, $allowedLocales)) {
+        if ($header && in_array($header, $allowedLocales, true)) {
             app(Application::class)->setLocale(
                 $this->normalizeLocale($header),
             );

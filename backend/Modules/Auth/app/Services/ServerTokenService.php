@@ -74,7 +74,7 @@ class ServerTokenService
     {
         $serverToken = $this->hmacService->extractAndVerify($signedServerToken);
 
-        if (empty($serverToken)) {
+        if ($serverToken === null || $serverToken === '' || $serverToken === '0') {
             return null;
         }
 

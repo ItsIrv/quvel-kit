@@ -25,7 +25,7 @@ class ConfigSeederBuilder implements ConfigSeederBuilderInterface
      */
     public static function create(): static
     {
-        return new static();
+        return new self();
     }
 
     /**

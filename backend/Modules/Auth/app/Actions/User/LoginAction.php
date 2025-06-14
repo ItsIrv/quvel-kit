@@ -57,7 +57,7 @@ class LoginAction
         }
 
         // Check if the user has verified their email if verify_email_before_login is true
-        if (!$user->hasVerifiedEmail() && config('auth.verify_email_before_login')) {
+        if (!$user->hasVerifiedEmail() && ((bool) config('auth.verify_email_before_login'))) {
             $this->logs->loginFailedAccountInactive(
                 $loginData['email'],
                 $user->id,

@@ -72,9 +72,9 @@ class TenantAwareCsrfToken extends VerifyCsrfToken
      */
     protected function getTokenFromRequest($request): ?string
     {
-        $token = $request->input('_token') ?: $request->header('X-CSRF-TOKEN');
+        $token = $request->input('_token') ?? $request->header('X-CSRF-TOKEN');
 
-        if (!$token && $header = $request->header('X-XSRF-TOKEN')) {
+        if (($token === null || $token === '' || $token === '0') && ($header = $request->header('X-XSRF-TOKEN')) !== null) {
             try {
                 $token = CookieValuePrefix::remove(
                     $this->encrypter->decrypt($header, static::serialized()),
@@ -85,7 +85,7 @@ class TenantAwareCsrfToken extends VerifyCsrfToken
         }
 
         // Check tenant-specific XSRF token cookie
-        if (!$token) {
+        if ($token === null || $token === '' || $token === '0') {
             $cookieName = $this->getCookieName();
             if ($cookieValue = $request->cookie($cookieName)) {
                 try {

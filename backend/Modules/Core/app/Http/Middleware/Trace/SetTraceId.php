@@ -26,7 +26,7 @@ class SetTraceId
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!config('core.trace.enabled')) {
+        if (!((bool) config('core.trace.enabled'))) {
             return $next($request);
         }
 
@@ -35,10 +35,10 @@ class SetTraceId
         $shouldAcceptHeader = $this->shouldAcceptTraceHeader($headerTraceId);
 
         // Get trace ID from request header if allowed, or generate a new one
-        $traceId = $shouldAcceptHeader ? $headerTraceId : (string) Str::uuid();
+        $traceId = $shouldAcceptHeader ? (string) $headerTraceId : (string) Str::uuid();
 
         // If trace ID is still empty and generation is enabled, create a new one
-        if (empty($traceId) && config('core.trace.always_generate', true)) {
+        if (($traceId === '' || $traceId === '0') && ((bool) config('core.trace.always_generate', true))) {
             $traceId = (string) Str::uuid();
         }
 
@@ -58,12 +58,12 @@ class SetTraceId
     protected function shouldAcceptTraceHeader(?string $traceId): bool
     {
         // If no trace ID is provided, no need to check
-        if (empty($traceId)) {
+        if ($traceId === null || $traceId === '' || $traceId === '0') {
             return false;
         }
 
         // If we don't require internal requests, always accept the header
-        if (!config('core.trace.require_internal_request', true)) {
+        if (!((bool) config('core.trace.require_internal_request', true))) {
             return true;
         }
 

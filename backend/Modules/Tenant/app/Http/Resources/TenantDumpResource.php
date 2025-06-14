@@ -48,7 +48,7 @@ class TenantDumpResource extends JsonResource
     private function getFilteredConfig(): array
     {
         // Get the merged config array from getEffectiveConfig for pipeline resolution
-        $tenantConfig = $this->getEffectiveConfig();
+        $tenantConfig = $this->resource->getEffectiveConfig();
         $configArray  = $tenantConfig instanceof DynamicTenantConfig
             ? $tenantConfig->toArray()['config']
             : ($tenantConfig ? $tenantConfig->toArray() : []);

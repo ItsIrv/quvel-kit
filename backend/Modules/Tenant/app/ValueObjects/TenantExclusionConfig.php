@@ -43,7 +43,7 @@ class TenantExclusionConfig
      */
     public static function fromArray(array $config): static
     {
-        return new static(
+        return new self(
             paths: $config['paths'] ?? [],
             patterns: $config['patterns'] ?? []
         );
@@ -56,7 +56,7 @@ class TenantExclusionConfig
      */
     public function hasExclusions(): bool
     {
-        return !empty($this->paths) || !empty($this->patterns);
+        return $this->paths !== [] || $this->patterns !== [];
     }
 
     /**
@@ -67,7 +67,7 @@ class TenantExclusionConfig
      */
     public function merge(TenantExclusionConfig $other): static
     {
-        return new static(
+        return new self(
             paths: array_unique(array_merge($this->paths, $other->paths)),
             patterns: array_unique(array_merge($this->patterns, $other->patterns)),
         );

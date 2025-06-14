@@ -89,13 +89,13 @@ class TenantServiceProvider extends ModuleServiceProvider
 
         // Register exclusion paths from all modules
         $exclusionPaths = $loader->getAllExclusionPaths();
-        if (!empty($exclusionPaths)) {
+        if ($exclusionPaths !== []) {
             $exclusionRegistry->excludePaths($exclusionPaths);
         }
 
         // Register exclusion patterns from all modules
         $exclusionPatterns = $loader->getAllExclusionPatterns();
-        if (!empty($exclusionPatterns)) {
+        if ($exclusionPatterns !== []) {
             $exclusionRegistry->excludePatterns($exclusionPatterns);
         }
 

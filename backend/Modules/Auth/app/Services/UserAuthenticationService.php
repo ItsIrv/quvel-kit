@@ -31,7 +31,6 @@ class UserAuthenticationService
      */
     public function attempt(string $email, string $password): bool
     {
-        // @phpstan-ignore-next-line Laravel provides attempt
         return $this->auth->guard()->attempt([
             'email'    => $email,
             'password' => $password,
@@ -40,7 +39,6 @@ class UserAuthenticationService
 
     public function logout(): void
     {
-        // @phpstan-ignore-next-line Laravel provides logout
         $this->auth->guard()->logout();
     }
 
@@ -65,7 +63,7 @@ class UserAuthenticationService
             }
 
             // Ensure email is verified
-            if (!$user->hasVerifiedEmail() && config('auth.verify_email_before_login')) {
+            if (!$user->hasVerifiedEmail() && ((bool) config('auth.verify_email_before_login'))) {
                 return [$user, OAuthStatusEnum::EMAIL_NOT_VERIFIED];
             }
 
@@ -92,7 +90,6 @@ class UserAuthenticationService
      */
     public function logInWithId(int $id): User|bool
     {
-        // @phpstan-ignore-next-line laravel provides loginUsingId
         return $this->auth->guard()->loginUsingId($id);
     }
 

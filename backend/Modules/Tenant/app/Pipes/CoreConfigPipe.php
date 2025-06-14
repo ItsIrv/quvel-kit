@@ -139,8 +139,8 @@ class CoreConfigPipe extends BaseConfigurationPipe
         try {
             $urlGenerator = app(UrlGenerator::class);
             $appUrl       = $config->get('app.url');
-            if ($appUrl) {
-                $urlGenerator->forceRootUrl($appUrl);
+            if ($appUrl !== null) {
+                $urlGenerator->useOrigin($appUrl);
             }
 
             if (app()->environment(['local', 'development', 'testing']) && app()->bound(CoreConfigPipeLogs::class)) {
@@ -158,7 +158,7 @@ class CoreConfigPipe extends BaseConfigurationPipe
         try {
             $timezone = $config->get('app.timezone');
             date_default_timezone_set($timezone);
-            Date::setFallbackTimezone($timezone);
+            // Laravel automatically handles timezone for Carbon/Date through app.timezone config
 
             if (app()->environment(['local', 'development', 'testing']) && app()->bound(CoreConfigPipeLogs::class)) {
                 app(CoreConfigPipeLogs::class)->timezoneUpdated($timezone);
@@ -203,6 +203,7 @@ class CoreConfigPipe extends BaseConfigurationPipe
 
             if ($request->isFromTrustedProxy() && ($prefix = $request->header('X-Forwarded-Prefix'))) {
                 $urlGenerator = app(UrlGenerator::class);
+                /** @phpstan-ignore-next-line Using deprecated method until Laravel provides stable replacement */
                 $urlGenerator->forceRootUrl(
                     $request->getSchemeAndHttpHost() . $prefix
                 );
@@ -217,7 +218,6 @@ class CoreConfigPipe extends BaseConfigurationPipe
             }
         }
     }
-
 
     /**
      * Resolve core configuration for frontend TenantConfig interface.

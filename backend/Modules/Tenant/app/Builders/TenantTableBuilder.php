@@ -25,7 +25,7 @@ class TenantTableBuilder implements TableBuilderInterface
      */
     public static function create(): static
     {
-        return new static();
+        return new self();
     }
 
     /**

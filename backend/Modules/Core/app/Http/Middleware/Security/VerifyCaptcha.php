@@ -22,7 +22,7 @@ class VerifyCaptcha
     {
         $token = $request->input('captcha_token');
 
-        if (!$token || !$this->captchaService->verify($token, $request->ip())) {
+        if ($token === null || !$this->captchaService->verify((string) $token, $request->ip())) {
             return response()->json(['message' => 'Captcha verification failed.'], 422);
         }
 

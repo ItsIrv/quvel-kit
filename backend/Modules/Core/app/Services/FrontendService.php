@@ -141,7 +141,7 @@ class FrontendService
 
         $url = "$base/$path";
 
-        if (!empty($query)) {
+        if (count($query) > 0) {
             $url .= '?' . \http_build_query($query);
         }
 
