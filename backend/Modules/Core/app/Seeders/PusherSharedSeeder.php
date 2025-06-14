@@ -22,12 +22,12 @@ class PusherSharedSeeder implements TenantSharedSeederInterface
     {
         $pusherConfig = [];
 
-        // Use seed parameters or environment variables
-        if (isset($baseConfig['_seed_pusher_app_key'])) {
-            $pusherConfig['pusher_app_key']     = $baseConfig['_seed_pusher_app_key'];
-            $pusherConfig['pusher_app_secret']  = $baseConfig['_seed_pusher_app_secret'] ?? '';
-            $pusherConfig['pusher_app_id']      = $baseConfig['_seed_pusher_app_id'] ?? '';
-            $pusherConfig['pusher_app_cluster'] = $baseConfig['_seed_pusher_app_cluster'] ?? 'mt1';
+        // Use direct parameters or environment variables for fallback
+        if (isset($baseConfig['pusher_app_key'])) {
+            $pusherConfig['pusher_app_key']     = $baseConfig['pusher_app_key'];
+            $pusherConfig['pusher_app_secret']  = $baseConfig['pusher_app_secret'] ?? '';
+            $pusherConfig['pusher_app_id']      = $baseConfig['pusher_app_id'] ?? '';
+            $pusherConfig['pusher_app_cluster'] = $baseConfig['pusher_app_cluster'] ?? 'mt1';
         } elseif (env('PUSHER_APP_KEY')) {
             // Fallback to env for development
             $pusherConfig['pusher_app_key']     = env('PUSHER_APP_KEY');

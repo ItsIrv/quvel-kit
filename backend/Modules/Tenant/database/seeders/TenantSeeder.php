@@ -5,7 +5,7 @@ namespace Modules\Tenant\database\seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Modules\Tenant\database\factories\DynamicTenantConfigFactory;
+use Modules\Tenant\Database\Factories\TenantTemplateFactory;
 use Modules\Tenant\Models\Tenant;
 use Random\RandomException;
 
@@ -24,15 +24,15 @@ class TenantSeeder extends Seeder
         // Create simple tenants for development
 
         // Basic tenant with minimal config (using basic template)
-        $basicTenant = $this->createTenant(
+        $basicTenant = $this->createTenantWithConfig(
             'api.quvel-two.127.0.0.1.nip.io',
             'Basic Tenant',
-            DynamicTenantConfigFactory::createBasic(
-                domain: 'api.quvel-two.127.0.0.1.nip.io',
-                appName: 'Basic QuVel App',
-                mailFromName: 'Basic Support',
-                mailFromAddress: 'support@quvel-two.127.0.0.1.nip.io',
-            )->toArray(),
+            TenantTemplateFactory::basic('api.quvel-two.127.0.0.1.nip.io'),
+            [
+                'app_name'          => 'Basic QuVel App',
+                'mail_from_name'    => 'Basic Support',
+                'mail_from_address' => 'support@quvel-two.127.0.0.1.nip.io',
+            ],
         );
 
         // Child tenant for the basic tenant
@@ -44,31 +44,30 @@ class TenantSeeder extends Seeder
         );
 
         // Main API tenant with basic config (using basic template)
-        $mainTenant = $this->createTenant(
+        $mainTenant = $this->createTenantWithConfig(
             $apiDomain,
             'Main API Tenant',
-            DynamicTenantConfigFactory::createBasic(
-                domain: $apiDomain,
-                appName: 'QuVel App',
-                mailFromName: 'QuVel Support',
-                mailFromAddress: 'support@quvel.app',
-            )->toArray(),
+            TenantTemplateFactory::basic($apiDomain),
+            [
+                'app_name'          => 'QuVel App',
+                'mail_from_name'    => 'QuVel Support',
+                'mail_from_address' => 'support@quvel.app',
+            ],
         );
 
         // LAN API tenant with full isolation (using isolated template)
-        $lanTenant = $this->createTenant(
+        $lanTenant = $this->createTenantWithConfig(
             $lanApiDomain,
             'LAN API Tenant',
-            DynamicTenantConfigFactory::createIsolated(
-                apiDomain: $lanApiDomain,
-                appName: 'QuVel LAN',
-                overrides: [
-                    '_seed_capacitor_scheme'  => 'quvel',
-                    '_seed_mail_from_address' => 'lan@quvel.app',
-                    '_seed_mail_from_name'    => 'QuVel LAN',
-                    'internal_api_url'        => 'http://api-lan:8000', // For SSR
-                ],
-            )->toArray(),
+            TenantTemplateFactory::isolated($lanApiDomain, [
+                'internal_api_url' => 'http://api-lan:8000', // Infrastructure override for SSR
+            ]),
+            [
+                'app_name'          => 'QuVel LAN',
+                'capacitor_scheme'  => 'quvel',
+                'mail_from_address' => 'lan@quvel.app',
+                'mail_from_name'    => 'QuVel LAN',
+            ],
         );
 
         // Create frontend tenants (inherit parent config)
@@ -133,6 +132,30 @@ class TenantSeeder extends Seeder
             ['domain' => $domain],
             Tenant::factory()->make($data)->toArray(),
         );
+    }
+
+    /**
+     * Create or update a tenant with configuration template and parameters.
+     */
+    private function createTenantWithConfig(
+        string $domain,
+        string $name,
+        \Modules\Tenant\ValueObjects\DynamicTenantConfig $template,
+        array $applicationParams = [],
+        ?Tenant $parent = null,
+    ): Tenant {
+        // Apply application parameters to the template by merging with existing data
+        $templateArray = $template->toArray();
+        $mergedConfig  = array_merge($templateArray['config'], $applicationParams);
+
+        // Create a new template with the merged config
+        $finalTemplate = new \Modules\Tenant\ValueObjects\DynamicTenantConfig(
+            $mergedConfig,
+            $templateArray['visibility'],
+            $templateArray['tier'],
+        );
+
+        return $this->createTenant($domain, $name, $finalTemplate->toArray(), $parent);
     }
 
     /**

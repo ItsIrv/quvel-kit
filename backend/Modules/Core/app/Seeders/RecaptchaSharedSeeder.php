@@ -22,10 +22,10 @@ class RecaptchaSharedSeeder implements TenantSharedSeederInterface
     {
         $recaptchaConfig = [];
 
-        // Use seed parameters or environment variables
-        if (isset($baseConfig['_seed_recaptcha_site_key'])) {
-            $recaptchaConfig['recaptcha_site_key']   = $baseConfig['_seed_recaptcha_site_key'];
-            $recaptchaConfig['recaptcha_secret_key'] = $baseConfig['_seed_recaptcha_secret_key'] ?? '';
+        // Use direct parameters or environment variables for fallback
+        if (isset($baseConfig['recaptcha_site_key'])) {
+            $recaptchaConfig['recaptcha_site_key']   = $baseConfig['recaptcha_site_key'];
+            $recaptchaConfig['recaptcha_secret_key'] = $baseConfig['recaptcha_secret_key'] ?? '';
         } elseif (env('RECAPTCHA_GOOGLE_SITE_KEY')) {
             // Fallback to env for development
             $recaptchaConfig['recaptcha_site_key']   = env('RECAPTCHA_GOOGLE_SITE_KEY');

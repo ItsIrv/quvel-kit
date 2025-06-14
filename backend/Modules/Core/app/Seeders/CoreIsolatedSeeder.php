@@ -26,25 +26,23 @@ class CoreIsolatedSeeder implements TenantConfigSeederInterface
         $apiUrl      = "https://$domain";
         $frontendUrl = 'https://' . str_replace('api.', '', $domain);
 
-        // Core configuration
+        // Core configuration with reasonable defaults
         $coreConfig = [
-            'app_name'     => $baseConfig['_seed_app_name'] ?? $baseConfig['app_name'] ?? 'QuVel',
+            'app_name'     => $baseConfig['app_name'] ?? 'QuVel',
             'app_url'      => $apiUrl,
             'frontend_url' => $frontendUrl,
         ];
 
-        // Add mail configuration using seed parameters
-        $coreConfig['mail_from_name'] = $baseConfig['_seed_mail_from_name']
-            ?? $baseConfig['mail_from_name']
+        // Add mail configuration with sensible defaults
+        $coreConfig['mail_from_name'] = $baseConfig['mail_from_name']
             ?? $coreConfig['app_name'] . ' Support';
 
-        $coreConfig['mail_from_address'] = $baseConfig['_seed_mail_from_address']
-            ?? $baseConfig['mail_from_address']
+        $coreConfig['mail_from_address'] = $baseConfig['mail_from_address']
             ?? 'support@' . str_replace(['https://', 'http://', 'api.'], '', $domain);
 
         // Add capacitor scheme if provided
-        if (isset($baseConfig['_seed_capacitor_scheme'])) {
-            $coreConfig['capacitor_scheme'] = $baseConfig['_seed_capacitor_scheme'];
+        if (isset($baseConfig['capacitor_scheme'])) {
+            $coreConfig['capacitor_scheme'] = $baseConfig['capacitor_scheme'];
         }
 
         // Add internal API URL for isolated template
