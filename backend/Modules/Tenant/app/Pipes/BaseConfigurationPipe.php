@@ -31,7 +31,7 @@ abstract class BaseConfigurationPipe implements ConfigurationPipeInterface
      */
     protected function hasValue(array $tenantConfig, string $key): bool
     {
-        return isset($tenantConfig[$key]) && $tenantConfig[$key] !== '' && $tenantConfig[$key] !== null;
+        return isset($tenantConfig[$key]) && $tenantConfig[$key] !== '';
     }
 
     /**

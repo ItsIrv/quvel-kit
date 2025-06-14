@@ -17,7 +17,7 @@ class CatalogItem extends Model
     use TenantScopedModel;
 
     /**
-     * @var string[]
+     * @var list<string>
      */
     protected $fillable = [
         'uuid',
@@ -29,7 +29,7 @@ class CatalogItem extends Model
     ];
 
     /**
-     * @var string[]
+     * @var array<string, string>
      */
     protected $casts = [
         'metadata' => 'array',

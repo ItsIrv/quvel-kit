@@ -31,6 +31,7 @@ class NotificationsController extends Controller
         /** @var User $user */
         $user = $request->user();
 
+        /** @phpstan-ignore-next-line property.notFound */
         $user->unreadNotifications->markAsRead();
 
         return true;

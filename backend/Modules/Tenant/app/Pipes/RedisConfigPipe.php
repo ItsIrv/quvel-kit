@@ -67,9 +67,7 @@ class RedisConfigPipe extends BaseConfigurationPipe
         }
 
         // Apply the changes to the actual resources
-        if ($hasRedisChanges) {
-            $this->refreshRedisConnections();
-        }
+        $this->refreshRedisConnections();
 
         return $next([
             'tenant'       => $tenant,

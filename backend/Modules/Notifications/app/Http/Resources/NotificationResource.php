@@ -31,9 +31,9 @@ class NotificationResource extends JsonResource
             'notifiable_id' => $this->notifiable_id,
             'notifiable_type' => $this->notifiable_type,
             'data' => $this->data,
-            'read_at' => $this->read_at?->format('Y-m-d H:i:s'),
-            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            'read_at' => $this->read_at !== null ? $this->read_at->format('Y-m-d H:i:s') : null,
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
     }
 }

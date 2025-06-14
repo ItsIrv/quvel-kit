@@ -55,6 +55,7 @@ class ShowProxyInfoAction
             ],
             'proxy_detection'   => [
                 'is_from_trusted_proxy' => $request->isFromTrustedProxy(),
+                /** @phpstan-ignore-next-line staticMethod.dynamicCall */
                 'trusted_proxies'       => $request->getTrustedProxies(),
             ],
             'forwarded_headers' => [
@@ -77,6 +78,7 @@ class ShowProxyInfoAction
                 'app_url'      => $this->config->get('app.url'),
                 'url_helper'   => url('/'),
                 'asset_helper' => asset('test.css'),
+                /** @phpstan-ignore-next-line nullCoalesce.expr */
                 'route_helper' => route('login') ?? 'No login route found',
             ],
             'all_headers'       => $request->headers->all(),

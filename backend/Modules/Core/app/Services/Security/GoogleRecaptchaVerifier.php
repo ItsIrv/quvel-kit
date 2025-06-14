@@ -24,6 +24,7 @@ class GoogleRecaptchaVerifier implements CaptchaVerifierInterface
             return false;
         }
 
+        /** @phpstan-ignore-next-line staticMethod.dynamicCall */
         $response = $this->http->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
             'secret'   => $secretKey,
             'response' => $token,

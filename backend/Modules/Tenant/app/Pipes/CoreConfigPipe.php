@@ -195,7 +195,7 @@ class CoreConfigPipe extends BaseConfigurationPipe
     {
         try {
             // Only proceed if we have a request (not in testing/CLI contexts)
-            if (!app()->bound('request') || !app('request') instanceof Request) {
+            if (!app()->bound('request')) {
                 return;
             }
 

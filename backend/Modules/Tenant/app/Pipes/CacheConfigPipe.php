@@ -24,27 +24,20 @@ class CacheConfigPipe extends BaseConfigurationPipe
      */
     public function handle(Tenant $tenant, ConfigRepository $config, array $tenantConfig, callable $next): mixed
     {
-        $hasCacheChanges = false;
-
         if ($this->hasValue($tenantConfig, 'cache_store')) {
             $config->set('cache.default', $tenantConfig['cache_store']);
-            $hasCacheChanges = true;
         }
 
         // Always set a tenant-specific cache prefix
         if ($this->hasValue($tenantConfig, 'cache_prefix')) {
             $config->set('cache.prefix', $tenantConfig['cache_prefix']);
-            $hasCacheChanges = true;
         } else {
             // Default to tenant-specific prefix for isolation
             $config->set('cache.prefix', "tenant_{$tenant->public_id}_");
-            $hasCacheChanges = true;
         }
 
         // Apply the changes to the actual resources
-        if ($hasCacheChanges) {
-            $this->rebindCacheManager();
-        }
+        $this->rebindCacheManager();
 
         return $next([
             'tenant'       => $tenant,
@@ -84,5 +77,4 @@ class CacheConfigPipe extends BaseConfigurationPipe
     {
         return [];
     }
-
 }

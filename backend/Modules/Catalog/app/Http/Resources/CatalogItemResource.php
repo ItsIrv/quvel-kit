@@ -35,13 +35,13 @@ class CatalogItemResource extends JsonResource
             'is_public' => $this->is_public,
 
             // Only show specific fields to authenticated users
-            'metadata' => $request->user()?->id ? $this->metadata : [],
-            'user' => $request->user()?->id ? [
+            'metadata' => $request->user()?->id !== null ? $this->metadata : [],
+            'user' => $request->user()?->id !== null ? [
                 'name' => $this->user->name,
             ] : null,
 
-            'created_at' => $this->created_at?->toIso8601String(),
-            'updated_at' => $this->updated_at?->toIso8601String(),
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
         ];
     }
 }

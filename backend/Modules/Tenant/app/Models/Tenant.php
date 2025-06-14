@@ -37,16 +37,21 @@ class Tenant extends Model
     use SoftDeletes;
 
     /**
+     * Memoized effective configuration to avoid recomputation.
+     */
+    private ?DynamicTenantConfig $memoizedEffectiveConfig = null;
+
+    /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = ['name', 'domain', 'parent_id', 'config'];
 
     /**
      * The attributes that should be cast to native types.
      *
-     * @var array<string, class-string>
+     * @var array<string, string>
      */
     protected $casts = [
         'config'    => DynamicTenantConfigCast::class,
@@ -64,93 +69,98 @@ class Tenant extends Model
     /**
      * Parent tenant relationship.
      *
-     * @return BelongsTo<Tenant, Tenant>
+     * @return BelongsTo<Tenant, $this>
      */
     public function parent(): BelongsTo
     {
-        /** @var BelongsTo<Tenant, Tenant> */
         return $this->belongsTo(__CLASS__, 'parent_id');
     }
 
     /**
      * Child tenants relationship.
      *
-     * @return HasMany<Tenant, Tenant>
+     * @return HasMany<Tenant, $this>
      */
     public function children(): HasMany
     {
-        /** @var HasMany<Tenant, Tenant> */
         return $this->hasMany(__CLASS__, 'parent_id');
     }
 
     /**
      * Get the effective tenant configuration.
-     * Merges parent config with child config if both exist.
+     * Efficiently merges parent config with child config by working with raw arrays.
      *
      * @return DynamicTenantConfig|null
      */
     public function getEffectiveConfig(): DynamicTenantConfig|null
     {
-        $config       = $this->config;
+        // Check if we have memoized result
+        if ($this->memoizedEffectiveConfig !== null) {
+            return $this->memoizedEffectiveConfig;
+        }
+
+        // Get config objects first
+        $childConfig  = $this->config;
         $parentConfig = $this->parent?->config;
 
-        if ($config === null && $parentConfig === null) {
-            return null;
+        // Fast path: no configs at all
+        /** @phpstan-ignore-next-line booleanAnd.alwaysFalse,identical.alwaysFalse */
+        if ($childConfig === null && $parentConfig === null) {
+            return $this->memoizedEffectiveConfig = null;
         }
 
+        // Fast path: only child config
         if ($parentConfig === null) {
-            return $config;
+            return $this->memoizedEffectiveConfig = $childConfig;
         }
 
-        if ($config === null) {
-            return $parentConfig;
+        // Fast path: only parent config
+        /** @phpstan-ignore-next-line identical.alwaysFalse */
+        if ($childConfig === null) {
+            return $this->memoizedEffectiveConfig = $parentConfig;
         }
 
-        // Merge parent and child configs
-        $childDynamic  = $config;
-        $parentDynamic = $parentConfig;
+        // Get raw config arrays for merging
+        $childConfigArray  = $childConfig->toArray();
+        $parentConfigArray = $parentConfig->toArray();
 
-        // Create a new DynamicTenantConfig with parent's data as a starting point
-        $mergedConfig = new DynamicTenantConfig(
-            [], // Empty data array to start
-            [], // Empty visibility array to start
-            $parentDynamic->getTier() // Start with parent tier
+        // Merge configs efficiently using array operations
+        $mergedData = array_merge(
+            $parentConfigArray['config'] ?? [],
+            $childConfigArray['config'] ?? []
         );
 
-        // Copy all parent values first
-        foreach ($parentDynamic->toArray()['config'] as $key => $value) {
-            $mergedConfig->set($key, $value);
-        }
+        $mergedVisibility = array_merge(
+            $parentConfigArray['visibility'] ?? [],
+            $childConfigArray['visibility'] ?? []
+        );
 
-        // Copy parent visibility
-        foreach ($parentDynamic->toArray()['visibility'] as $key => $visibility) {
-            $mergedConfig->setVisibility($key, \Modules\Tenant\Enums\TenantConfigVisibility::from($visibility));
-        }
+        // Create merged config (no tier system)
+        $mergedConfig = new DynamicTenantConfig($mergedData, $mergedVisibility);
 
-        // Then override with child values
-        foreach ($childDynamic->toArray()['config'] as $key => $value) {
-            $mergedConfig->set($key, $value);
-        }
-
-        // Override with child visibility
-        foreach ($childDynamic->toArray()['visibility'] as $key => $visibility) {
-            $mergedConfig->setVisibility($key, \Modules\Tenant\Enums\TenantConfigVisibility::from($visibility));
-        }
-
-        // Child tier takes precedence if set
-        if ($childDynamic->getTier() !== null) {
-            $mergedConfig->setTier($childDynamic->getTier());
-        }
-
-        return $mergedConfig;
+        return $this->memoizedEffectiveConfig = $mergedConfig;
     }
 
     /**
-     * @return HasMany<User, Tenant>
+     * Boot the model and set up event listeners to invalidate memoized config.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        // Clear memoized config when config attribute is changed
+        static::updating(function (Tenant $tenant) {
+            if ($tenant->isDirty('config')) {
+                $tenant->memoizedEffectiveConfig = null;
+            }
+        });
+    }
+
+    /**
+     * @return HasMany<User, $this>
      */
     public function users(): HasMany
     {
-        /** @var HasMany<User, Tenant> */
         return $this->hasMany(User::class);
     }
 }

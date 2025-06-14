@@ -29,24 +29,15 @@ class DynamicTenantConfig implements Arrayable
     protected array $visibility;
 
     /**
-     * Configuration tier (e.g., 'basic', 'standard', 'premium', 'enterprise').
-     *
-     * @var string|null
-     */
-    protected ?string $tier;
-
-    /**
      * Create a new dynamic tenant configuration.
      *
      * @param array<string, mixed> $data
      * @param array<string, TenantConfigVisibility|string> $visibility
-     * @param string|null $tier
      */
-    public function __construct(array $data = [], array $visibility = [], ?string $tier = null)
+    public function __construct(array $data = [], array $visibility = [])
     {
         $this->data       = $data;
         $this->visibility = $visibility;
-        $this->tier       = $tier;
     }
 
     /**
@@ -128,27 +119,6 @@ class DynamicTenantConfig implements Arrayable
         return $this;
     }
 
-    /**
-     * Get the configuration tier.
-     *
-     * @return string|null
-     */
-    public function getTier(): ?string
-    {
-        return $this->tier;
-    }
-
-    /**
-     * Set the configuration tier.
-     *
-     * @param string|null $tier
-     * @return static
-     */
-    public function setTier(?string $tier): static
-    {
-        $this->tier = $tier;
-        return $this;
-    }
 
     /**
      * Merge another configuration into this one.
@@ -159,11 +129,8 @@ class DynamicTenantConfig implements Arrayable
     public function merge(DynamicTenantConfig|array $config): static
     {
         if ($config instanceof DynamicTenantConfig) {
-            $this->data       = array_merge($this->data, $config->toArray());
+            $this->data       = array_merge($this->data, $config->data);
             $this->visibility = array_merge($this->visibility, $config->visibility);
-            if ($config->tier !== null) {
-                $this->tier = $config->tier;
-            }
         } else {
             $this->data = array_merge($this->data, $config);
         }
@@ -221,7 +188,6 @@ class DynamicTenantConfig implements Arrayable
     {
         $config     = $data['config'] ?? [];
         $visibility = $data['visibility'] ?? [];
-        $tier       = $data['tier'] ?? null;
 
         // Convert visibility values to enums
         $visibilityEnums = [];
@@ -233,8 +199,8 @@ class DynamicTenantConfig implements Arrayable
             }
         }
 
-        /** @phpstan-ignore-next-line */
-        return new static($config, $visibilityEnums, $tier);
+        /** @phpstan-ignore-next-line new.static */
+        return new static($config, $visibilityEnums);
     }
 
     /**
@@ -250,7 +216,6 @@ class DynamicTenantConfig implements Arrayable
                 fn (TenantConfigVisibility|string $v) => $v instanceof TenantConfigVisibility ? $v->value : $v,
                 $this->visibility,
             ),
-            'tier'       => $this->tier,
         ];
     }
 

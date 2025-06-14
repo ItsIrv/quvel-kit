@@ -50,8 +50,6 @@ class DynamicTenantConfigCast implements CastsAttributes
     /**
      * Cast the config object back into JSON for storage.
      *
-     * @param DynamicTenantConfig|array<string, mixed>|null $value
-     *
      * @throws JsonException
      */
     public function set($model, string $key, mixed $value, array $attributes): ?string
@@ -60,11 +58,12 @@ class DynamicTenantConfigCast implements CastsAttributes
             return null;
         }
 
-        $data = match (true) {
-            $value instanceof DynamicTenantConfig => $value->toArray(),
-            is_array($value)                      => $value,
-            default                               => throw new \InvalidArgumentException('Invalid tenant config type'),
-        };
+        /** @phpstan-ignore-next-line instanceof.alwaysFalse */
+        if ($value instanceof DynamicTenantConfig) {
+            $data = $value->toArray();
+        } else {
+            $data = $value;
+        }
 
         /** @var non-empty-string $encoded */
         $encoded = json_encode($data, JSON_THROW_ON_ERROR);

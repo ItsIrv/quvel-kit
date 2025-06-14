@@ -47,17 +47,4 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
             'x-xsrf-token',
         ]);
     }
-
-    /**
-     * Register the Telescope gate.
-     *
-     * This gate determines who can access Telescope in non-local environments.
-     */
-    protected function gate(): void
-    {
-        Gate::define('viewTelescope', static function ($user): bool {
-            return in_array($user->email, [
-            ], true);
-        });
-    }
 }

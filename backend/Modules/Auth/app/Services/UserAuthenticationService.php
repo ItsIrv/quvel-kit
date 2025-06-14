@@ -31,6 +31,7 @@ class UserAuthenticationService
      */
     public function attempt(string $email, string $password): bool
     {
+        /** @phpstan-ignore-next-line staticMethod.dynamicCall */
         return $this->auth->guard()->attempt([
             'email'    => $email,
             'password' => $password,
@@ -39,6 +40,7 @@ class UserAuthenticationService
 
     public function logout(): void
     {
+        /** @phpstan-ignore-next-line staticMethod.dynamicCall */
         $this->auth->guard()->logout();
     }
 
@@ -90,6 +92,7 @@ class UserAuthenticationService
      */
     public function logInWithId(int $id): User|bool
     {
+        /** @phpstan-ignore-next-line staticMethod.dynamicCall */
         return $this->auth->guard()->loginUsingId($id);
     }
 

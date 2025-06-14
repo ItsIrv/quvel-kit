@@ -7,7 +7,7 @@ parameters:
         - Modules/Tenant/app
         - Modules/Auth/app
         - Modules/Core/app
-    level: 1
+    level: 5
 
     # Ignore patterns for generated files and external dependencies
     excludePaths:

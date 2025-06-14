@@ -171,18 +171,14 @@ class SessionConfigPipe extends BaseConfigurationPipe
             // Get the current session manager
             $sessionManager = app(SessionManager::class);
 
-            // If it's using the cookie session handler, update the cookie name
-            if (method_exists($sessionManager, 'driver')) {
-                /** @var \Illuminate\Session\Store $driver */
-                $driver = $sessionManager->driver();
-                if (method_exists($driver, 'setName')) {
-                    $driver->setName($cookieName);
+            // Update the session driver cookie name
+            /** @var \Illuminate\Session\Store $driver */
+            $driver = $sessionManager->driver();
+            $driver->setName($cookieName);
 
-                    $this->logger->debug('Updated session driver cookie name', [
-                        'cookie_name' => $cookieName,
-                    ]);
-                }
-            }
+            $this->logger->debug('Updated session driver cookie name', [
+                'cookie_name' => $cookieName,
+            ]);
         }
     }
 

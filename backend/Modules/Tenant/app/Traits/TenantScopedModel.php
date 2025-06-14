@@ -65,7 +65,7 @@ trait TenantScopedModel
      * Global scope automatically applies `tenant_id`, so no need to add it manually.
      *
      * @param  array<string, mixed>  $attributes
-     * @param  array<string, mixed>  $options
+     * @param  array<int|string, mixed>  $options
      *
      * @throws TenantMismatchException
      */
@@ -101,19 +101,17 @@ trait TenantScopedModel
     {
         $modelClass     = class_basename($this);
         $tenantPublicId = $this->tenant->public_id ?? $this->getTenantPublicId();
+        /** @phpstan-ignore-next-line property.notFound */
         $modelPublicId  = $this->public_id ?? $this->getKey();
 
         return "tenant.{$tenantPublicId}.{$modelClass}.{$modelPublicId}";
     }
 
     /**
-     * @return BelongsTo<Tenant, User>
+     * @return BelongsTo<Tenant, $this>
      */
     public function tenant(): BelongsTo
     {
-        /**
-         * @var BelongsTo<Tenant, User>
-         */
         return $this->belongsTo(Tenant::class);
     }
 }

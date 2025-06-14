@@ -66,9 +66,7 @@ class TenantConfigSeederRegistry
                     : $seederData['config'];
             }
 
-            if (is_array($seederConfig)) {
-                $config = array_merge($config, $seederConfig);
-            }
+            $config = array_merge($config, $seederConfig);
         }
 
         return $config;
@@ -95,17 +93,13 @@ class TenantConfigSeederRegistry
             if (isset($visibilityData['seeder_class'])) {
                 $seeder = $this->getSeederInstance($visibilityData['seeder_class']);
                 $seederVisibility = $seeder->getVisibility();
-                if (is_array($seederVisibility)) {
-                    $visibility = array_merge($visibility, $seederVisibility);
-                }
+                $visibility = array_merge($visibility, $seederVisibility);
             }
             // Handle shared seeder visibility
             elseif (isset($visibilityData['shared_seeder_class'])) {
                 $seeder = $this->getSharedSeederInstance($visibilityData['shared_seeder_class']);
                 $seederVisibility = $seeder->getVisibility();
-                if (is_array($seederVisibility)) {
-                    $visibility = array_merge($visibility, $seederVisibility);
-                }
+                $visibility = array_merge($visibility, $seederVisibility);
             }
             // Legacy array visibility
             elseif (is_array($visibilityData)) {

@@ -84,9 +84,7 @@ class ConfigurationPipeline
         }
 
         // Convert to array for pipeline processing
-        $configArray = $tenantConfig instanceof DynamicTenantConfig
-            ? $tenantConfig->toArray()['config']
-            : $tenantConfig->toArray();
+        $configArray = $tenantConfig->toArray()['config'];
 
         // Sort pipes by priority (higher priority first, defaults to array index)
         $sortedPipes = $this->pipes
