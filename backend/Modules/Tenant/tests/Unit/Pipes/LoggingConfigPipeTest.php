@@ -362,40 +362,4 @@ class LoggingConfigPipeTest extends TestCase
         ];
     }
 
-    public function testHandlesReturnsCorrectKeys(): void
-    {
-        $handles = $this->pipe->handles();
-
-        $expectedKeys = [
-            'log_channel',
-            'log_deprecations_channel',
-            'log_single_path',
-            'log_daily_path',
-            'log_daily_days',
-            'log_level',
-            'log_slack_webhook_url',
-            'log_slack_channel',
-            'log_slack_username',
-            'sentry_dsn',
-            'sentry_level',
-            'sentry_environment',
-            'log_custom_driver',
-            'log_custom_path',
-            'log_custom_level',
-            'log_custom_days',
-            'log_stack_channels',
-        ];
-
-        foreach ($expectedKeys as $key) {
-            $this->assertContains($key, $handles);
-        }
-        $this->assertCount(count($expectedKeys), $handles);
-    }
-
-    public function testPriorityReturnsCorrectValue(): void
-    {
-        $priority = $this->pipe->priority();
-
-        $this->assertEquals(40, $priority);
-    }
 }

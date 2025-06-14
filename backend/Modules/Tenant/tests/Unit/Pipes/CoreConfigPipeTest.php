@@ -228,38 +228,6 @@ class CoreConfigPipeTest extends TestCase
         ], $result['visibility']);
     }
 
-    public function testHandlesReturnsCorrectKeys(): void
-    {
-        $handles = $this->pipe->handles();
-
-        $expectedKeys = [
-            'app_name',
-            'app_env',
-            'app_key',
-            'app_debug',
-            'app_url',
-            'app_timezone',
-            'app_locale',
-            'app_fallback_locale',
-            'frontend_url',
-            'internal_api_url',
-            'capacitor_scheme',
-            'pusher_app_key',
-            'pusher_app_secret',
-            'pusher_app_id',
-            'pusher_app_cluster',
-        ];
-
-        foreach ($expectedKeys as $key) {
-            $this->assertContains($key, $handles);
-        }
-    }
-
-    public function testPriorityReturnsCorrectValue(): void
-    {
-        $priority = $this->pipe->priority();
-        $this->assertEquals(100, $priority);
-    }
 
     protected function tearDown(): void
     {

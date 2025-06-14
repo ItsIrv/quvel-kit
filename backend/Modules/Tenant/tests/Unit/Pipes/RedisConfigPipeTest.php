@@ -266,39 +266,6 @@ class RedisConfigPipeTest extends TestCase
         });
     }
 
-    /**
-     * Test that the handles method returns the correct keys.
-     */
-    public function testHandlesReturnsCorrectKeys(): void
-    {
-        // Act
-        $handles = $this->pipe->handles();
-
-        // Assert
-        $expectedKeys = [
-            'redis_client',
-            'redis_host',
-            'redis_password',
-            'redis_port',
-            'redis_prefix',
-        ];
-
-        foreach ($expectedKeys as $key) {
-            $this->assertContains($key, $handles);
-        }
-    }
-
-    /**
-     * Test that the priority method returns the correct value.
-     */
-    public function testPriorityReturnsCorrectValue(): void
-    {
-        // Act
-        $priority = $this->pipe->priority();
-
-        // Assert
-        $this->assertEquals(84, $priority);
-    }
 
     /**
      * Test that the handle method handles empty tenant config gracefully.

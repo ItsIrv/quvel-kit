@@ -217,8 +217,7 @@ class TenantTest extends TestCase
         // Child values should override parent values for shared settings
         $this->assertEquals('child_value', $effectiveConfig->get('shared_setting'));
 
-        // Child tier should take precedence
-        $this->assertEquals('premium', $effectiveConfig->getTier());
+        // Tier system has been removed
     }
 
     /**
@@ -252,8 +251,7 @@ class TenantTest extends TestCase
         // Get the effective config
         $effectiveConfig = $childTenant->getEffectiveConfig();
 
-        // Assert parent tier is preserved
-        $this->assertEquals('enterprise', $effectiveConfig->getTier());
+        // Tier system has been removed
 
         // Child-specific values should still override parent values
         $this->assertEquals('child.example.com', $effectiveConfig->get('domain'));

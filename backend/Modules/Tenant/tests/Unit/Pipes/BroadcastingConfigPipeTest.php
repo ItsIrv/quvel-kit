@@ -59,15 +59,4 @@ class BroadcastingConfigPipeTest extends TestCase
         $this->assertEquals(['values' => [], 'visibility' => []], $result);
     }
 
-    public function testHandlesReturnsCorrectKeys(): void
-    {
-        $handles = $this->pipe->handles();
-        $this->assertContains('pusher_app_key', $handles);
-        $this->assertContains('pusher_app_cluster', $handles);
-    }
-
-    public function testPriorityReturnsCorrectValue(): void
-    {
-        $this->assertEquals(45, $this->pipe->priority());
-    }
 }

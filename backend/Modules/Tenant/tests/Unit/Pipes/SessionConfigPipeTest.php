@@ -385,27 +385,6 @@ class SessionConfigPipeTest extends TestCase
         ];
     }
 
-    public function testHandlesReturnsCorrectKeys(): void
-    {
-        $handles = $this->pipe->handles();
-
-        $expectedKeys = [
-            'session_driver',
-            'session_lifetime',
-            'session_encrypt',
-            'session_path',
-            'session_domain',
-            'session_cookie',
-        ];
-
-        $this->assertEquals($expectedKeys, $handles);
-    }
-
-    public function testPriorityReturnsCorrectValue(): void
-    {
-        $priority = $this->pipe->priority();
-        $this->assertEquals(10, $priority);
-    }
 
     protected function tearDown(): void
     {

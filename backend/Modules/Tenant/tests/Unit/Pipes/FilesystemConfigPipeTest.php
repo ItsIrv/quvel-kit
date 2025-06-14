@@ -263,34 +263,4 @@ class FilesystemConfigPipeTest extends TestCase
         $this->assertSame($tenant, $result['tenant']);
     }
 
-    public function testHandlesReturnsCorrectKeys(): void
-    {
-        $handles = $this->pipe->handles();
-
-        $expectedKeys = [
-            'filesystem_default',
-            'filesystem_cloud',
-            'filesystem_local_root',
-            'filesystem_public_root',
-            'aws_s3_bucket',
-            'aws_s3_path_prefix',
-            'aws_s3_key',
-            'aws_s3_secret',
-            'aws_s3_region',
-            'aws_s3_url',
-            'disable_temp_isolation',
-        ];
-
-        foreach ($expectedKeys as $key) {
-            $this->assertContains($key, $handles);
-        }
-        $this->assertCount(count($expectedKeys), $handles);
-    }
-
-    public function testPriorityReturnsCorrectValue(): void
-    {
-        $priority = $this->pipe->priority();
-
-        $this->assertEquals(55, $priority);
-    }
 }

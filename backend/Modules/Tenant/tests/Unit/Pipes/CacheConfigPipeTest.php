@@ -163,20 +163,6 @@ class CacheConfigPipeTest extends TestCase
         $this->assertEmpty($result);
     }
 
-    public function testHandlesReturnsCorrectKeys(): void
-    {
-        $handles = $this->pipe->handles();
-
-        $expectedKeys = ['cache_store', 'cache_prefix'];
-
-        $this->assertEquals($expectedKeys, $handles);
-    }
-
-    public function testPriorityReturnsCorrectValue(): void
-    {
-        $priority = $this->pipe->priority();
-        $this->assertEquals(85, $priority);
-    }
 
     protected function tearDown(): void
     {

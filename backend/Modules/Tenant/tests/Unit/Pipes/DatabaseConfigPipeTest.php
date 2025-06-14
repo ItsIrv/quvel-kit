@@ -279,27 +279,6 @@ class DatabaseConfigPipeTest extends TestCase
         $this->assertEmpty($result);
     }
 
-    public function testHandlesReturnsCorrectKeys(): void
-    {
-        $handles = $this->pipe->handles();
-
-        $expectedKeys = [
-            'db_connection',
-            'db_host',
-            'db_port',
-            'db_database',
-            'db_username',
-            'db_password',
-        ];
-
-        $this->assertEquals($expectedKeys, $handles);
-    }
-
-    public function testPriorityReturnsCorrectValue(): void
-    {
-        $priority = $this->pipe->priority();
-        $this->assertEquals(90, $priority);
-    }
 
     protected function tearDown(): void
     {

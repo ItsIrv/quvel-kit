@@ -123,21 +123,6 @@ class TestableBaseConfigurationPipe extends BaseConfigurationPipe
         ]);
     }
 
-    /**
-     * Required by interface but not tested in base class test.
-     */
-    public function handles(): array
-    {
-        return [];
-    }
-
-    /**
-     * Required by interface but not tested in base class test.
-     */
-    public function priority(): int
-    {
-        return 0;
-    }
 
     /**
      * Expose protected hasValue method for testing.

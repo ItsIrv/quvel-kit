@@ -186,33 +186,6 @@ class MailConfigPipeTest extends TestCase
         $this->assertSame($tenant, $result['tenant']);
     }
 
-    public function testHandlesReturnsCorrectKeys(): void
-    {
-        $handles = $this->pipe->handles();
-
-        $expectedKeys = [
-            'mail_mailer',
-            'mail_host',
-            'mail_port',
-            'mail_username',
-            'mail_password',
-            'mail_encryption',
-            'mail_from_address',
-            'mail_from_name',
-        ];
-
-        foreach ($expectedKeys as $key) {
-            $this->assertContains($key, $handles);
-        }
-        $this->assertCount(count($expectedKeys), $handles);
-    }
-
-    public function testPriorityReturnsCorrectValue(): void
-    {
-        $priority = $this->pipe->priority();
-
-        $this->assertEquals(70, $priority);
-    }
 
     public function testHandleWithSpecialCharactersInPassword(): void
     {

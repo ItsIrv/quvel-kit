@@ -20,7 +20,6 @@ final class DynamicTenantConfigTest extends TestCase
         $config = new DynamicTenantConfig();
 
         $this->assertInstanceOf(DynamicTenantConfig::class, $config);
-        $this->assertNull($config->getTier());
         $this->assertEquals([], $config->toArray()['config']);
         $this->assertEquals([], $config->toArray()['visibility']);
     }
@@ -30,13 +29,11 @@ final class DynamicTenantConfigTest extends TestCase
     {
         $data       = ['key1' => 'value1', 'key2' => 'value2'];
         $visibility = ['key1' => TenantConfigVisibility::PUBLIC];
-        $tier       = 'premium';
 
-        $config = new DynamicTenantConfig($data, $visibility, $tier);
+        $config = new DynamicTenantConfig($data, $visibility);
 
         $this->assertEquals($data, $config->toArray()['config']);
         $this->assertEquals(['key1' => 'public'], $config->toArray()['visibility']);
-        $this->assertEquals($tier, $config->getTier());
     }
 
     #[TestDox('Should get value using dot notation')]
@@ -130,52 +127,28 @@ final class DynamicTenantConfigTest extends TestCase
         $this->assertEquals(TenantConfigVisibility::PUBLIC, $config->getVisibility('key1'));
     }
 
-    #[TestDox('Should get and set tier')]
-    public function testGetSetTier(): void
-    {
-        $config = new DynamicTenantConfig();
-
-        $this->assertNull($config->getTier());
-
-        $result = $config->setTier('premium');
-
-        $this->assertSame($config, $result); // Fluent interface
-        $this->assertEquals('premium', $config->getTier());
-
-        $config->setTier(null);
-        $this->assertNull($config->getTier());
-    }
 
     #[TestDox('Should merge with another DynamicTenantConfig')]
     public function testMergeWithDynamicTenantConfig(): void
     {
         $config1 = new DynamicTenantConfig(
             ['key1' => 'value1', 'key2' => 'value2'],
-            ['key1' => TenantConfigVisibility::PUBLIC],
-            'basic',
+            ['key1' => TenantConfigVisibility::PUBLIC]
         );
 
         $config2 = new DynamicTenantConfig(
             ['key2' => 'new_value2', 'key3' => 'value3'],
-            ['key2' => TenantConfigVisibility::PROTECTED , 'key3' => TenantConfigVisibility::PUBLIC],
-            'premium',
+            ['key2' => TenantConfigVisibility::PROTECTED , 'key3' => TenantConfigVisibility::PUBLIC]
         );
 
         $result = $config1->merge($config2);
 
         $this->assertSame($config1, $result); // Fluent interface
 
-        // After merge, the data structure becomes nested due to toArray() call
-        // The merge() method calls toArray() which returns ['config' => [...], 'visibility' => [...], 'tier' => ...]
-        // So the original keys are preserved and new structure is added
+        // After merge, config1 should have merged values
         $this->assertEquals('value1', $config1->get('key1')); // Original key preserved
-        $this->assertEquals('value2', $config1->get('key2')); // Original value preserved (not overwritten)
-        $this->assertFalse($config1->has('key3')); // key3 is not at top level
-
-        // The merged data is nested under 'config' key
-        $this->assertEquals(['key2' => 'new_value2', 'key3' => 'value3'], $config1->get('config'));
-
-        $this->assertEquals('premium', $config1->getTier()); // Updated tier
+        $this->assertEquals('new_value2', $config1->get('key2')); // Value overwritten by merge
+        $this->assertEquals('value3', $config1->get('key3')); // New key added
         $this->assertEquals(TenantConfigVisibility::PUBLIC, $config1->getVisibility('key1')); // Original visibility
         $this->assertEquals(TenantConfigVisibility::PROTECTED, $config1->getVisibility('key2')); // Updated visibility
         $this->assertEquals(TenantConfigVisibility::PUBLIC, $config1->getVisibility('key3')); // New visibility
@@ -186,8 +159,7 @@ final class DynamicTenantConfigTest extends TestCase
     {
         $config = new DynamicTenantConfig(
             ['key1' => 'value1', 'key2' => 'value2'],
-            ['key1' => TenantConfigVisibility::PUBLIC],
-            'basic',
+            ['key1' => TenantConfigVisibility::PUBLIC]
         );
 
         $result = $config->merge(['key2' => 'new_value2', 'key3' => 'value3']);
@@ -196,22 +168,11 @@ final class DynamicTenantConfigTest extends TestCase
         $this->assertEquals('value1', $config->get('key1'));
         $this->assertEquals('new_value2', $config->get('key2')); // Overwritten
         $this->assertEquals('value3', $config->get('key3')); // New
-        $this->assertEquals('basic', $config->getTier()); // Unchanged
         $this->assertEquals(TenantConfigVisibility::PUBLIC, $config->getVisibility('key1')); // Unchanged
         $this->assertEquals(TenantConfigVisibility::PRIVATE, $config->getVisibility('key2')); // Default
         $this->assertEquals(TenantConfigVisibility::PRIVATE, $config->getVisibility('key3')); // Default
     }
 
-    #[TestDox('Should merge with config that has null tier')]
-    public function testMergeWithNullTier(): void
-    {
-        $config1 = new DynamicTenantConfig([], [], 'premium');
-        $config2 = new DynamicTenantConfig([], [], null);
-
-        $config1->merge($config2);
-
-        $this->assertEquals('premium', $config1->getTier()); // Tier not overwritten by null
-    }
 
     #[TestDox('Should get public config only')]
     public function testGetPublicConfig(): void
@@ -254,7 +215,6 @@ final class DynamicTenantConfigTest extends TestCase
         $data = [
             'config'     => ['key1' => 'value1', 'key2' => 'value2'],
             'visibility' => ['key1' => 'public', 'key2' => 'protected'],
-            'tier'       => 'premium',
         ];
 
         $config = DynamicTenantConfig::fromArray($data);
@@ -263,7 +223,6 @@ final class DynamicTenantConfigTest extends TestCase
         $this->assertEquals('value2', $config->get('key2'));
         $this->assertEquals(TenantConfigVisibility::PUBLIC, $config->getVisibility('key1'));
         $this->assertEquals(TenantConfigVisibility::PROTECTED, $config->getVisibility('key2'));
-        $this->assertEquals('premium', $config->getTier());
     }
 
     #[TestDox('Should handle invalid visibility when creating from array')]
@@ -299,7 +258,6 @@ final class DynamicTenantConfigTest extends TestCase
 
         $this->assertEquals([], $config->toArray()['config']);
         $this->assertEquals([], $config->toArray()['visibility']);
-        $this->assertNull($config->getTier());
     }
 
     #[TestDox('Should convert to array')]
@@ -307,8 +265,7 @@ final class DynamicTenantConfigTest extends TestCase
     {
         $config = new DynamicTenantConfig(
             ['key1' => 'value1', 'key2' => 'value2'],
-            ['key1' => TenantConfigVisibility::PUBLIC , 'key2' => TenantConfigVisibility::PROTECTED],
-            'premium',
+            ['key1' => TenantConfigVisibility::PUBLIC , 'key2' => TenantConfigVisibility::PROTECTED]
         );
 
         $array = $config->toArray();
@@ -316,7 +273,6 @@ final class DynamicTenantConfigTest extends TestCase
         $this->assertEquals([
             'config'     => ['key1' => 'value1', 'key2' => 'value2'],
             'visibility' => ['key1' => 'public', 'key2' => 'protected'],
-            'tier'       => 'premium',
         ], $array);
     }
 
@@ -367,12 +323,10 @@ final class DynamicTenantConfigTest extends TestCase
 
         $array = $config1->toArray();
 
-        // The merge should have created a nested array structure
-        // because merge() calls toArray() on config2 which returns
-        // ['config' => [...], 'visibility' => [...], 'tier' => ...]
+        // After merge, the array should contain merged config data
         $this->assertArrayHasKey('config', $array);
         $this->assertArrayHasKey('visibility', $array);
-        $this->assertArrayHasKey('tier', $array);
+        $this->assertEquals(['key1' => 'value1', 'key2' => 'value2'], $array['config']);
     }
 
     #[TestDox('Should handle nested values in magic getter')]
@@ -421,14 +375,12 @@ final class DynamicTenantConfigTest extends TestCase
         $result = $config
             ->set('key1', 'value1')
             ->setVisibility('key1', TenantConfigVisibility::PUBLIC)
-            ->setTier('premium')
             ->set('key2', 'value2')
             ->forget('key2');
 
         $this->assertSame($config, $result);
         $this->assertEquals('value1', $config->get('key1'));
         $this->assertEquals(TenantConfigVisibility::PUBLIC, $config->getVisibility('key1'));
-        $this->assertEquals('premium', $config->getTier());
         $this->assertFalse($config->has('key2'));
     }
 }

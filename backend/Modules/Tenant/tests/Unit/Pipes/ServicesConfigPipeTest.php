@@ -421,34 +421,4 @@ class ServicesConfigPipeTest extends TestCase
 
 
 
-    public function testHandlesReturnsCorrectKeys(): void
-    {
-        $handles = $this->pipe->handles();
-
-        $expectedKeys = [
-            'stripe_key', 'stripe_secret', 'stripe_webhook_secret',
-            'paypal_client_id', 'paypal_secret', 'paypal_mode',
-            'twilio_sid', 'twilio_token', 'twilio_from',
-            'sendgrid_api_key',
-            'mailgun_domain', 'mailgun_secret', 'mailgun_endpoint',
-            'postmark_token',
-            'ses_key', 'ses_secret', 'ses_region',
-            'algolia_app_id', 'algolia_secret',
-            'google_analytics_id', 'google_maps_key',
-            'bugsnag_api_key', 'slack_webhook_url',
-            'custom_api_endpoints', 'custom_api_keys',
-        ];
-
-        foreach ($expectedKeys as $key) {
-            $this->assertContains($key, $handles);
-        }
-        $this->assertCount(count($expectedKeys), $handles);
-    }
-
-    public function testPriorityReturnsCorrectValue(): void
-    {
-        $priority = $this->pipe->priority();
-
-        $this->assertEquals(35, $priority);
-    }
 }

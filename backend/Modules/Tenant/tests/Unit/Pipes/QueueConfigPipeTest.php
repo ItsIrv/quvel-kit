@@ -255,34 +255,4 @@ class QueueConfigPipeTest extends TestCase
 
 
 
-    public function testHandlesReturnsCorrectKeys(): void
-    {
-        $handles = $this->pipe->handles();
-
-        $expectedKeys = [
-            'queue_default',
-            'queue_connection',
-            'queue_database_table',
-            'queue_name',
-            'queue_retry_after',
-            'queue_failed_table',
-            'redis_queue_database',
-            'aws_sqs_queue',
-            'aws_sqs_region',
-            'aws_sqs_key',
-            'aws_sqs_secret',
-        ];
-
-        foreach ($expectedKeys as $key) {
-            $this->assertContains($key, $handles);
-        }
-        $this->assertCount(count($expectedKeys), $handles);
-    }
-
-    public function testPriorityReturnsCorrectValue(): void
-    {
-        $priority = $this->pipe->priority();
-
-        $this->assertEquals(65, $priority);
-    }
 }
