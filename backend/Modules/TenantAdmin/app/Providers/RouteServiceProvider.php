@@ -18,8 +18,8 @@ class RouteServiceProvider extends ModuleRouteServiceProvider
 
         if (file_exists($webRoutes)) {
             Route::middleware('web')
-                ->prefix('admin/tenants')
-                ->name('admin.tenants.')
+                ->prefix('tenant/admin')
+                ->name('tenant.admin.')
                 ->group($webRoutes);
         }
     }
@@ -33,8 +33,8 @@ class RouteServiceProvider extends ModuleRouteServiceProvider
 
         if (file_exists($apiRoutes)) {
             Route::middleware('api')
-                ->prefix('api/admin/tenants')
-                ->name('api.admin.tenants.')
+                ->prefix('api/tenant/admin')
+                ->name('api.tenant.admin.')
                 ->group($apiRoutes);
         }
     }

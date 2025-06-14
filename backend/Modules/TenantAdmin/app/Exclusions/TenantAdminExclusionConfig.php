@@ -20,8 +20,8 @@ class TenantAdminExclusionConfig implements TenantExclusionConfigInterface
         return new TenantExclusionConfig(
             paths: [],
             patterns: [
-                'admin/tenants*',
-                'api/admin/tenants*',
+                'tenant/admin*',
+                'api/tenant/admin*',
             ],
         );
     }

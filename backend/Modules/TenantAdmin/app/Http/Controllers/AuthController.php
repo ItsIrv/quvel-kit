@@ -11,7 +11,7 @@ use Modules\TenantAdmin\Services\AuthenticationService;
 class AuthController extends Controller
 {
     public function __construct(
-        private AuthenticationService $authService
+        private AuthenticationService $authService,
     ) {
     }
 
@@ -24,7 +24,7 @@ class AuthController extends Controller
 
         $result = $this->authService->authenticate(
             $credentials['username'],
-            $credentials['password']
+            $credentials['password'],
         );
 
         if (!$result['success']) {
@@ -45,10 +45,10 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'success' => true,
-            'message' => 'Login successful.',
-            'redirect_url' => '/admin/tenants/dashboard',
-            'user' => $result['user'],
+            'success'      => true,
+            'message'      => 'Login successful.',
+            'redirect_url' => '/tenant/admin/dashboard',
+            'user'         => $result['user'],
         ]);
     }
 
@@ -63,9 +63,9 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         return response()->json([
-            'success' => true,
-            'message' => 'Logged out successfully.',
-            'redirect_url' => '/admin/tenants/login',
+            'success'      => true,
+            'message'      => 'Logged out successfully.',
+            'redirect_url' => '/tenant/admin/login',
         ]);
     }
 

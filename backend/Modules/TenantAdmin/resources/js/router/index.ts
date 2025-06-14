@@ -57,7 +57,7 @@ const routes: RouteRecordRaw[] = [
 ];
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.VITE_BASE_URL || "/admin/tenants"),
+    history: createWebHistory(import.meta.env.VITE_BASE_URL || "/tenant/admin"),
     routes,
 });
 

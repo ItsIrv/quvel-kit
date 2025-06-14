@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckNotInstalled
 {
     public function __construct(
-        private InstallationService $installationService
+        private InstallationService $installationService,
     ) {
     }
 
@@ -23,12 +23,12 @@ class CheckNotInstalled
         if ($this->installationService->isInstalled()) {
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'TenantAdmin is already installed.',
-                    'redirect' => '/admin/tenants/login'
+                    'message'  => 'TenantAdmin is already installed.',
+                    'redirect' => '/tenant/admin/login',
                 ], 403);
             }
 
-            return redirect('/admin/tenants/login');
+            return redirect('/tenant/admin/login');
         }
 
         return $next($request);

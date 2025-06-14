@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 class TenantAdminAuth
 {
     public function __construct(
-        private AuthenticationService $authService
+        private AuthenticationService $authService,
     ) {
     }
 
@@ -27,7 +27,7 @@ class TenantAdminAuth
                 ], 401);
             }
 
-            return redirect('/admin/tenants/login');
+            return redirect('/tenant/admin/login');
         }
 
         return $next($request);
