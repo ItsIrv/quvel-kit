@@ -1,18 +1,19 @@
 <?php
 
-namespace Modules\Core\Seeders;
+namespace Modules\Tenant\Seeders\CoreConfig;
 
 use Modules\Tenant\Contracts\TenantConfigSeederInterface;
 
 /**
- * Core module seeder for basic tenant template.
+ * Core application configuration seeder for isolated tenant template.
  *
- * Provides core application configuration for standard tenants.
+ * Handles application-level configuration for isolated tenants including
+ * internal API URLs and enhanced domain handling.
  */
-class CoreBasicSeeder implements TenantConfigSeederInterface
+class CoreApplicationIsolatedSeeder implements TenantConfigSeederInterface
 {
     /**
-     * Generate configuration values for basic template.
+     * Generate configuration values for isolated template.
      *
      * @param string $template The tenant template
      * @param array $baseConfig The base configuration to build upon
@@ -25,7 +26,7 @@ class CoreBasicSeeder implements TenantConfigSeederInterface
         $apiUrl      = "https://$domain";
         $frontendUrl = 'https://' . str_replace('api.', '', $domain);
 
-        // Core configuration with reasonable defaults
+        // Core application configuration with reasonable defaults
         $coreConfig = [
             'app_name'     => $baseConfig['app_name'] ?? 'QuVel',
             'app_url'      => $apiUrl,
@@ -42,6 +43,11 @@ class CoreBasicSeeder implements TenantConfigSeederInterface
         // Add capacitor scheme if provided
         if (isset($baseConfig['capacitor_scheme'])) {
             $coreConfig['capacitor_scheme'] = $baseConfig['capacitor_scheme'];
+        }
+
+        // Add internal API URL for isolated template
+        if (!isset($baseConfig['internal_api_url'])) {
+            $coreConfig['internal_api_url'] = $this->generateInternalApiUrl($domain, $apiUrl);
         }
 
         return $coreConfig;
@@ -61,7 +67,26 @@ class CoreBasicSeeder implements TenantConfigSeederInterface
             'mail_from_name'    => 'private',
             'mail_from_address' => 'private',
             'capacitor_scheme'  => 'protected',
+            'internal_api_url'  => 'protected',
         ];
     }
 
+    /**
+     * Generate internal API URL for isolated tenants.
+     *
+     * @param string $domain The tenant domain
+     * @param string $apiUrl The external API URL
+     * @return string Internal API URL
+     */
+    private function generateInternalApiUrl(string $domain, string $apiUrl): string
+    {
+        // Special handling for specific isolated domains (like the seeder does)
+        if ($domain === 'api-lan') {
+            return 'http://api-lan:8000';
+        }
+
+        // Extract just the domain part for internal API
+        $internalDomain = str_replace(['https://', 'http://'], '', $apiUrl);
+        return "http://{$internalDomain}:8000";
+    }
 }

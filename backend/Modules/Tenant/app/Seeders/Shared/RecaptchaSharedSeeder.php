@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Core\Seeders;
+namespace Modules\Tenant\Seeders\Shared;
 
 use Modules\Tenant\Contracts\TenantSharedSeederInterface;
 
@@ -47,5 +47,4 @@ class RecaptchaSharedSeeder implements TenantSharedSeederInterface
             'recaptcha_secret_key' => 'private',
         ];
     }
-
 }

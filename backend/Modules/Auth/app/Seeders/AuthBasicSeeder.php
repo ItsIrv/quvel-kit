@@ -21,7 +21,6 @@ class AuthBasicSeeder implements TenantConfigSeederInterface
     public function getConfig(string $template, array $baseConfig): array
     {
         return [
-            'session_cookie'      => 'quvel_session',
             'socialite_providers' => [],
             'oauth_credentials'   => [],
         ];
@@ -35,9 +34,7 @@ class AuthBasicSeeder implements TenantConfigSeederInterface
     public function getVisibility(): array
     {
         return [
-            'session_cookie'      => 'protected',
             'socialite_providers' => 'public',
-            'session_lifetime'    => 'protected',
         ];
     }
 }

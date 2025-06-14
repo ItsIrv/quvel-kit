@@ -4,8 +4,14 @@ use Modules\Tenant\Factories\TenantConfigFactory;
 
 return [
     'seeders'    => [
-        // Tenant module doesn't contribute tenant-specific seeders
-        // but this shows the structure for future use
+        'basic'    => \Modules\Tenant\Seeders\CoreConfig\CoreApplicationBasicSeeder::class,
+        'isolated' => \Modules\Tenant\Seeders\CoreConfig\CoreApplicationIsolatedSeeder::class,
+    ],
+
+    // Additional seeders for shared configs across all templates
+    'shared_seeders' => [
+        'recaptcha' => \Modules\Tenant\Seeders\Shared\RecaptchaSharedSeeder::class,
+        'pusher'    => \Modules\Tenant\Seeders\Shared\PusherSharedSeeder::class,
     ],
 
     'pipes'      => [

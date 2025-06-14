@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Core\Seeders;
+namespace Modules\Tenant\Seeders\Shared;
 
 use Modules\Tenant\Contracts\TenantSharedSeederInterface;
 
@@ -53,5 +53,4 @@ class PusherSharedSeeder implements TenantSharedSeederInterface
             'pusher_app_cluster' => 'public',
         ];
     }
-
 }
