@@ -123,7 +123,7 @@ class DynamicTenantConfig implements Arrayable
     /**
      * Merge another configuration into this one.
      *
-     * @param DynamicTenantConfig|array $config
+     * @param DynamicTenantConfig|array<string, mixed> $config
      * @return static
      */
     public function merge(DynamicTenantConfig|array $config): static

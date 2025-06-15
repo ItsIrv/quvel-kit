@@ -9,21 +9,25 @@ class TenantConfigSeederRegistry
 {
     /**
      * Evaluated seeders cache by template.
+     * @var array<string, mixed>
      */
     private array $evaluatedSeeders = [];
 
     /**
      * Evaluated visibility cache by template.
+     * @var array<string, mixed>
      */
     private array $evaluatedVisibility = [];
 
     /**
      * Instantiated seeder classes cache.
+     * @var array<string, mixed>
      */
     private array $seederInstances = [];
 
     /**
      * Instantiated shared seeder classes cache.
+     * @var array<string, mixed>
      */
     private array $sharedSeederInstances = [];
 

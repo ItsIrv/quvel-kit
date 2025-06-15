@@ -12,11 +12,13 @@ class TenantSeederConfig
     public function __construct(
         /**
          * Configuration key-value pairs to seed.
+         * @var array<string, mixed>
          */
         public array $config,
         /**
          * Visibility settings for configuration keys.
          * Values: 'public', 'protected', 'private'
+         * @var array<string, string>
          */
         public array $visibility,
 

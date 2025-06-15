@@ -72,7 +72,7 @@ class TenantTableRegistry
      * Get configuration for a specific table as array (backward compatibility).
      *
      * @param string $tableName
-     * @return array|null
+     * @return array<string, mixed>|null
      */
     public function getTableConfigArray(string $tableName): ?array
     {

@@ -6,16 +6,19 @@ class TenantExclusionRegistry
 {
     /**
      * Paths that should bypass tenant resolution.
+     * @var array<int, string>
      */
     protected array $excludedPaths = [];
 
     /**
      * Path patterns that should bypass tenant resolution.
+     * @var array<int, string>
      */
     protected array $excludedPatterns = [];
 
     /**
      * Add exact paths to exclude from tenant resolution.
+     * @param string|array<int, string> $paths
      */
     public function excludePaths(string|array $paths): void
     {
@@ -25,6 +28,7 @@ class TenantExclusionRegistry
 
     /**
      * Add path patterns to exclude from tenant resolution.
+     * @param string|array<int, string> $patterns
      */
     public function excludePatterns(string|array $patterns): void
     {
@@ -34,6 +38,7 @@ class TenantExclusionRegistry
 
     /**
      * Get all excluded paths.
+     * @return array<int, string>
      */
     public function getExcludedPaths(): array
     {
@@ -42,6 +47,7 @@ class TenantExclusionRegistry
 
     /**
      * Get all excluded patterns.
+     * @return array<int, string>
      */
     public function getExcludedPatterns(): array
     {

@@ -12,11 +12,13 @@ class TenantExclusionConfig
     public function __construct(
         /**
          * Exact paths that should bypass tenant resolution.
+         * @var array<int, string>
          */
         public array $paths = [],
         /**
          * Path patterns that should bypass tenant resolution.
          * Patterns support wildcards (*, ?, [chars], etc.)
+         * @var array<int, string>
          */
         public array $patterns = [],
     ) {

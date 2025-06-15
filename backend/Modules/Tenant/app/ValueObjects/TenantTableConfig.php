@@ -23,12 +23,14 @@ readonly class TenantTableConfig
         /**
          * List of unique constraints to drop before adding tenant-specific ones.
          * Each entry is an array of columns that form a unique constraint.
+         * @var array<int, string>
          */
         public array $dropUniques = [],
 
         /**
          * Unique constraints that should include tenant_id.
          * Each entry is an array of columns that should be unique together within a tenant.
+         * @var array<int, string>
          */
         public array $tenantUniqueConstraints = []
     ) {
