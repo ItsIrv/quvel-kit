@@ -75,9 +75,8 @@ class UpdateUserPasswordTest extends TestCase
             ->andReturn($this->validator);
 
         $this->validator
-            ->shouldReceive('validateWithBag')
+            ->shouldReceive('validate')
             ->once()
-            ->with('updatePassword')
             ->andReturn(null);
 
         $this->hasher
@@ -124,9 +123,8 @@ class UpdateUserPasswordTest extends TestCase
         $this->validator->shouldReceive('getTranslator')->andReturn(app('translator'));
 
         $this->validator
-            ->shouldReceive('validateWithBag')
+            ->shouldReceive('validate')
             ->once()
-            ->with('updatePassword')
             ->andThrow(new ValidationException($this->validator));
 
         $this->hasher
@@ -161,9 +159,8 @@ class UpdateUserPasswordTest extends TestCase
         $this->validator->shouldReceive('getTranslator')->andReturn(app('translator'));
 
         $this->validator
-            ->shouldReceive('validateWithBag')
+            ->shouldReceive('validate')
             ->once()
-            ->with('updatePassword')
             ->andThrow(new ValidationException($this->validator));
 
         $this->hasher
@@ -198,9 +195,8 @@ class UpdateUserPasswordTest extends TestCase
         $this->validator->shouldReceive('getTranslator')->andReturn(app('translator'));
 
         $this->validator
-            ->shouldReceive('validateWithBag')
+            ->shouldReceive('validate')
             ->once()
-            ->with('updatePassword')
             ->andThrow(new ValidationException($this->validator));
 
         $this->hasher
@@ -229,9 +225,8 @@ class UpdateUserPasswordTest extends TestCase
             ->andReturn($this->validator);
 
         $this->validator
-            ->shouldReceive('validateWithBag')
+            ->shouldReceive('validate')
             ->once()
-            ->with('updatePassword')
             ->andReturn(null);
 
         $this->hasher

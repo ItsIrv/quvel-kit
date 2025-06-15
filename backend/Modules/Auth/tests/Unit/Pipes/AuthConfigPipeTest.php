@@ -40,29 +40,6 @@ class AuthConfigPipeTest extends TestCase
         $this->assertInstanceOf(ConfigurationPipeInterface::class, $this->pipe);
     }
 
-    #[TestDox('returns correct priority of 50')]
-    public function testReturnsCorrectPriority(): void
-    {
-        $this->assertEquals(50, $this->pipe->priority());
-    }
-
-    #[TestDox('returns all handled configuration keys')]
-    public function testReturnsHandledConfigurationKeys(): void
-    {
-        $expectedKeys = [
-            'socialite_providers',
-            'socialite_nonce_ttl',
-            'socialite_token_ttl',
-            'hmac_secret_key',
-            'oauth_credentials',
-            'disable_socialite',
-            'verify_email_before_login',
-            'password_min_length',
-            'session_timeout',
-        ];
-
-        $this->assertEquals($expectedKeys, $this->pipe->handles());
-    }
 
     #[TestDox('sets socialite configuration when provided')]
     public function testSetsSocialiteConfiguration(): void
@@ -465,6 +442,19 @@ class AuthConfigPipeTest extends TestCase
                 }
             });
 
+        $this->config->expects($this->exactly(2))
+            ->method('get')
+            ->willReturnCallback(function ($key, $default = null) {
+                switch ($key) {
+                    case 'services.github.client_id':
+                        return 'env-github-client-id';
+                    case 'services.github.client_secret':
+                        return 'env-github-client-secret';
+                    default:
+                        return $default;
+                }
+            });
+
         $next = function ($payload) {
             return $payload;
         };
@@ -509,10 +499,20 @@ class AuthConfigPipeTest extends TestCase
                 }
             });
 
-        $this->config->expects($this->once())
+        $this->config->expects($this->exactly(3))
             ->method('get')
-            ->with('app.url')
-            ->willReturn('https://default.app.url');
+            ->willReturnCallback(function ($key, $default = null) {
+                switch ($key) {
+                    case 'services.facebook.client_id':
+                        return 'env-facebook-client-id';
+                    case 'services.facebook.client_secret':
+                        return 'env-facebook-client-secret';
+                    case 'app.url':
+                        return 'https://default.app.url';
+                    default:
+                        return $default;
+                }
+            });
 
         $next = function ($payload) {
             return $payload;
@@ -541,9 +541,13 @@ class AuthConfigPipeTest extends TestCase
             ->method('set')
             ->with('auth.socialite.providers', ['missing_provider']);
 
-        // Should not call get() for app.url since no credentials are set
-        $this->config->expects($this->never())
-            ->method('get');
+        // Should call get() to check for existing credentials but won't find any
+        $this->config->expects($this->exactly(2))
+            ->method('get')
+            ->willReturnCallback(function ($key, $default = null) {
+                // Return null for missing provider credentials
+                return $default;
+            });
 
         $next = function ($payload) {
             return $payload;

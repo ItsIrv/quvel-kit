@@ -101,7 +101,7 @@ abstract class BaseLogger implements LoggerInterface
      */
     public function log(mixed $level, string|\Stringable $message, array $context = []): void
     {
-        // $context = $this->enrichContext($context);
+        $context = $this->enrichContext($context);
 
         $this->logger->channel($this->channel)->log($level, $message, $context);
     }

@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
+use Mockery;
 
 /**
  * @testdox BaseLogger
@@ -31,8 +32,14 @@ class BaseLoggerTest extends TestCase
         // Create a concrete implementation for testing
         $this->logger = new class ($this->logManager) extends BaseLogger {
             protected string $channel = 'test';
-            protected string $contextPrefix = 'test_prefix';
+            // No contextPrefix for basic tests
         };
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 
     #[TestDox('implements PSR-3 LoggerInterface')]
@@ -44,6 +51,9 @@ class BaseLoggerTest extends TestCase
     #[TestDox('logs emergency messages')]
     public function testLogsEmergencyMessages(): void
     {
+        // Mock Context facade - no trace_id
+        Context::shouldReceive('has')->with('trace_id')->andReturn(false);
+
         $message = 'Emergency message';
         $context = ['key' => 'value'];
 
@@ -63,6 +73,9 @@ class BaseLoggerTest extends TestCase
     #[TestDox('logs alert messages')]
     public function testLogsAlertMessages(): void
     {
+        // Mock Context facade - no trace_id
+        Context::shouldReceive('has')->with('trace_id')->andReturn(false);
+
         $message = 'Alert message';
         $context = ['key' => 'value'];
 
@@ -82,6 +95,9 @@ class BaseLoggerTest extends TestCase
     #[TestDox('logs critical messages')]
     public function testLogsCriticalMessages(): void
     {
+        // Mock Context facade - no trace_id
+        Context::shouldReceive('has')->with('trace_id')->andReturn(false);
+
         $message = 'Critical message';
         $context = ['key' => 'value'];
 
@@ -101,6 +117,9 @@ class BaseLoggerTest extends TestCase
     #[TestDox('logs error messages')]
     public function testLogsErrorMessages(): void
     {
+        // Mock Context facade - no trace_id
+        Context::shouldReceive('has')->with('trace_id')->andReturn(false);
+
         $message = 'Error message';
         $context = ['key' => 'value'];
 
@@ -120,6 +139,9 @@ class BaseLoggerTest extends TestCase
     #[TestDox('logs warning messages')]
     public function testLogsWarningMessages(): void
     {
+        // Mock Context facade - no trace_id
+        Context::shouldReceive('has')->with('trace_id')->andReturn(false);
+
         $message = 'Warning message';
         $context = ['key' => 'value'];
 
@@ -139,6 +161,9 @@ class BaseLoggerTest extends TestCase
     #[TestDox('logs notice messages')]
     public function testLogsNoticeMessages(): void
     {
+        // Mock Context facade - no trace_id
+        Context::shouldReceive('has')->with('trace_id')->andReturn(false);
+
         $message = 'Notice message';
         $context = ['key' => 'value'];
 
@@ -158,6 +183,9 @@ class BaseLoggerTest extends TestCase
     #[TestDox('logs info messages')]
     public function testLogsInfoMessages(): void
     {
+        // Mock Context facade - no trace_id
+        Context::shouldReceive('has')->with('trace_id')->andReturn(false);
+
         $message = 'Info message';
         $context = ['key' => 'value'];
 
@@ -177,6 +205,9 @@ class BaseLoggerTest extends TestCase
     #[TestDox('logs debug messages')]
     public function testLogsDebugMessages(): void
     {
+        // Mock Context facade - no trace_id
+        Context::shouldReceive('has')->with('trace_id')->andReturn(false);
+
         $message = 'Debug message';
         $context = ['key' => 'value'];
 
@@ -196,6 +227,9 @@ class BaseLoggerTest extends TestCase
     #[TestDox('logs with arbitrary level')]
     public function testLogsWithArbitraryLevel(): void
     {
+        // Mock Context facade - no trace_id
+        Context::shouldReceive('has')->with('trace_id')->andReturn(false);
+
         $level   = 'custom';
         $message = 'Custom level message';
         $context = ['key' => 'value'];
@@ -216,6 +250,9 @@ class BaseLoggerTest extends TestCase
     #[TestDox('accepts stringable messages')]
     public function testAcceptsStringableMessages(): void
     {
+        // Mock Context facade - no trace_id
+        Context::shouldReceive('has')->with('trace_id')->andReturn(false);
+
         $stringable = new class () {
             public function __toString(): string
             {
@@ -239,6 +276,9 @@ class BaseLoggerTest extends TestCase
     #[TestDox('uses default channel when not overridden')]
     public function testUsesDefaultChannelWhenNotOverridden(): void
     {
+        // Mock Context facade - no trace_id
+        Context::shouldReceive('has')->with('trace_id')->andReturn(false);
+
         $defaultLogger = new class ($this->logManager) extends BaseLogger {
             // Uses default 'stack' channel
         };
@@ -259,17 +299,22 @@ class BaseLoggerTest extends TestCase
     #[TestDox('enriches context with trace ID when available')]
     public function testEnrichesContextWithTraceIdWhenAvailable(): void
     {
-        Context::add('trace_id', 'test-trace-123');
+        // Reset all Mockery expectations
+        Mockery::close();
+        
+        // Set up Context facade mock expectations for this specific test
+        Context::shouldReceive('has')
+            ->with('trace_id')
+            ->once()
+            ->andReturn(true);
+        Context::shouldReceive('get')
+            ->with('trace_id')
+            ->once()
+            ->andReturn('test-trace-123');
 
         $loggerWithEnrichment = new class ($this->logManager) extends BaseLogger {
             protected string $channel = 'test';
-
-            // Override log method to test enrichContext
-            public function log(mixed $level, string|\Stringable $message, array $context = []): void
-            {
-                $context = $this->enrichContext($context);
-                parent::log($level, $message, $context);
-            }
+            // Uses default enrichContext via parent::log
         };
 
         $mockChannel = $this->createMock(LoggerInterface::class);
@@ -285,23 +330,20 @@ class BaseLoggerTest extends TestCase
             ->willReturn($mockChannel);
 
         $loggerWithEnrichment->info('message', ['key' => 'value']);
-
-        Context::flush();
     }
 
     #[TestDox('adds prefix to context keys')]
     public function testAddsPrefixToContextKeys(): void
     {
+        // Override Context facade mock for this test - no trace_id
+        Context::shouldReceive('has')
+            ->with('trace_id')
+            ->andReturn(false);
+
         $loggerWithPrefix = new class ($this->logManager) extends BaseLogger {
             protected string $channel = 'test';
             protected string $contextPrefix = 'app.module';
-
-            // Override log method to test enrichContext
-            public function log(mixed $level, string|\Stringable $message, array $context = []): void
-            {
-                $context = $this->enrichContext($context);
-                parent::log($level, $message, $context);
-            }
+            // Uses default enrichContext via parent::log
         };
 
         $mockChannel = $this->createMock(LoggerInterface::class);
@@ -323,16 +365,15 @@ class BaseLoggerTest extends TestCase
     #[TestDox('returns empty context unchanged with prefix')]
     public function testReturnsEmptyContextUnchangedWithPrefix(): void
     {
+        // Override Context facade mock for this test - no trace_id
+        Context::shouldReceive('has')
+            ->with('trace_id')
+            ->andReturn(false);
+
         $loggerWithPrefix = new class ($this->logManager) extends BaseLogger {
             protected string $channel = 'test';
             protected string $contextPrefix = 'prefix';
-
-            // Override log method to test enrichContext
-            public function log(mixed $level, string|\Stringable $message, array $context = []): void
-            {
-                $context = $this->enrichContext($context);
-                parent::log($level, $message, $context);
-            }
+            // Uses default enrichContext via parent::log
         };
 
         $mockChannel = $this->createMock(LoggerInterface::class);
@@ -351,16 +392,15 @@ class BaseLoggerTest extends TestCase
     #[TestDox('returns context unchanged without prefix')]
     public function testReturnsContextUnchangedWithoutPrefix(): void
     {
+        // Override Context facade mock for this test - no trace_id
+        Context::shouldReceive('has')
+            ->with('trace_id')
+            ->andReturn(false);
+
         $loggerWithoutPrefix = new class ($this->logManager) extends BaseLogger {
             protected string $channel = 'test';
             protected string $contextPrefix = '';
-
-            // Override log method to test enrichContext
-            public function log(mixed $level, string|\Stringable $message, array $context = []): void
-            {
-                $context = $this->enrichContext($context);
-                parent::log($level, $message, $context);
-            }
+            // Uses default enrichContext via parent::log
         };
 
         $originalContext = ['key' => 'value', 'nested' => ['data' => 123]];

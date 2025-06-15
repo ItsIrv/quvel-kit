@@ -66,7 +66,10 @@ class TenantConfigSeederRegistry
                     : $seederData['config'];
             }
 
-            $config = array_merge($config, $seederConfig);
+            // Only merge if seederConfig is an array
+            if (is_array($seederConfig)) {
+                $config = array_merge($config, $seederConfig);
+            }
         }
 
         return $config;

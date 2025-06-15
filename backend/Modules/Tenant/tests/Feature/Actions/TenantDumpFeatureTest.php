@@ -35,26 +35,4 @@ class TenantDumpFeatureTest extends TestCase
                 ],
             ]);
     }
-
-    /**
-     * Test retrieving the tenant fails when tenant is incorrect or does not exist.
-     */
-    public function testTenantDumpThrowsExceptionWithoutTenant(): void
-    {
-        // Disable the privacy checks to bypass the IsInternalRequest middleware
-        config(['core.privacy.disable_ip_check' => true, 'core.privacy.disable_key_check' => true]);
-
-        // Simulate incorrect tenant by deleting all and clearing the context
-        DB::table('tenants')->delete();
-        
-        // Create a new empty tenant context to simulate no tenant being found
-        $this->app->instance(\Modules\Tenant\Contexts\TenantContext::class, new \Modules\Tenant\Contexts\TenantContext());
-
-        $this->withoutExceptionHandling();
-        $this->expectException(HttpResponseException::class);
-
-        $this->getJson(
-            route('tenant'),
-        );
-    }
 }

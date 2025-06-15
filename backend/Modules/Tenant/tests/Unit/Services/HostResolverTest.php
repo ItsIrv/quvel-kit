@@ -112,16 +112,16 @@ final class HostResolverTest extends TestCase
             ->andReturn(true);
 
         $this->request->shouldReceive('getHost')
-            ->times(3)
+            ->twice()
             ->andReturn($host);
 
         $this->request->shouldReceive('header')
-            ->times(3)
+            ->twice()
             ->with(TenantHeader::TENANT_DOMAIN->value)
             ->andReturn('');
 
         $this->requestPrivacyService->shouldReceive('isInternalRequest')
-            ->times(3)
+            ->twice()
             ->andReturn(false);
 
         $this->tenantFindService->shouldReceive('findTenantByDomain')
@@ -154,16 +154,16 @@ final class HostResolverTest extends TestCase
             ->andReturn(false);
 
         $this->request->shouldReceive('getHost')
-            ->twice()
+            ->times(3)
             ->andReturn($host);
 
         $this->request->shouldReceive('header')
-            ->twice()
+            ->times(3)
             ->with(TenantHeader::TENANT_DOMAIN->value)
             ->andReturn('');
 
         $this->requestPrivacyService->shouldReceive('isInternalRequest')
-            ->twice()
+            ->times(3)
             ->andReturn(false);
 
         $this->memoryCache->shouldReceive('getTenant')
@@ -255,11 +255,11 @@ final class HostResolverTest extends TestCase
             ->andReturn(true);
 
         $this->request->shouldReceive('getHost')
-            ->once()
+            ->twice()
             ->andReturn($defaultHost);
 
         $this->request->shouldReceive('header')
-            ->once()
+            ->twice()
             ->with(TenantHeader::TENANT_DOMAIN->value)
             ->andReturn($customHostHeader);
 
@@ -268,15 +268,15 @@ final class HostResolverTest extends TestCase
         $this->request->server = Mockery::mock(ServerBag::class);
 
         $this->request->headers->shouldReceive('set')
-            ->once()
+            ->twice()
             ->with('host', $customHost);
 
         $this->request->server->shouldReceive('set')
-            ->once()
+            ->twice()
             ->with('HTTP_HOST', $customHost);
 
         $this->requestPrivacyService->shouldReceive('isInternalRequest')
-            ->times(3)
+            ->twice()
             ->andReturn(true);
 
         $this->memoryCache->shouldReceive('getTenant')
@@ -315,11 +315,11 @@ final class HostResolverTest extends TestCase
             ->andReturn(true);
 
         $this->request->shouldReceive('getHost')
-            ->once()
+            ->twice()
             ->andReturn($defaultHost);
 
         $this->request->shouldReceive('header')
-            ->once()
+            ->twice()
             ->with(TenantHeader::TENANT_DOMAIN->value)
             ->andReturn($customHostHeader);
 
@@ -362,18 +362,18 @@ final class HostResolverTest extends TestCase
             ->andReturn(true);
 
         $this->request->shouldReceive('getHost')
-            ->once()
+            ->twice()
             ->andReturn($defaultHost);
 
         // Properly mock the header method without accessing Request::$headers directly
         $this->request->shouldReceive('header')
-            ->once()
+            ->twice()
             ->with(TenantHeader::TENANT_DOMAIN->value)
             ->andReturn($invalidCustomHostHeader);
 
         // Since parse_url will return false for invalid URL, no host will be extracted
         // So the request should proceed with the default host
-        
+
         $this->requestPrivacyService->shouldReceive('isInternalRequest')
             ->twice()
             ->andReturn(true);

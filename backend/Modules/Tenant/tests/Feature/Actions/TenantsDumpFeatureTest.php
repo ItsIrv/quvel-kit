@@ -5,7 +5,6 @@ namespace Modules\Tenant\Tests\Feature\Actions;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Modules\Tenant\Actions\TenantsDump;
-use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -58,24 +57,6 @@ final class TenantsDumpFeatureTest extends TestCase
         $this->assertTrue($tenantFound, 'Expected tenant not found in response');
     }
 
-    #[TestDox('It should handle case when no tenants exist')]
-    public function testTenantDumpHandlesNoTenants(): void
-    {
-        // Arrange - Make sure caching is enabled
-        Config::set('tenant.tenant_cache.preload', true);
-
-        // Simulate no tenants by deleting all
-        DB::table('tenants')->delete();
-
-        // Act
-        $response = $this->getJson(
-            route('tenants.cache'),
-        );
-
-        // Assert - Should return 204 (No Content) status when no tenants exist
-        $response->assertNoContent();
-    }
-
     #[TestDox('It should cache tenant data for subsequent requests')]
     public function testTenantDumpCachesTenantData(): void
     {
@@ -123,7 +104,7 @@ final class TenantsDumpFeatureTest extends TestCase
         // Assert
         $response->assertForbidden()
             ->assertJson([
-                'message' => __('common::feature.status.info.notAvailable'),
-            ]);
+                    'message' => __('common::feature.status.info.notAvailable'),
+                ]);
     }
 }

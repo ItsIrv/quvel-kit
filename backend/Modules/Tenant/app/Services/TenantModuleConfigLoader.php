@@ -83,11 +83,11 @@ class TenantModuleConfigLoader
             }
         }
 
-        // Sort by priority (higher numbers first, defaults to array index)
+        // Sort by priority (lower numbers first, defaults to array index)
         usort($seeders, function ($a, $b) {
             $aPriority = $this->getSeederPriorityUnified($a);
             $bPriority = $this->getSeederPriorityUnified($b);
-            return $bPriority <=> $aPriority; // Higher priority first (like pipes)
+            return $aPriority <=> $bPriority; // Lower priority first
         });
 
         return $seeders;
@@ -122,21 +122,28 @@ class TenantModuleConfigLoader
 
         foreach ($this->loadAllModuleConfigs() as $moduleConfig) {
             if (isset($moduleConfig['tables']) && is_array($moduleConfig['tables'])) {
-                foreach ($moduleConfig['tables'] as $tableName => $tableConfig) {
-                    // Handle class references
-                    if (is_string($tableConfig) && class_exists($tableConfig)) {
-                        $instance = app($tableConfig);
-                        if ($instance instanceof \Modules\Tenant\Contracts\TenantTableConfigInterface) {
-                            $tables[$tableName] = $instance->getConfig()->toArray();
+                // Handle simple array of table names
+                foreach ($moduleConfig['tables'] as $key => $value) {
+                    if (is_numeric($key) && is_string($value)) {
+                        // Simple table name
+                        $tables[] = $value;
+                    } else {
+                        // Associative array with table configurations
+                        // Handle class references
+                        if (is_string($value) && class_exists($value)) {
+                            $instance = app($value);
+                            if ($instance instanceof \Modules\Tenant\Contracts\TenantTableConfigInterface) {
+                                $tables[$key] = $instance->getConfig()->toArray();
+                            }
                         }
-                    }
-                    // Handle value objects
-                    elseif ($tableConfig instanceof \Modules\Tenant\ValueObjects\TenantTableConfig) {
-                        $tables[$tableName] = $tableConfig->toArray();
-                    }
-                    // Handle legacy arrays
-                    elseif (is_array($tableConfig)) {
-                        $tables[$tableName] = $tableConfig;
+                        // Handle value objects
+                        elseif ($value instanceof \Modules\Tenant\ValueObjects\TenantTableConfig) {
+                            $tables[$key] = $value->toArray();
+                        }
+                        // Handle legacy arrays
+                        elseif (is_array($value)) {
+                            $tables[$key] = $value;
+                        }
                     }
                 }
             }
