@@ -10,16 +10,16 @@ export function createConfig(ssrServiceOptions?: SsrServiceOptions): TenantConfi
   if (ssrServiceOptions?.req?.tenantConfig) {
     config = ssrServiceOptions.req.tenantConfig;
   }
-  
+
   // 2. Browser global from SSR hydration
   else if (typeof window !== 'undefined' && window.__TENANT_CONFIG__) {
     config = window.__TENANT_CONFIG__;
   }
-  
+
   // 3. PWA cached config from localStorage
   else if (typeof window !== 'undefined') {
     config = getPWACachedConfig();
-    
+
     // 4. NEW: Fetch from public config API (for non-SSR modes)
     if (!config && shouldFetchPublicConfig()) {
       // This will be handled by a boot file for async loading
@@ -62,29 +62,31 @@ export async function fetchPublicTenantConfig(): Promise<TenantConfig | null> {
   try {
     const publicConfigUrl = import.meta.env.VITE_PUBLIC_CONFIG_URL;
     const tenantDomain = import.meta.env.VITE_TENANT_DOMAIN || window.location.hostname;
-    
+
     if (!publicConfigUrl) {
       console.warn('QuVel Kit: VITE_PUBLIC_CONFIG_URL not configured');
       return null;
     }
 
     console.log(`QuVel Kit: Fetching public config for domain: ${tenantDomain}`);
-    
+
     const response = await fetch(`${publicConfigUrl}?domain=${encodeURIComponent(tenantDomain)}`, {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
       },
     });
 
     if (!response.ok) {
-      console.warn(`QuVel Kit: Public config fetch failed: ${response.status} ${response.statusText}`);
+      console.warn(
+        `QuVel Kit: Public config fetch failed: ${response.status} ${response.statusText}`,
+      );
       return null;
     }
 
     const data = await response.json();
-    
+
     if (data.data) {
       console.log(`QuVel Kit: Successfully fetched public config for ${tenantDomain}`);
       return data.data as TenantConfig;
@@ -105,20 +107,21 @@ function getPWACachedConfig(): TenantConfig | null {
     const domain = window.location.hostname;
     const configKey = `quvel_tenant_config_${domain}`;
     const cachedData = localStorage.getItem(configKey);
-    
+
     if (cachedData) {
       const parsed = JSON.parse(cachedData);
-      
+
       // Validate cached data structure
       if (parsed.config && parsed.domain === domain) {
-        console.log(`QuVel Kit: Using cached tenant config for ${domain}`);
+        console.log(
+          `QuVel Kit: Using cached tenant config for ${domain}, ${JSON.stringify(parsed.config)}`,
+        );
         return parsed.config;
       }
     }
   } catch (error) {
     console.warn('QuVel Kit: Failed to retrieve cached tenant config:', error);
   }
-  
+
   return null;
 }
-
