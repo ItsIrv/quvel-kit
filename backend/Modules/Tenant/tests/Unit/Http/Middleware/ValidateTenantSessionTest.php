@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Modules\Tenant\Contexts\TenantContext;
+use Modules\Tenant\Enums\TenantError;
 use Modules\Tenant\Http\Middleware\ValidateTenantSession;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\Tests\TestCase;
 use App\Models\User;
+use Modules\Tenant\Exceptions\TenantNotFoundException;
 
 class ValidateTenantSessionTest extends TestCase
 {
@@ -33,7 +35,7 @@ class ValidateTenantSessionTest extends TestCase
         $request = Request::create('/test');
         $request->setLaravelSession(Session::driver());
 
-        $called = false;
+        $called   = false;
         $response = $this->middleware->handle($request, function () use (&$called) {
             $called = true;
             return 'response';
@@ -43,23 +45,23 @@ class ValidateTenantSessionTest extends TestCase
         $this->assertEquals('response', $response);
     }
 
-    public function testItSkipsValidationWhenNoTenantIsSet(): void
+    public function testItSkipsValidationThrowsExceptionWhenNoTenantIsSet(): void
     {
+        $this->expectException(TenantNotFoundException::class);
+        $this->expectExceptionMessage(TenantError::NO_CONTEXT_TENANT->value);
+
         // Create a fresh context without tenant
         $emptyContext = new TenantContext();
-        $middleware = new ValidateTenantSession($emptyContext);
+        $middleware   = new ValidateTenantSession($emptyContext);
 
         $request = Request::create('/test');
         $request->setLaravelSession(Session::driver());
 
-        $called = false;
+        $called   = false;
         $response = $middleware->handle($request, function () use (&$called) {
             $called = true;
             return 'response';
         });
-
-        $this->assertTrue($called);
-        $this->assertEquals('response', $response);
     }
 
     public function testItStoresTenantIdInSessionWhenMissing(): void
