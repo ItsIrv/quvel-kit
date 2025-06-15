@@ -85,6 +85,6 @@ class TenantContext
     {
         $config = $this->tenant->config;
 
-        return $config?->get($key, $default) ?? $default;
+        return $config->get($key, $default);
     }
 }
