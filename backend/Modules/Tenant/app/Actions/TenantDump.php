@@ -29,11 +29,11 @@ class TenantDump
         // Check if a domain is specified in the request header
         $domain = $request->header('X-Tenant-Domain');
 
-        if ($domain) {
+        if ($domain !== null && $domain !== '') {
             // Find tenant by domain
             $tenant = $this->findService->findTenantByDomain($domain);
 
-            if (!$tenant) {
+            if ($tenant === null) {
                 throw new TenantNotFoundException("Tenant not found for domain: {$domain}");
             }
 

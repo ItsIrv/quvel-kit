@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class AuthenticationService
 {
     public function __construct(
-        private InstallationService $installationService
+        private InstallationService $installationService,
     ) {
     }
 
@@ -50,10 +50,10 @@ class AuthenticationService
         if ($username === $configUsername && $password === $configPassword) {
             return [
                 'success' => true,
-                'user' => [
-                    'id' => 1,
+                'user'    => [
+                    'id'       => 1,
                     'username' => $username,
-                    'method' => 'env',
+                    'method'   => 'env',
                 ],
             ];
         }
@@ -73,7 +73,6 @@ class AuthenticationService
     private function authenticateWithDatabase(string $username, string $password): array
     {
         try {
-            /** @phpstan-ignore-next-line staticMethod.dynamicCall */
             $user = DB::table('tenant_admin_credentials')
                 ->where('username', $username)
                 ->first();
@@ -81,10 +80,10 @@ class AuthenticationService
             if ($user && Hash::check($password, $user->password)) {
                 return [
                     'success' => true,
-                    'user' => [
-                        'id' => $user->id,
-                        'username' => $user->username,
-                        'method' => 'database',
+                    'user'    => [
+                        'id'         => $user->id,
+                        'username'   => $user->username,
+                        'method'     => 'database',
                         'created_at' => $user->created_at,
                         'updated_at' => $user->updated_at,
                     ],

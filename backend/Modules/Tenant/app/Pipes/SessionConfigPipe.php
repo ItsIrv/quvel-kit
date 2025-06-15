@@ -197,9 +197,9 @@ class SessionConfigPipe extends BaseConfigurationPipe
 
         // Use the API domain if available, otherwise fall back to tenant domain
         $domain = null;
-        if ($apiUrl) {
+        if ($apiUrl !== null) {
             $domain = parse_url($apiUrl, PHP_URL_HOST);
-        } elseif ($frontendUrl) {
+        } elseif ($frontendUrl !== null) {
             $domain = parse_url($frontendUrl, PHP_URL_HOST);
         } else {
             $domain = $tenant->domain;

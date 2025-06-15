@@ -27,7 +27,7 @@ class AuthController extends Controller
             $credentials['password'],
         );
 
-        if (!$result['success']) {
+        if ($result['success'] === false) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid credentials.',

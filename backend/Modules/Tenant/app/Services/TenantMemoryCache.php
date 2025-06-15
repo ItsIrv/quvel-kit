@@ -14,6 +14,7 @@ class TenantMemoryCache
 {
     /**
      * Fallback cache for non-Octane environments
+     * @var array<string, mixed>
      */
     private static array $fallbackCache = [];
 
@@ -126,6 +127,7 @@ class TenantMemoryCache
 
     /**
      * Check if a cache entry is still valid
+     * @param array<string, mixed> $entry
      */
     private function isValidCacheEntry(array $entry): bool
     {

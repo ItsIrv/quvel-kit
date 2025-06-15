@@ -9,6 +9,7 @@ use Nwidart\Modules\Facades\Module;
  */
 class TenantModuleConfigLoader
 {
+    /** @var array<string, mixed>|null */
     private ?array $loadedConfigs = null;
 
     /**
@@ -40,7 +41,7 @@ class TenantModuleConfigLoader
      * Get all seeder configurations for a specific template.
      *
      * @param string $template
-     * @return array<string, mixed>
+     * @return list<mixed>
      */
     public function getSeedersForTemplate(string $template): array
     {
@@ -155,7 +156,7 @@ class TenantModuleConfigLoader
     /**
      * Get all exclusion paths from modules.
      *
-     * @return array<string, mixed>
+     * @return array<int, string>
      */
     public function getAllExclusionPaths(): array
     {
@@ -191,7 +192,7 @@ class TenantModuleConfigLoader
     /**
      * Get all exclusion patterns from modules.
      *
-     * @return array<string, mixed>
+     * @return array<int, string>
      */
     public function getAllExclusionPatterns(): array
     {

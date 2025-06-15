@@ -31,7 +31,7 @@ class TenantPublicController extends Controller
     {
         $domain = $request->query('domain');
 
-        if (!$domain) {
+        if ($domain === null || $domain === '') {
             return response()->json([
                 'error' => 'Domain parameter is required',
             ], 400);
@@ -41,7 +41,7 @@ class TenantPublicController extends Controller
             // Find tenant by domain
             $tenant = $this->findService->findTenantByDomain($domain);
 
-            if (!$tenant) {
+            if ($tenant === null) {
                 return response()->json([
                     'error' => 'Tenant not found',
                 ], 404);
@@ -50,7 +50,7 @@ class TenantPublicController extends Controller
             // Check if tenant allows public config API
             $allowPublicConfig = $tenant->getEffectiveConfig()?->get('allow_public_config_api', false);
 
-            if (!$allowPublicConfig) {
+            if ($allowPublicConfig !== true) {
                 return response()->json([
                     'error' => 'Public config API not enabled for this tenant',
                 ], 403);
