@@ -28,7 +28,7 @@ export class SSREndpointConfigService extends SSRService {
    * Get the tenant endpoint prefix value.
    */
   private getTenantPrefixValue(): string {
-    return process.env.SSR_TENANT_ENDPOINT_PREFIX || '/tenant-info';
+    return process.env.SSR_TENANT_ENDPOINT_PREFIX || 'tenant-info';
   }
 
   /**
