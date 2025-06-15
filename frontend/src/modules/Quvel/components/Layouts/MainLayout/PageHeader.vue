@@ -144,7 +144,7 @@ onMounted(() => {
   }
 
   &-NavLinks {
-    @apply tw:hidden tw:md:flex tw:gap-8 tw:ml-10 tw:font-medium;
+    @apply tw:hidden tw:md:flex tw:gap-8 tw:ml-10 tw:text-lg;
   }
 
   &-UserSection {

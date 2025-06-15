@@ -87,8 +87,8 @@
 }
 
 .quvel-link {
-  @apply tw:relative tw:inline-block tw:font-medium tw:text-gray-700 tw:dark:text-gray-200;
-  @apply tw:transition-colors tw:duration-300 tw:ease-out tw:text-xl;
+  @apply tw:relative tw:inline-block tw:text-gray-700 tw:dark:text-gray-200;
+  @apply tw:transition-colors tw:duration-300 tw:ease-out;
   text-decoration: none;
 
   &::before {
