@@ -117,6 +117,9 @@ if (!function_exists('getTenantConfig')) {
     function getTenantConfig(?string $key = null, mixed $default = null): mixed
     {
         $config = getTenant()->getEffectiveConfig();
+        if ($config === null) {
+            return $default;
+        }
 
         if ($key === null) {
             return $config;

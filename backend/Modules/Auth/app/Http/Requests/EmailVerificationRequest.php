@@ -51,6 +51,9 @@ class EmailVerificationRequest extends BaseEmailVerificationRequest
         }
 
         $user = $this->user();
+        if ($user === null) {
+            return false;
+        }
         if (!hash_equals($publicId, (string) ($user->public_id ?? $user->getKey()))) {
             return false;
         }

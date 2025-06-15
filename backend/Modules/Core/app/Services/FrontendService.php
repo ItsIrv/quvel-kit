@@ -136,7 +136,7 @@ class FrontendService
      */
     protected function buildUrl(string $path, array $query = []): string
     {
-        $base = \rtrim(config('frontend.url'), '/');
+        $base = \rtrim(config('frontend.url') ?? '', '/');
         $path = \ltrim($path, '/');
 
         $url = "$base/$path";
@@ -147,7 +147,7 @@ class FrontendService
 
         // Handle capacitor schemes
         if ($this->isCapacitor && $this->capacitorScheme !== null && $this->capacitorScheme !== '_deep') {
-            $url = \preg_replace('#^https?://#', "{$this->capacitorScheme}://", $url);
+            $url = \preg_replace('#^https?://#', "{$this->capacitorScheme}://", $url) ?? $url;
         }
 
         return $url;

@@ -39,7 +39,7 @@ class LoginAction
         if ($user === null) {
             $this->logs->loginFailedUserNotFound(
                 $loginData['email'],
-                $request->ip(),
+                $request->ip() ?? 'unknown',
                 $request->userAgent(),
             );
 
@@ -50,7 +50,7 @@ class LoginAction
         if ($user->password === null || $user->provider_id !== null) {
             $this->logs->loginFailedInvalidCredentials(
                 $loginData['email'],
-                $request->ip(),
+                $request->ip() ?? 'unknown',
                 $request->userAgent(),
             );
 
@@ -62,7 +62,7 @@ class LoginAction
             $this->logs->loginFailedAccountInactive(
                 $loginData['email'],
                 $user->id,
-                $request->ip(),
+                $request->ip() ?? 'unknown',
                 $request->userAgent(),
             );
 
@@ -73,7 +73,7 @@ class LoginAction
         if (!$this->userAuthenticationService->attempt($loginData['email'], $loginData['password'])) {
             $this->logs->loginFailedInvalidCredentials(
                 $loginData['email'],
-                $request->ip(),
+                $request->ip() ?? 'unknown',
                 $request->userAgent(),
             );
 
@@ -84,7 +84,7 @@ class LoginAction
         $this->logs->loginSuccess(
             $loginData['email'],
             $user->id,
-            $request->ip(),
+            $request->ip() ?? 'unknown',
             $request->userAgent(),
         );
 

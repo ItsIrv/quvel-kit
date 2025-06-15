@@ -233,7 +233,7 @@ class DynamicTenantConfig implements Arrayable
         }
 
         // Convert camelCase to snake_case for backward compatibility
-        $key = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
+        $key = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name) ?? $name);
         return $this->get($key);
     }
 
@@ -245,7 +245,7 @@ class DynamicTenantConfig implements Arrayable
      */
     public function __isset(string $name): bool
     {
-        $key = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
+        $key = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name) ?? $name);
         return $this->has($key);
     }
 }

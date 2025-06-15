@@ -7,10 +7,8 @@ parameters:
         - Modules/Tenant/app
         - Modules/Auth/app
         - Modules/Core/app
-        - Modules/Catalog/app
-        - Modules/Notifications/app
-        - Modules/TenantAdmin/app
-    level: 6
+
+    level: 8
 
     # Ignore patterns for generated files and external dependencies
     excludePaths:

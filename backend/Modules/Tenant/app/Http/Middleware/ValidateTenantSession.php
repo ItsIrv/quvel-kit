@@ -61,6 +61,9 @@ class ValidateTenantSession
         // Ensure authenticated users belong to current tenant
         if (Auth::check()) {
             $user = Auth::user();
+            if ($user === null) {
+                return $next($request);
+            }
 
             // Check if user belongs to current tenant
             if ($user->tenant_id !== $currentTenant->id) {

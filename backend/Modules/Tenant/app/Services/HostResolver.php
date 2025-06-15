@@ -47,6 +47,13 @@ class HostResolver implements TenantResolver
             ? $this->resolveTenantFromDatabase()
             : $this->resolveTenantFromCache();
 
+        if ($tenant === null) {
+            throw new HttpResponseException(
+                response()->noContent(),
+                new TenantNotFoundException('Tenant not found for hostname ' . $domain),
+            );
+        }
+
         // Cache in memory for future requests
         $this->memoryCache->cacheTenant($domain, $tenant);
 
