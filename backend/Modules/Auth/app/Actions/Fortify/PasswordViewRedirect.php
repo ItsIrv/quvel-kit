@@ -3,6 +3,7 @@
 namespace Modules\Auth\Actions\Fortify;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Modules\Core\Services\FrontendService;
 
 class PasswordViewRedirect
@@ -12,7 +13,7 @@ class PasswordViewRedirect
     ) {
     }
 
-    public function __invoke(string $token): RedirectResponse
+    public function __invoke(string $token): RedirectResponse|Response
     {
         return $this->frontendService->redirect(
             '',

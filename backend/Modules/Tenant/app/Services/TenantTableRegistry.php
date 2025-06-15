@@ -29,7 +29,7 @@ class TenantTableRegistry
             if ($instance instanceof \Modules\Tenant\Contracts\TenantTableConfigInterface) {
                 $this->tables[$tableName] = $instance->getConfig();
             }
-        } else {
+        } elseif (is_array($config)) {
             $this->tables[$tableName] = TenantTableConfig::fromArray($config);
         }
     }

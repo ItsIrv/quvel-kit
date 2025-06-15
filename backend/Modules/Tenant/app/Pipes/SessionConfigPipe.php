@@ -205,7 +205,7 @@ class SessionConfigPipe extends BaseConfigurationPipe
             $domain = $tenant->domain;
         }
 
-        if (!$domain) {
+        if ($domain === null || $domain === false || $domain === '') {
             return null;
         }
 

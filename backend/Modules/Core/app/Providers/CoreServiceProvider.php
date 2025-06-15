@@ -60,14 +60,14 @@ class CoreServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
-        $this->app['url']->forceScheme('https');
-        $this->app['request']->server->set('HTTPS', 'on');
+        $this->app->make('url')->forceScheme('https');
+        $this->app->make('request')->server->set('HTTPS', 'on');
 
-        $this->app['router']->pushMiddlewareToGroup('web', SetRequestLocale::class);
-        $this->app['router']->pushMiddlewareToGroup('api', SetRequestLocale::class);
+        $this->app->make('router')->pushMiddlewareToGroup('web', SetRequestLocale::class);
+        $this->app->make('router')->pushMiddlewareToGroup('api', SetRequestLocale::class);
 
-        $this->app['router']->pushMiddlewareToGroup('web', SetTraceId::class);
-        $this->app['router']->pushMiddlewareToGroup('api', SetTraceId::class);
+        $this->app->make('router')->pushMiddlewareToGroup('web', SetTraceId::class);
+        $this->app->make('router')->pushMiddlewareToGroup('api', SetTraceId::class);
 
         Context::dehydrating(function (Repository $context): void {
             $context->addHidden('locale', config('app.locale'));

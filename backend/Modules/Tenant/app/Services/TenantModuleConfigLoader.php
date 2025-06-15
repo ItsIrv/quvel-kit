@@ -303,7 +303,7 @@ class TenantModuleConfigLoader
     {
         try {
             $instance = app($seederClass);
-            return method_exists($instance, 'getPriority') ? $instance->getPriority() : 500;
+            return method_exists($instance, 'getPriority') && is_object($instance) ? $instance->getPriority() : 500;
         } catch (\Exception) {
             return 500; // Default priority
         }
@@ -319,7 +319,7 @@ class TenantModuleConfigLoader
     {
         try {
             $instance = app($seederClass);
-            return method_exists($instance, 'getPriority') ? $instance->getPriority() : 500;
+            return method_exists($instance, 'getPriority') && is_object($instance) ? $instance->getPriority() : 500;
         } catch (\Exception) {
             return 500; // Default priority
         }

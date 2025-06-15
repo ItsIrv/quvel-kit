@@ -6,6 +6,7 @@ use Exception;
 use Modules\Auth\Enums\EmailStatusEnum;
 use Modules\Auth\Http\Requests\EmailNotificationRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Modules\Core\Enums\StatusEnum;
 use Modules\Core\Services\FrontendService;
 
@@ -19,7 +20,7 @@ class VerificationNotification
     ) {
     }
 
-    public function __invoke(EmailNotificationRequest $request): RedirectResponse
+    public function __invoke(EmailNotificationRequest $request): RedirectResponse|Response
     {
         try {
             $request->fulfill();

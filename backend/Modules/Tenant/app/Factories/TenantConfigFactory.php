@@ -108,8 +108,8 @@ class TenantConfigFactory
     /**
      * Create exclusions from arrays for convenience.
      *
-     * @param array<string, mixed> $paths Exact paths to exclude
-     * @param array<string, mixed> $patterns Path patterns to exclude
+     * @param array<int, string> $paths Exact paths to exclude
+     * @param array<int, string> $patterns Path patterns to exclude
      * @return TenantExclusionConfig
      */
     public static function simpleExclusions(array $paths = [], array $patterns = []): TenantExclusionConfig

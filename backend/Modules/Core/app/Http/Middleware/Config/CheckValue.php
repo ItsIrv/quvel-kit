@@ -38,7 +38,7 @@ class CheckValue
     /**
      * Handle the denied response.
      */
-    protected function denyResponse(Request $request, string $key): JsonResponse|RedirectResponse
+    protected function denyResponse(Request $request, string $key): JsonResponse|RedirectResponse|Response
     {
         $message = __('common::feature.status.info.notAvailable');
 

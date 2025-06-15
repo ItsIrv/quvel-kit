@@ -81,13 +81,13 @@ class HostResolver implements TenantResolver
         $customHost = $this->request->header(TenantHeader::TENANT_DOMAIN->value);
 
         if ($customHost !== null && $this->requestPrivacyService->isInternalRequest()) {
-            $customHost = parse_url($customHost, PHP_URL_HOST);
+            $parsedHost = parse_url($customHost, PHP_URL_HOST);
 
-            if ($customHost !== null && $customHost !== '' && $customHost !== '0') {
-                $this->request->headers->set('host', $customHost);
-                $this->request->server->set('HTTP_HOST', $customHost);
+            if ($parsedHost !== null && $parsedHost !== false && $parsedHost !== '' && $parsedHost !== '0') {
+                $this->request->headers->set('host', $parsedHost);
+                $this->request->server->set('HTTP_HOST', $parsedHost);
 
-                return $customHost;
+                return $parsedHost;
             }
         }
 

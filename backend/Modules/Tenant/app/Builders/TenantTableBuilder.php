@@ -15,9 +15,9 @@ class TenantTableBuilder implements TableBuilderInterface
 {
     private string $after = 'id';
     private bool $cascadeDelete = true;
-    /** @var array<int, string> */
+    /** @var array<int, list<string>> */
     private array $dropUniques = [];
-    /** @var array<int, string> */
+    /** @var array<int, list<string>> */
     private array $tenantUniqueConstraints = [];
 
     /**
@@ -58,7 +58,7 @@ class TenantTableBuilder implements TableBuilderInterface
     /**
      * Add a unique constraint to drop before making table tenant-aware.
      *
-     * @param array<string, mixed> $columns Column names that form the unique constraint
+     * @param list<string> $columns Column names that form the unique constraint
      * @return static
      */
     public function dropUnique(array $columns): static
@@ -70,7 +70,7 @@ class TenantTableBuilder implements TableBuilderInterface
     /**
      * Add multiple unique constraints to drop.
      *
-     * @param array<string, mixed> $constraints Array of column arrays
+     * @param array<int, list<string>> $constraints Array of column arrays
      * @return static
      */
     public function dropUniques(array $constraints): static
@@ -87,7 +87,7 @@ class TenantTableBuilder implements TableBuilderInterface
      * These constraints will be unique within a tenant but can
      * be duplicated across different tenants.
      *
-     * @param array<string, mixed> $columns Column names that should be unique within tenant
+     * @param list<string> $columns Column names that should be unique within tenant
      * @return static
      */
     public function tenantUnique(array $columns): static
@@ -99,7 +99,7 @@ class TenantTableBuilder implements TableBuilderInterface
     /**
      * Add multiple tenant-scoped unique constraints.
      *
-     * @param array<string, mixed> $constraints Array of column arrays
+     * @param array<int, list<string>> $constraints Array of column arrays
      * @return static
      */
     public function tenantUniques(array $constraints): static

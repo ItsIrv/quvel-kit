@@ -33,8 +33,10 @@ class TenantAwareCsrfToken extends VerifyCsrfToken
 
     /**
      * Create a new XSRF-TOKEN cookie with tenant-specific name.
+     *
+     * @phpstan-ignore-next-line
      */
-    protected function newCookie($request, mixed $config)
+    protected function newCookie($request, $config)
     {
         $cookieName = $this->getCookieName();
 
@@ -89,7 +91,7 @@ class TenantAwareCsrfToken extends VerifyCsrfToken
         if ($token === null || $token === '' || $token === '0') {
             $cookieName = $this->getCookieName();
             $cookieValue = $request->cookie($cookieName);
-            if ($cookieValue !== null) {
+            if ($cookieValue !== null && is_string($cookieValue)) {
                 try {
                     $token = CookieValuePrefix::remove(
                         $this->encrypter->decrypt($cookieValue, static::serialized()),
