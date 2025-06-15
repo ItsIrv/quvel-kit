@@ -70,9 +70,8 @@ class UpdateUserProfileInformationTest extends TestCase
             ->andReturn($this->validator);
 
         $this->validator
-            ->shouldReceive('validateWithBag')
+            ->shouldReceive('validate')
             ->once()
-            ->with('updateProfileInformation')
             ->andReturn(null);
 
         $user->shouldReceive('forceFill')
@@ -118,9 +117,8 @@ class UpdateUserProfileInformationTest extends TestCase
         $this->validator->shouldReceive('getTranslator')->andReturn(app('translator'));
 
         $this->validator
-            ->shouldReceive('validateWithBag')
+            ->shouldReceive('validate')
             ->once()
-            ->with('updateProfileInformation')
             ->andThrow(new ValidationException($this->validator));
 
         $this->expectException(ValidationException::class);
@@ -150,9 +148,8 @@ class UpdateUserProfileInformationTest extends TestCase
             ->andReturn($this->validator);
 
         $this->validator
-            ->shouldReceive('validateWithBag')
+            ->shouldReceive('validate')
             ->once()
-            ->with('updateProfileInformation')
             ->andReturn(null);
 
         $user->shouldReceive('forceFill')
@@ -192,7 +189,7 @@ class UpdateUserProfileInformationTest extends TestCase
             ->andReturn($this->validator);
 
         $this->validator
-            ->shouldReceive('validateWithBag')
+            ->shouldReceive('validate')
             ->andReturn(null);
 
         $user->shouldReceive('forceFill')

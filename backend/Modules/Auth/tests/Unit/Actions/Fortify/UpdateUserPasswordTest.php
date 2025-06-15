@@ -271,7 +271,7 @@ class UpdateUserPasswordTest extends TestCase
             ->andReturn($this->validator);
 
         $this->validator
-            ->shouldReceive('validateWithBag')
+            ->shouldReceive('validate')
             ->once()
             ->andReturn(null);
 
@@ -317,7 +317,7 @@ class UpdateUserPasswordTest extends TestCase
             ->andReturn($this->validator);
 
         $this->validator
-            ->shouldReceive('validateWithBag')
+            ->shouldReceive('validate')
             ->once()
             ->andReturn(null);
 

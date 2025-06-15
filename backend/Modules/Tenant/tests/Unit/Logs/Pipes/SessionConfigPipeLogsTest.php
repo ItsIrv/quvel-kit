@@ -3,6 +3,7 @@
 namespace Modules\Tenant\Tests\Unit\Logs\Pipes;
 
 use Illuminate\Log\LogManager;
+use Illuminate\Support\Facades\Context;
 use Modules\Tenant\Logs\Pipes\SessionConfigPipeLogs;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -11,6 +12,7 @@ use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Mockery;
 
 /**
  * @testdox SessionConfigPipeLogs
@@ -29,6 +31,9 @@ class SessionConfigPipeLogsTest extends TestCase
     {
         parent::setUp();
 
+        // Mock Context facade to prevent "facade root has not been set" errors
+        Context::shouldReceive('has')->with('trace_id')->andReturn(false)->byDefault();
+
         $this->logManager = $this->createMock(LogManager::class);
         $this->channel = $this->createMock(LoggerInterface::class);
 
@@ -38,6 +43,12 @@ class SessionConfigPipeLogsTest extends TestCase
             ->willReturn($this->channel);
 
         $this->logger = new SessionConfigPipeLogs($this->logManager);
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 
     #[TestDox('logs driver changed debug message')]
@@ -146,7 +157,7 @@ class SessionConfigPipeLogsTest extends TestCase
         $this->channel->expects($this->once())
             ->method('log')
             ->with('debug', 'Applying session configuration changes', [
-                'changes_count' => $changesCount,
+                'tenant_session.changes_count' => $changesCount,
             ]);
 
         $this->logger->applyingChanges($changesCount);
@@ -180,9 +191,9 @@ class SessionConfigPipeLogsTest extends TestCase
         $this->channel->expects($this->once())
             ->method('log')
             ->with('error', "Failed to rebind session manager: {$exception->getMessage()}", [
-                'exception' => \RuntimeException::class,
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
+                'tenant_session.exception' => \RuntimeException::class,
+                'tenant_session.file' => $exception->getFile(),
+                'tenant_session.line' => $exception->getLine(),
             ]);
 
         $this->logger->sessionManagerRebindFailed($exception);
@@ -216,9 +227,9 @@ class SessionConfigPipeLogsTest extends TestCase
         $this->channel->expects($this->once())
             ->method('log')
             ->with('error', "Failed to reset session manager: {$exception->getMessage()}", [
-                'exception' => \InvalidArgumentException::class,
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
+                'tenant_session.exception' => \InvalidArgumentException::class,
+                'tenant_session.file' => $exception->getFile(),
+                'tenant_session.line' => $exception->getLine(),
             ]);
 
         $this->logger->sessionManagerResetFailed($exception);
