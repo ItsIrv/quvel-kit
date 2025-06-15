@@ -2,9 +2,44 @@
 
 namespace Modules\Tenant\Providers;
 
-use Modules\Core\Providers\ModuleRouteServiceProvider;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
-class RouteServiceProvider extends ModuleRouteServiceProvider
+class RouteServiceProvider extends ServiceProvider
 {
-    protected string $name = 'Tenant';
+    /**
+     * Register and configure tenant routes with custom middleware groups.
+     */
+    public function boot(): void
+    {
+        parent::boot();
+
+        $this->routes(function () {
+            $this->registerTenantRoutes();
+        });
+    }
+
+    /**
+     * Register tenant routes with configurable prefix and middleware.
+     */
+    protected function registerTenantRoutes(): void
+    {
+        $prefix        = config('tenant.endpoints.prefix', '/tenant-info');
+        $internalGroup = config('tenant.middleware.internal_group', 'tenant_internal');
+        $publicGroup   = config('tenant.middleware.public_group', 'tenant_public');
+
+        // Register internal tenant routes
+        Route::middleware($internalGroup)
+            ->prefix($prefix)
+            ->group(function () {
+                $this->loadRoutesFrom(module_path('Tenant', 'routes/internal.php'));
+            });
+
+        // Register public tenant routes
+        Route::middleware($publicGroup)
+            ->prefix($prefix)
+            ->group(function () {
+                $this->loadRoutesFrom(module_path('Tenant', 'routes/public.php'));
+            });
+    }
 }

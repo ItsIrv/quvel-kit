@@ -2,6 +2,7 @@ import { SSRServiceContainer } from '../services/SSRServiceContainer';
 import type { SSRServiceClassGeneric } from '../types/service.types';
 import { SSRLogService } from '../services/SSRLogService';
 import { SSRApiService } from '../services/SSRApiService';
+import { SSREndpointConfigService } from '../services/SSREndpointConfigService';
 import { SSRTenantCacheService } from '../services/SSRTenantCacheService';
 import { TenantResolver } from '../services/TenantResolver';
 import { SSRRequestHandler } from '../services/SSRRequestHandler';
@@ -14,6 +15,7 @@ function getSSRServices(): Map<string, SSRServiceClassGeneric> {
     // Core SSR services
     ['SSRLogService', SSRLogService],
     ['SSRApiService', SSRApiService],
+    ['SSREndpointConfigService', SSREndpointConfigService],
     ['SSRTenantCacheService', SSRTenantCacheService],
     // SSR-specific services
     ['TenantResolver', TenantResolver],

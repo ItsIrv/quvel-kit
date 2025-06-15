@@ -7,7 +7,7 @@ use Modules\Tenant\Http\Middleware\TenantAwareCsrfToken;
 use Modules\Tenant\Http\Middleware\TenantMiddleware;
 use Modules\Tenant\Http\Middleware\ValidateTenantSession;
 
-class TenantMiddlewareProvider
+class TenantMiddlewareBootstrapper
 {
     public static function bootstrapMiddleware(Middleware $middleware): void
     {

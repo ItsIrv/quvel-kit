@@ -2,9 +2,19 @@ import { defineConfig } from '#q-app/wrappers';
 import { getCerts, isLocal as isLocalFn } from './utils';
 
 const isLocal = isLocalFn();
+const isMultiTenant = process.env.SSR_MULTI_TENANT === 'true';
 
 export default defineConfig(() => {
   return {
+    boot: [
+      // Add tenant config boot file for PWA mode only in multi-tenant setups
+      ...(isMultiTenant ? ['tenant-config'] : []),
+      'container',
+      {
+        server: false,
+        path: 'pinia-hydrator',
+      },
+    ],
     build: {
       extendViteConf(viteConf): void {
         viteConf.server = {
@@ -45,20 +55,9 @@ export default defineConfig(() => {
         cfg.cleanupOutdatedCaches = true;
         cfg.skipWaiting = true;
         cfg.clientsClaim = true;
-        
+
         // Add cache strategies for different resource types
         cfg.runtimeCaching = [
-          {
-            urlPattern: /^https:\/\/api\.quvel\.127\.0\.0\.1\.nip\.io\//,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-              networkTimeoutSeconds: 10,
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
           {
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
             handler: 'CacheFirst',

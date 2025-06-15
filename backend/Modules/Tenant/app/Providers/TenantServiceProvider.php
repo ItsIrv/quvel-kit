@@ -4,6 +4,7 @@ namespace Modules\Tenant\Providers;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Support\Facades\Context;
+use Illuminate\Support\Facades\Route;
 use Modules\Core\Providers\ModuleServiceProvider;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Contracts\TenantResolver;
@@ -99,6 +100,8 @@ class TenantServiceProvider extends ModuleServiceProvider
             $exclusionRegistry->excludePatterns($exclusionPatterns);
         }
 
+        $this->registerTenantMiddlewareGroups();
+
         Context::dehydrating(function (Repository $context): void {
             $context->addHidden('tenant', app(TenantContext::class)->get());
         });
@@ -111,5 +114,17 @@ class TenantServiceProvider extends ModuleServiceProvider
                 );
             }
         });
+    }
+
+    /**
+     * Register custom middleware groups for tenant endpoints.
+     */
+    protected function registerTenantMiddlewareGroups(): void
+    {
+        $middlewareGroups = config('tenant.middleware.groups', []);
+
+        foreach ($middlewareGroups as $groupName => $groupMiddleware) {
+            Route::middlewareGroup($groupName, $groupMiddleware);
+        }
     }
 }

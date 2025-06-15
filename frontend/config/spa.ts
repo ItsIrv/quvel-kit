@@ -3,8 +3,18 @@ import { getCerts } from './utils';
 
 export default defineConfig(() => {
   const isLocal = process.env.LOCAL === '1';
+  const isMultiTenant = process.env.SSR_MULTI_TENANT === 'true';
 
   return {
+    boot: [
+      // Add tenant config boot file for SPA mode only in multi-tenant setups
+      ...(isMultiTenant ? ['tenant-config'] : []),
+      'container',
+      {
+        server: false,
+        path: 'pinia-hydrator',
+      },
+    ],
     build: {
       vueRouterMode: 'history',
     },

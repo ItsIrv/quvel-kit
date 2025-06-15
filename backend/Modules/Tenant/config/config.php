@@ -77,4 +77,40 @@ return [
         // Tables are now automatically loaded from all modules
     ],
 
+    /**
+     * Tenant API endpoints configuration.
+     */
+    'endpoints'         => [
+        'prefix' => 'tenant-info',  // Configurable namespace for tenant endpoints
+        'routes' => [
+            'protected' => 'protected',            // /tenant-info/protected
+            'cache'     => 'cache',       // /tenant-info/cache
+            'public'    => 'public',      // /tenant-info/public
+        ],
+    ],
+
+    /**
+     * Middleware configuration for tenant endpoints.
+     */
+    'middleware'        => [
+        'groups'         => [
+            'tenant_internal' => [
+                // Minimal middleware for internal tenant endpoints
+                \Illuminate\Http\Middleware\HandleCors::class,
+                \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+                \Illuminate\Foundation\Http\Middleware\TrimStrings::class,
+                \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+            ],
+            'tenant_public'   => [
+                // Minimal middleware for public tenant endpoints
+                \Illuminate\Http\Middleware\HandleCors::class,
+                \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+                \Illuminate\Foundation\Http\Middleware\TrimStrings::class,
+                \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+            ],
+        ],
+        'internal_group' => 'tenant_internal',
+        'public_group'   => 'tenant_public',
+    ],
+
 ];
