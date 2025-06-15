@@ -9,7 +9,7 @@ use Modules\Tenant\ValueObjects\TenantSeederConfig;
 
 /**
  * Fluent builder for configuration seeder builders.
- * 
+ *
  * Provides a clean, chainable API for building tenant configuration seeders.
  */
 class ConfigSeederBuilder implements ConfigSeederBuilderInterface

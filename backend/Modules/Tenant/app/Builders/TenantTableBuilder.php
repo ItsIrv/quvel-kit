@@ -7,7 +7,7 @@ use Modules\Tenant\ValueObjects\TenantTableConfig;
 
 /**
  * Fluent builder for tenant table configuration.
- * 
+ *
  * Provides a clean, chainable API for configuring how tables
  * should be made tenant-aware.
  */
@@ -81,7 +81,7 @@ class TenantTableBuilder implements TableBuilderInterface
 
     /**
      * Add a tenant-scoped unique constraint.
-     * 
+     *
      * These constraints will be unique within a tenant but can
      * be duplicated across different tenants.
      *

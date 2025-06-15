@@ -50,7 +50,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
         ], [
             'current_password.current_password' => __('The provided password does not match your current password.'),
         ]);
-        
+
         $validator->validate();
 
         // Update the user's password

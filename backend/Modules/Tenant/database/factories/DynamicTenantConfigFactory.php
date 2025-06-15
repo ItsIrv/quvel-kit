@@ -56,7 +56,7 @@ class DynamicTenantConfigFactory
     {
         $domain = $apiDomain ?? 'standard.example.com';
         $name = $appName ?? 'Standard Test App';
-        
+
         return new DynamicTenantConfig([
             'app_name' => $name,
             'app_url' => "https://{$domain}",

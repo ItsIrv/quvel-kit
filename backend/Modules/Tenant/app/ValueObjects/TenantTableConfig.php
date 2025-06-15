@@ -4,7 +4,7 @@ namespace Modules\Tenant\ValueObjects;
 
 /**
  * Immutable value object representing tenant table configuration.
- * 
+ *
  * Contains all the settings needed to make a database table tenant-aware.
  */
 readonly class TenantTableConfig
@@ -31,7 +31,8 @@ readonly class TenantTableConfig
          * Each entry is an array of columns that should be unique together within a tenant.
          */
         public array $tenantUniqueConstraints = []
-    ) {}
+    ) {
+    }
 
     /**
      * Convert to array format for backward compatibility.

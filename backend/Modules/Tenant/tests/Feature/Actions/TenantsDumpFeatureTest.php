@@ -3,7 +3,6 @@
 namespace Modules\Tenant\Tests\Feature\Actions;
 
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 use Modules\Tenant\Actions\TenantsDump;
 use Modules\Tenant\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;

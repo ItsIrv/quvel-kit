@@ -2,8 +2,6 @@
 
 namespace Modules\Tenant\Tests\Feature\Actions;
 
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Support\Facades\DB;
 use Modules\Tenant\Actions\TenantDump;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;

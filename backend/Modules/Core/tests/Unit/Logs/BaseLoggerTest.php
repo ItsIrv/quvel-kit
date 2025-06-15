@@ -322,7 +322,7 @@ class BaseLoggerTest extends TestCase
             ->willReturn($mockChannel);
 
         $loggerWithEnrichment->info('message', ['key' => 'value']);
-        
+
         // The test passes if no exceptions are thrown
         $this->assertTrue(true);
     }

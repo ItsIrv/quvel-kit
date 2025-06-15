@@ -7,7 +7,7 @@ use Modules\Tenant\ValueObjects\TenantExclusionConfig;
 
 /**
  * Fluent builder for tenant exclusion configuration.
- * 
+ *
  * Provides a clean, chainable API for configuring paths and patterns
  * that should bypass tenant resolution.
  */
@@ -53,7 +53,7 @@ class TenantExclusionBuilder implements ExclusionBuilderInterface
 
     /**
      * Add path patterns that should bypass tenant resolution.
-     * 
+     *
      * Patterns support wildcards (*, ?, [chars], etc.)
      *
      * @param string|array $patterns Pattern or array of patterns to exclude

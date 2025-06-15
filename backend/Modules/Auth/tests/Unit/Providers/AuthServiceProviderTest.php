@@ -102,7 +102,7 @@ class AuthServiceProviderTest extends TestCase
 
         $isolatedSeederClass = $config['seeders']['isolated'];
         $this->assertIsString($isolatedSeederClass);
-        
+
         $isolatedSeeder = new $isolatedSeederClass();
         $this->assertInstanceOf(\Modules\Tenant\Contracts\TenantConfigSeederInterface::class, $isolatedSeeder);
 

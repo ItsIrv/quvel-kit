@@ -90,7 +90,7 @@ class SessionConfigPipeLogs extends BaseLogger
         if ($changesCount !== null) {
             $context['changes_count'] = $changesCount;
         }
-        
+
         $this->debug("Applying session configuration changes", $context);
     }
 

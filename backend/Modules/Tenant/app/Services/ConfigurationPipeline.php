@@ -8,7 +8,6 @@ use Illuminate\Support\Collection;
 use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Contracts\ConfigurationPipeInterface;
 use Modules\Tenant\Models\Tenant;
-use Modules\Tenant\ValueObjects\DynamicTenantConfig;
 
 /**
  * Manages the configuration pipeline for applying tenant configurations.

@@ -71,7 +71,7 @@ class RedisConfigPipeTest extends TestCase
         // Set Container instance
         Container::setInstance($this->app);
 
-        // Configure app container defaults  
+        // Configure app container defaults
         $this->app->method('bound')
             ->willReturnCallback(function ($abstract) {
                 return match ($abstract) {
@@ -225,7 +225,7 @@ class RedisConfigPipeTest extends TestCase
     {
         // Set Redis as unavailable for this test
         $this->redisAvailable = false;
-        
+
         // Arrange
         $tenant = $this->createMock(Tenant::class);
         $tenant->method('__get')

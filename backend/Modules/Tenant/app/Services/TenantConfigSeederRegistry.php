@@ -53,7 +53,7 @@ class TenantConfigSeederRegistry
             if (isset($seederData['seeder_class'])) {
                 $seeder = $this->getSeederInstance($seederData['seeder_class']);
                 $seederConfig = $seeder->getConfig($template, $config);
-            } 
+            }
             // Handle shared seeders
             elseif (isset($seederData['shared_seeder_class'])) {
                 $seeder = $this->getSharedSeederInstance($seederData['shared_seeder_class']);

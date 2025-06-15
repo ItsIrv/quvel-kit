@@ -7,7 +7,7 @@ use Modules\Tenant\Contracts\TenantConfigSeederInterface;
 /**
  * Core application configuration seeder for basic tenant template.
  *
- * Handles application-level configuration that would traditionally be 
+ * Handles application-level configuration that would traditionally be
  * considered "core" but is actually tenant-specific.
  */
 class CoreApplicationBasicSeeder implements TenantConfigSeederInterface

@@ -3,7 +3,6 @@
 namespace Modules\Auth\Actions\Fortify;
 
 use App\Models\User;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
@@ -49,7 +48,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             //     Rule::unique('users')->ignore($user->id),
             // ],
         ]);
-        
+
         $validator->validate();
 
         // Handle email verification if email has changed
