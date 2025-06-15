@@ -14,7 +14,9 @@ use Modules\Tenant\ValueObjects\TenantSeederConfig;
  */
 class ConfigSeederBuilder implements ConfigSeederBuilderInterface
 {
+    /** @var array<string, mixed> */
     private array $config = [];
+    /** @var array<string, mixed> */
     private array $visibility = [];
     private int $priority = 50;
 

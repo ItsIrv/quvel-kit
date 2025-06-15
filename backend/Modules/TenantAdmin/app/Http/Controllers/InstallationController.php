@@ -79,6 +79,9 @@ class InstallationController extends Controller
     /**
      * Update .env file
      */
+    /**
+     * @param array<string, mixed> $values
+     */
     private function updateEnvironmentFile(array $values): void
     {
         $envPath = base_path('.env');

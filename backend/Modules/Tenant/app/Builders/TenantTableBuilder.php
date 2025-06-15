@@ -15,7 +15,9 @@ class TenantTableBuilder implements TableBuilderInterface
 {
     private string $after = 'id';
     private bool $cascadeDelete = true;
+    /** @var array<int, string> */
     private array $dropUniques = [];
+    /** @var array<int, string> */
     private array $tenantUniqueConstraints = [];
 
     /**

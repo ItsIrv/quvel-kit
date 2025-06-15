@@ -46,6 +46,7 @@ class TenantCacheResource extends JsonResource
     /**
      * Get filtered config using pipeline resolution.
      * This method applies configuration pipes to resolve values including calculated defaults.
+     * @return array<string, mixed>
      */
     private function getFilteredConfig(): array
     {

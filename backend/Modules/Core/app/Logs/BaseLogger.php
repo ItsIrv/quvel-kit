@@ -35,6 +35,9 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log an emergency message.
      */
+    /**
+     * @param array<string, mixed> $context
+     */
     public function emergency(string|\Stringable $message, array $context = []): void
     {
         $this->log('emergency', $message, $context);
@@ -42,6 +45,9 @@ abstract class BaseLogger implements LoggerInterface
 
     /**
      * Log an alert message.
+     */
+    /**
+     * @param array<string, mixed> $context
      */
     public function alert(string|\Stringable $message, array $context = []): void
     {
@@ -51,6 +57,9 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log a critical message.
      */
+    /**
+     * @param array<string, mixed> $context
+     */
     public function critical(string|\Stringable $message, array $context = []): void
     {
         $this->log('critical', $message, $context);
@@ -58,6 +67,9 @@ abstract class BaseLogger implements LoggerInterface
 
     /**
      * Log an error message.
+     */
+    /**
+     * @param array<string, mixed> $context
      */
     public function error(string|\Stringable $message, array $context = []): void
     {
@@ -67,6 +79,9 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log a warning message.
      */
+    /**
+     * @param array<string, mixed> $context
+     */
     public function warning(string|\Stringable $message, array $context = []): void
     {
         $this->log('warning', $message, $context);
@@ -74,6 +89,9 @@ abstract class BaseLogger implements LoggerInterface
 
     /**
      * Log a notice message.
+     */
+    /**
+     * @param array<string, mixed> $context
      */
     public function notice(string|\Stringable $message, array $context = []): void
     {
@@ -83,6 +101,9 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log an info message.
      */
+    /**
+     * @param array<string, mixed> $context
+     */
     public function info(string|\Stringable $message, array $context = []): void
     {
         $this->log('info', $message, $context);
@@ -91,6 +112,9 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log a debug message.
      */
+    /**
+     * @param array<string, mixed> $context
+     */
     public function debug(string|\Stringable $message, array $context = []): void
     {
         $this->log('debug', $message, $context);
@@ -98,6 +122,9 @@ abstract class BaseLogger implements LoggerInterface
 
     /**
      * Log a message with an arbitrary level.
+     */
+    /**
+     * @param array<string, mixed> $context
      */
     public function log(mixed $level, string|\Stringable $message, array $context = []): void
     {

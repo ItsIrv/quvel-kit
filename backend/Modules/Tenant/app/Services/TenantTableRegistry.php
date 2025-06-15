@@ -8,6 +8,7 @@ class TenantTableRegistry
 {
     /**
      * Registered tenant-aware tables.
+     * @var array<string, mixed>
      */
     protected array $tables = [];
 
@@ -15,7 +16,7 @@ class TenantTableRegistry
      * Register a table to be made tenant-aware.
      *
      * @param string $tableName The name of the table
-     * @param array|TenantTableConfig|string $config Configuration for the table
+     * @param array<string, mixed>|TenantTableConfig|string $config Configuration for the table
      * @return void
      */
     public function registerTable(string $tableName, array|TenantTableConfig|string $config = []): void

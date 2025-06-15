@@ -15,7 +15,7 @@ interface ExclusionBuilderInterface
     /**
      * Add exact paths that should bypass tenant resolution.
      *
-     * @param string|array $paths Path or array of paths to exclude
+     * @param string|array<int, string> $paths Path or array of paths to exclude
      * @return static
      */
     public function paths(string|array $paths): static;
@@ -33,7 +33,7 @@ interface ExclusionBuilderInterface
      *
      * Patterns support wildcards (*, ?, [chars], etc.)
      *
-     * @param string|array $patterns Pattern or array of patterns to exclude
+     * @param string|array<int, string> $patterns Pattern or array of patterns to exclude
      * @return static
      */
     public function patterns(string|array $patterns): static;

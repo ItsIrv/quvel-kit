@@ -33,6 +33,8 @@ class TenantAwareCsrfToken extends VerifyCsrfToken
 
     /**
      * Create a new XSRF-TOKEN cookie with tenant-specific name.
+     * @param mixed $request
+     * @param array<string, mixed> $config
      */
     protected function newCookie($request, mixed $config)
     {
