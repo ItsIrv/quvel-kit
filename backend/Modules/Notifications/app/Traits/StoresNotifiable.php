@@ -19,7 +19,7 @@ trait StoresNotifiable
     /**
      * Store the notifiable entity for use in notification methods
      */
-    public function storeNotifiable($notifiable): void
+    public function storeNotifiable(mixed $notifiable): void
     {
         $this->notifiable = $notifiable;
     }

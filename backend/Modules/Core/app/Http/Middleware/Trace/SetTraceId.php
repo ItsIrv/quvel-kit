@@ -24,7 +24,7 @@ class SetTraceId
     /**
      * Handle an incoming request.
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         if (!((bool) config('core.trace.enabled'))) {
             return $next($request);

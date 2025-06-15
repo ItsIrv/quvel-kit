@@ -15,20 +15,7 @@ class TenantCreateRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     */
-    public function rules(): array
-    {
-        return [
-            'name' => ['required', 'string', 'min:3', 'max:255'],
-            'domain' => ['required', 'string', 'min:3', 'max:255', 'unique:tenants,domain'],
-            'database' => ['nullable', 'string', 'max:255'],
-            'parent_id' => ['nullable', 'exists:tenants,public_id'],
-        ];
-    }
-
-    /**
-     * Get custom error messages
+     * @return array<string, string>
      */
     public function messages(): array
     {

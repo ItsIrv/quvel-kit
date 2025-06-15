@@ -37,8 +37,8 @@ class TenantConfigSeederRegistry
      * Get seeded config for a specific template.
      *
      * @param string $template
-     * @param array $baseConfig Base configuration to merge with
-     * @return array
+     * @param array<string, mixed> $baseConfig Base configuration to merge with
+     * @return array<string, mixed>
      */
     public function getSeedConfig(string $template, array $baseConfig = []): array
     {
@@ -80,8 +80,8 @@ class TenantConfigSeederRegistry
      * This is separate from seed config to maintain clean separation.
      *
      * @param string $template
-     * @param array $baseVisibility Base visibility to merge with
-     * @return array
+     * @param array<string, mixed> $baseVisibility Base visibility to merge with
+     * @return array<string, mixed>
      */
     public function getSeedVisibility(string $template, array $baseVisibility = []): array
     {

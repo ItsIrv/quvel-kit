@@ -56,7 +56,7 @@ class TenantTableBuilder implements TableBuilderInterface
     /**
      * Add a unique constraint to drop before making table tenant-aware.
      *
-     * @param array $columns Column names that form the unique constraint
+     * @param array<string, mixed> $columns Column names that form the unique constraint
      * @return static
      */
     public function dropUnique(array $columns): static
@@ -68,7 +68,7 @@ class TenantTableBuilder implements TableBuilderInterface
     /**
      * Add multiple unique constraints to drop.
      *
-     * @param array $constraints Array of column arrays
+     * @param array<string, mixed> $constraints Array of column arrays
      * @return static
      */
     public function dropUniques(array $constraints): static
@@ -85,7 +85,7 @@ class TenantTableBuilder implements TableBuilderInterface
      * These constraints will be unique within a tenant but can
      * be duplicated across different tenants.
      *
-     * @param array $columns Column names that should be unique within tenant
+     * @param array<string, mixed> $columns Column names that should be unique within tenant
      * @return static
      */
     public function tenantUnique(array $columns): static
@@ -97,7 +97,7 @@ class TenantTableBuilder implements TableBuilderInterface
     /**
      * Add multiple tenant-scoped unique constraints.
      *
-     * @param array $constraints Array of column arrays
+     * @param array<string, mixed> $constraints Array of column arrays
      * @return static
      */
     public function tenantUniques(array $constraints): static

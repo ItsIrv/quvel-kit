@@ -119,8 +119,8 @@ class ConfigurationPipeline
      * Returns both values and visibility for frontend consumption.
      *
      * @param Tenant $tenant The tenant context for resolution
-     * @param array $configArray The merged configuration array to resolve
-     * @return array ['values' => array, 'visibility' => array]
+     * @param array<string, mixed> $configArray The merged configuration array to resolve
+     * @return array<string, mixed> ['values' => array, 'visibility' => array]
      */
     public function resolveFromArray(Tenant $tenant, array $configArray): array
     {

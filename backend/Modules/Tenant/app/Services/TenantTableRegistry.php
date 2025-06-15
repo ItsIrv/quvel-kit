@@ -36,7 +36,7 @@ class TenantTableRegistry
     /**
      * Register multiple tables at once.
      *
-     * @param array $tables Array of table configurations
+     * @param array<string, mixed> $tables Array of table configurations
      * @return void
      */
     public function registerTables(array $tables): void
@@ -49,7 +49,7 @@ class TenantTableRegistry
     /**
      * Get all registered tables.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getTables(): array
     {

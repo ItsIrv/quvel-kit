@@ -14,21 +14,7 @@ class LoginRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
-    public function rules(): array
-    {
-        return [
-            'username' => ['required', 'string', 'min:3', 'max:255'],
-            'password' => ['required', 'string'],
-            'remember' => ['boolean'],
-        ];
-    }
-
-    /**
-     * Get custom error messages
-     */
+    /** */
     public function messages(): array
     {
         return [

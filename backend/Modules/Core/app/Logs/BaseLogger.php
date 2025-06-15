@@ -109,6 +109,10 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Enrich the log context with additional information.
      */
+    /**
+     * @param array<string, mixed> $context
+     * @return array<string, mixed>
+     */
     protected function enrichContext(array $context): array
     {
         // Add trace ID if available

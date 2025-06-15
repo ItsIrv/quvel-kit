@@ -11,7 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $type
  * @property string $notifiable_id
  * @property string $notifiable_type
- * @property array $data
+ * @property array<string, mixed> $data
  * @property Carbon $read_at
  * @property Carbon $created_at
  * @property Carbon $updated_at

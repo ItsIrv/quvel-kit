@@ -34,7 +34,7 @@ class TenantAwareCsrfToken extends VerifyCsrfToken
     /**
      * Create a new XSRF-TOKEN cookie with tenant-specific name.
      */
-    protected function newCookie($request, $config)
+    protected function newCookie($request, mixed $config)
     {
         $cookieName = $this->getCookieName();
 
@@ -55,7 +55,7 @@ class TenantAwareCsrfToken extends VerifyCsrfToken
     /**
      * Add the CSRF token to the response cookies.
      */
-    protected function addCookieToResponse($request, $response)
+    protected function addCookieToResponse($request, mixed $response)
     {
         $config = config('session');
 
@@ -71,7 +71,7 @@ class TenantAwareCsrfToken extends VerifyCsrfToken
     /**
      * Get the CSRF token from the request with tenant-aware cookie handling.
      */
-    protected function getTokenFromRequest($request): ?string
+    protected function getTokenFromRequest(mixed $request): ?string
     {
         $token = $request->input('_token') ?? $request->header('X-CSRF-TOKEN');
 

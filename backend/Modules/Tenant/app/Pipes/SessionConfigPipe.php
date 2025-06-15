@@ -30,7 +30,7 @@ class SessionConfigPipe extends BaseConfigurationPipe
      *
      * @param Tenant $tenant The tenant context
      * @param Repository $config Laravel config repository
-     * @param array $tenantConfig The tenant configuration array
+     * @param array<string, mixed> $tenantConfig The tenant configuration array
      * @param callable $next The next pipe in the pipeline
      * @return mixed Result of calling $next()
      */
@@ -121,8 +121,8 @@ class SessionConfigPipe extends BaseConfigurationPipe
      * Resolve session configuration for frontend TenantConfig interface.
      *
      * @param Tenant $tenant The tenant context
-     * @param array $tenantConfig The tenant configuration array
-     * @return array ['values' => array, 'visibility' => array] Resolved values and visibility
+     * @param array<string, mixed> $tenantConfig The tenant configuration array
+     * @return array<string, mixed> ['values' => array, 'visibility' => array] Resolved values and visibility
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
@@ -144,7 +144,7 @@ class SessionConfigPipe extends BaseConfigurationPipe
      * Calculate session cookie name using the same logic as resolve().
      *
      * @param Tenant $tenant The tenant context
-     * @param array $tenantConfig The tenant configuration array
+     * @param array<string, mixed> $tenantConfig The tenant configuration array
      * @return string The calculated session cookie name
      */
     protected function calculateSessionCookie(Tenant $tenant, array $tenantConfig): string
@@ -186,7 +186,7 @@ class SessionConfigPipe extends BaseConfigurationPipe
      * Extract the session domain from tenant configuration.
      *
      * @param Tenant $tenant The tenant context
-     * @param array $tenantConfig The tenant configuration array
+     * @param array<string, mixed> $tenantConfig The tenant configuration array
      * @return string|null The extracted session domain or null
      */
     protected function extractSessionDomain(Tenant $tenant, array $tenantConfig): ?string

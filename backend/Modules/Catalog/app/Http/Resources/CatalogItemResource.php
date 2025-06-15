@@ -13,7 +13,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $description
  * @property string $image
  * @property bool $is_public
- * @property array $metadata
+ * @property array<string, mixed> $metadata
  * @property User $user
  * @property Carbon $created_at
  * @property Carbon $updated_at

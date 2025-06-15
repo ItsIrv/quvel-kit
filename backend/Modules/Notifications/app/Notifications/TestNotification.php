@@ -13,11 +13,17 @@ class TestNotification extends Notification
         //
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function via(): array
     {
         return ['broadcast', 'database'];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toDatabase(): array
     {
         return [
@@ -25,7 +31,7 @@ class TestNotification extends Notification
         ];
     }
 
-    public function toBroadcast($notifiable = null): BroadcastMessage
+    public function toBroadcast(mixed $notifiable = null): BroadcastMessage
     {
         return new BroadcastMessage([
             'message' => $this->message,

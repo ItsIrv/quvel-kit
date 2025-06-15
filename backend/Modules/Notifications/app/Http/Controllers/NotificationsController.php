@@ -17,6 +17,7 @@ class NotificationsController extends Controller
     {
         /** @var User $user */
         $user          = $request->user();
+        /** @phpstan-ignore-next-line staticMethod.dynamicCall */
         $notifications = $user->notifications()
             ->limit(15)
             ->orderBy('read_at', 'desc')

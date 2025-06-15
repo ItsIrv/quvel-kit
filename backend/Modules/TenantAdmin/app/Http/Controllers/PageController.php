@@ -10,7 +10,7 @@ class PageController extends Controller
     /**
      * Show the installation page
      */
-    public function show(Request $request)
+    public function show(Request $request): mixed
     {
         return view('tenantadmin::app');
     }

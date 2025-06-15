@@ -70,7 +70,7 @@ class TenantController extends Controller
     /**
      * Get single tenant
      */
-    public function show($id): JsonResponse
+    public function show(mixed $id): JsonResponse
     {
         $tenant = Tenant::where('id', $id)
             ->orWhere('public_id', $id)
@@ -111,7 +111,7 @@ class TenantController extends Controller
     /**
      * Update tenant
      */
-    public function update(TenantUpdateRequest $request, $id): JsonResponse
+    public function update(TenantUpdateRequest $request, mixed $id): JsonResponse
     {
         $tenant = Tenant::where('id', $id)
             ->orWhere('public_id', $id)
@@ -166,7 +166,7 @@ class TenantController extends Controller
     /**
      * Delete tenant
      */
-    public function destroy($id): JsonResponse
+    public function destroy(mixed $id): JsonResponse
     {
         $tenant = Tenant::where('id', $id)
             ->orWhere('public_id', $id)

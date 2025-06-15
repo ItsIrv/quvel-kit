@@ -14,8 +14,8 @@ abstract class BaseConfigurationPipe implements ConfigurationPipeInterface
      * Default resolve implementation.
      *
      * @param Tenant $tenant The tenant context
-     * @param array $tenantConfig The tenant configuration array
-     * @return array ['values' => array, 'visibility' => array] Empty by default
+     * @param array<string, mixed> $tenantConfig The tenant configuration array
+     * @return array<string, mixed> ['values' => array, 'visibility' => array] Empty by default
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {
@@ -25,7 +25,7 @@ abstract class BaseConfigurationPipe implements ConfigurationPipeInterface
     /**
      * Check if a tenant configuration value is set and not empty.
      *
-     * @param array $tenantConfig The tenant configuration array
+     * @param array<string, mixed> $tenantConfig The tenant configuration array
      * @param string $key The configuration key to check
      * @return bool True if value exists and is not empty
      */
@@ -37,7 +37,7 @@ abstract class BaseConfigurationPipe implements ConfigurationPipeInterface
     /**
      * Get a configuration value with optional default.
      *
-     * @param array $tenantConfig The tenant configuration array
+     * @param array<string, mixed> $tenantConfig The tenant configuration array
      * @param string $key The configuration key
      * @param mixed $default Default value if key not found
      * @return mixed The configuration value or default

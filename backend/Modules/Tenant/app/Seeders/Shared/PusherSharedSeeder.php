@@ -15,8 +15,8 @@ class PusherSharedSeeder implements TenantSharedSeederInterface
      * Generate shared Pusher configuration for all templates.
      *
      * @param string $template The tenant template for context
-     * @param array $baseConfig The base configuration to build upon
-     * @return array The shared configuration values to seed
+     * @param array<string, mixed> $baseConfig The base configuration to build upon
+     * @return array<string, mixed> The shared configuration values to seed
      */
     public function getSharedConfig(string $template, array $baseConfig): array
     {
@@ -42,7 +42,7 @@ class PusherSharedSeeder implements TenantSharedSeederInterface
     /**
      * Get visibility settings for the Pusher configuration.
      *
-     * @return array Key-value pairs of config keys and their visibility levels
+     * @return array<string, mixed> Key-value pairs of config keys and their visibility levels
      */
     public function getVisibility(): array
     {

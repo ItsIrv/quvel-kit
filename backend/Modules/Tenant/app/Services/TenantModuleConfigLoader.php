@@ -14,7 +14,7 @@ class TenantModuleConfigLoader
     /**
      * Load tenant configuration from all modules.
      *
-     * @return array Module name => config array
+     * @return array<string, mixed> Module name => config array
      */
     public function loadAllModuleConfigs(): array
     {
@@ -40,7 +40,7 @@ class TenantModuleConfigLoader
      * Get all seeder configurations for a specific template.
      *
      * @param string $template
-     * @return array
+     * @return array<string, mixed>
      */
     public function getSeedersForTemplate(string $template): array
     {
@@ -96,7 +96,7 @@ class TenantModuleConfigLoader
     /**
      * Get all configuration pipes from modules.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getAllPipes(): array
     {
@@ -114,7 +114,7 @@ class TenantModuleConfigLoader
     /**
      * Get all tenant tables from modules.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getAllTables(): array
     {
@@ -155,7 +155,7 @@ class TenantModuleConfigLoader
     /**
      * Get all exclusion paths from modules.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getAllExclusionPaths(): array
     {
@@ -191,7 +191,7 @@ class TenantModuleConfigLoader
     /**
      * Get all exclusion patterns from modules.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getAllExclusionPatterns(): array
     {
@@ -228,7 +228,7 @@ class TenantModuleConfigLoader
      * Get visibility configurations for a specific template.
      *
      * @param string $template
-     * @return array
+     * @return array<string, mixed>
      */
     public function getVisibilityForTemplate(string $template): array
     {
@@ -257,7 +257,7 @@ class TenantModuleConfigLoader
      * Get unified priority for any seeder configuration.
      * Uses array index as default (converted to higher-first system).
      *
-     * @param array $seederData
+     * @param array<string, mixed> $seederData
      * @return int
      */
     private function getSeederPriorityUnified(array $seederData): int

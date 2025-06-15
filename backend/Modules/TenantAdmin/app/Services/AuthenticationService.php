@@ -15,6 +15,9 @@ class AuthenticationService
     /**
      * Authenticate user against configured credentials
      */
+    /**
+     * @return array<string, mixed>
+     */
     public function authenticate(string $username, string $password): array
     {
         $method = $this->installationService->getInstallationMethod();
@@ -35,6 +38,9 @@ class AuthenticationService
 
     /**
      * Authenticate using environment variables
+     */
+    /**
+     * @return array<string, mixed>
      */
     private function authenticateWithEnv(string $username, string $password): array
     {
@@ -61,9 +67,13 @@ class AuthenticationService
     /**
      * Authenticate using database
      */
+    /**
+     * @return array<string, mixed>
+     */
     private function authenticateWithDatabase(string $username, string $password): array
     {
         try {
+            /** @phpstan-ignore-next-line staticMethod.dynamicCall */
             $user = DB::table('tenant_admin_credentials')
                 ->where('username', $username)
                 ->first();
@@ -93,7 +103,7 @@ class AuthenticationService
     /**
      * Check if a session is authenticated
      */
-    public function isAuthenticated($session): bool
+    public function isAuthenticated(mixed $session): bool
     {
         return $session->get('tenant_admin_authenticated', false) === true;
     }
@@ -101,7 +111,10 @@ class AuthenticationService
     /**
      * Get the authenticated user from session
      */
-    public function getAuthenticatedUser($session): ?array
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getAuthenticatedUser(mixed $session): ?array
     {
         if (!$this->isAuthenticated($session)) {
             return null;

@@ -161,8 +161,8 @@ if (!function_exists('createTenantConfig')) {
      * Create a new DynamicTenantConfig instance.
      * Useful for CLI/Tinker when setting up tenants.
      *
-     * @param array $data Configuration data
-     * @param array $visibility Visibility settings
+     * @param array<string, mixed> $data Configuration data
+     * @param array<string, mixed> $visibility Visibility settings
      * @return DynamicTenantConfig
      */
     function createTenantConfig(array $data = [], array $visibility = []): DynamicTenantConfig

@@ -21,7 +21,7 @@ class TenantConfigFactory
      *
      * @param string $name Table name
      * @param callable|null $callback Configuration callback
-     * @return array Table configuration array
+     * @return array<string, mixed> Table configuration array
      */
     public static function table(string $name, callable $callback = null): array
     {
@@ -37,8 +37,8 @@ class TenantConfigFactory
     /**
      * Create multiple tenant table configurations.
      *
-     * @param array $tables Array of table configurations
-     * @return array Multiple table configurations
+     * @param array<string, mixed> $tables Array of table configurations
+     * @return array<string, mixed> Multiple table configurations
      */
     public static function tables(array $tables): array
     {
@@ -88,8 +88,8 @@ class TenantConfigFactory
     /**
      * Create a simple seeder with just config and visibility.
      *
-     * @param array $config Configuration values
-     * @param array $visibility Visibility settings
+     * @param array<string, mixed> $config Configuration values
+     * @param array<string, mixed> $visibility Visibility settings
      * @param int $priority Priority level
      * @return TenantConfigSeederInterface
      */
@@ -108,8 +108,8 @@ class TenantConfigFactory
     /**
      * Create exclusions from arrays for convenience.
      *
-     * @param array $paths Exact paths to exclude
-     * @param array $patterns Path patterns to exclude
+     * @param array<string, mixed> $paths Exact paths to exclude
+     * @param array<string, mixed> $patterns Path patterns to exclude
      * @return TenantExclusionConfig
      */
     public static function simpleExclusions(array $paths = [], array $patterns = []): TenantExclusionConfig
@@ -124,8 +124,8 @@ class TenantConfigFactory
      * Create a table configuration from array for backward compatibility.
      *
      * @param string $name Table name
-     * @param array $config Table configuration array
-     * @return array
+     * @param array<string, mixed> $config Table configuration array
+     * @return array<string, mixed>
      */
     public static function tableFromArray(string $name, array $config): array
     {

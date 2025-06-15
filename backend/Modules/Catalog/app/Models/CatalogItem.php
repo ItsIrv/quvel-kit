@@ -35,6 +35,9 @@ class CatalogItem extends Model
         'metadata' => 'array',
     ];
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

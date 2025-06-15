@@ -12,7 +12,7 @@ interface ConfigSeederBuilderInterface
     /**
      * Set or merge configuration values.
      *
-     * @param array $config Configuration key-value pairs
+     * @param array<string, mixed> $config Configuration key-value pairs
      * @return static
      */
     public function config(array $config): static;
@@ -20,7 +20,7 @@ interface ConfigSeederBuilderInterface
     /**
      * Set or merge visibility settings.
      *
-     * @param array $visibility Visibility key-value pairs
+     * @param array<string, mixed> $visibility Visibility key-value pairs
      * @return static
      */
     public function visibility(array $visibility): static;

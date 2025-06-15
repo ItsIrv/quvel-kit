@@ -25,7 +25,7 @@ class TenantExclusionConfig
     /**
      * Convert to array format for backward compatibility.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -38,7 +38,7 @@ class TenantExclusionConfig
     /**
      * Create from array format for backward compatibility.
      *
-     * @param array $config
+     * @param array<string, mixed> $config
      * @return static
      */
     public static function fromArray(array $config): static

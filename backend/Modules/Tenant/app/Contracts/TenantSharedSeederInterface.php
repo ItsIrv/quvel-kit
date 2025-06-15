@@ -15,8 +15,8 @@ interface TenantSharedSeederInterface
      * Generate shared configuration values that apply to all templates.
      *
      * @param string $template The tenant template for context
-     * @param array $baseConfig The base configuration to build upon
-     * @return array The shared configuration values to seed
+     * @param array<string, mixed> $baseConfig The base configuration to build upon
+     * @return array<string, mixed> The shared configuration values to seed
      */
     public function getSharedConfig(string $template, array $baseConfig): array;
 
@@ -25,7 +25,7 @@ interface TenantSharedSeederInterface
      *
      * Visibility levels: 'public', 'protected', 'private'
      *
-     * @return array Key-value pairs of config keys and their visibility levels
+     * @return array<string, mixed> Key-value pairs of config keys and their visibility levels
      */
     public function getVisibility(): array;
 

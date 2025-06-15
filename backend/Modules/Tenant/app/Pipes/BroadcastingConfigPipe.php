@@ -15,7 +15,7 @@ class BroadcastingConfigPipe extends BaseConfigurationPipe
      *
      * @param Tenant $tenant The tenant context
      * @param ConfigRepository $config Laravel config repository
-     * @param array $tenantConfig The tenant configuration array
+     * @param array<string, mixed> $tenantConfig The tenant configuration array
      * @param callable $next The next pipe in the pipeline
      * @return mixed Result of calling $next()
      */
@@ -102,8 +102,8 @@ class BroadcastingConfigPipe extends BaseConfigurationPipe
      * Resolve broadcasting configuration for frontend TenantConfig interface.
      *
      * @param Tenant $tenant The tenant context
-     * @param array $tenantConfig The tenant configuration array
-     * @return array ['values' => array, 'visibility' => array] Resolved values and visibility
+     * @param array<string, mixed> $tenantConfig The tenant configuration array
+     * @return array<string, mixed> ['values' => array, 'visibility' => array] Resolved values and visibility
      */
     public function resolve(Tenant $tenant, array $tenantConfig): array
     {

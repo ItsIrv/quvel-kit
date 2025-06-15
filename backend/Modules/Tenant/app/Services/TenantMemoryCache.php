@@ -135,7 +135,7 @@ class TenantMemoryCache
     /**
      * Evict the oldest entry from Octane table
      */
-    private function evictOldestOctaneEntry($table): void
+    private function evictOldestOctaneEntry(mixed $table): void
     {
         $oldest    = null;
         $oldestKey = null;
