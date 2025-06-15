@@ -2,19 +2,9 @@ import { defineConfig } from '#q-app/wrappers';
 import { getCerts, isLocal as isLocalFn } from './utils';
 
 const isLocal = isLocalFn();
-const isMultiTenant = process.env.SSR_MULTI_TENANT === 'true';
 
 export default defineConfig(() => {
   return {
-    boot: [
-      // Add tenant config boot file for PWA mode only in multi-tenant setups
-      ...(isMultiTenant ? ['tenant-config'] : []),
-      'container',
-      {
-        server: false,
-        path: 'pinia-hydrator',
-      },
-    ],
     build: {
       extendViteConf(viteConf): void {
         viteConf.server = {
@@ -39,7 +29,7 @@ export default defineConfig(() => {
     },
     devServer: {
       strictPort: true,
-      port: isLocal ? 4000 : 9002,
+      port: isLocal ? 3003 : 9002,
       host: isLocal ? 'quvel.127.0.0.1.nip.io' : '0.0.0.0',
       https: getCerts(),
       open: false,

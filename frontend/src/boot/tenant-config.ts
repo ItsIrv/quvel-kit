@@ -3,10 +3,10 @@ import { fetchPublicTenantConfig } from 'src/modules/Core/utils/configUtil';
 
 /**
  * Tenant Config Boot File
- * 
+ *
  * Handles async tenant configuration loading for non-SSR modes.
  * Only runs when:
- * - Not in SSR mode
+ * - Not in SSR mode with SSR_MULTI_TENANT enabled
  * - No window.__TENANT_CONFIG__ available
  * - Public config URL is configured
  */
@@ -27,19 +27,16 @@ export default boot(async ({ ssrContext }) => {
     return;
   }
 
-  console.log('QuVel Kit: Loading tenant config before app initialization...');
-
   try {
     // Fetch tenant config from public API
     const config = await fetchPublicTenantConfig();
-    
+
     if (config) {
       // Set global config for other services to use
       if (typeof window !== 'undefined') {
         window.__TENANT_CONFIG__ = config;
-        console.log('QuVel Kit: Tenant config loaded successfully');
       }
-      
+
       // Store in localStorage for PWA caching
       try {
         const domain = window.location.hostname;
@@ -49,16 +46,13 @@ export default boot(async ({ ssrContext }) => {
           domain: domain,
           cachedAt: new Date().toISOString(),
         });
-        
+
         localStorage.setItem(configKey, configData);
-        console.log(`QuVel Kit: Cached tenant config for ${domain}`);
-      } catch (storageError) {
-        console.warn('QuVel Kit: Failed to cache tenant config:', storageError);
+      } catch {
+        // Silent fail for storage errors
       }
-    } else {
-      console.warn('QuVel Kit: Failed to load tenant config, using environment fallback');
     }
-  } catch (error) {
-    console.error('QuVel Kit: Error loading tenant config:', error);
+  } catch {
+    // Silent fail for config loading errors
   }
 });
