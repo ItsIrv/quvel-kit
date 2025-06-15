@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import { useAuthStore } from "../stores/useAuthStore";
+import { APP_BASE_URL } from "../config/api";
 
 const routes: RouteRecordRaw[] = [
     {
@@ -50,6 +51,7 @@ const routes: RouteRecordRaw[] = [
                 component: () => import("../pages/TenantEdit.vue"),
                 meta: {
                     title: "Edit Tenant",
+                    requiresAuth: true,
                 },
             },
         ],
@@ -57,7 +59,7 @@ const routes: RouteRecordRaw[] = [
 ];
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.VITE_BASE_URL || "/tenant/admin"),
+    history: createWebHistory(APP_BASE_URL),
     routes,
 });
 

@@ -1,9 +1,7 @@
 <?php
 
-use Modules\Tenant\Factories\TenantConfigFactory;
-
 return [
-    'seeders'    => [
+    'seeders'        => [
         'basic'    => \Modules\Tenant\Seeders\CoreConfig\CoreApplicationBasicSeeder::class,
         'isolated' => \Modules\Tenant\Seeders\CoreConfig\CoreApplicationIsolatedSeeder::class,
     ],
@@ -14,7 +12,7 @@ return [
         'pusher'    => \Modules\Tenant\Seeders\Shared\PusherSharedSeeder::class,
     ],
 
-    'pipes'      => [
+    'pipes'          => [
         // All the core tenant configuration pipes
         \Modules\Tenant\Pipes\CoreConfigPipe::class,
         \Modules\Tenant\Pipes\DatabaseConfigPipe::class,
@@ -29,11 +27,11 @@ return [
         \Modules\Tenant\Pipes\ServicesConfigPipe::class,
     ],
 
-    'tables'     => [
+    'tables'         => [
         'users' => \Modules\Tenant\Tables\UsersTableConfig::class,
     ],
 
-    'exclusions' => [
+    'exclusions'     => [
         'paths'    => [],
         'patterns' => [],
     ],

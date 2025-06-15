@@ -14,15 +14,6 @@ import TenantTable from '../components/TenantTable.vue'
                 <div class="col-span-1">
                     <TenantTable />
                 </div>
-
-                <!-- Future widgets can be added here in a responsive grid -->
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="col-span-1">
-                        Future widget
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>

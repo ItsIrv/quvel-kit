@@ -1,4 +1,5 @@
 import { BaseApiService } from "./BaseApiService";
+import { API_BASE_URL } from "../config/api";
 import type { ApiError } from "../types/api";
 import type {
     InstallationStatus,
@@ -12,7 +13,7 @@ import type {
  */
 export class InstallationService extends BaseApiService {
     constructor() {
-        super(import.meta.env.VITE_API_BASE_URL || "/tenant/admin/api");
+        super(API_BASE_URL);
     }
 
     /**

@@ -250,6 +250,13 @@ const loadTenant = async () => {
             }
         }
     } catch (err: any) {
+        // Check if this is an authentication error
+        if (err.status === 401 || err.message?.includes('Unauthenticated')) {
+            // Redirect to login instead of showing error
+            router.push({ name: 'login', query: { redirect: route.fullPath } })
+            return
+        }
+        
         error.value = err.message || 'Failed to load tenant'
         console.error('Failed to load tenant:', err)
     } finally {
@@ -302,6 +309,13 @@ const saveTenant = async () => {
             successMessage.value = 'Tenant updated successfully'
         }
     } catch (err: any) {
+        // Check if this is an authentication error
+        if (err.status === 401 || err.message?.includes('Unauthenticated')) {
+            // Redirect to login instead of showing error
+            router.push({ name: 'login', query: { redirect: route.fullPath } })
+            return
+        }
+        
         error.value = err.message || 'Failed to save tenant'
         console.error('Failed to save tenant:', err)
     } finally {

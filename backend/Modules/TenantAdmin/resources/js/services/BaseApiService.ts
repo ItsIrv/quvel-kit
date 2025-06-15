@@ -52,7 +52,6 @@ export class BaseApiService {
         this.api.interceptors.request.use(
             (config) => {
                 // Add timestamp for response time tracking
-                config.metadata = { startTime: Date.now() };
                 return config;
             },
             (error) => {

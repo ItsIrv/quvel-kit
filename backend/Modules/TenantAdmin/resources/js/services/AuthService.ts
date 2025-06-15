@@ -1,4 +1,5 @@
 import { BaseApiService } from "./BaseApiService";
+import { API_BASE_URL } from "../config/api";
 import type { ApiError } from "../types/api";
 import type { LoginRequest, LoginResponse, User } from "../types/auth";
 
@@ -8,7 +9,7 @@ import type { LoginRequest, LoginResponse, User } from "../types/auth";
  */
 export class AuthService extends BaseApiService {
     constructor() {
-        super(import.meta.env.VITE_API_BASE_URL || "/tenant/admin/api");
+        super(API_BASE_URL);
     }
 
     /**
