@@ -1,11 +1,72 @@
 /**
  * Test CSS for dynamic tenant assets
- * This file overrides PageHeader-Nav styles to demonstrate asset injection
+ * This file overrides key Quvel styles to demonstrate asset injection
  */
 
-/* Override PageHeader-Nav when scrolled */
-.PageHeader-Nav--scrolled {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+/* Override primary buttons with a more vibrant gradient */
+.PrimaryButton {
+  background: linear-gradient(135deg, #ff006e 0%, #fb5607 50%, #ffbe0b 100%) !important;
+  color: white !important;
+  border: 2px solid #ff006e !important;
+  box-shadow: 0 4px 15px rgba(255, 0, 110, 0.3) !important;
+  transform: scale(1.02) !important;
+}
+
+.dark .PrimaryButton {
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 50%, #3a86ff 100%) !important;
+  border: 2px solid #8338ec !important;
+  box-shadow: 0 4px 15px rgba(131, 56, 236, 0.4) !important;
+}
+
+/* Override link hover effects */
+.quvel-link::before {
+  background: linear-gradient(135deg, #ff006e 0%, #ffbe0b 100%) !important;
+  height: 3px !important;
+}
+
+.quvel-link:hover {
+  color: #ff006e !important;
+  text-shadow: 0 0 8px rgba(255, 0, 110, 0.3) !important;
+}
+
+/* Override small glow effects */
+.SmallGlow::before {
+  background: radial-gradient(
+    circle,
+    rgba(255, 0, 110, 0.4) 0%,
+    rgba(255, 190, 11, 0.1) 70%
+  ) !important;
+}
+
+.dark .SmallGlow::before {
+  background: radial-gradient(
+    circle,
+    rgba(131, 56, 236, 0.4) 0%,
+    rgba(58, 134, 255, 0.1) 70%
+  ) !important;
+}
+
+/* Add pulsing animation to dialog gradients */
+.DialogGradient {
+  background: 
+    radial-gradient(circle at top, #ff006e2e 15%, #0000 80%),
+    radial-gradient(circle at bottom, #ffbe0b1f 10%, #0000 80%),
+    linear-gradient(170deg, #fff5f5, #fef7e0) !important;
+  animation: pulse-gradient 3s ease-in-out infinite !important;
+}
+
+.dark .DialogGradient {
+  background:
+    radial-gradient(circle at 20% 30%, #8338ec24 10%, #0000 50%),
+    radial-gradient(circle at 80% 70%, #3a86ff1a 8%, #0000 50%),
+    linear-gradient(150deg, #2d1b4e, #1a2332) !important;
+}
+
+@keyframes pulse-gradient {
+  0%, 100% { 
+    filter: brightness(1) saturate(1);
+  }
+  50% { 
+    filter: brightness(1.1) saturate(1.2);
+  }
 }
