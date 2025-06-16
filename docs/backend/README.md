@@ -25,6 +25,10 @@ The backend follows a modular pattern with dedicated modules for different conce
 - **[Authentication](./auth-module.md)** - OAuth, Sanctum, and security
 - **[Core Module](./core-module.md)** - Base functionality and utilities
 
+### Advanced Features
+
+- **[Dynamic Assets System](./dynamic-assets.md)** - Multi-tenant CSS/JS injection and loading strategies
+
 ### Development Tools
 
 - **[Common Commands](./common-commands.md)** - Quick reference for Laravel commands
