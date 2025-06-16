@@ -41,5 +41,9 @@ class RouteServiceProvider extends ServiceProvider
             ->group(function () {
                 $this->loadRoutesFrom(module_path('Tenant', 'routes/public.php'));
             });
+
+        $channelRoutes = module_path('Tenant', 'routes/channels.php');
+
+        require $channelRoutes;
     }
 }
