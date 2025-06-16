@@ -4,6 +4,7 @@ import { SSRService } from './SSRService';
 import type { SSRServiceContainer } from './SSRServiceContainer';
 import type { SSRSingletonService } from '../types/service.types';
 import { SSRLogService } from './SSRLogService';
+import { SSRAssetInjectionService } from './SSRAssetInjectionService';
 import { TenantConfigProtected } from '../types/tenant.types';
 import { createTenantConfigFromEnv, filterTenantConfig } from '../utils/tenantConfigUtil';
 import { isValidHostname } from '../utils/validationUtil';
@@ -21,8 +22,10 @@ export interface SSRRequestContext {
 export class SSRRequestHandler extends SSRService implements SSRSingletonService {
   private tenantResolver!: TenantResolver;
   private logger!: SSRLogService;
+  private container!: SSRServiceContainer;
 
   override register(container: SSRServiceContainer): void {
+    this.container = container;
     this.tenantResolver = container.get(TenantResolver);
     this.logger = container.get(SSRLogService);
   }
@@ -50,6 +53,14 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
       // Update trace info with tenant
       if (context.tenantConfig) {
         context.traceInfo.tenant = context.tenantConfig.tenantId;
+      }
+
+      // Create a scoped asset injection service for this request
+      const assetInjectionService = this.container.scoped(SSRAssetInjectionService, { req, res });
+      
+      // Set tenant assets if available
+      if (context.tenantConfig?.assets) {
+        assetInjectionService.setTenantAssets(context.tenantConfig.assets);
       }
 
       // Attach tenant config to request for Vue app access
@@ -87,9 +98,12 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
         </script>`;
 
       // Inject before title tag (similar to Quasar's __INITIAL_STATE__)
-      const hydratedHtml = html.includes('<title>')
+      let hydratedHtml = html.includes('<title>')
         ? html.replace('<title>', `${scriptTag}<title>`)
         : html.replace('<head>', `<head>${scriptTag}`);
+
+      // Process HTML to inject tenant assets
+      hydratedHtml = assetInjectionService.processHTML(hydratedHtml);
 
       const duration = Date.now() - context.startTime;
       const statusCode = res.statusCode || 200;

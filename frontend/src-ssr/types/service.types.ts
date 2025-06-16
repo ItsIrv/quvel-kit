@@ -37,6 +37,6 @@ export interface SSRSingletonService extends SSRService {
  * These services are created per-request via container.scoped() method
  */
 export interface SSRScopedService extends SSRService {
-  register(container: unknown): void | Promise<void>;
+  register?(container: unknown): void | Promise<void>;
   boot(options?: SSRServiceOptions): void | Promise<void>;
 }

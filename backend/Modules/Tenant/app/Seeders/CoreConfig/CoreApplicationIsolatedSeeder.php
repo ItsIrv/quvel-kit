@@ -50,6 +50,16 @@ class CoreApplicationIsolatedSeeder implements TenantConfigSeederInterface
             $coreConfig['internal_api_url'] = $this->generateInternalApiUrl($domain, $apiUrl);
         }
 
+        // Add assets configuration if provided
+        if (isset($baseConfig['assets'])) {
+            $coreConfig['assets'] = $baseConfig['assets'];
+        }
+
+        // Add meta configuration if provided
+        if (isset($baseConfig['meta'])) {
+            $coreConfig['meta'] = $baseConfig['meta'];
+        }
+
         return $coreConfig;
     }
 
@@ -68,6 +78,8 @@ class CoreApplicationIsolatedSeeder implements TenantConfigSeederInterface
             'mail_from_address' => 'private',
             'capacitor_scheme'  => 'protected',
             'internal_api_url'  => 'protected',
+            'assets'            => 'public', // Assets must be public for frontend injection
+            'meta'              => 'public', // Meta must be public for frontend meta tags
         ];
     }
 

@@ -4,11 +4,9 @@ namespace Modules\Tenant\Pipes;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Translation\Translator;
-use Illuminate\Http\Request;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Context;
-use Illuminate\Support\Facades\Date;
 use Modules\Tenant\Logs\Pipes\CoreConfigPipeLogs;
 use Modules\Tenant\Models\Tenant;
 
@@ -258,6 +256,16 @@ class CoreConfigPipe extends BaseConfigurationPipe
         if ($this->hasValue($tenantConfig, 'pusher_app_cluster')) {
             $values['pusherAppCluster']     = $tenantConfig['pusher_app_cluster'];
             $visibility['pusherAppCluster'] = 'public';
+        }
+
+        if ($this->hasValue($tenantConfig, 'assets')) {
+            $values['assets']     = $tenantConfig['assets'];
+            $visibility['assets'] = 'public';
+        }
+
+        if ($this->hasValue($tenantConfig, 'meta')) {
+            $values['meta']     = $tenantConfig['meta'];
+            $visibility['meta'] = 'public';
         }
 
         return ['values' => $values, 'visibility' => $visibility];

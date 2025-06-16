@@ -107,7 +107,7 @@ export class SSRServiceContainer {
     const instance = new ServiceClass();
 
     // Register it with this container for dependency injection
-    if (this.isSingleton(instance) || this.isScoped(instance)) {
+    if (this.isSingleton(instance)) {
       void instance.register(this);
     }
 
@@ -123,6 +123,4 @@ export class SSRServiceContainer {
 
     return instance;
   }
-
-  // isSsrAware method removed - replaced with isScoped() method above
 }

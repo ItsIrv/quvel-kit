@@ -1,5 +1,6 @@
 import { boot } from 'quasar/wrappers';
 import { fetchPublicTenantConfig } from 'src/modules/Core/utils/configUtil';
+import { injectTenantAssets } from 'src/modules/Core/utils/assetUtil';
 
 /**
  * Tenant Config Boot File
@@ -35,6 +36,11 @@ export default boot(async ({ ssrContext }) => {
       // Set global config for other services to use
       if (typeof window !== 'undefined') {
         window.__TENANT_CONFIG__ = config;
+      }
+
+      // Inject tenant assets if available
+      if (config.assets) {
+        injectTenantAssets(config.assets);
       }
 
       // Store in localStorage for PWA caching
