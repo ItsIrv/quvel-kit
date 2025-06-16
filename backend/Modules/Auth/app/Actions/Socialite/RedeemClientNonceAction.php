@@ -34,7 +34,7 @@ class RedeemClientNonceAction
             return $this->responseFactory->json([
                 'message' => OAuthStatusEnum::CLIENT_TOKEN_GRANTED->getTranslatedMessage(),
                 'user'    => new UserResource($this->authCoordinator->redeemClientNonce(
-                    $request->validated('nonce', ''),
+                    (string) $request->validated('nonce', ''),
                 )),
             ]);
         } catch (Throwable $e) {

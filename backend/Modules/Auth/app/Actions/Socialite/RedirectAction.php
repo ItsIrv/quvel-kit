@@ -27,6 +27,9 @@ class RedirectAction
     public function __invoke(RedirectRequest $request, string $provider): RedirectResponse
     {
         $nonce = $request->validated('nonce');
+        if ($nonce !== null) {
+            $nonce = (string) $nonce;
+        }
 
         try {
             return $this->authCoordinator->buildRedirectResponse($provider, $nonce);

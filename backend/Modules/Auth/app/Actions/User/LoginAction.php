@@ -33,12 +33,14 @@ class LoginAction
     public function __invoke(LoginRequest $request): JsonResponse
     {
         $loginData = $request->validated();
+        $email = (string) $loginData['email'];
+        $password = (string) $loginData['password'];
 
         // Find the user by email
-        $user = $this->userFindService->findByEmail($loginData['email']);
+        $user = $this->userFindService->findByEmail($email);
         if ($user === null) {
             $this->logs->loginFailedUserNotFound(
-                $loginData['email'],
+                $email,
                 $request->ip() ?? 'unknown',
                 $request->userAgent(),
             );
@@ -49,7 +51,7 @@ class LoginAction
         // Check the user signed up with password
         if ($user->password === null || $user->provider_id !== null) {
             $this->logs->loginFailedInvalidCredentials(
-                $loginData['email'],
+                $email,
                 $request->ip() ?? 'unknown',
                 $request->userAgent(),
             );
@@ -60,7 +62,7 @@ class LoginAction
         // Check if the user has verified their email if verify_email_before_login is true
         if (!$user->hasVerifiedEmail() && ((bool) config('auth.verify_email_before_login'))) {
             $this->logs->loginFailedAccountInactive(
-                $loginData['email'],
+                $email,
                 $user->id,
                 $request->ip() ?? 'unknown',
                 $request->userAgent(),
@@ -70,9 +72,9 @@ class LoginAction
         }
 
         // Attempt to authenticate the user
-        if (!$this->userAuthenticationService->attempt($loginData['email'], $loginData['password'])) {
+        if (!$this->userAuthenticationService->attempt($email, $password)) {
             $this->logs->loginFailedInvalidCredentials(
-                $loginData['email'],
+                $email,
                 $request->ip() ?? 'unknown',
                 $request->userAgent(),
             );
@@ -82,7 +84,7 @@ class LoginAction
 
         // Log successful login
         $this->logs->loginSuccess(
-            $loginData['email'],
+            $email,
             $user->id,
             $request->ip() ?? 'unknown',
             $request->userAgent(),

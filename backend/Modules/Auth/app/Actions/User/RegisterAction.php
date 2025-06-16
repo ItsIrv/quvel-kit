@@ -36,9 +36,10 @@ class RegisterAction
     public function __invoke(RegisterRequest $request): JsonResponse
     {
         $registerData = $request->validated();
+        $email = (string) $registerData['email'];
 
         // Check if user already exists
-        if ($this->userFindService->findByEmail($registerData['email']) !== null) {
+        if ($this->userFindService->findByEmail($email) !== null) {
             throw new RegisterActionException(
                 AuthStatusEnum::EMAIL_ALREADY_IN_USE,
             );

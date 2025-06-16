@@ -35,7 +35,7 @@ class CallbackAction
         try {
             $result = $this->authCoordinator->authenticateCallback(
                 $provider,
-                $request->validated('state', ''),
+                (string) $request->validated('state', ''),
             );
 
             if ($result->isStateless()) {

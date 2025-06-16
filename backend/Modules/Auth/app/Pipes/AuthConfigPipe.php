@@ -39,17 +39,20 @@ class AuthConfigPipe extends BaseConfigurationPipe
         // OAuth credentials - try tenant config first, fallback to environment
         if (isset($tenantConfig['oauth_credentials']) && is_array($tenantConfig['oauth_credentials'])) {
             foreach ($tenantConfig['oauth_credentials'] as $provider => $credentials) {
+                if (!is_array($credentials)) {
+                    continue;
+                }
                 if (isset($credentials['client_id'])) {
-                    $config->set("services.$provider.client_id", $credentials['client_id']);
+                    $config->set("services.$provider.client_id", (string) $credentials['client_id']);
                 }
                 if (isset($credentials['client_secret'])) {
-                    $config->set("services.$provider.client_secret", $credentials['client_secret']);
+                    $config->set("services.$provider.client_secret", (string) $credentials['client_secret']);
                 }
                 if (isset($credentials['redirect'])) {
-                    $config->set("services.$provider.redirect", $credentials['redirect']);
+                    $config->set("services.$provider.redirect", (string) $credentials['redirect']);
                 } else {
                     // Default redirect URL based on tenant's app URL
-                    $appUrl = $tenantConfig['app_url'] ?? $config->get('app.url');
+                    $appUrl = (string) ($tenantConfig['app_url'] ?? $config->get('app.url') ?? '');
                     $config->set("services.$provider.redirect", "$appUrl/auth/provider/$provider/callback");
                 }
             }
