@@ -10,7 +10,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Services\SocialiteService;
-use Modules\Tenant\database\factories\DynamicTenantConfigFactory;
+use Modules\Tenant\Database\Factories\DynamicTenantConfigFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;

@@ -6,7 +6,7 @@ use Modules\Tenant\Contexts\TenantContext;
 use Modules\Tenant\Exceptions\TenantNotFoundException;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
-use Modules\Tenant\database\factories\DynamicTenantConfigFactory;
+use Modules\Tenant\Database\Factories\DynamicTenantConfigFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;

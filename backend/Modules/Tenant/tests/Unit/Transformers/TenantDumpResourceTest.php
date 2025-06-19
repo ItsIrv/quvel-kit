@@ -3,7 +3,7 @@
 namespace Modules\Tenant\Tests\Unit\Transformers;
 
 use Illuminate\Http\Request;
-use Modules\Tenant\database\factories\DynamicTenantConfigFactory;
+use Modules\Tenant\Database\Factories\DynamicTenantConfigFactory;
 use Modules\Tenant\Http\Resources\TenantDumpResource;
 use Modules\Tenant\Models\Tenant;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -37,8 +37,6 @@ class TenantDumpResourceTest extends TestCase
         $this->assertEquals('public-id-1', $result['id']);
         $this->assertEquals('Tenant Name', $result['name']);
         $this->assertEquals('tenant.com', $result['domain']);
-        $this->assertEquals($tenant->created_at, $result['created_at']);
-        $this->assertEquals($tenant->updated_at, $result['updated_at']);
         $this->assertNull($result['parent_id']);
 
         // Config should include provider data

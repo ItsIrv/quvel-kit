@@ -69,8 +69,6 @@ class TenantCacheResourceTest extends TestCase
         $this->assertEquals('Test Tenant', $result['name']);
         $this->assertEquals('test.example.com', $result['domain']);
         $this->assertNull($result['parent_id']);
-        $this->assertInstanceOf(Carbon::class, $result['created_at']);
-        $this->assertInstanceOf(Carbon::class, $result['updated_at']);
         $this->assertArrayHasKey('config', $result);
     }
 

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Tenant\Database\Factories\TenantFactory;
 use Modules\Tenant\Models\Tenant;
 use Modules\Tenant\ValueObjects\DynamicTenantConfig;
-use Modules\Tenant\database\factories\DynamicTenantConfigFactory;
+use Modules\Tenant\Database\Factories\DynamicTenantConfigFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
