@@ -1,0 +1,56 @@
+{
+    "name": "itsirv/quvel-tenant",
+    "description": "Multi-tenancy module for QuVel Kit - Provides domain-based tenant resolution and configuration management.",
+    "type": "laravel-module",
+    "version": "1.0.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Irving Gomez",
+            "email": "gomirv.work@gmail.com"
+        }
+    ],
+    "keywords": [
+        "laravel",
+        "module",
+        "quvel",
+        "tenant",
+        "multi-tenancy"
+    ],
+    "homepage": "https://github.com/itsirv/quvel-tenant",
+    "require": {
+        "php": "^8.4",
+        "laravel/framework": "^12.0",
+        "nwidart/laravel-modules": "^12.0.1",
+        "itsirv/quvel-core": "dev-main"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0.1",
+        "mockery/mockery": "^1.6"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Tenant\\Providers\\TenantServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Tenant\\": "app/",
+            "Modules\\Tenant\\Database\\Factories\\": "database/factories/",
+            "Modules\\Tenant\\Database\\Seeders\\": "database/seeders/"
+        },
+        "files": [
+            "app/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Tenant\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,0 +1,13 @@
+http:
+  routers:
+    api:
+      rule: 'Host(`api.quvel.127.0.0.1.nip.io`) || Host(`api.quvel-two.127.0.0.1.nip.io`) || Host(`api.quvel.192.168.86.245.nip.io`) || Host(`api.quvel-two.192.168.86.245.nip.io`)'
+      entryPoints: websecure
+      service: api
+      tls: {}
+
+  services:
+    api:
+      loadBalancer:
+        servers:
+          - url: 'http://host.docker.internal:8000'

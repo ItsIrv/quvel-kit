@@ -1,0 +1,28 @@
+{
+    "name": "itsirv/catalog",
+    "description": "Catalog Module for QuVel Kit. Includes products and categories. As of now, used to build pagination helpers. Not production ready by any means.",
+    "authors": [
+        {
+            "name": "Irving Gomez",
+            "email": "gomirv.work@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Catalog\\": "app/",
+            "Modules\\Catalog\\Database\\Factories\\": "database/factories/",
+            "Modules\\Catalog\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Catalog\\Tests\\": "tests/"
+        }
+    }
+}

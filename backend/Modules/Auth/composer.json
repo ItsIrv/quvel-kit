@@ -1,0 +1,33 @@
+{
+    "name": "itsirv/auth",
+    "description": "Handles authentication for QuVel Kit. Includes login, logout, session dumping, registration and social login.",
+    "authors": [
+        {
+            "name": "Irving Gomez",
+            "email": "gomirv.work@gmail.com"
+        }
+    ],
+    "require": {
+        "laravel/fortify": "^1.25"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Auth\\Providers\\FortifyServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Auth\\": "app/",
+            "Modules\\Auth\\Database\\Factories\\": "database/factories/",
+            "Modules\\Auth\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Auth\\Tests\\": "tests/"
+        }
+    }
+}

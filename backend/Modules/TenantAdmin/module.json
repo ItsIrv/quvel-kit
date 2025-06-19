@@ -1,0 +1,15 @@
+{
+    "name": "TenantAdmin",
+    "alias": "tenantadmin",
+    "description": "Admin interface for managing tenants",
+    "keywords": [
+        "tenant",
+        "admin",
+        "management"
+    ],
+    "priority": 0,
+    "providers": [
+        "Modules\\TenantAdmin\\Providers\\TenantAdminServiceProvider"
+    ],
+    "files": []
+}

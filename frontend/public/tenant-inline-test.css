@@ -1,0 +1,7 @@
+/* Simple test CSS for inline injection */
+.PageHeader-Container {
+  border: 2px solid #ff6b6b !important;
+  border-radius: 8px !important;
+  margin: 4px !important;
+  padding: 8px !important;
+}

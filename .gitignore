@@ -1,0 +1,6 @@
+.DS_Store
+docker/certs/
+/.idea
+qodana.yaml
+.claude
+CLAUDE.MD

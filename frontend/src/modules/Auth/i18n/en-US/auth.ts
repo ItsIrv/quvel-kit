@@ -1,0 +1,97 @@
+export default {
+  forms: {
+    common: {
+      email: 'Email',
+      name: 'Name',
+      password: 'Password',
+      passwordConfirm: 'Confirm Password',
+    },
+    login: {
+      title: 'Login',
+      button: 'Login',
+      loggedInAs: 'Logged in as {name}',
+      goTo: 'Go to',
+      welcomePage: 'Welcome Page',
+      link: 'Have an account?',
+    },
+    logout: {
+      button: 'Logout',
+    },
+    oauth: {
+      providers: {
+        apple: 'Apple',
+        google: 'Google',
+        facebook: 'Facebook',
+        microsoft: 'Microsoft',
+      },
+      link: 'Use Email/Password instead?',
+      logInWith: '@:auth.forms.oauth.{provider} Login',
+      title: 'Login with a Provider',
+    },
+    signup: {
+      button: 'Sign Up',
+      link: 'Need an account?',
+      title: 'Sign Up',
+    },
+    password: {
+      title: 'Reset Password',
+      resetButton: 'Send Reset Link',
+      resetDescription:
+        'Enter your email address and we will send you a link to reset your password.',
+      forgot: 'Forgot password?',
+      newPassword: 'New Password',
+      confirmNewPassword: 'Confirm New Password',
+      changeButton: 'Change Password',
+    },
+    passwordReset: {
+      tokenDescription: 'Enter your email and new password to reset your account.',
+      tokenButton: 'Reset Password',
+      title: 'Reset Password',
+      token: 'Token',
+    },
+    mfa: {
+      title: 'Two-Factor Authentication',
+      code: 'Authentication Code',
+      verifyButton: 'Verify',
+      description: 'Enter the verification code from your authenticator app.',
+      backupCode: 'Use Backup Code',
+      backupCodeDescription: 'Enter one of your backup codes.',
+    },
+  },
+  status: {
+    errors: {
+      activeFlowExists: 'An active flow already exists.',
+      captcha: 'Failed to verify you are human. Please try again.',
+      captcha_not_loaded:
+        'Human verification is not loaded. Please refresh the page and try again.',
+      captcha_invalid: 'Human verification failed. Please try again.',
+      emailAlreadyInUse: 'This email is already in use.',
+      emailTaken: 'This email is already in use.',
+      invalidConfig: 'Invalid configuration.',
+      invalidCredentials: 'Invalid email or password.',
+      invalidNonce: 'Invalid nonce.',
+      invalidProvider: 'Invalid provider.',
+      invalidToken: 'Invalid token.',
+      invalidUser: 'Invalid user.',
+      login: 'Failed to log in, please try again later',
+      mismatch: 'Password does not match.',
+      providerIdTaken: 'This provider ID is already in use.',
+      userNotFound: 'User not found.',
+    },
+    warnings: {
+      emailNotVerified: 'This account has not been verified.',
+    },
+    success: {
+      clientTokenGranted: 'Authentication successful, exchange nonce for session',
+      loggedIn: 'You have been logged in.',
+      loggedOut: 'You have been logged out.',
+      signedUp: 'You have been signed up.',
+      userCreated: 'User created successfully.',
+      checkYourEmail: 'Check your email for a verification link.',
+      passwordResetSent: 'Password reset link sent.',
+      passwordReset: 'Your password has been reset successfully.',
+      emailVerified: 'Your email has been verified successfully.',
+      emailVerificationNotice: 'A verification link has been sent to your email.',
+    },
+  },
+};

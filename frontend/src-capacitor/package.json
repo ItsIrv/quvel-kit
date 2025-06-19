@@ -1,0 +1,14 @@
+{
+  "name": "quvel.irv.codes",
+  "version": "0.1.3-beta",
+  "description": "A Laravel & Quasar hybrid framework optimized for SSR and seamless development.",
+  "author": "Irving Gomez <gomirv.work@gmail.com>",
+  "private": true,
+  "dependencies": {
+    "@capacitor/app": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@jcesarmobile/ssl-skip": "^0.4.0"
+  }
+}
