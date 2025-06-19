@@ -14,16 +14,6 @@
         "framework"
     ],
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/ItsIrv/quvel-core"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/ItsIrv/quvel-tenant"
-        }
-    ],
     "require": {
         "php": "^8.4",
         "laravel/framework": "^12.0",
@@ -32,9 +22,7 @@
         "laravel/socialite": "^5.18",
         "laravel/tinker": "^2.9",
         "nwidart/laravel-modules": "^12.0.1",
-        "pusher/pusher-php-server": "^7.2",
-        "itsirv/quvel-core": "dev-main",
-        "itsirv/quvel-tenant": "dev-main"
+        "pusher/pusher-php-server": "^7.2"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.5",
@@ -68,7 +56,9 @@
             "Tests\\": "tests/",
             "Modules\\Auth\\Tests\\": "Modules/Auth/tests/",
             "Modules\\Catalog\\Tests\\": "Modules/Catalog/tests/",
+            "Modules\\Core\\Tests\\": "Modules/Core/tests/",
             "Modules\\Notifications\\Tests\\": "Modules/Notifications/tests/",
+            "Modules\\Tenant\\Tests\\": "Modules/Tenant/tests/",
             "Modules\\TenantAdmin\\Tests\\": "Modules/TenantAdmin/tests/"
         }
     },
@@ -134,10 +124,6 @@
         "merge-plugin": {
             "include": [
                 "Modules/*/composer.json"
-            ],
-            "exclude": [
-                "Modules/Core/composer.json",
-                "Modules/Tenant/composer.json"
             ]
         }
     },
