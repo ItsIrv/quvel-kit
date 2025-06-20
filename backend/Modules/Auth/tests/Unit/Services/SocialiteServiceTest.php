@@ -10,7 +10,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Services\SocialiteService;
-use Modules\Tenant\Database\Factories\DynamicTenantConfigFactory;
+use Modules\Core\Services\FrontendService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -21,6 +21,7 @@ use Tests\TestCase;
 class SocialiteServiceTest extends TestCase
 {
     private MockInterface|SocialiteManager $socialiteManager;
+    private MockInterface|FrontendService $frontendService;
 
     private SocialiteService $service;
 
@@ -28,20 +29,16 @@ class SocialiteServiceTest extends TestCase
     {
         parent::setUp();
 
-        $tenantConfig = DynamicTenantConfigFactory::createStandard(
-            apiDomain: 'api.quvel.app'
-        );
-
         // Mock dependencies
-        $this->seedMock();
         $this->socialiteManager = Mockery::mock(SocialiteManager::class);
-        $this->tenantContextMock->shouldReceive('getConfig')
-            ->andReturn($tenantConfig);
+        $this->frontendService = Mockery::mock(FrontendService::class);
+        
+        // Mock the app() call to return our mocked FrontendService
+        $this->app->instance(FrontendService::class, $this->frontendService);
 
         // Initialize the service
         $this->service = new SocialiteService(
-            $this->socialiteManager,
-            $this->tenantContextMock
+            $this->socialiteManager
         );
     }
 
@@ -50,6 +47,11 @@ class SocialiteServiceTest extends TestCase
         $redirectUrl = Mockery::mock(RedirectResponse::class);
         $driver = Mockery::mock(AbstractProvider::class);
         $provider = 'google';
+
+        // Mock FrontendService behavior
+        $this->frontendService->shouldReceive('getPageUrl')
+            ->with("/auth/provider/$provider/callback")
+            ->andReturn('https://app.example.com/auth/provider/google/callback');
 
         // Mock driver behavior
         $this->socialiteManager->shouldReceive('buildProvider')->andReturn($driver);
@@ -68,6 +70,11 @@ class SocialiteServiceTest extends TestCase
         $driver = Mockery::mock(AbstractProvider::class);
         $provider = 'google';
         $signedServerToken = 'test_token';
+
+        // Mock FrontendService behavior
+        $this->frontendService->shouldReceive('getPageUrl')
+            ->with("/auth/provider/$provider/callback")
+            ->andReturn('https://app.example.com/auth/provider/google/callback');
 
         // Mock driver behavior
         $this->socialiteManager->shouldReceive('buildProvider')->andReturn($driver);
@@ -91,6 +98,11 @@ class SocialiteServiceTest extends TestCase
         $mockUser = Mockery::mock(SocialiteUser::class);
         $driver = Mockery::mock(AbstractProvider::class);
 
+        // Mock FrontendService behavior
+        $this->frontendService->shouldReceive('getPageUrl')
+            ->with("/auth/provider/$provider/callback")
+            ->andReturn('https://app.example.com/auth/provider/google/callback');
+
         // Mock driver stateless user fetch
         $this->socialiteManager->shouldReceive('buildProvider')->andReturn($driver);
         $driver->shouldReceive('stateless')->andReturn($driver);
@@ -112,6 +124,11 @@ class SocialiteServiceTest extends TestCase
         $mockUser = Mockery::mock(SocialiteUser::class);
         $driver = Mockery::mock(AbstractProvider::class);
 
+        // Mock FrontendService behavior
+        $this->frontendService->shouldReceive('getPageUrl')
+            ->with("/auth/provider/$provider/callback")
+            ->andReturn('https://app.example.com/auth/provider/google/callback');
+
         // Mock driver stateful user fetch
         $this->socialiteManager->shouldReceive('buildProvider')->andReturn($driver);
         $driver->shouldReceive('user')->once()->andReturn($mockUser);
@@ -121,5 +138,38 @@ class SocialiteServiceTest extends TestCase
 
         // Assert
         $this->assertSame($mockUser, $result);
+    }
+
+    public function testGetRedirectUriUsesCorrectFrontendService(): void
+    {
+        $provider = 'github';
+        $expectedUrl = 'https://app.example.com/auth/provider/github/callback';
+        
+        // Mock FrontendService to return specific URL
+        $this->frontendService->shouldReceive('getPageUrl')
+            ->with("/auth/provider/$provider/callback")
+            ->once()
+            ->andReturn($expectedUrl);
+
+        $driver = Mockery::mock(AbstractProvider::class);
+        $redirectResponse = Mockery::mock(RedirectResponse::class);
+
+        // The buildProvider method should be called with config including our redirect URI
+        $this->socialiteManager->shouldReceive('buildProvider')
+            ->with(
+                Mockery::any(), 
+                Mockery::on(function ($config) use ($expectedUrl) {
+                    return isset($config['redirect']) && $config['redirect'] === $expectedUrl;
+                })
+            )
+            ->andReturn($driver);
+
+        $driver->shouldReceive('redirect')->andReturn($redirectResponse);
+
+        // Act
+        $result = $this->service->getRedirectResponse($provider);
+
+        // Assert
+        $this->assertSame($redirectResponse, $result);
     }
 }

@@ -7,13 +7,12 @@ use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\SocialiteManager;
 use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\GoogleProvider;
-use Modules\Tenant\Contexts\TenantContext;
+use Modules\Core\Services\FrontendService;
 
 class SocialiteService
 {
     public function __construct(
         private readonly SocialiteManager $socialiteManager,
-        private readonly TenantContext $tenantContext,
     ) {
     }
 
@@ -64,8 +63,8 @@ class SocialiteService
      */
     private function getRedirectUri(string $provider): string
     {
-        $appUrl = $this->tenantContext->getConfig()?->get('app_url');
-        return "$appUrl/auth/provider/$provider/callback";
+        $frontendService = app(FrontendService::class);
+        return $frontendService->getPageUrl("/auth/provider/$provider/callback");
     }
 
     /**
