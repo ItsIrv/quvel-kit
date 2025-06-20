@@ -1,19 +1,19 @@
 import { defineConfig } from '#q-app/wrappers';
-import { getCerts } from './utils';
+import { getCerts, config } from './utils';
 
 export default defineConfig(() => {
   return {
     devServer: {
-      allowedHosts: ['quvel.127.0.0.1.nip.io', 'cap-tenant.quvel.192.168.86.21.nip.io'],
+      allowedHosts: config.infra.getAllowedHosts(),
       strictPort: true,
-      port: 3002,
-      host: 'quvel.127.0.0.1.nip.io',
+      port: config.infra.getPort('capacitor', 'dev'),
+      host: config.infra.getHost('dev'),
       https: getCerts(),
       open: false,
     },
     capacitor: {
       hideSplashscreen: true,
-      appName: 'quvel.irv.codes',
+      appName: config.app.getId(),
       description:
         'A Laravel & Quasar hybrid framework optimized for SSR and seamless development.',
       version: '0.1.3-beta',

@@ -1,6 +1,6 @@
 import { defineConfig } from '#q-app/wrappers';
 import { fileURLToPath } from 'url';
-import { isLocal } from './utils';
+import { isLocal, config } from './utils';
 
 export default defineConfig((ctx) => {
   const isMultiTenant = process.env.SSR_MULTI_TENANT === 'true';
@@ -73,7 +73,7 @@ export default defineConfig((ctx) => {
             }
 
             if (id.endsWith('dist/client/client.mjs') || id.endsWith('dist/client/env.mjs')) {
-              return code.replace('__HMR_HOSTNAME__', JSON.stringify('quvel.127.0.0.1.nip.io'));
+              return code.replace('__HMR_HOSTNAME__', JSON.stringify(config.infra.getHMR().hostname));
             }
 
             return code;

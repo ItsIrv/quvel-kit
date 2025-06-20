@@ -5,11 +5,10 @@ import { TenantConfigProtected } from '../types/tenant.types';
  * Used in single-tenant mode when SSR_MULTI_TENANT is false.
  */
 export function createTenantConfigFromEnv(): TenantConfigProtected {
-  return {
+  const config: TenantConfigProtected = {
     apiUrl: process.env.VITE_API_URL || '',
     appUrl: process.env.VITE_APP_URL || '',
     appName: process.env.VITE_APP_NAME || '',
-    internalApiUrl: process.env.VITE_INTERNAL_API_URL || '',
     tenantId: process.env.VITE_TENANT_ID || '',
     tenantName: process.env.VITE_TENANT_NAME || '',
     pusherAppKey: process.env.VITE_PUSHER_APP_KEY || '',
@@ -30,6 +29,14 @@ export function createTenantConfigFromEnv(): TenantConfigProtected {
       recaptchaGoogleSiteKey: 'public',
     },
   };
+
+  if (process.env.VITE_INTERNAL_API_URL) {
+    config.internalApiUrl = process.env.VITE_INTERNAL_API_URL;
+  } else {
+    config.internalApiUrl = config.apiUrl;
+  }
+
+  return config;
 }
 
 /**

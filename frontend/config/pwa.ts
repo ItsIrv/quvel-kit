@@ -1,26 +1,27 @@
 import { defineConfig } from '#q-app/wrappers';
-import { getCerts, isLocal as isLocalFn } from './utils';
-
-const isLocal = isLocalFn();
+import { getCerts, isLocal, config } from './utils';
 
 export default defineConfig(() => {
+  const hmrConfig = config.infra.getHMR();
+  const vitePort = config.infra.getPort('pwa', 'vite');
+  
   return {
     build: {
       extendViteConf(viteConf): void {
         viteConf.server = {
           ...viteConf.server,
-          allowedHosts: ['quvel.127.0.0.1.nip.io'],
+          allowedHosts: config.infra.getAllowedHosts(),
           strictPort: true,
-          port: 9002,
-          host: '0.0.0.0',
+          port: vitePort,
+          host: config.infra.getHost('prod'),
           watch: {
             usePolling: true,
           },
           hmr: {
             protocol: 'wss',
-            host: isLocal ? 'quvel.127.0.0.1.nip.io' : '0.0.0.0',
-            port: 9002,
-            clientPort: isLocal ? 9002 : 443,
+            host: isLocal() ? config.infra.getHost('dev') : config.infra.getHost('prod'),
+            port: vitePort,
+            clientPort: isLocal() ? vitePort : hmrConfig.clientPort,
             path: '/hmr',
           },
           https: getCerts(),
@@ -29,8 +30,8 @@ export default defineConfig(() => {
     },
     devServer: {
       strictPort: true,
-      port: isLocal ? 3003 : 9002,
-      host: isLocal ? 'quvel.127.0.0.1.nip.io' : '0.0.0.0',
+      port: config.infra.getPort('pwa', 'dev'),
+      host: config.infra.getHost(isLocal() ? 'dev' : 'prod'),
       https: getCerts(),
       open: false,
     },
@@ -66,8 +67,8 @@ export default defineConfig(() => {
       },
       extendManifestJson(json) {
         // Customize manifest.json
-        json.name = 'QuVel Kit';
-        json.short_name = 'QuVel';
+        json.name = config.app.getName();
+        json.short_name = config.app.getShortName();
         json.description = 'Full-stack SaaS framework combining Laravel with Vue 3 + Quasar';
         json.display = 'standalone';
         json.orientation = 'portrait';

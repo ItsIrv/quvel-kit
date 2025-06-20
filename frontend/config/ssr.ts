@@ -1,29 +1,30 @@
 import { defineConfig } from '#q-app/wrappers';
-import { getCerts, isLocal as isLocalFn } from './utils';
-
-const isLocal = isLocalFn();
+import { getCerts, isLocal, config } from './utils';
 
 /**
  * Quasar SSR Configuration
  */
 export default defineConfig(() => {
+  const hmrConfig = config.infra.getHMR();
+  const vitePort = config.infra.getPort('ssr', 'vite');
+  
   return {
     build: {
       extendViteConf(viteConf): void {
         viteConf.server = {
           ...viteConf.server,
-          allowedHosts: ['quvel.127.0.0.1.nip.io'],
+          allowedHosts: config.infra.getAllowedHosts(),
           strictPort: true,
-          port: 9001,
-          host: '0.0.0.0',
+          port: vitePort,
+          host: config.infra.getHost('prod'),
           watch: {
             usePolling: true,
           },
           hmr: {
             protocol: 'wss',
-            host: isLocal ? 'quvel.127.0.0.1.nip.io' : '0.0.0.0',
-            port: 9001,
-            clientPort: isLocal ? 9001 : 443,
+            host: isLocal() ? config.infra.getHost('dev') : config.infra.getHost('prod'),
+            port: vitePort,
+            clientPort: isLocal() ? vitePort : hmrConfig.clientPort,
             path: '/hmr',
           },
           https: getCerts(),
@@ -32,21 +33,21 @@ export default defineConfig(() => {
     },
     devServer: {
       strictPort: true,
-      port: isLocal ? 3000 : 9000,
-      host: isLocal ? 'quvel.127.0.0.1.nip.io' : '0.0.0.0',
+      port: config.infra.getPort('ssr', 'dev'),
+      host: config.infra.getHost(isLocal() ? 'dev' : 'prod'),
       https: getCerts(),
       open: false,
     },
     ssr: {
-      prodPort: 3000,
+      prodPort: config.infra.getPort('ssr', 'prod'),
       middlewares: [
         'render', // keep this as last one
       ],
       // Enable PWA in SSR mode when requested
-      pwa: process.env.SSR_PWA === 'true',
+      pwa: config.getBoolean('SSR_PWA', false),
     },
     pwa: {
-      injectPwaMetaTags: process.env.SSR_PWA === 'true',
+      injectPwaMetaTags: config.getBoolean('SSR_PWA', false),
     },
   };
 });

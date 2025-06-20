@@ -1,12 +1,12 @@
 import { defineConfig } from '#q-app/wrappers';
-import { getCerts } from './utils';
+import { getCerts, config } from './utils';
 
 export default defineConfig(() => {
   return {
     devServer: {
       strictPort: true,
-      port: 3003,
-      host: 'cap-tenant.quvel.127.0.0.1.nip.io',
+      port: config.infra.getPort('electron', 'dev'),
+      host: config.infra.getHost('tenant'),
       https: getCerts(),
     },
   };
