@@ -13,6 +13,7 @@ use Modules\Auth\Actions\User\RegisterAction;
 use Modules\Auth\Actions\Fortify\VerificationVerify;
 use Modules\Auth\Actions\Fortify\ForgotPassword;
 use Modules\Auth\Actions\Fortify\PasswordViewRedirect;
+use Modules\Auth\Actions\Fortify\LoginViewRedirect;
 use Modules\Core\Http\Middleware\Config\CheckValue;
 use Modules\Core\Http\Middleware\Security\VerifyCaptcha;
 
@@ -34,6 +35,9 @@ Route::group([
     ], static function (): void {
         Route::post('/login', LoginAction::class)
             ->middleware('throttle:login')
+            ->name('login.process');
+
+        Route::get('/login', LoginViewRedirect::class)
             ->name('login');
 
         Route::post('/register', RegisterAction::class)

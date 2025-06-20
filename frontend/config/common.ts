@@ -20,6 +20,13 @@ export default defineConfig((ctx) => {
     ],
     css: ['app.scss'],
     extras: ['eva-icons', 'roboto-font'],
+    framework: {
+      cssAddon: false,
+      config: {},
+      iconSet: 'eva-icons',
+      plugins: ['Cookies', 'Notify', 'LocalStorage', 'Meta', 'Loading'],
+    },
+    animations: ['fadeIn', 'fadeOut'],
     build: {
       target: {
         browser: ['es2022', 'firefox115', 'chrome115', 'safari14'],
@@ -73,7 +80,10 @@ export default defineConfig((ctx) => {
             }
 
             if (id.endsWith('dist/client/client.mjs') || id.endsWith('dist/client/env.mjs')) {
-              return code.replace('__HMR_HOSTNAME__', JSON.stringify(config.infra.getHMR().hostname));
+              return code.replace(
+                '__HMR_HOSTNAME__',
+                JSON.stringify(config.infra.getHMR().hostname),
+              );
             }
 
             return code;
@@ -81,12 +91,5 @@ export default defineConfig((ctx) => {
         },
       ],
     },
-    framework: {
-      cssAddon: false,
-      config: {},
-      iconSet: 'eva-icons',
-      plugins: ['Cookies', 'Notify', 'LocalStorage', 'Meta', 'Loading'],
-    },
-    animations: ['fadeIn', 'fadeOut'],
   };
 });
