@@ -12,7 +12,7 @@ export function createConfig(ssrServiceOptions?: SsrServiceOptions): TenantConfi
   } else if (typeof window !== 'undefined' && window.__TENANT_CONFIG__) {
     config = window.__TENANT_CONFIG__;
   } else {
-    config = createTenantConfigFromEnv();
+    config = createConfigFromEnv();
   }
 
   return config;
@@ -89,7 +89,7 @@ function getPWACachedConfig(): TenantConfig | null {
   return null;
 }
 
-export function createTenantConfigFromEnv(): TenantConfig {
+export function createConfigFromEnv(): TenantConfig {
   const config: TenantConfig = {
     apiUrl: process.env.VITE_API_URL || '',
     appUrl: process.env.VITE_APP_URL || '',

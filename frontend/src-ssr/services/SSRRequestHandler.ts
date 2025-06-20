@@ -6,7 +6,7 @@ import type { SSRSingletonService } from '../types/service.types';
 import { SSRLogService } from './SSRLogService';
 import { SSRAssetInjectionService } from './SSRAssetInjectionService';
 import { TenantConfigProtected } from '../types/tenant.types';
-import { createTenantConfigFromEnv, filterTenantConfig } from '../utils/tenantConfigUtil';
+import { createConfigFromEnv, filterTenantConfig } from '../utils/configUtil';
 import { isValidHostname } from '../utils/validationUtil';
 import { TenantResolver } from './TenantResolver';
 import type { TraceInfo } from 'src/modules/Core/types/logging.types';
@@ -57,7 +57,7 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
 
       // Create a scoped asset injection service for this request
       const assetInjectionService = this.container.scoped(SSRAssetInjectionService, { req, res });
-      
+
       // Set tenant assets if available
       if (context.tenantConfig?.assets) {
         assetInjectionService.setTenantAssets(context.tenantConfig.assets);
@@ -161,7 +161,7 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
 
     if (!isMultiTenant) {
       // Single-tenant mode
-      const tenantConfig = createTenantConfigFromEnv();
+      const tenantConfig = createConfigFromEnv();
       logger.debug('Single-tenant mode', { tenantId: tenantConfig.tenantId });
       return tenantConfig;
     }

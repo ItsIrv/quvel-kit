@@ -1,13 +1,13 @@
 import { TenantConfigProtected } from '../types/tenant.types';
-import { createTenantConfigFromEnv as createTenantConfigFromEnvPublic } from 'src/modules/Core/utils/configUtil';
+import { createConfigFromEnv as createConfigFromEnvPublic } from 'src/modules/Core/utils/configUtil';
 
 /**
  * Creates a tenant config object from environment variables.
  * Used in single-tenant mode when SSR_MULTI_TENANT is false.
  */
-export function createTenantConfigFromEnv(): TenantConfigProtected {
+export function createConfigFromEnv(): TenantConfigProtected {
   const config: TenantConfigProtected = {
-    ...createTenantConfigFromEnvPublic(),
+    ...createConfigFromEnvPublic(),
     __visibility: {
       apiUrl: 'public',
       appUrl: 'public',
