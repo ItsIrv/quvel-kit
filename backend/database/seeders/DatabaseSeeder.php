@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $allModules = Module::toCollection();
+        $allModules = collect(Module::getByStatus('enabled'));
 
         $prioritized = $allModules->filter(fn ($m) => $m->get('seed_priority') !== null)
             ->sortBy(fn ($m) => $m->get('seed_priority'));
