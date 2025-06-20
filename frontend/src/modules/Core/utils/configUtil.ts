@@ -11,21 +11,8 @@ export function createConfig(ssrServiceOptions?: SsrServiceOptions): TenantConfi
     config = ssrServiceOptions.req.tenantConfig;
   } else if (typeof window !== 'undefined' && window.__TENANT_CONFIG__) {
     config = window.__TENANT_CONFIG__;
-  }
-
-  if (!config) {
-    config = {
-      apiUrl: import.meta.env.VITE_API_URL ?? '',
-      appUrl: import.meta.env.VITE_APP_URL ?? '',
-      appName: import.meta.env.VITE_APP_NAME ?? 'QuVel',
-      tenantId: import.meta.env.VITE_TENANT_ID ?? '',
-      tenantName: import.meta.env.VITE_TENANT_NAME ?? '',
-      pusherAppKey: import.meta.env.VITE_PUSHER_APP_KEY ?? '',
-      pusherAppCluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? '',
-      socialiteProviders: import.meta.env.VITE_SOCIALITE_PROVIDERS?.split(',') ?? [],
-      sessionCookie: import.meta.env.VITE_SESSION_NAME ?? SessionName,
-      recaptchaGoogleSiteKey: import.meta.env.VITE_RECAPTCHA_GOOGLE_SITE_KEY ?? '',
-    };
+  } else {
+    config = createTenantConfigFromEnv();
   }
 
   return config;
@@ -100,4 +87,21 @@ function getPWACachedConfig(): TenantConfig | null {
   }
 
   return null;
+}
+
+export function createTenantConfigFromEnv(): TenantConfig {
+  const config: TenantConfig = {
+    apiUrl: process.env.VITE_API_URL || '',
+    appUrl: process.env.VITE_APP_URL || '',
+    appName: process.env.VITE_APP_NAME || '',
+    tenantId: process.env.VITE_TENANT_ID || '',
+    tenantName: process.env.VITE_APP_NAME || '',
+    pusherAppKey: process.env.VITE_PUSHER_APP_KEY || '',
+    pusherAppCluster: process.env.VITE_PUSHER_APP_CLUSTER || '',
+    socialiteProviders: (process.env.VITE_SOCIALITE_PROVIDERS || '').split(',').filter(Boolean),
+    sessionCookie: process.env.VITE_SESSION_NAME || SessionName,
+    recaptchaGoogleSiteKey: process.env.VITE_RECAPTCHA_GOOGLE_SITE_KEY || '',
+  };
+
+  return config;
 }

@@ -1,4 +1,5 @@
 import { TenantConfigProtected } from '../types/tenant.types';
+import { createTenantConfigFromEnv as createTenantConfigFromEnvPublic } from 'src/modules/Core/utils/configUtil';
 
 /**
  * Creates a tenant config object from environment variables.
@@ -6,16 +7,7 @@ import { TenantConfigProtected } from '../types/tenant.types';
  */
 export function createTenantConfigFromEnv(): TenantConfigProtected {
   const config: TenantConfigProtected = {
-    apiUrl: process.env.VITE_API_URL || '',
-    appUrl: process.env.VITE_APP_URL || '',
-    appName: process.env.VITE_APP_NAME || '',
-    tenantId: process.env.VITE_TENANT_ID || '',
-    tenantName: process.env.VITE_TENANT_NAME || '',
-    pusherAppKey: process.env.VITE_PUSHER_APP_KEY || '',
-    pusherAppCluster: process.env.VITE_PUSHER_APP_CLUSTER || '',
-    socialiteProviders: (process.env.VITE_SOCIALITE_PROVIDERS || '').split(',').filter(Boolean),
-    sessionCookie: process.env.VITE_SESSION_NAME || '',
-    recaptchaGoogleSiteKey: process.env.VITE_RECAPTCHA_GOOGLE_SITE_KEY || '',
+    ...createTenantConfigFromEnvPublic(),
     __visibility: {
       apiUrl: 'public',
       appUrl: 'public',
