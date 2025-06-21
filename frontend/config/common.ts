@@ -19,7 +19,7 @@ export default defineConfig((ctx) => {
       },
     ],
     css: ['app.scss'],
-    extras: ['eva-icons', 'roboto-font'],
+    extras: ['eva-icons'],
     framework: {
       cssAddon: false,
       config: {},
