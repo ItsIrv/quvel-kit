@@ -160,7 +160,7 @@ onMounted(() => {
   }
 
   &-MobileMenu {
-    @apply tw:flex tw:lg:hidden;
+    @apply tw:flex tw:md:hidden;
   }
 
   &-MenuButton {
