@@ -1,4 +1,5 @@
 import { register } from 'register-service-worker';
+import type { TenantConfig } from 'src/modules/Core/types/tenant.types';
 
 // The ready(), registered(), cached(), updatefound() and updated()
 // events passes a ServiceWorkerRegistration instance in their arguments.
@@ -7,7 +8,7 @@ import { register } from 'register-service-worker';
 /**
  * Fetch tenant config from public API for standalone PWA mode.
  */
-async function fetchTenantConfigForPWA(): Promise<any> {
+async function fetchTenantConfigForPWA(): Promise<TenantConfig | null> {
   try {
     // Check if public config is enabled
     const publicConfigEnabled = import.meta.env.VITE_PUBLIC_CONFIG_ENABLED === 'true';
@@ -54,7 +55,7 @@ async function storeTenantConfig(context: string): Promise<void> {
 
     const domain = window.location.hostname;
     const configKey = `quvel_tenant_config_${domain}`;
-    
+
     // For registration backup, don't overwrite existing config
     if (context === 'registration backup') {
       const existingConfig = localStorage.getItem(configKey);
@@ -69,7 +70,7 @@ async function storeTenantConfig(context: string): Promise<void> {
     if (!tenantConfig) {
       console.log('QuVel Kit PWA: No window config found, fetching from API...');
       tenantConfig = await fetchTenantConfigForPWA();
-      
+
       if (tenantConfig) {
         // Set it on window for other parts of the app to use
         window.__TENANT_CONFIG__ = tenantConfig;
@@ -107,14 +108,14 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   registered(/* registration */) {
     console.log('QuVel Kit service worker has been registered.');
-    
+
     // Store tenant config on registration as backup
     void storeTenantConfig('registration backup');
   },
 
   cached(/* registration */) {
     console.log('QuVel Kit content has been cached for offline use.');
-    
+
     // Store tenant config for offline PWA use
     void storeTenantConfig('cache');
   },
