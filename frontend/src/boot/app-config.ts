@@ -1,14 +1,14 @@
 import { boot } from 'quasar/wrappers';
-import { fetchPublicTenantConfig } from 'src/modules/Core/utils/configUtil';
+import { fetchPublicAppConfig } from 'src/modules/Core/utils/configUtil';
 import { injectTenantAssets } from 'src/modules/Core/utils/assetUtil';
 
 /**
- * Tenant Config Boot File
+ * App Config Boot File
  *
- * Handles async tenant configuration loading for non-SSR modes.
+ * Handles async application configuration loading for non-SSR modes.
  * Only runs when:
  * - Not in SSR mode with SSR_MULTI_TENANT enabled
- * - No window.__TENANT_CONFIG__ available
+ * - No window.__APP_CONFIG__ available
  * - Public config API is enabled
  */
 export default boot(async ({ ssrContext }) => {
@@ -17,8 +17,8 @@ export default boot(async ({ ssrContext }) => {
     return;
   }
 
-  // Skip if tenant config already available
-  if (typeof window !== 'undefined' && window.__TENANT_CONFIG__) {
+  // Skip if app config already available
+  if (typeof window !== 'undefined' && window.__APP_CONFIG__) {
     return;
   }
 
@@ -29,16 +29,16 @@ export default boot(async ({ ssrContext }) => {
   }
 
   try {
-    // Fetch tenant config from public API
-    const config = await fetchPublicTenantConfig();
+    // Fetch app config from public API
+    const config = await fetchPublicAppConfig();
 
     if (config) {
       // Set global config for other services to use
       if (typeof window !== 'undefined') {
-        window.__TENANT_CONFIG__ = config;
+        window.__APP_CONFIG__ = config;
       }
 
-      // Inject tenant assets if available
+      // Inject app assets if available
       if (config.assets) {
         injectTenantAssets(config.assets);
       }

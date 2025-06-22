@@ -43,7 +43,8 @@ export class NotificationService extends Service implements RegisterService {
       return null;
     }
 
-    const channelName = `tenant.${this.config.get('tenantId')}.User.${userId}`;
+    const tenantId = this.config.isTenantConfig() ? this.config.getTenantId() : 'default';
+    const channelName = `tenant.${tenantId}.User.${userId}`;
 
     const channel = await this.ws.subscribe({
       channelName,

@@ -22,7 +22,9 @@ const SCROLL_THRESHOLD = 50;
  * Refs
  */
 const scrollY = ref(0);
+const lastScrollY = ref(0);
 const isScrolled = ref(false);
+const isHeaderVisible = ref(true);
 const route = useRoute();
 
 /**
@@ -38,8 +40,25 @@ const isLandingPage = computed(() => {
 function handleScroll() {
   // Use requestAnimationFrame for better performance
   window.requestAnimationFrame(() => {
-    scrollY.value = window.scrollY;
-    isScrolled.value = scrollY.value > SCROLL_THRESHOLD;
+    const currentScrollY = window.scrollY;
+    
+    // Update scroll states
+    scrollY.value = currentScrollY;
+    isScrolled.value = currentScrollY > SCROLL_THRESHOLD;
+    
+    // Determine header visibility based on scroll direction
+    if (currentScrollY <= 0) {
+      // Always show header at top (transparent)
+      isHeaderVisible.value = true;
+    } else if (currentScrollY < lastScrollY.value) {
+      // Scrolling up - show header
+      isHeaderVisible.value = true;
+    } else if (currentScrollY > lastScrollY.value && currentScrollY > SCROLL_THRESHOLD) {
+      // Scrolling down past threshold - hide header
+      isHeaderVisible.value = false;
+    }
+    
+    lastScrollY.value = currentScrollY;
   });
 }
 
@@ -55,7 +74,8 @@ onMounted(() => {
     <nav :class="[
       'PageHeader-Nav',
       isScrolled ? 'PageHeader-Nav--scrolled' : '',
-      isLandingPage ? 'PageHeader-Nav--landing' : ''
+      isLandingPage ? 'PageHeader-Nav--landing' : '',
+      !isHeaderVisible ? 'PageHeader-Nav--hidden' : ''
     ]">
       <div class="PageHeader-Container">
         <!-- Logo Section -->
@@ -128,6 +148,10 @@ onMounted(() => {
           @apply tw:text-gray-800 tw:dark:text-white;
         }
       }
+    }
+
+    &--hidden {
+      transform: translateY(-100%);
     }
   }
 

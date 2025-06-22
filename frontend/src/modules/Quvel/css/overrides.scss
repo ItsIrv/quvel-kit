@@ -2,19 +2,6 @@
  * Quasar Component Overrides
  */
 
-/* Reset default margin and padding for all heading and paragraph elements */
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: initial;
-  padding: initial;
-  font-size: initial;
-}
-
 /* Increase form error text size */
 .q-field__bottom,
 .q-field__messages {

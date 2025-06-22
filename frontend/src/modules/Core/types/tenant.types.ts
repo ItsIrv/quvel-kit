@@ -22,14 +22,14 @@ export interface JSAssetConfig {
   loading?: 'immediate' | 'deferred' | 'lazy'; // When to load
 }
 
-/** Tenant assets configuration */
-export interface TenantAssets {
+/** App assets configuration */
+export interface AppAssets {
   css?: CSSAssetConfig[];
   js?: JSAssetConfig[];
 }
 
-/** Tenant meta configuration */
-export interface TenantMeta {
+/** App meta configuration */
+export interface AppMeta {
   title?: string;
   titleTemplate?: string;
   description?: string;
@@ -42,18 +42,26 @@ export interface TenantMeta {
   twitterImage?: string;
 }
 
-/** Config type for SPA */
-export interface TenantConfig {
+/** Base application configuration interface */
+export interface AppConfig {
   apiUrl: string;
   appUrl: string;
   appName: string;
-  tenantId: string;
-  tenantName: string;
   pusherAppKey: string;
   pusherAppCluster: string;
   socialiteProviders: string[];
   sessionCookie?: string;
   recaptchaGoogleSiteKey: string;
-  assets?: TenantAssets;
-  meta?: TenantMeta;
+  assets?: AppAssets;
+  meta?: AppMeta;
 }
+
+/** Extended tenant configuration with tenant-specific fields */
+export interface TenantConfig extends AppConfig {
+  tenantId: string;
+  tenantName: string;
+}
+
+/** Legacy aliases for backward compatibility */
+export type TenantAssets = AppAssets;
+export type TenantMeta = AppMeta;

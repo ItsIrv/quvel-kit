@@ -10,8 +10,8 @@ export default defineConfig((ctx) => {
   return {
     preFetch: true,
     boot: [
-      // Add tenant config boot file for non-SSR modes or SSR+PWA in multi-tenant setups
-      ...(needsTenantConfig ? ['tenant-config'] : []),
+      // Add app config boot file for non-SSR modes or SSR+PWA in multi-tenant setups
+      ...(needsTenantConfig ? ['app-config'] : []),
       'container',
       {
         server: false,

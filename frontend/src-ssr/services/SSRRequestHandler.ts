@@ -5,8 +5,8 @@ import type { SSRServiceContainer } from './SSRServiceContainer';
 import type { SSRSingletonService } from '../types/service.types';
 import { SSRLogService } from './SSRLogService';
 import { SSRAssetInjectionService } from './SSRAssetInjectionService';
-import { TenantConfigProtected } from '../types/tenant.types';
-import { createConfigFromEnv, filterTenantConfig } from '../utils/configUtil';
+import { AppConfigProtected, TenantConfigProtected } from '../types/tenant.types';
+import { createAppConfigFromEnv, createTenantConfigFromEnv, filterConfig } from '../utils/configUtil';
 import { isValidHostname } from '../utils/validationUtil';
 import { TenantResolver } from './TenantResolver';
 import type { TraceInfo } from 'src/modules/Core/types/logging.types';
@@ -15,7 +15,7 @@ export interface SSRRequestContext {
   traceId: string;
   startTime: number;
   logger: SSRLogService;
-  tenantConfig: TenantConfigProtected | null;
+  tenantConfig: AppConfigProtected | TenantConfigProtected | null;
   traceInfo: TraceInfo;
 }
 
@@ -50,8 +50,8 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
       // Resolve tenant configuration
       context.tenantConfig = await this.resolveTenant(req, context.logger);
 
-      // Update trace info with tenant
-      if (context.tenantConfig) {
+      // Update trace info with tenant (only if tenant config)
+      if (context.tenantConfig && 'tenantId' in context.tenantConfig) {
         context.traceInfo.tenant = context.tenantConfig.tenantId;
       }
 
@@ -63,9 +63,9 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
         assetInjectionService.setTenantAssets(context.tenantConfig.assets);
       }
 
-      // Attach tenant config to request for Vue app access
+      // Attach config to request for Vue app access
       if (context.tenantConfig) {
-        (req as unknown as { tenantConfig: TenantConfigProtected }).tenantConfig =
+        (req as unknown as { tenantConfig: AppConfigProtected | TenantConfigProtected }).tenantConfig =
           context.tenantConfig;
       }
 
@@ -73,14 +73,14 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
       (req as unknown as { traceInfo: TraceInfo }).traceInfo = context.traceInfo;
 
       // Filter non-public fields before injecting into window
-      const publicTenantConfig = context.tenantConfig
-        ? filterTenantConfig(context.tenantConfig)
+      const publicConfig = context.tenantConfig
+        ? filterConfig(context.tenantConfig)
         : null;
 
-      if (!publicTenantConfig) {
-        context.logger.error('No tenant config found', { domain: req.get('host') });
+      if (!publicConfig) {
+        context.logger.error('No config found', { domain: req.get('host') });
 
-        throw new Error('No tenant config found');
+        throw new Error('No config found');
       }
 
       // Render the application
@@ -91,9 +91,9 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
       // Change runtime to client for browser
       const clientTraceInfo = { ...context.traceInfo, runtime: 'client' as const };
 
-      // Inject tenant config and trace info into window
+      // Inject app config and trace info into window
       const scriptTag = `<script>
-          window.__TENANT_CONFIG__ = ${JSON.stringify(publicTenantConfig)};
+          window.__APP_CONFIG__ = ${JSON.stringify(publicConfig)};
           window.__TRACE__ = ${JSON.stringify(clientTraceInfo)};
         </script>`;
 
@@ -156,14 +156,24 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
   private async resolveTenant(
     req: Request,
     logger: SSRLogService,
-  ): Promise<TenantConfigProtected | null> {
+  ): Promise<AppConfigProtected | TenantConfigProtected | null> {
     const isMultiTenant = process.env.SSR_MULTI_TENANT === 'true';
 
     if (!isMultiTenant) {
-      // Single-tenant mode
-      const tenantConfig = createConfigFromEnv();
-      logger.debug('Single-tenant mode', { tenantId: tenantConfig.tenantId });
-      return tenantConfig;
+      // Single-tenant mode - check if we need tenant fields from env
+      const hasTenantEnvVars = process.env.VITE_TENANT_ID || process.env.VITE_TENANT_NAME;
+      
+      if (hasTenantEnvVars) {
+        // Use tenant config if tenant env vars are provided
+        const tenantConfig = createTenantConfigFromEnv();
+        logger.debug('Single-tenant mode with tenant fields', { tenantId: tenantConfig.tenantId });
+        return tenantConfig;
+      } else {
+        // Use app config for pure single-tenant mode
+        const appConfig = createAppConfigFromEnv();
+        logger.debug('Single-tenant mode without tenant fields');
+        return appConfig;
+      }
     }
 
     // Multi-tenant mode

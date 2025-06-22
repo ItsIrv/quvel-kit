@@ -1,4 +1,4 @@
-import type { TenantConfig } from './modules/Core/types/tenant.types';
+import type { AppConfig, TenantConfig } from './modules/Core/types/tenant.types';
 import type { TraceInfo } from './modules/Core/types/logging.types';
 
 declare namespace NodeJS {
@@ -11,7 +11,7 @@ declare namespace NodeJS {
 
 declare global {
   interface Window {
-    __TENANT_CONFIG__: TenantConfig | null;
+    __APP_CONFIG__: AppConfig | TenantConfig | null;
     __TRACE__: TraceInfo;
   }
 }

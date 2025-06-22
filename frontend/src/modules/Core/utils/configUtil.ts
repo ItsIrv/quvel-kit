@@ -1,27 +1,27 @@
 import type { SsrServiceOptions } from 'src/modules/Core/types/service.types';
-import type { TenantConfig } from 'src/modules/Core/types/tenant.types';
+import type { AppConfig, TenantConfig } from 'src/modules/Core/types/tenant.types';
 import { SessionName } from 'src/modules/Auth/models/Session';
 import { Tenant } from 'app/src-ssr/types/tenant.types';
 
-export function createConfig(ssrServiceOptions?: SsrServiceOptions): TenantConfig {
+export function createConfig<T extends AppConfig = AppConfig>(ssrServiceOptions?: SsrServiceOptions): T {
   // Try different config sources in order of preference
-  let config: TenantConfig | null = null;
+  let config: T | null = null;
 
   if (ssrServiceOptions?.req?.tenantConfig) {
-    config = ssrServiceOptions.req.tenantConfig;
-  } else if (typeof window !== 'undefined' && window.__TENANT_CONFIG__) {
-    config = window.__TENANT_CONFIG__;
+    config = ssrServiceOptions.req.tenantConfig as unknown as T;
+  } else if (typeof window !== 'undefined' && window.__APP_CONFIG__) {
+    config = window.__APP_CONFIG__ as T;
   } else {
-    config = createConfigFromEnv();
+    config = createConfigFromEnv() as T;
   }
 
   return config;
 }
 
 /**
- * Fetch tenant config from public API endpoint.
+ * Fetch app config from public API endpoint.
  */
-export async function fetchPublicTenantConfig(): Promise<TenantConfig | null> {
+export async function fetchPublicAppConfig(): Promise<AppConfig | null> {
   const cachedConfig = getPWACachedConfig();
 
   if (cachedConfig) {
@@ -66,9 +66,9 @@ export async function fetchPublicTenantConfig(): Promise<TenantConfig | null> {
 }
 
 /**
- * Retrieve tenant config from PWA localStorage cache.
+ * Retrieve app config from PWA localStorage cache.
  */
-function getPWACachedConfig(): TenantConfig | null {
+function getPWACachedConfig(): AppConfig | null {
   try {
     const domain = window.location.hostname;
     const configKey = `quvel_tenant_config_${domain}`;
@@ -89,13 +89,11 @@ function getPWACachedConfig(): TenantConfig | null {
   return null;
 }
 
-export function createConfigFromEnv(): TenantConfig {
-  const config: TenantConfig = {
+export function createConfigFromEnv(): AppConfig {
+  const config: AppConfig = {
     apiUrl: process.env.VITE_API_URL || '',
     appUrl: process.env.VITE_APP_URL || '',
     appName: process.env.VITE_APP_NAME || '',
-    tenantId: process.env.VITE_TENANT_ID || '',
-    tenantName: process.env.VITE_APP_NAME || '',
     pusherAppKey: process.env.VITE_PUSHER_APP_KEY || '',
     pusherAppCluster: process.env.VITE_PUSHER_APP_CLUSTER || '',
     socialiteProviders: (process.env.VITE_SOCIALITE_PROVIDERS || '').split(',').filter(Boolean),
@@ -105,3 +103,15 @@ export function createConfigFromEnv(): TenantConfig {
 
   return config;
 }
+
+export function createTenantConfigFromEnv(): TenantConfig {
+  const baseConfig = createConfigFromEnv();
+  const tenantConfig: TenantConfig = {
+    ...baseConfig,
+    tenantId: process.env.VITE_TENANT_ID || '',
+    tenantName: process.env.VITE_TENANT_NAME || process.env.VITE_APP_NAME || '',
+  };
+
+  return tenantConfig;
+}
+

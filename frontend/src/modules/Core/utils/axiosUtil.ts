@@ -10,14 +10,18 @@ export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance
 }
 
 /**
- * Gets the tenant-specific XSRF cookie name
+ * Gets the app-specific XSRF cookie name
  */
-function getTenantXsrfCookieName(ssrServiceOptions?: SsrServiceOptions | null): string {
+function getAppXsrfCookieName(ssrServiceOptions?: SsrServiceOptions | null): string {
+  // Check for tenant ID first (for multi-tenant setups)
+  const tenantConfig = ssrServiceOptions?.req?.tenantConfig as unknown as Record<string, unknown>;
+  const appConfig = typeof window !== 'undefined' ? window.__APP_CONFIG__ as unknown as Record<string, unknown> : null;
+  
   const tenantId =
-    ssrServiceOptions?.req?.tenantConfig?.tenantId ??
-    (typeof window !== 'undefined' ? window.__TENANT_CONFIG__?.tenantId : null);
+    tenantConfig?.tenantId ??
+    appConfig?.tenantId;
 
-  if (tenantId) {
+  if (tenantId && typeof tenantId === 'string') {
     return `XSRF-TOKEN-${tenantId}`;
   }
 
@@ -36,12 +40,13 @@ export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosIn
   let baseURL = '';
 
   if (ssrServiceOptions?.req?.tenantConfig) {
+    const config = ssrServiceOptions?.req?.tenantConfig as unknown as Record<string, unknown>;
     baseURL =
-      ssrServiceOptions?.req?.tenantConfig?.internalApiUrl ??
+      (config?.internalApiUrl as string) ??
       ssrServiceOptions?.req?.tenantConfig?.apiUrl;
   } else {
     baseURL =
-      (typeof window !== 'undefined' ? window.__TENANT_CONFIG__?.apiUrl : null) ??
+      (typeof window !== 'undefined' ? window.__APP_CONFIG__?.apiUrl : null) ??
       process.env.VITE_API_URL ??
       '';
   }
@@ -54,7 +59,7 @@ export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosIn
     baseURL,
     withCredentials: true,
     withXSRFToken: true,
-    xsrfCookieName: getTenantXsrfCookieName(ssrServiceOptions),
+    xsrfCookieName: getAppXsrfCookieName(ssrServiceOptions),
     xsrfHeaderName: 'X-XSRF-TOKEN',
     headers: {
       Accept: 'application/json',
