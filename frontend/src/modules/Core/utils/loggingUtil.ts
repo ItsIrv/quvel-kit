@@ -21,7 +21,9 @@ export function createLogger(
       id: '',
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV ?? 'development',
-      tenant: ssrContext?.req?.tenantConfig?.tenantId ?? 'unknown',
+      tenant: (ssrContext?.req?.appConfig && 'tenantId' in ssrContext.req.appConfig) 
+        ? ssrContext.req.appConfig.tenantId 
+        : 'unknown',
       runtime: 'client' as const,
     };
 

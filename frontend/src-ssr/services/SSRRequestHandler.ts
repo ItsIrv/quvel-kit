@@ -15,7 +15,7 @@ export interface SSRRequestContext {
   traceId: string;
   startTime: number;
   logger: SSRLogService;
-  tenantConfig: AppConfigProtected | TenantConfigProtected | null;
+  appConfig: AppConfigProtected | TenantConfigProtected | null;
   traceInfo: TraceInfo;
 }
 
@@ -47,34 +47,34 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
         userAgent: req.get('user-agent'),
       });
 
-      // Resolve tenant configuration
-      context.tenantConfig = await this.resolveTenant(req, context.logger);
+      // Resolve app configuration
+      context.appConfig = await this.resolveTenant(req, context.logger);
 
       // Update trace info with tenant (only if tenant config)
-      if (context.tenantConfig && 'tenantId' in context.tenantConfig) {
-        context.traceInfo.tenant = context.tenantConfig.tenantId;
+      if (context.appConfig && 'tenantId' in context.appConfig) {
+        context.traceInfo.tenant = context.appConfig.tenantId;
       }
 
       // Create a scoped asset injection service for this request
       const assetInjectionService = this.container.scoped(SSRAssetInjectionService, { req, res });
 
       // Set tenant assets if available
-      if (context.tenantConfig?.assets) {
-        assetInjectionService.setTenantAssets(context.tenantConfig.assets);
+      if (context.appConfig?.assets) {
+        assetInjectionService.setTenantAssets(context.appConfig.assets);
       }
 
       // Attach config to request for Vue app access
-      if (context.tenantConfig) {
-        (req as unknown as { tenantConfig: AppConfigProtected | TenantConfigProtected }).tenantConfig =
-          context.tenantConfig;
+      if (context.appConfig) {
+        (req as unknown as { appConfig: AppConfigProtected | TenantConfigProtected }).appConfig =
+          context.appConfig;
       }
 
       // Attach trace info to the request for use in SSR
       (req as unknown as { traceInfo: TraceInfo }).traceInfo = context.traceInfo;
 
       // Filter non-public fields before injecting into window
-      const publicConfig = context.tenantConfig
-        ? filterConfig(context.tenantConfig)
+      const publicConfig = context.appConfig
+        ? filterConfig(context.appConfig)
         : null;
 
       if (!publicConfig) {
@@ -148,7 +148,7 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
       traceId,
       startTime,
       logger,
-      tenantConfig: null,
+      appConfig: null,
       traceInfo,
     };
   }

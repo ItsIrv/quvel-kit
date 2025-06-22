@@ -14,12 +14,12 @@ export function createAxios(axiosConfig: AxiosRequestConfig = {}): AxiosInstance
  */
 function getAppXsrfCookieName(ssrServiceOptions?: SsrServiceOptions | null): string {
   // Check for tenant ID first (for multi-tenant setups)
-  const tenantConfig = ssrServiceOptions?.req?.tenantConfig as unknown as Record<string, unknown>;
-  const appConfig = typeof window !== 'undefined' ? window.__APP_CONFIG__ as unknown as Record<string, unknown> : null;
+  const ssrConfig = ssrServiceOptions?.req?.appConfig as unknown as Record<string, unknown>;
+  const windowConfig = typeof window !== 'undefined' ? window.__APP_CONFIG__ as unknown as Record<string, unknown> : null;
   
   const tenantId =
-    tenantConfig?.tenantId ??
-    appConfig?.tenantId;
+    ssrConfig?.tenantId ??
+    windowConfig?.tenantId;
 
   if (tenantId && typeof tenantId === 'string') {
     return `XSRF-TOKEN-${tenantId}`;
@@ -39,11 +39,11 @@ export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosIn
   // In order: Internal API URL, Public API URL, Vite API URL
   let baseURL = '';
 
-  if (ssrServiceOptions?.req?.tenantConfig) {
-    const config = ssrServiceOptions?.req?.tenantConfig as unknown as Record<string, unknown>;
+  if (ssrServiceOptions?.req?.appConfig) {
+    const config = ssrServiceOptions?.req?.appConfig as unknown as Record<string, unknown>;
     baseURL =
       (config?.internalApiUrl as string) ??
-      ssrServiceOptions?.req?.tenantConfig?.apiUrl;
+      ssrServiceOptions?.req?.appConfig?.apiUrl;
   } else {
     baseURL =
       (typeof window !== 'undefined' ? window.__APP_CONFIG__?.apiUrl : null) ??
@@ -70,7 +70,7 @@ export function createApi(ssrServiceOptions?: SsrServiceOptions | null): AxiosIn
 
   if (ssrServiceOptions) {
     const cookies = Cookies.parseSSR(ssrServiceOptions);
-    const sessionCookie = ssrServiceOptions.req?.tenantConfig?.sessionCookie ?? SessionName;
+    const sessionCookie = ssrServiceOptions.req?.appConfig?.sessionCookie ?? SessionName;
     const sessionToken = cookies.get(sessionCookie);
 
     // Attach session cookie (for authentication)

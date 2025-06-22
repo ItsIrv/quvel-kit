@@ -1,14 +1,14 @@
 import type { SsrServiceOptions } from 'src/modules/Core/types/service.types';
 import type { AppConfig, TenantConfig } from 'src/modules/Core/types/tenant.types';
 import { SessionName } from 'src/modules/Auth/models/Session';
-import { Tenant } from 'app/src-ssr/types/tenant.types';
+// Removed SSR import to avoid circular dependencies
 
 export function createConfig<T extends AppConfig = AppConfig>(ssrServiceOptions?: SsrServiceOptions): T {
   // Try different config sources in order of preference
   let config: T | null = null;
 
-  if (ssrServiceOptions?.req?.tenantConfig) {
-    config = ssrServiceOptions.req.tenantConfig as unknown as T;
+  if (ssrServiceOptions?.req?.appConfig) {
+    config = ssrServiceOptions.req.appConfig as unknown as T;
   } else if (typeof window !== 'undefined' && window.__APP_CONFIG__) {
     config = window.__APP_CONFIG__ as T;
   } else {
@@ -53,7 +53,7 @@ export async function fetchPublicAppConfig(): Promise<AppConfig | null> {
       return null;
     }
 
-    const data = (await response.json()) as { data: Tenant };
+    const data = (await response.json()) as { data: { config: AppConfig } };
 
     if (data.data) {
       return data.data.config;
