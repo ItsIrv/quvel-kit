@@ -1,5 +1,8 @@
 import { AppConfigProtected, TenantConfigProtected } from '../types/tenant.types';
-import { createConfigFromEnv as createConfigFromEnvPublic, createTenantConfigFromEnv as createTenantConfigFromEnvPublic } from 'src/modules/Core/utils/configUtil';
+import {
+  createConfigFromEnv as createConfigFromEnvPublic,
+  createTenantConfigFromEnv as createTenantConfigFromEnvPublic,
+} from 'src/modules/Core/utils/configUtil';
 
 /**
  * Creates an app config object from environment variables.
@@ -60,18 +63,12 @@ export function createTenantConfigFromEnv(): TenantConfigProtected {
 }
 
 /**
- * Legacy function for backward compatibility.
- * @deprecated Use createAppConfigFromEnv() or createTenantConfigFromEnv() instead.
- */
-export function createConfigFromEnv(): AppConfigProtected {
-  return createAppConfigFromEnv();
-}
-
-/**
  * Filters out non-public fields from any protected config.
  * Only returns fields marked as 'public' in the visibility settings.
  */
-export function filterConfig(config: AppConfigProtected | TenantConfigProtected): Record<string, unknown> {
+export function filterConfig(
+  config: AppConfigProtected | TenantConfigProtected,
+): Record<string, unknown> {
   const publicConfig: Record<string, unknown> = {};
 
   // First, build the filtered config with only public fields
@@ -87,12 +84,4 @@ export function filterConfig(config: AppConfigProtected | TenantConfigProtected)
   });
 
   return publicConfig;
-}
-
-/**
- * Legacy function for backward compatibility.
- * @deprecated Use filterConfig() instead.
- */
-export function filterTenantConfig(config: TenantConfigProtected): Record<string, unknown> {
-  return filterConfig(config);
 }

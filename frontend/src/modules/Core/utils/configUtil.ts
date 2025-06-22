@@ -3,7 +3,9 @@ import type { AppConfig, TenantConfig } from 'src/modules/Core/types/tenant.type
 import { SessionName } from 'src/modules/Auth/models/Session';
 // Removed SSR import to avoid circular dependencies
 
-export function createConfig<T extends AppConfig = AppConfig>(ssrServiceOptions?: SsrServiceOptions): T {
+export function createConfig<T extends AppConfig = AppConfig>(
+  ssrServiceOptions?: SsrServiceOptions,
+): T {
   // Try different config sources in order of preference
   let config: T | null = null;
 
@@ -22,6 +24,12 @@ export function createConfig<T extends AppConfig = AppConfig>(ssrServiceOptions?
  * Fetch app config from public API endpoint.
  */
 export async function fetchPublicAppConfig(): Promise<AppConfig | null> {
+  const publicConfigEnabled = import.meta.env.VITE_PUBLIC_CONFIG_ENABLED === 'true';
+
+  if (!publicConfigEnabled) {
+    return null;
+  }
+
   const cachedConfig = getPWACachedConfig();
 
   if (cachedConfig) {
@@ -29,12 +37,6 @@ export async function fetchPublicAppConfig(): Promise<AppConfig | null> {
   }
 
   try {
-    const publicConfigEnabled = import.meta.env.VITE_PUBLIC_CONFIG_ENABLED === 'true';
-
-    if (!publicConfigEnabled) {
-      return null;
-    }
-
     // Construct URL from current host - no cross-domain requests allowed
     const protocol = window.location.protocol;
     const hostname = window.location.hostname;
@@ -114,4 +116,3 @@ export function createTenantConfigFromEnv(): TenantConfig {
 
   return tenantConfig;
 }
-

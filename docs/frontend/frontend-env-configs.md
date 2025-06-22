@@ -6,16 +6,28 @@ QuVel Kit uses environment variables to configure various aspects of the applica
 
 A starter `.env.example` file is included in the frontend directory that you can copy to `.env` and customize.
 
-## Multi-Tenant Mode
+## Deployment Modes
 
-QuVel Kit supports both single-tenant and multi-tenant deployments:
+QuVel Kit supports both single-tenant and multi-tenant deployments with a decoupled configuration system:
 
 ```env
 # Enable or disable multi-tenant mode
 SSR_MULTI_TENANT=true
 ```
 
-When `SSR_MULTI_TENANT` is set to `true`, the application will resolve tenant configuration based on the hostname. When set to `false`, the application will use the values from environment variables.
+### Multi-Tenant Mode (`SSR_MULTI_TENANT=true`)
+
+- Configuration is resolved based on the hostname
+- Tenant data is fetched from the database
+- Includes `tenantId` and `tenantName` in the configuration
+- Uses `TenantConfig` interface
+
+### Single-Tenant Mode (`SSR_MULTI_TENANT=false`)
+
+- Configuration comes from environment variables
+- Uses `AppConfig` interface (no tenant fields)
+- Can optionally include tenant fields if `VITE_TENANT_ID`/`VITE_TENANT_NAME` are set
+- Suitable for dedicated single-tenant deployments
 
 ## Core Configuration
 
@@ -69,17 +81,25 @@ VITE_PUSHER_APP_KEY=your_pusher_key
 VITE_PUSHER_APP_CLUSTER=us3
 ```
 
-## Single-Tenant Configuration
+## Tenant Configuration (Optional)
 
-When running in single-tenant mode, these variables define the tenant:
+When running in single-tenant mode, you can optionally include tenant information:
 
 ```env
-# Tenant ID for single-tenant mode
+# Optional: Tenant ID for single-tenant mode with tenant context
 VITE_TENANT_ID=1
 
-# Tenant name for display
+# Optional: Tenant name for display
 VITE_TENANT_NAME=QuVel
 ```
+
+> **Note**: These variables are **optional** in single-tenant mode. When provided, the configuration will include tenant fields (`tenantId`, `tenantName`) and use the `TenantConfig` interface. When omitted, the configuration uses the base `AppConfig` interface without tenant fields.
+
+### When to Use Tenant Variables in Single-Tenant Mode
+
+- **Include them** if your single-tenant app needs tenant context (e.g., branding, tenant-specific features)
+- **Omit them** for pure single-tenant apps that don't need tenant concepts
+- **Multi-tenant mode** always includes tenant data from the database regardless of these variables
 
 ## SSR-Only Configuration
 
@@ -127,8 +147,8 @@ VITE_RECAPTCHA_KEY=your_recaptcha_key
 | `VITE_LOG_LEVEL` | Minimum log level | `info` |
 | `VITE_PUSHER_APP_KEY` | Pusher application key | - |
 | `VITE_PUSHER_APP_CLUSTER` | Pusher cluster | `us3` |
-| `VITE_TENANT_ID` | Tenant ID for single-tenant mode | `1` |
-| `VITE_TENANT_NAME` | Tenant name | `QuVel` |
+| `VITE_TENANT_ID` | Optional tenant ID for single-tenant mode | - |
+| `VITE_TENANT_NAME` | Optional tenant name | - |
 | `VITE_SOCIALITE_PROVIDERS` | Enabled OAuth providers | - |
 | `VITE_INTERNAL_API_URL` | Internal API URL for SSR | Same as `VITE_API_URL` |
 | `VITE_RECAPTCHA_KEY` | Google reCAPTCHA site key | - |
@@ -144,11 +164,46 @@ VITE_RECAPTCHA_KEY=your_recaptcha_key
 | `SSR_API_KEY` | API key for secure SSR communication | - |
 | `SSR_MULTI_TENANT` | Enables multi-tenant mode | `false` |
 
+## Configuration Examples
+
+### Pure Single-Tenant Setup
+
+```env
+SSR_MULTI_TENANT=false
+VITE_API_URL="https://api.myapp.com"
+VITE_APP_URL="https://myapp.com"
+VITE_APP_NAME="My Application"
+# No VITE_TENANT_ID or VITE_TENANT_NAME - uses AppConfig
+```
+
+### Single-Tenant with Tenant Context
+
+```env
+SSR_MULTI_TENANT=false
+VITE_API_URL="https://api.myapp.com"
+VITE_APP_URL="https://myapp.com"
+VITE_APP_NAME="My Application"
+VITE_TENANT_ID="main-tenant"
+VITE_TENANT_NAME="Main Organization"
+# Uses TenantConfig due to tenant variables
+```
+
+### Multi-Tenant Setup
+
+```env
+SSR_MULTI_TENANT=true
+VITE_API_URL="https://api.platform.com"
+SSR_TENANT_SSR_API_URL="https://internal-api.platform.com"
+SSR_API_KEY="secure-api-key"
+# Tenant data comes from database based on hostname
+```
+
 ## Security Considerations
 
 - SSR-only variables are never exposed to the client
-- Tenant configuration is filtered based on visibility levels
+- Configuration is filtered based on visibility levels (`public`, `protected`, `private`)
 - Sensitive values like API keys should be kept secure
+- The configuration system automatically adapts to deployment mode
 
 For more details on how configuration values are filtered and used, see the [Config Service documentation](./frontend-config-service.md).
 

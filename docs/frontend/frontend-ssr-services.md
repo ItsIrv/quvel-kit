@@ -47,16 +47,17 @@ export default defineSsrMiddleware(({ app, resolve, render }) => {
 |---------|---------|
 | `SSRLogService` | Server-side logging |
 | `SSRApiService` | Backend HTTP requests |
-| `SSRTenantCacheService` | Tenant configuration cache |
-| `TenantResolver` | Domain-to-tenant resolution |
-| `SSRRequestHandler` | Main request coordination |
+| `SSRTenantCacheService` | Tenant configuration cache (multi-tenant mode) |
+| `TenantResolver` | Domain-to-tenant resolution (multi-tenant mode) |
+| `SSRRequestHandler` | Main request coordination and config resolution |
 
 ### Express Container Flow
 
 1. Express server starts → Creates singleton container
 2. HTTP request arrives → Middleware gets container  
-3. Middleware uses services → Processes request
-4. Services coordinate → Renders Quasar app
+3. SSRRequestHandler resolves app/tenant configuration
+4. Configuration attached to `req.appConfig`
+5. Services coordinate → Renders Quasar app with config context
 
 ## Quasar Container
 
@@ -82,7 +83,7 @@ export class SSRApiService extends SSRService implements SSRSingletonService {
 
   // Pass request context as parameters - never store in instance
   async get<T>(url: string, options?: { req?: Request }): Promise<T> {
-    const baseURL = options?.req?.tenantConfig?.internalApiUrl;
+    const baseURL = options?.req?.appConfig?.internalApiUrl;
     // Use baseURL for this request only
   }
 }
@@ -134,11 +135,55 @@ const requestService = container.scoped(RequestContextService, { req, res });
 const userAgent = requestService.getUserAgent();
 ```
 
+## Configuration in SSR Services
+
+The SSR system now uses a decoupled configuration approach that supports both single-tenant and multi-tenant deployments:
+
+### Request Configuration
+
+Configuration is attached to each request as `req.appConfig`:
+
+```ts
+// In SSR services, access configuration from request
+export class MySSRService extends SSRService implements SSRSingletonService {
+  async processRequest(req: Request): Promise<void> {
+    // Access app configuration (works in both modes)
+    const apiUrl = req.appConfig?.apiUrl;
+    const appName = req.appConfig?.appName;
+    
+    // Check if this is a tenant configuration
+    if ('tenantId' in req.appConfig) {
+      const tenantId = req.appConfig.tenantId;
+      const tenantName = req.appConfig.tenantName;
+      // Handle tenant-specific logic
+    }
+    
+    // Use configuration for this request
+    const response = await fetch(`${apiUrl}/endpoint`);
+  }
+}
+```
+
+### Configuration Types in SSR
+
+The SSR system works with these configuration types:
+
+- **`AppConfigProtected`**: Single-tenant mode without tenant fields
+- **`TenantConfigProtected`**: Multi-tenant mode or single-tenant with tenant context
+- Both include visibility controls (`__visibility`) for filtering public/protected fields
+
+### Configuration Resolution
+
+1. **Multi-tenant mode** (`SSR_MULTI_TENANT=true`): Resolves tenant from hostname via database
+2. **Single-tenant mode** (`SSR_MULTI_TENANT=false`): Creates config from environment variables
+3. **Hybrid mode**: Single-tenant with optional tenant context if `VITE_TENANT_ID`/`VITE_TENANT_NAME` are set
+
 ## Security Rules
 
 - **Singletons**: Never store request data in instance variables
 - **Scoped**: Only when you need request-specific state  
 - **Request context**: Pass as method parameters
+- **Configuration**: Always access via `req.appConfig`, never cache in service instances
 
 ---
 
