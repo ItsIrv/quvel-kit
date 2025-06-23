@@ -5,9 +5,9 @@
  * Add your own translations here to extend the core translations.
  */
 import coreTranslations from 'src/modules/Core/i18n/en-US';
-import authTranslations from 'src/modules/Auth/i18n/en-US';
-import notificationsTranslations from 'src/modules/Notifications/i18n/en-US';
-import quvelTranslations from 'src/modules/Quvel/i18n/en-US';
+import { AuthModule } from 'src/modules/Auth';
+import { NotificationsModule } from 'src/modules/Notifications';
+import { QuvelModule } from 'src/modules/Quvel';
 
 /**
  * Application-specific translations that extend the core translations
@@ -22,8 +22,8 @@ const appTranslations = {
  */
 export default {
   ...coreTranslations,
-  ...authTranslations,
-  ...notificationsTranslations,
+  ...(AuthModule.i18n?.()['en-US'] || {}),
+  ...(NotificationsModule.i18n?.()['en-US'] || {}),
   ...appTranslations,
-  ...quvelTranslations,
+  ...(QuvelModule.i18n?.()['en-US'] || {}),
 } as const;

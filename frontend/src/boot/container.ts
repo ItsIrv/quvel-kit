@@ -1,13 +1,21 @@
 import { defineBoot } from '#q-app/wrappers';
 import { ContainerKey, setClientContainer } from 'src/modules/Core/composables/useContainer';
 import { createContainer } from 'src/modules/Core/utils/containerUtil';
-import { getAllServices } from 'src/config/services';
+import { CoreModule } from 'src/modules/Core';
 
 /**
  * Boot function to provide the container service.
  */
 export default defineBoot(({ ssrContext, app }) => {
-  const container = createContainer(ssrContext, getAllServices());
+  // Get core services for initialization
+  const coreServices = CoreModule.services!();
+  const serviceMap = new Map();
+
+  for (const [name, ServiceClass] of Object.entries(coreServices)) {
+    serviceMap.set(name, ServiceClass);
+  }
+
+  const container = createContainer(ssrContext, serviceMap);
 
   if (ssrContext) {
     ssrContext.$container = container;
