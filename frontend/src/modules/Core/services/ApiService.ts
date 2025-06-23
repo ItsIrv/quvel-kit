@@ -36,7 +36,9 @@ export class ApiService extends Service implements SsrAwareService, RegisterServ
   register(container: ServiceContainer): void {
     this.log = container.log;
 
-    this.setupInterceptors();
+    if (process.env.VITE_AXIOS_INTERCEPTORS === 'true') {
+      this.setupInterceptors();
+    }
   }
 
   /**
