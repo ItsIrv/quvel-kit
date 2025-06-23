@@ -83,7 +83,7 @@ export class SSRApiService extends SSRService implements SSRSingletonService {
 
   // Pass request context as parameters - never store in instance
   async get<T>(url: string, options?: { req?: Request }): Promise<T> {
-    const baseURL = options?.req?.appConfig?.internalApiUrl;
+    const baseURL = options?.req?.requestContext?.appConfig?.internalApiUrl;
     // Use baseURL for this request only
   }
 }
@@ -141,20 +141,21 @@ The SSR system now uses a decoupled configuration approach that supports both si
 
 ### Request Configuration
 
-Configuration is attached to each request as `req.appConfig`:
+Configuration is attached to each request as `req.requestContext`:
 
 ```ts
 // In SSR services, access configuration from request
 export class MySSRService extends SSRService implements SSRSingletonService {
   async processRequest(req: Request): Promise<void> {
     // Access app configuration (works in both modes)
-    const apiUrl = req.appConfig?.apiUrl;
-    const appName = req.appConfig?.appName;
+    const appConfig = req.requestContext?.appConfig;
+    const apiUrl = appConfig?.apiUrl;
+    const appName = appConfig?.appName;
     
     // Check if this is a tenant configuration
-    if ('tenantId' in req.appConfig) {
-      const tenantId = req.appConfig.tenantId;
-      const tenantName = req.appConfig.tenantName;
+    if (appConfig && 'tenantId' in appConfig) {
+      const tenantId = appConfig.tenantId;
+      const tenantName = appConfig.tenantName;
       // Handle tenant-specific logic
     }
     
@@ -183,7 +184,7 @@ The SSR system works with these configuration types:
 - **Singletons**: Never store request data in instance variables
 - **Scoped**: Only when you need request-specific state  
 - **Request context**: Pass as method parameters
-- **Configuration**: Always access via `req.appConfig`, never cache in service instances
+- **Configuration**: Always access via `req.requestContext.appConfig`, never cache in service instances
 
 ---
 

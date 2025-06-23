@@ -61,7 +61,7 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
       }
 
       // Attach full context to request
-      req.ssrContext = {
+      req.requestContext = {
         traceId: context.traceId,
         startTime: context.startTime,
         appConfig: context.appConfig,

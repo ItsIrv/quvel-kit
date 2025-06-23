@@ -10,6 +10,6 @@ export interface SSRRequestContext {
 
 declare module 'express' {
   interface Request {
-    ssrContext: SSRRequestContext;
+    requestContext: SSRRequestContext;
   }
 }

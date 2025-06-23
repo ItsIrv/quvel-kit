@@ -9,8 +9,8 @@ export function createConfig<T extends AppConfig = AppConfig>(
   // Try different config sources in order of preference
   let config: T | null = null;
 
-  if (ssrServiceOptions?.req?.ssrContext?.appConfig) {
-    config = ssrServiceOptions.req.ssrContext.appConfig as unknown as T;
+  if (ssrServiceOptions?.req?.requestContext?.appConfig) {
+    config = ssrServiceOptions.req.requestContext.appConfig as unknown as T;
   } else if (typeof window !== 'undefined' && window.__APP_CONFIG__) {
     config = window.__APP_CONFIG__ as T;
   } else {

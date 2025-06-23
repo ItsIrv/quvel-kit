@@ -16,13 +16,13 @@ export function createLogger(
   ssrContext?: SsrServiceOptions,
   type: string = process.env.VITE_LOGGER || LoggerType.NULL,
 ): LoggerInterface {
-  const traceInfo = ssrContext?.req?.ssrContext?.traceInfo ??
+  const traceInfo = ssrContext?.req?.requestContext?.traceInfo ??
     (typeof window !== 'undefined' ? window.__TRACE__ : null) ?? {
       id: '',
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV ?? 'development',
       tenant: (() => {
-        const config = ssrContext?.req?.ssrContext?.appConfig;
+        const config = ssrContext?.req?.requestContext?.appConfig;
         return (config && 'tenantId' in config && typeof config.tenantId === 'string') ? config.tenantId : 'unknown';
       })(),
       runtime: 'client' as const,
