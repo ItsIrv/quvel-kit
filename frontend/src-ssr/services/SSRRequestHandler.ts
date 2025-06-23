@@ -6,18 +6,15 @@ import type { SSRSingletonService } from '../types/service.types';
 import { SSRLogService } from './SSRLogService';
 import { SSRAssetInjectionService } from './SSRAssetInjectionService';
 import { AppConfigProtected, TenantConfigProtected } from '../types/tenant.types';
-import { createAppConfigFromEnv, createTenantConfigFromEnv, filterConfig } from '../utils/configUtil';
+import {
+  createAppConfigFromEnv,
+  createTenantConfigFromEnv,
+  filterConfig,
+} from '../utils/configUtil';
 import { isValidHostname } from '../utils/validationUtil';
 import { TenantResolver } from './TenantResolver';
 import type { TraceInfo } from 'src/modules/Core/types/logging.types';
-
-export interface SSRRequestContext {
-  traceId: string;
-  startTime: number;
-  logger: SSRLogService;
-  appConfig: AppConfigProtected | TenantConfigProtected | null;
-  traceInfo: TraceInfo;
-}
+import type { SSRRequestContext } from '../ssr.d';
 
 export class SSRRequestHandler extends SSRService implements SSRSingletonService {
   private tenantResolver!: TenantResolver;
@@ -63,19 +60,16 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
         assetInjectionService.setTenantAssets(context.appConfig.assets);
       }
 
-      // Attach config to request for Vue app access
-      if (context.appConfig) {
-        (req as unknown as { appConfig: AppConfigProtected | TenantConfigProtected }).appConfig =
-          context.appConfig;
-      }
-
-      // Attach trace info to the request for use in SSR
-      (req as unknown as { traceInfo: TraceInfo }).traceInfo = context.traceInfo;
+      // Attach full context to request
+      req.ssrContext = {
+        traceId: context.traceId,
+        startTime: context.startTime,
+        appConfig: context.appConfig,
+        traceInfo: context.traceInfo,
+      };
 
       // Filter non-public fields before injecting into window
-      const publicConfig = context.appConfig
-        ? filterConfig(context.appConfig)
-        : null;
+      const publicConfig = context.appConfig ? filterConfig(context.appConfig) : null;
 
       if (!publicConfig) {
         context.logger.error('No config found', { domain: req.get('host') });
@@ -129,7 +123,7 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
     }
   }
 
-  private createRequestContext(): SSRRequestContext {
+  private createRequestContext(): SSRRequestContext & { logger: SSRLogService } {
     const traceId = uuidv4();
     const startTime = Date.now();
 
@@ -162,7 +156,7 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
     if (!isMultiTenant) {
       // Single-tenant mode - check if we need tenant fields from env
       const hasTenantEnvVars = process.env.VITE_TENANT_ID || process.env.VITE_TENANT_NAME;
-      
+
       if (hasTenantEnvVars) {
         // Use tenant config if tenant env vars are provided
         const tenantConfig = createTenantConfigFromEnv();
