@@ -1,6 +1,8 @@
 import type { ModuleLoader } from './types/module.types';
 import { getAllServices } from './config/services';
 import { ServiceClass } from './types/service.types';
+import enUSTranslations from './i18n/en-US';
+import esMXTranslations from './i18n/es-MX';
 
 /**
  * Core Module Loader
@@ -22,4 +24,12 @@ export const CoreModule: ModuleLoader = {
 
     return services;
   },
+
+  /**
+   * Returns Core module translations
+   */
+  i18n: () => ({
+    'en-US': enUSTranslations,
+    'es-MX': esMXTranslations,
+  }),
 };

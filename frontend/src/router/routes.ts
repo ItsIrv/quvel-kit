@@ -1,12 +1,8 @@
 import type { RouteRecordRaw } from 'vue-router';
-import { AuthModule } from 'src/modules/Auth';
-import { NotificationsModule } from 'src/modules/Notifications';
-import { QuvelModule } from 'src/modules/Quvel';
+import { getModuleRoutes } from 'src/modules/moduleRegistry';
 
 const routes: RouteRecordRaw[] = [
-  ...(AuthModule.routes?.() || []),
-  ...(NotificationsModule.routes?.() || []), 
-  ...(QuvelModule.routes?.() || []),
+  ...getModuleRoutes(),
   // Always leave this as last one,
   // but you can also remove it
   {
