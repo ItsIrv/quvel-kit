@@ -1,22 +1,13 @@
 import type { RouteRecordRaw } from 'vue-router';
-import type { ModuleLoader } from 'src/modules/Core/types/module.types';
 import type { ServiceClass } from 'src/modules/Core/types/service.types';
-import { AuthModule } from 'src/modules/Auth';
-import { NotificationsModule } from 'src/modules/Notifications';
-import { QuvelModule } from 'src/modules/Quvel';
-import { CoreModule } from 'src/modules/Core';
+import { getAllModules } from 'src/config/modules';
 
 /**
- * Registered Modules
+ * Module Registry
  * 
- * Add new modules here to make them available throughout the app.
+ * Provides access to configured modules and their resources.
  */
-export const modules: Record<string, ModuleLoader> = {
-  Core: CoreModule,
-  Auth: AuthModule,
-  Notifications: NotificationsModule,
-  Quvel: QuvelModule,
-};
+export const modules = getAllModules();
 
 /**
  * Gets routes from all modules

@@ -1,8 +1,7 @@
-import type messages from 'src/i18n';
 import type { I18n } from 'vue-i18n';
 
-export type MessageLanguages = keyof typeof messages;
-export type MessageSchema = (typeof messages)[MessageLanguages];
+export type MessageLanguages = 'en-US' | 'es-MX';
+export type MessageSchema = Record<string, unknown>;
 
 /**
  * Shared type for Vue I18n configuration
