@@ -74,6 +74,19 @@ generate_config() {
         exit 1
     fi
     
+    # Backup existing config if it exists and looks custom
+    if [[ -f "$output_file" ]]; then
+        # Check if file looks like it has custom content (not just template-generated)
+        if grep -q "192\.168\|10\.|172\." "$output_file" 2>/dev/null || 
+           grep -q "# Custom" "$output_file" 2>/dev/null ||
+           ! grep -q "# Generated from template" "$output_file" 2>/dev/null; then
+            local backup_file="${output_file}.backup.$(date +%Y%m%d_%H%M%S)"
+            print_warning "Found existing config with potential customizations"
+            print_status "Creating backup: $backup_file"
+            cp "$output_file" "$backup_file"
+        fi
+    fi
+    
     print_status "Generating $output_file from template..."
     
     # Use environment variables for template substitution
@@ -102,9 +115,13 @@ generate_config() {
         export CAPACITOR_TARGET="https://host.docker.internal:3002"
     fi
     
+    # Add header comment to identify template-generated files
+    local header_comment="# Generated from template $(basename "$template_file") on $(date)"
+    echo "$header_comment" > "$output_file"
+    
     # Use envsubst for template substitution (much more reliable than sed)
     if command -v envsubst &> /dev/null; then
-        envsubst < "$template_file" > "$output_file"
+        envsubst < "$template_file" >> "$output_file"
     else
         # Fallback to simpler sed for basic replacements
         print_warning "envsubst not available, using basic sed replacement"
@@ -117,7 +134,7 @@ generate_config() {
             -e "s|\${TENANT_DOMAINS}||g" \
             -e "s|\${API_TENANT_DOMAINS}||g" \
             -e "s|\${CAP_TENANT_DOMAINS}||g" \
-            "$template_file" > "$output_file"
+            "$template_file" >> "$output_file"
     fi
     
     # Clean up environment variables
@@ -140,6 +157,18 @@ generate_traefik_config() {
     
     print_status "Generating traefik.yml for $mode mode..."
     
+    # Backup existing traefik.yml if it exists and looks custom
+    if [[ -f "$TRAEFIK_CONFIG" ]]; then
+        if grep -q "192\.168\|10\.|172\." "$TRAEFIK_CONFIG" 2>/dev/null || 
+           grep -q "# Custom" "$TRAEFIK_CONFIG" 2>/dev/null ||
+           ! grep -q "# Generated from template" "$TRAEFIK_CONFIG" 2>/dev/null; then
+            local backup_file="${TRAEFIK_CONFIG}.backup.$(date +%Y%m%d_%H%M%S)"
+            print_warning "Found existing traefik.yml with potential customizations"
+            print_status "Creating backup: $backup_file"
+            cp "$TRAEFIK_CONFIG" "$backup_file"
+        fi
+    fi
+    
     # Set paths based on deployment mode
     case "$mode" in
         "local")
@@ -156,15 +185,19 @@ generate_traefik_config() {
             ;;
     esac
     
+    # Add header comment to identify template-generated files
+    local header_comment="# Generated from template traefik.yml.template on $(date)"
+    echo "$header_comment" > "$TRAEFIK_CONFIG"
+    
     # Generate traefik.yml from template
     if command -v envsubst &> /dev/null; then
-        envsubst < "$TEMPLATE_DIR/traefik.yml.template" > "$TRAEFIK_CONFIG"
+        envsubst < "$TEMPLATE_DIR/traefik.yml.template" >> "$TRAEFIK_CONFIG"
     else
         print_warning "envsubst not available, using basic sed replacement"
         sed -e "s|\${TRAEFIK_CERT_FILE}|$TRAEFIK_CERT_FILE|g" \
             -e "s|\${TRAEFIK_KEY_FILE}|$TRAEFIK_KEY_FILE|g" \
             -e "s|\${TRAEFIK_DYNAMIC_DIR}|$TRAEFIK_DYNAMIC_DIR|g" \
-            "$TEMPLATE_DIR/traefik.yml.template" > "$TRAEFIK_CONFIG"
+            "$TEMPLATE_DIR/traefik.yml.template" >> "$TRAEFIK_CONFIG"
     fi
     
     # Clean up environment variables

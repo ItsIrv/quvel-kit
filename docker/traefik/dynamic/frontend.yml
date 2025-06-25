@@ -1,3 +1,4 @@
+# Generated from template frontend.yml.template on Tue Jun 24 20:08:03 PDT 2025
 # HMR needs to support SSL all the way through from browser -> traefik -> vite dev server
 http:
   routers:
@@ -21,12 +22,6 @@ http:
       service: capacitor
       tls: {}
 
-    pwa:
-      rule: 'Host(`pwa-tenant.quvel.127.0.0.1.nip.io`) || Host(`pwa-tenant.quvel.192.168.86.245.nip.io`)'
-      entryPoints: websecure
-      service: pwa
-      tls: {}
-
   services:
     web:
       loadBalancer:
@@ -44,12 +39,6 @@ http:
       loadBalancer:
         servers:
           - url: 'https://host.docker.internal:3002'
-        serversTransport: 'insecureTransport' # Supports self-signed certificates
-
-    pwa:
-      loadBalancer:
-        servers:
-          - url: 'https://host.docker.internal:3003'
         serversTransport: 'insecureTransport' # Supports self-signed certificates
 
   middlewares:

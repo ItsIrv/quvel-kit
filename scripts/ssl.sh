@@ -20,6 +20,24 @@ fi
 mkdir -p docker/certs
 cp "$(mkcert -CAROOT)/rootCA.pem" docker/certs/ca.pem
 
+# Function to detect local IP
+detect_local_ip() {
+    # Try to get local IP (excluding 127.0.0.1)
+    local ip=""
+    
+    # macOS/Linux method
+    if command -v ifconfig &> /dev/null; then
+        ip=$(ifconfig | grep 'inet ' | grep -v '127.0.0.1' | head -1 | awk '{print $2}' | sed 's/addr://')
+    fi
+    
+    # If ifconfig didn't work, try ip command (Linux)
+    if [[ -z "$ip" ]] && command -v ip &> /dev/null; then
+        ip=$(ip route get 8.8.8.8 | head -1 | awk '{print $7}')
+    fi
+    
+    echo "$ip"
+}
+
 # Define base domains
 BASE_DOMAINS=(
   "quvel.127.0.0.1.nip.io"
@@ -31,9 +49,30 @@ BASE_DOMAINS=(
   "api.quvel-two.127.0.0.1.nip.io"
 )
 
-# Ask for optional LAN IP
+# Auto-detect LAN IP
 echo ""
-read -p "📡 Enter your LAN IP (e.g., 192.168.X.X) if you want to add LAN-based domains, or press Enter to skip: " LAN_IP
+DETECTED_IP=$(detect_local_ip)
+if [[ -n "$DETECTED_IP" ]]; then
+  echo "🔍 Auto-detected LAN IP: $DETECTED_IP"
+  read -p "📡 Use detected IP ($DETECTED_IP) for LAN-based domains? [Y/n/custom]: " IP_CHOICE
+  
+  case "$IP_CHOICE" in
+    [Nn]*)
+      LAN_IP=""
+      echo "   Skipping LAN domains"
+      ;;
+    [Cc]*)
+      read -p "   Enter custom LAN IP: " LAN_IP
+      ;;
+    *)
+      LAN_IP="$DETECTED_IP"
+      echo "   Using detected IP: $LAN_IP"
+      ;;
+  esac
+else
+  echo "⚠️  Could not auto-detect LAN IP"
+  read -p "📡 Enter your LAN IP (e.g., 192.168.X.X) if you want to add LAN-based domains, or press Enter to skip: " LAN_IP
+fi
 
 if [[ -n "$LAN_IP" ]]; then
   LAN_DOMAINS=(

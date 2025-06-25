@@ -36,16 +36,16 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
 
     try {
       res.header('Content-Type', 'text/html');
-      res.header('X-Trace-Id', context.traceId);
+      res.header('X-Trace-Id', context.traceInfo.id);
 
-      context.logger.debug('SSR request started', {
+      this.logger.debug('SSR request started', {
         url: req.url,
         method: req.method,
         userAgent: req.get('user-agent'),
       });
 
       // Resolve app configuration
-      context.appConfig = await this.resolveTenant(req, context.logger);
+      context.appConfig = await this.resolveTenant(req);
 
       // Update trace info with tenant (only if tenant config)
       if (context.appConfig && 'tenantId' in context.appConfig) {
@@ -60,19 +60,13 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
         assetInjectionService.setTenantAssets(context.appConfig.assets);
       }
 
-      // Attach full context to request
-      req.requestContext = {
-        traceId: context.traceId,
-        startTime: context.startTime,
-        appConfig: context.appConfig,
-        traceInfo: context.traceInfo,
-      };
+      req.requestContext = context;
 
       // Filter non-public fields before injecting into window
       const publicConfig = context.appConfig ? filterConfig(context.appConfig) : null;
 
       if (!publicConfig) {
-        context.logger.error('No config found', { domain: req.get('host') });
+        this.logger.error('No config found', { domain: req.get('host') });
 
         throw new Error('No config found');
       }
@@ -102,7 +96,7 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
       const duration = Date.now() - context.startTime;
       const statusCode = res.statusCode || 200;
 
-      context.logger.info('SSR request completed', {
+      this.logger.info('SSR request completed', {
         duration,
         statusCode,
         htmlSize: hydratedHtml.length,
@@ -113,7 +107,7 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
     } catch (error) {
       const duration = Date.now() - context.startTime;
 
-      context.logger.error('SSR request failed', {
+      this.logger.error('SSR request failed', {
         duration,
         error: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
@@ -123,14 +117,10 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
     }
   }
 
-  private createRequestContext(): SSRRequestContext & { logger: SSRLogService } {
+  private createRequestContext(): SSRRequestContext {
     const traceId = uuidv4();
     const startTime = Date.now();
 
-    // For SSR, we'll use the main logger instance
-    const logger = this.logger;
-
-    // Create trace info for this request
     const traceInfo: TraceInfo = {
       id: traceId,
       timestamp: new Date().toISOString(),
@@ -139,9 +129,7 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
     };
 
     return {
-      traceId,
       startTime,
-      logger,
       appConfig: null,
       traceInfo,
     };
@@ -149,7 +137,6 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
 
   private async resolveTenant(
     req: Request,
-    logger: SSRLogService,
   ): Promise<AppConfigProtected | TenantConfigProtected | null> {
     const isMultiTenant = process.env.SSR_MULTI_TENANT === 'true';
 
@@ -160,12 +147,14 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
       if (hasTenantEnvVars) {
         // Use tenant config if tenant env vars are provided
         const tenantConfig = createTenantConfigFromEnv();
-        logger.debug('Single-tenant mode with tenant fields', { tenantId: tenantConfig.tenantId });
+        this.logger.debug('Single-tenant mode with tenant fields', {
+          tenantId: tenantConfig.tenantId,
+        });
         return tenantConfig;
       } else {
         // Use app config for pure single-tenant mode
         const appConfig = createAppConfigFromEnv();
-        logger.debug('Single-tenant mode without tenant fields');
+        this.logger.debug('Single-tenant mode without tenant fields');
         return appConfig;
       }
     }
@@ -173,20 +162,20 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
     // Multi-tenant mode
     const host = req.get('host');
     if (!host || !isValidHostname(host)) {
-      logger.warning('Invalid or missing hostname', { host });
+      this.logger.warning('Invalid or missing hostname', { host });
       return null;
     }
 
-    logger.debug('Resolving tenant for hostname', { host });
+    this.logger.debug('Resolving tenant for hostname', { host });
 
     const tenantConfig = await this.tenantResolver.getTenantConfigByDomain(host);
 
     if (!tenantConfig) {
-      logger.warning('Tenant not found for hostname', { host });
+      this.logger.warning('Tenant not found for hostname', { host });
       return null;
     }
 
-    logger.debug('Tenant resolved successfully', {
+    this.logger.debug('Tenant resolved successfully', {
       host,
       tenantId: tenantConfig.tenantId,
       tenantName: tenantConfig.tenantName,
