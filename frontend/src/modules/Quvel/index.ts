@@ -27,6 +27,6 @@ export const QuvelModule: ModuleLoader = {
   }),
 
   build: () => ({
-    css: ['../Modules/Quvel/css/quvel.scss'],
+    css: ['../modules/Quvel/css/quvel.scss'],
   }),
 };
