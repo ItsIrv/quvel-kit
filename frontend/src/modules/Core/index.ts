@@ -1,6 +1,7 @@
 import type { ModuleLoader } from './types/module.types';
 import { getAllServices } from './config/services';
 import { ServiceClass } from './types/service.types';
+import { moduleResource } from '../moduleUtils';
 import enUSTranslations from './i18n/en-US';
 import esMXTranslations from './i18n/es-MX';
 
@@ -40,10 +41,9 @@ export const CoreModule: ModuleLoader = {
     const isMultiTenant = process.env.SSR_MULTI_TENANT === 'true';
     const isSSRWithPWA = ctx?.modeName === 'ssr' && process.env.SSR_PWA === 'true';
     const needsTenantConfig = isMultiTenant && (ctx?.modeName !== 'ssr' || isSSRWithPWA);
-
     const bootFiles: Array<string | { path: string; server?: false; client?: false }> = [
-      ...(needsTenantConfig ? ['../modules/Core/boot/app-config'] : []),
-      '../modules/Core/boot/container',
+      ...(needsTenantConfig ? [moduleResource('Core', 'boot/app-config')] : []),
+      moduleResource('Core', 'boot/container'),
     ];
 
     return {

@@ -1,5 +1,6 @@
 import type { ModuleLoader } from 'src/modules/Core/types/module.types';
 import type { RouteRecordRaw } from 'vue-router';
+import { moduleResource } from '../moduleUtils';
 import routes from './router/routes';
 import enUSTranslations from './i18n/en-US';
 import esMXTranslations from './i18n/es-MX';
@@ -27,6 +28,6 @@ export const QuvelModule: ModuleLoader = {
   }),
 
   build: () => ({
-    css: ['../modules/Quvel/css/quvel.scss'],
+    css: [moduleResource('Quvel', 'css/quvel.scss')],
   }),
 };
