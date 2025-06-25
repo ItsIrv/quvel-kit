@@ -25,4 +25,5 @@ export const NotificationsModule: ModuleLoader = {
     'en-US': enUSTranslations,
     'es-MX': esMXTranslations,
   }),
+
 };

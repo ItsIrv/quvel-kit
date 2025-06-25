@@ -1,9 +1,27 @@
 import type { RouteRecordRaw } from 'vue-router';
 import type { ServiceClass } from './service.types';
+import { QuasarAnimations, QuasarPlugins } from 'quasar';
+
+/**
+ * Build configuration for modules
+ */
+export interface ModuleBuildConfig {
+  /** Boot files to include */
+  boot?: Array<string | { path: string; server?: false; client?: false }>;
+
+  /** CSS files to include */
+  css?: string[];
+
+  /** Animations to register */
+  animations?: QuasarAnimations[];
+
+  /** Quasar framework plugins */
+  plugins?: (keyof QuasarPlugins)[];
+}
 
 /**
  * Module Loader Interface
- * 
+ *
  * Defines the contract for module loaders to expose their resources.
  * All methods are optional - modules only implement what they need.
  */
@@ -22,4 +40,9 @@ export interface ModuleLoader {
    * Returns module translations by locale
    */
   i18n?: () => Record<string, Record<string, unknown>>;
+
+  /**
+   * Returns module build configuration
+   */
+  build?: () => ModuleBuildConfig;
 }

@@ -6,7 +6,7 @@ import esMXTranslations from './i18n/es-MX';
 
 /**
  * Quvel Module Loader
- * 
+ *
  * Provides simple APIs for other parts of the app to access Quvel module resources.
  * Only loads resources when requested for performance.
  */
@@ -24,5 +24,9 @@ export const QuvelModule: ModuleLoader = {
   i18n: () => ({
     'en-US': enUSTranslations,
     'es-MX': esMXTranslations,
+  }),
+
+  build: () => ({
+    css: ['../Modules/Quvel/css/quvel.scss'],
   }),
 };

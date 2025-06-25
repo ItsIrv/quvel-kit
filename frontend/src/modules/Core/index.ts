@@ -32,4 +32,19 @@ export const CoreModule: ModuleLoader = {
     'en-US': enUSTranslations,
     'es-MX': esMXTranslations,
   }),
+
+  /**
+   * Returns Core module build configuration
+   */
+  build: () => {
+    const bootFiles: Array<string | { path: string; server?: false; client?: false }> = [
+      'container',
+    ];
+
+    return {
+      boot: bootFiles,
+      plugins: ['Cookies', 'Notify', 'LocalStorage', 'Meta', 'Loading'],
+      animations: ['fadeIn', 'fadeOut'],
+    };
+  },
 };

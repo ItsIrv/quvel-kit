@@ -1,10 +1,11 @@
 import type { RouteRecordRaw } from 'vue-router';
 import type { ServiceClass } from 'src/modules/Core/types/service.types';
 import { getAllModules } from 'src/config/modules';
+import { ConfigureCallback } from '@quasar/app-vite';
 
 /**
  * Module Registry
- * 
+ *
  * Provides access to configured modules and their resources.
  */
 export const modules = getAllModules();
@@ -40,7 +41,7 @@ export function getModuleI18n(locale: string): Record<string, unknown> {
       try {
         const moduleI18n = moduleLoader.i18n();
         const localeTranslations = moduleI18n[locale];
-        
+
         if (localeTranslations) {
           Object.assign(translations, localeTranslations);
         }
@@ -71,4 +72,48 @@ export function getModuleServices(): Record<string, ServiceClass> {
   }
 
   return services;
+}
+
+/**
+ * Gets merged build configuration from all modules
+ */
+export function getBuildConfig(): ReturnType<ConfigureCallback> {
+  const mergedConfig: Partial<ReturnType<ConfigureCallback>> = {
+    boot: [],
+    animations: [],
+    framework: {
+      plugins: [],
+    },
+  };
+
+  for (const [moduleName, moduleLoader] of Object.entries(modules)) {
+    if (moduleLoader.build) {
+      try {
+        const buildConfig = moduleLoader.build();
+
+        if (buildConfig.boot) {
+          mergedConfig.boot?.push(...buildConfig.boot);
+        }
+
+        if (buildConfig.css) {
+          if (!mergedConfig.css) {
+            mergedConfig.css = [];
+          }
+          mergedConfig.css.push(...buildConfig.css);
+        }
+
+        if (buildConfig.animations && Array.isArray(mergedConfig.animations)) {
+          mergedConfig.animations?.push(...buildConfig.animations);
+        }
+
+        if (buildConfig.plugins) {
+          mergedConfig.framework?.plugins?.push(...buildConfig.plugins);
+        }
+      } catch (error) {
+        console.warn(`Failed to load build config from ${moduleName} module:`, error);
+      }
+    }
+  }
+
+  return mergedConfig;
 }

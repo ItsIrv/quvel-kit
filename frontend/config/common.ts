@@ -12,21 +12,16 @@ export default defineConfig((ctx) => {
     boot: [
       // Add app config boot file for non-SSR modes or SSR+PWA in multi-tenant setups
       ...(needsTenantConfig ? ['app-config'] : []),
-      'container',
-      {
-        server: false,
-        path: 'pinia-hydrator',
-      },
     ],
-    css: ['app.scss'],
+    css: ['tailwind.scss'],
     extras: ['eva-icons'],
     framework: {
       cssAddon: false,
       config: {},
       iconSet: 'eva-icons',
-      plugins: ['Cookies', 'Notify', 'LocalStorage', 'Meta', 'Loading'],
+      plugins: [],
     },
-    animations: ['fadeIn', 'fadeOut'],
+    animations: [],
     build: {
       target: {
         browser: ['es2022', 'firefox115', 'chrome115', 'safari14'],

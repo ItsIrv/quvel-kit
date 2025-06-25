@@ -15,6 +15,11 @@ export function deepMerge<T extends Record<string, unknown>>(target: T, source: 
         target[key] as Record<string, unknown>,
         source[key] as Record<string, unknown>,
       ) as T[Extract<keyof T, string>];
+    } else if (Array.isArray(source[key]) && Array.isArray(target[key])) {
+      target[key] = [...(target[key] as unknown[]), ...(source[key] as unknown[])] as T[Extract<
+        keyof T,
+        string
+      >];
     } else {
       target[key] = source[key] as T[Extract<keyof T, string>];
     }
@@ -63,7 +68,10 @@ export const config = {
   getArray(key: string, defaultValue: string[] = []): string[] {
     const value = process.env[key];
     if (!value) return defaultValue;
-    return value.split(',').map(item => item.trim()).filter(Boolean);
+    return value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
   },
 
   /** Infrastructure configuration */
@@ -71,7 +79,7 @@ export const config = {
     /** Get host based on environment */
     getHost(type: 'dev' | 'tenant' | 'prod' = 'dev'): string {
       if (!isLocal()) return config.get('PROD_HOST', '0.0.0.0');
-      
+
       switch (type) {
         case 'tenant':
           return config.get('DEV_TENANT_HOST', 'cap-tenant.quvel.127.0.0.1.nip.io');
@@ -83,12 +91,16 @@ export const config = {
     },
 
     /** Get port based on mode and environment */
-    getPort(mode: 'ssr' | 'spa' | 'capacitor' | 'electron' | 'pwa', type: 'dev' | 'vite' | 'prod' = 'dev'): number {
-      const key = type === 'vite' 
-        ? `${mode.toUpperCase()}_VITE_PORT`
-        : type === 'prod'
-        ? `${mode.toUpperCase()}_PROD_PORT`
-        : `${mode.toUpperCase()}_DEV_PORT`;
+    getPort(
+      mode: 'ssr' | 'spa' | 'capacitor' | 'electron' | 'pwa',
+      type: 'dev' | 'vite' | 'prod' = 'dev',
+    ): number {
+      const key =
+        type === 'vite'
+          ? `${mode.toUpperCase()}_VITE_PORT`
+          : type === 'prod'
+            ? `${mode.toUpperCase()}_PROD_PORT`
+            : `${mode.toUpperCase()}_DEV_PORT`;
 
       const defaults: Record<string, number> = {
         SSR_DEV_PORT: 3000,

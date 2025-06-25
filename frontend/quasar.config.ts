@@ -1,5 +1,6 @@
 import { defineConfig } from '#q-app/wrappers';
 import { deepMerge } from './config/utils';
+import { getBuildConfig } from './src/modules/moduleRegistry';
 import common from './config/common';
 import ssr from './config/ssr';
 import spa from './config/spa';
@@ -11,7 +12,7 @@ import pwa from './config/pwa';
  * Gets the common config and the config for the current mode
  */
 export default defineConfig(async (ctx) => {
-  const commonConfig = await common(ctx);
+  const commonConfig = (await common(ctx)) as Record<string, unknown>;
   let modeConfig = {};
 
   switch (ctx.modeName) {
@@ -32,5 +33,7 @@ export default defineConfig(async (ctx) => {
       break;
   }
 
-  return deepMerge(commonConfig as Record<string, unknown>, modeConfig);
+  const moduleConfig = deepMerge(getBuildConfig() as Record<string, string>, modeConfig);
+
+  return deepMerge(commonConfig, moduleConfig);
 });
