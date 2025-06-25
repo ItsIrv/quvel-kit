@@ -3,6 +3,9 @@ import type { ServiceClass } from 'src/modules/Core/types/service.types';
 import { getAllModules } from 'src/config/modules';
 import { ConfigureCallback } from '@quasar/app-vite';
 
+// Extract the context type from ConfigureCallback
+type QuasarContext = Parameters<ConfigureCallback>[0];
+
 /**
  * Module Registry
  *
@@ -77,7 +80,7 @@ export function getModuleServices(): Record<string, ServiceClass> {
 /**
  * Gets merged build configuration from all modules
  */
-export function getBuildConfig(): ReturnType<ConfigureCallback> {
+export function getBuildConfig(ctx: QuasarContext): ReturnType<ConfigureCallback> {
   const mergedConfig: Partial<ReturnType<ConfigureCallback>> = {
     boot: [],
     animations: [],
@@ -89,7 +92,7 @@ export function getBuildConfig(): ReturnType<ConfigureCallback> {
   for (const [moduleName, moduleLoader] of Object.entries(modules)) {
     if (moduleLoader.build) {
       try {
-        const buildConfig = moduleLoader.build();
+        const buildConfig = moduleLoader.build(ctx);
 
         if (buildConfig.boot) {
           mergedConfig.boot?.push(...buildConfig.boot);

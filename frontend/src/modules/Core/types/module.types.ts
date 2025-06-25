@@ -1,6 +1,10 @@
 import type { RouteRecordRaw } from 'vue-router';
 import type { ServiceClass } from './service.types';
 import { QuasarAnimations, QuasarPlugins } from 'quasar';
+import type { ConfigureCallback } from '@quasar/app-vite';
+
+// Extract the context type from ConfigureCallback
+type QuasarContext = Parameters<ConfigureCallback>[0];
 
 /**
  * Build configuration for modules
@@ -44,5 +48,5 @@ export interface ModuleLoader {
   /**
    * Returns module build configuration
    */
-  build?: () => ModuleBuildConfig;
+  build?: (ctx?: QuasarContext) => ModuleBuildConfig;
 }

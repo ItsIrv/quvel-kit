@@ -33,7 +33,7 @@ export const AuthModule: ModuleLoader = {
     boot: [
       {
         server: false,
-        path: 'pinia-hydrator',
+        path: '../modules/Auth/boot/pinia-hydrator',
       },
     ],
   }),

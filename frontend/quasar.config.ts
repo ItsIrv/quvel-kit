@@ -33,7 +33,7 @@ export default defineConfig(async (ctx) => {
       break;
   }
 
-  const moduleConfig = deepMerge(getBuildConfig() as Record<string, string>, modeConfig);
+  const moduleConfig = deepMerge(getBuildConfig(ctx) as Record<string, string>, modeConfig);
 
   return deepMerge(commonConfig, moduleConfig);
 });

@@ -3,16 +3,9 @@ import { fileURLToPath } from 'url';
 import { isLocal, config } from './utils';
 
 export default defineConfig((ctx) => {
-  const isMultiTenant = process.env.SSR_MULTI_TENANT === 'true';
-  const isSSRWithPWA = ctx.modeName === 'ssr' && process.env.SSR_PWA === 'true';
-  const needsTenantConfig = isMultiTenant && (ctx.modeName !== 'ssr' || isSSRWithPWA);
-
   return {
     preFetch: true,
-    boot: [
-      // Add app config boot file for non-SSR modes or SSR+PWA in multi-tenant setups
-      ...(needsTenantConfig ? ['app-config'] : []),
-    ],
+    boot: [],
     css: ['tailwind.scss'],
     extras: ['eva-icons'],
     framework: {

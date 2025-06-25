@@ -36,9 +36,14 @@ export const CoreModule: ModuleLoader = {
   /**
    * Returns Core module build configuration
    */
-  build: () => {
+  build: (ctx) => {
+    const isMultiTenant = process.env.SSR_MULTI_TENANT === 'true';
+    const isSSRWithPWA = ctx?.modeName === 'ssr' && process.env.SSR_PWA === 'true';
+    const needsTenantConfig = isMultiTenant && (ctx?.modeName !== 'ssr' || isSSRWithPWA);
+
     const bootFiles: Array<string | { path: string; server?: false; client?: false }> = [
-      'container',
+      ...(needsTenantConfig ? ['../modules/Core/boot/app-config'] : []),
+      '../modules/Core/boot/container',
     ];
 
     return {
