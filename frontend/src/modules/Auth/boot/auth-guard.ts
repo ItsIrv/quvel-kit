@@ -1,6 +1,7 @@
 import { defineBoot } from '#q-app/wrappers';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
-import { AppRoutes } from 'src/modules/Auth/router/routes';
+import { QuvelRoutes } from 'src/modules/Quvel/router/constants';
+import { DashboardRoutes } from 'src/modules/Dashboard/router/constants';
 import { RouteMeta } from 'vue-router';
 
 /**
@@ -10,11 +11,6 @@ import { RouteMeta } from 'vue-router';
  * Protects routes based on meta.requiresAuth and meta.skipAuth properties.
  */
 export default defineBoot(async ({ router, store, urlPath, redirect }) => {
-  // Skip auth check for routes that explicitly skip auth
-  if (router.resolve(urlPath)?.meta?.skipAuth === true) {
-    return;
-  }
-
   // Initialize session store
   const sessionStore = useSessionStore(store);
 
@@ -28,18 +24,26 @@ export default defineBoot(async ({ router, store, urlPath, redirect }) => {
   }
 
   // Get configuration from environment variables
-  const requireAuthByDefault = import.meta.env.VITE_REQUIRE_AUTH_BY_DEFAULT === 'true';
-  const loginRoute = import.meta.env.VITE_AUTH_LOGIN_ROUTE || AppRoutes.LANDING;
-  const successRoute = import.meta.env.VITE_AUTH_SUCCESS_ROUTE || AppRoutes.LANDING;
+  const requireAuthByDefault = import.meta.env.VITE_REQUIRE_AUTH_BY_DEFAULT !== 'false';
+  const loginRoute = import.meta.env.VITE_AUTH_LOGIN_ROUTE || QuvelRoutes.LANDING;
+  const successRoute = import.meta.env.VITE_AUTH_SUCCESS_ROUTE || DashboardRoutes.DASHBOARD;
 
   /**
    * Centralized auth check logic to avoid duplication
+   * Security-first approach: auth is required unless explicitly disabled
    */
   const performAuthCheck = (path: string, routeMeta?: RouteMeta) => {
+    // Security-first: skip auth only if explicitly set to true
+    if (routeMeta?.skipAuth === true) {
+      return { action: 'continue' };
+    }
+
+    // Check if route requires auth (default behavior based on env var)
     const routeRequiresAuth =
       routeMeta?.requiresAuth !== undefined ? routeMeta.requiresAuth : requireAuthByDefault;
 
-    if (sessionStore.isAuthenticated && routeMeta?.skipAuth !== true) {
+    // If user is authenticated and trying to access auth pages, redirect to success route
+    if (sessionStore.isAuthenticated && path.startsWith('/auth/')) {
       return { action: 'redirect', route: successRoute };
     }
 
@@ -58,15 +62,8 @@ export default defineBoot(async ({ router, store, urlPath, redirect }) => {
     return;
   }
 
-  // Router guard
+  // Router guard for client-side navigation
   router.beforeEach(async (to, from, next) => {
-    console.log(1);
-    // Skip auth check for routes that explicitly skip auth
-    if (to.meta.skipAuth === true) {
-      next();
-      return;
-    }
-
     // Only fetch session if not initialized and we're on client
     if (!sessionStore.isInitialized) {
       try {

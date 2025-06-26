@@ -3,6 +3,7 @@ import { AuthModule } from 'src/modules/Auth';
 import { NotificationsModule } from 'src/modules/Notifications';
 import { QuvelModule } from 'src/modules/Quvel';
 import { CoreModule } from 'src/modules/Core';
+import { DashboardModule } from 'src/modules/Dashboard';
 
 /**
  * Get all registered modules
@@ -13,5 +14,6 @@ export function getAllModules(): Record<string, ModuleLoader> {
     AuthModule,
     NotificationsModule,
     QuvelModule,
+    DashboardModule,
   };
 }

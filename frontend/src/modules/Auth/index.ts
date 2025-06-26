@@ -1,6 +1,7 @@
 import type { ModuleLoader } from 'src/modules/Core/types/module.types';
 import type { RouteRecordRaw } from 'vue-router';
 import { moduleResource } from '../moduleUtils';
+import routes from './router/routes';
 import enUSTranslations from './i18n/en-US';
 import esMXTranslations from './i18n/es-MX';
 
@@ -15,8 +16,7 @@ export const AuthModule: ModuleLoader = {
    * Returns Auth module routes
    */
   routes: (): RouteRecordRaw[] => {
-    // Auth routes would go here when they exist
-    return [];
+    return routes;
   },
 
   /**
