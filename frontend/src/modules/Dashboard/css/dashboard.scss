@@ -1,0 +1,98 @@
+// Dashboard Module Styles
+
+// Responsive utilities
+@media (max-width: $breakpoint-xs-max) {
+  .desktop-hide {
+    display: block !important;
+  }
+}
+
+@media (min-width: $breakpoint-sm-min) {
+  .desktop-hide {
+    display: none !important;
+  }
+}
+
+// Dashboard layout adjustments
+.q-layout {
+  // Ensure proper sidebar behavior on mobile
+  &__drawer {
+    @media (max-width: $breakpoint-xs-max) {
+      &--mobile {
+        z-index: 9999;
+      }
+    }
+  }
+}
+
+// Navigation item styles
+.q-drawer {
+  .q-item {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: rgba($primary, 0.05);
+    }
+    
+    &--active {
+      &.bg-primary {
+        .q-item__label {
+          font-weight: 600;
+        }
+      }
+    }
+  }
+  
+  // Section headers
+  .q-item-label--header {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+// Card hover effects
+.q-card {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    &.hoverable {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+  }
+}
+
+// Stats card specific styles
+.stats-card {
+  .q-icon {
+    opacity: 0.8;
+  }
+}
+
+// Quick action buttons
+.q-btn {
+  &[stack] {
+    .q-icon {
+      margin-bottom: 8px;
+    }
+  }
+}
+
+// Breadcrumb styles
+.q-breadcrumbs {
+  &__el {
+    &:last-child {
+      color: $grey-8;
+      font-weight: 500;
+    }
+  }
+}
+
+// Activity list
+.q-list {
+  .q-item {
+    &:not(:last-child) {
+      border-bottom: 1px solid $grey-3;
+    }
+  }
+}
