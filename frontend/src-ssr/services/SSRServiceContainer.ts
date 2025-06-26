@@ -106,11 +106,6 @@ export class SSRServiceContainer {
     // Create a new instance of the service
     const instance = new ServiceClass();
 
-    // Register it with this container for dependency injection
-    if (this.isSingleton(instance)) {
-      void instance.register(this);
-    }
-
     // Boot it with the provided options if it's a scoped service
     if (this.isScoped(instance) && options) {
       const result = instance.boot(options);

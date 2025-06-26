@@ -30,12 +30,22 @@ export const AuthModule: ModuleLoader = {
   /**
    * Returns Auth module build configuration
    */
-  build: () => ({
-    boot: [
+  build: () => {
+    const authGuardEnabled = process.env.VITE_AUTH_GUARD_ENABLED === 'true';
+    const bootFiles: Array<string | { path: string; server?: false; client?: false }> = [
       {
         server: false,
         path: moduleResource('Auth', 'boot/pinia-hydrator'),
       },
-    ],
-  }),
+    ];
+
+    // Add auth guard boot file if enabled
+    if (authGuardEnabled) {
+      bootFiles.push(moduleResource('Auth', 'boot/auth-guard'));
+    }
+
+    return {
+      boot: bootFiles,
+    };
+  },
 };

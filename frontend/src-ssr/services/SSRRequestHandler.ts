@@ -105,6 +105,16 @@ export class SSRRequestHandler extends SSRService implements SSRSingletonService
 
       res.send(hydratedHtml);
     } catch (error) {
+      // Check if this is a redirect from boot file
+      if (typeof error === 'object' && error !== null && 'url' in error) {
+        const redirectUrl = (error as { url: string }).url;
+
+        this.logger.debug('SSR redirect', { redirectUrl });
+        res.redirect(302, redirectUrl);
+
+        return;
+      }
+
       const duration = Date.now() - context.startTime;
 
       this.logger.error('SSR request failed', {

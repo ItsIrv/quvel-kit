@@ -14,7 +14,7 @@
     "dev:ssr": "quasar dev -m ssr",
     "dev:pwa": "quasar dev -m pwa",
     "dev-local": "LOCAL=1 quasar dev",
-    "dev-local:ssr": "LOCAL=1 quasar dev -m ssr",
+    "dev-local:ssr": "LOCAL=1 VITE_REQUIRE_AUTH_BY_DEFAULT=true VITE_AUTH_GUARD_ENABLED=true quasar dev -m ssr",
     "dev-local:pwa": "LOCAL=1 quasar dev -m pwa",
     "dev:ios": "LOCAL=1 quasar dev -m capacitor -T ios",
     "dev:electron": "LOCAL=1 quasar dev -m electron",

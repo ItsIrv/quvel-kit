@@ -14,13 +14,7 @@ import { SSRService } from './SSRService';
 export class SSRAssetInjectionService extends SSRService implements SSRScopedService {
   private tenantAssets: TenantAssets | null = null;
 
-  /**
-   * Boots the service with request-specific context
-   */
-  override boot(): void {
-    // Reset assets for each request
-    this.tenantAssets = null;
-  }
+  override boot(): void {}
 
   /**
    * Sets tenant assets for injection
@@ -55,7 +49,8 @@ export class SSRAssetInjectionService extends SSRService implements SSRScopedSer
     if (headHTML) {
       const headEndIndex = processedHTML.indexOf('</head>');
       if (headEndIndex !== -1) {
-        processedHTML = processedHTML.slice(0, headEndIndex) + headHTML + processedHTML.slice(headEndIndex);
+        processedHTML =
+          processedHTML.slice(0, headEndIndex) + headHTML + processedHTML.slice(headEndIndex);
       }
     }
 
@@ -65,7 +60,10 @@ export class SSRAssetInjectionService extends SSRService implements SSRScopedSer
       if (bodyStartIndex !== -1) {
         // Find the end of the opening body tag
         const bodyTagEndIndex = processedHTML.indexOf('>', bodyStartIndex) + 1;
-        processedHTML = processedHTML.slice(0, bodyTagEndIndex) + bodyStartHTML + processedHTML.slice(bodyTagEndIndex);
+        processedHTML =
+          processedHTML.slice(0, bodyTagEndIndex) +
+          bodyStartHTML +
+          processedHTML.slice(bodyTagEndIndex);
       }
     }
 
@@ -73,7 +71,8 @@ export class SSRAssetInjectionService extends SSRService implements SSRScopedSer
     if (bodyEndHTML) {
       const bodyEndIndex = processedHTML.indexOf('</body>');
       if (bodyEndIndex !== -1) {
-        processedHTML = processedHTML.slice(0, bodyEndIndex) + bodyEndHTML + processedHTML.slice(bodyEndIndex);
+        processedHTML =
+          processedHTML.slice(0, bodyEndIndex) + bodyEndHTML + processedHTML.slice(bodyEndIndex);
       }
     }
 

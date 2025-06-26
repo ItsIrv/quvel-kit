@@ -15,6 +15,7 @@ type StateUser = User | null;
  */
 interface SessionState {
   user: StateUser;
+  initialized: boolean;
   resultChannel: {
     unsubscribe: () => void;
   } | null;
@@ -25,6 +26,7 @@ interface SessionState {
  */
 type SessionGetters = {
   isAuthenticated: (state: SessionState) => boolean;
+  isInitialized: (state: SessionState) => boolean;
   getUser: (state: SessionState) => StateUser;
 };
 
@@ -53,6 +55,7 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
   {
     state: (): SessionState => ({
       user: null,
+      initialized: false,
       resultChannel: null,
     }),
 
@@ -61,6 +64,11 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Determines if a user is authenticated.
        */
       isAuthenticated: (state) => state.user !== null && state.user !== undefined,
+
+      /**
+       * Determines if the session store has been initialized.
+       */
+      isInitialized: (state) => state.initialized,
 
       /**
        * Retrieves the authenticated user.
@@ -80,13 +88,18 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
        * Fetches the user session from the API.
        */
       async fetchSession(): Promise<IUser | null> {
-        const userData = await this.$container.get(AuthService).fetchSession();
+        try {
+          const userData = await this.$container.get(AuthService).fetchSession();
 
-        if (userData) {
-          this.setSession(userData);
+          if (userData) {
+            this.setSession(userData);
+          }
+
+          return userData;
+        } finally {
+          // Mark as initialized regardless of success/failure
+          this.initialized = true;
         }
-
-        return userData;
       },
 
       /**
