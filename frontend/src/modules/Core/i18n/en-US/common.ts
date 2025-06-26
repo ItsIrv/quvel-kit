@@ -30,6 +30,17 @@ export default {
       internalError: 'Internal error, please try again later.',
     },
   },
+  errors: {
+    notFound: {
+      title: 'Page Not Found',
+      description: 'The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.',
+      help: 'If you believe this is an error, please contact support.',
+      actions: {
+        home: 'Go Home',
+        back: 'Go Back',
+      },
+    },
+  },
   language: 'Language',
   placeholder: 'Placeholder',
 };
