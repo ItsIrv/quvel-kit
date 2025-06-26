@@ -11,6 +11,10 @@ import { RouteMeta } from 'vue-router';
  * Protects routes based on meta.requiresAuth and meta.skipAuth properties.
  */
 export default defineBoot(async ({ router, store, urlPath, redirect }) => {
+  if (router.resolve(urlPath)?.meta.skipAuth === true) {
+    return;
+  }
+
   // Initialize session store
   const sessionStore = useSessionStore(store);
 
