@@ -7,6 +7,7 @@ use Modules\Auth\Enums\OAuthStatusEnum;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\RedirectRequest;
 use Modules\Auth\Services\OAuthCoordinator;
+use Modules\Auth\Logs\Actions\Socialite\RedirectActionLogs;
 use Throwable;
 
 /**
@@ -16,6 +17,7 @@ class RedirectAction
 {
     public function __construct(
         private readonly OAuthCoordinator $authCoordinator,
+        private readonly RedirectActionLogs $logs,
     ) {
     }
 
@@ -32,12 +34,34 @@ class RedirectAction
         }
 
         try {
-            return $this->authCoordinator->buildRedirectResponse($provider, $nonce);
+            $response = $this->authCoordinator->buildRedirectResponse($provider, $nonce);
+            
+            $this->logs->redirectSuccess(
+                $provider,
+                $nonce,
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+            
+            return $response;
+        } catch (OAuthException $e) {
+            $this->logs->redirectFailed(
+                $provider,
+                $e->getMessage(),
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+            
+            throw $e;
         } catch (Throwable $e) {
-            if (! $e instanceof OAuthException) {
-                $e = new OAuthException(OAuthStatusEnum::INTERNAL_ERROR, $e);
-            }
-
+            $this->logs->redirectError(
+                $provider,
+                $e->getMessage(),
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+            
+            $e = new OAuthException(OAuthStatusEnum::INTERNAL_ERROR, $e);
             throw $e;
         }
     }

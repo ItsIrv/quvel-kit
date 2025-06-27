@@ -11,6 +11,7 @@ use Modules\Auth\Http\Requests\RegisterRequest;
 use Modules\Auth\Enums\AuthStatusEnum;
 use Modules\Auth\Services\UserAuthenticationService;
 use Modules\Auth\Exceptions\RegisterActionException;
+use Modules\Auth\Logs\Actions\User\RegisterActionLogs;
 
 /**
  * Action to register a new user.
@@ -25,6 +26,7 @@ class RegisterAction
         private readonly UserCreateService $userCreateService,
         private readonly ResponseFactory $responseFactory,
         private readonly UserAuthenticationService $userAuthenticationService,
+        private readonly RegisterActionLogs $logs,
     ) {
     }
 
@@ -40,6 +42,12 @@ class RegisterAction
 
         // Check if user already exists
         if ($this->userFindService->findByEmail($email) !== null) {
+            $this->logs->registerFailedEmailInUse(
+                $email,
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+
             throw new RegisterActionException(
                 AuthStatusEnum::EMAIL_ALREADY_IN_USE,
             );
@@ -51,6 +59,13 @@ class RegisterAction
         if (config('auth.verify_email_before_login') === false) {
             $this->userAuthenticationService->logInWithId($user->id);
 
+            $this->logs->registerSuccessWithLogin(
+                $email,
+                $user->id,
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+
             return $this->responseFactory->json(
                 [
                     'status' => AuthStatusEnum::LOGIN_SUCCESS->value,
@@ -59,6 +74,13 @@ class RegisterAction
                 200,
             );
         }
+
+        $this->logs->registerSuccess(
+            $email,
+            $user->id,
+            $request->ip() ?? 'unknown',
+            $request->userAgent(),
+        );
 
         return $this->responseFactory->json(
             [

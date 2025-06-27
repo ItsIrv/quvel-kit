@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
+use Modules\Auth\Logs\Actions\Fortify\UpdateUserPasswordLogs;
 
 /**
  * Fortify action to update a user's password.
@@ -30,8 +31,11 @@ class UpdateUserPassword implements UpdatesUserPasswords
     /**
      * Create a new action instance.
      */
-    public function __construct(ValidationFactory $validator, Hasher $hasher)
-    {
+    public function __construct(
+        ValidationFactory $validator, 
+        Hasher $hasher,
+        private readonly UpdateUserPasswordLogs $logs,
+    ) {
         $this->validator = $validator;
         $this->hasher = $hasher;
     }
@@ -43,19 +47,56 @@ class UpdateUserPassword implements UpdatesUserPasswords
      */
     public function update(User $user, array $input): void
     {
-        // Validate the current and new password
-        $validator = $this->validator->make($input, [
-            'current_password' => ['required', 'string', 'current_password:web'],
-            'password'         => $this->passwordRules(),
-        ], [
-            'current_password.current_password' => __('The provided password does not match your current password.'),
-        ]);
+        $request = request();
+        
+        try {
+            // Validate the current and new password
+            $validator = $this->validator->make($input, [
+                'current_password' => ['required', 'string', 'current_password:web'],
+                'password'         => $this->passwordRules(),
+            ], [
+                'current_password.current_password' => __('The provided password does not match your current password.'),
+            ]);
 
-        $validator->validate();
+            $validator->validate();
 
-        // Update the user's password
-        $user->forceFill([
-            'password' => $this->hasher->make($input['password']),
-        ])->save();
+            // Update the user's password
+            $user->forceFill([
+                'password' => $this->hasher->make($input['password']),
+            ])->save();
+            
+            $this->logs->passwordUpdateSuccess(
+                $user->id,
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Check if it's specifically a current password error
+            if ($e->validator->errors()->has('current_password')) {
+                $this->logs->passwordUpdateCurrentPasswordFailed(
+                    $user->id,
+                    $request->ip() ?? 'unknown',
+                    $request->userAgent(),
+                );
+            } else {
+                $this->logs->passwordUpdateValidationFailed(
+                    $user->id,
+                    $e->getMessage(),
+                    $request->ip() ?? 'unknown',
+                    $request->userAgent(),
+                );
+            }
+            
+            throw $e;
+        } catch (\Exception $e) {
+            $this->logs->passwordUpdateValidationFailed(
+                $user->id,
+                $e->getMessage(),
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+            
+            throw $e;
+        }
     }
 }

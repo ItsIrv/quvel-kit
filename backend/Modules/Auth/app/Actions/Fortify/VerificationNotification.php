@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Modules\Core\Enums\StatusEnum;
 use Modules\Core\Services\FrontendService;
+use Modules\Auth\Logs\Actions\Fortify\VerificationNotificationLogs;
 
 /**
  * Verifies an email address.
@@ -17,13 +18,25 @@ class VerificationNotification
 {
     public function __construct(
         private readonly FrontendService $frontendService,
+        private readonly VerificationNotificationLogs $logs,
     ) {
     }
 
     public function __invoke(EmailNotificationRequest $request): RedirectResponse|Response
     {
+        $user = $request->user();
+        
         try {
             $request->fulfill();
+            
+            if ($user) {
+                $this->logs->verificationNotificationSent(
+                    $user->id,
+                    $user->email,
+                    $request->ip() ?? 'unknown',
+                    $request->userAgent(),
+                );
+            }
 
             return $this->frontendService->redirect(
                 '',
@@ -32,6 +45,16 @@ class VerificationNotification
                 ],
             );
         } catch (Exception $e) {
+            if ($user) {
+                $this->logs->verificationNotificationFailed(
+                    $user->id,
+                    $user->email,
+                    $e->getMessage(),
+                    $request->ip() ?? 'unknown',
+                    $request->userAgent(),
+                );
+            }
+            
             return $this->frontendService->redirect(
                 '',
                 [

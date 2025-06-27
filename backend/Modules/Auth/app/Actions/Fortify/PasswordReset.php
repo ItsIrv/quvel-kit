@@ -3,9 +3,11 @@
 namespace Modules\Auth\Actions\Fortify;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\ResetsUserPasswords;
+use Modules\Auth\Logs\Actions\Fortify\PasswordResetLogs;
 
 /**
  * Fortify action to reset a user's password.
@@ -17,6 +19,11 @@ class PasswordReset implements ResetsUserPasswords
 {
     use PasswordValidationRules;
 
+    public function __construct(
+        private readonly PasswordResetLogs $logs,
+    ) {
+    }
+
     /**
      * Validate and reset the user's forgotten password.
      *
@@ -25,12 +32,30 @@ class PasswordReset implements ResetsUserPasswords
      */
     public function reset(User $user, array $input): void
     {
-        Validator::make($input, [
-            'password' => $this->passwordRules(),
-        ])->validate();
+        $request = request();
+        
+        try {
+            Validator::make($input, [
+                'password' => $this->passwordRules(),
+            ])->validate();
 
-        $user->forceFill([
-            'password' => Hash::make($input['password']),
-        ])->save();
+            $user->forceFill([
+                'password' => Hash::make($input['password']),
+            ])->save();
+            
+            $this->logs->passwordResetSuccess(
+                $user->id,
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+        } catch (\Exception $e) {
+            $this->logs->passwordResetValidationFailed(
+                $e->getMessage(),
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+            
+            throw $e;
+        }
     }
 }

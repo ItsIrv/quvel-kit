@@ -35,7 +35,7 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log an emergency message.
      */
-    public function emergency(string|\Stringable $message, array $context = []): void
+    public function emergency($message, array|SanitizedContext $context = []): void
     {
         $this->log('emergency', $message, $context);
     }
@@ -43,7 +43,7 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log an alert message.
      */
-    public function alert(string|\Stringable $message, array $context = []): void
+    public function alert($message, array|SanitizedContext $context = []): void
     {
         $this->log('alert', $message, $context);
     }
@@ -51,7 +51,7 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log a critical message.
      */
-    public function critical(string|\Stringable $message, array $context = []): void
+    public function critical($message, array|SanitizedContext $context = []): void
     {
         $this->log('critical', $message, $context);
     }
@@ -59,7 +59,7 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log an error message.
      */
-    public function error(string|\Stringable $message, array $context = []): void
+    public function error($message, array|SanitizedContext $context = []): void
     {
         $this->log('error', $message, $context);
     }
@@ -67,7 +67,7 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log a warning message.
      */
-    public function warning(string|\Stringable $message, array $context = []): void
+    public function warning($message, array|SanitizedContext $context = []): void
     {
         $this->log('warning', $message, $context);
     }
@@ -75,7 +75,7 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log a notice message.
      */
-    public function notice(string|\Stringable $message, array $context = []): void
+    public function notice($message, array|SanitizedContext $context = []): void
     {
         $this->log('notice', $message, $context);
     }
@@ -83,7 +83,7 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log an info message.
      */
-    public function info(string|\Stringable $message, array $context = []): void
+    public function info($message, array|SanitizedContext $context = []): void
     {
         $this->log('info', $message, $context);
     }
@@ -91,7 +91,7 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log a debug message.
      */
-    public function debug(string|\Stringable $message, array $context = []): void
+    public function debug($message, array|SanitizedContext $context = []): void
     {
         $this->log('debug', $message, $context);
     }
@@ -99,7 +99,7 @@ abstract class BaseLogger implements LoggerInterface
     /**
      * Log a message with an arbitrary level.
      */
-    public function log(mixed $level, string|\Stringable $message, array $context = []): void
+    public function log(mixed $level, $message, array|SanitizedContext $context = []): void
     {
         $context = $this->enrichContext($context);
 
@@ -110,11 +110,16 @@ abstract class BaseLogger implements LoggerInterface
      * Enrich the log context with additional information.
      */
     /**
-     * @param array<string, mixed> $context
+     * @param array<string, mixed>|SanitizedContext $context
      * @return array<string, mixed>
      */
-    protected function enrichContext(array $context): array
+    protected function enrichContext(array|SanitizedContext $context): array
     {
+        // Handle SanitizedContext by converting to sanitized array
+        if ($context instanceof SanitizedContext) {
+            $context = $context->toArray();
+        }
+
         // Add trace ID if available
         if (Context::has('trace_id')) {
             $context['trace_id'] = Context::get('trace_id');

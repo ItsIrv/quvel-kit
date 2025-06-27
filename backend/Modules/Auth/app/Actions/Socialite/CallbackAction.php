@@ -11,6 +11,7 @@ use Modules\Auth\Events\OAuthLoginResult;
 use Modules\Auth\Exceptions\OAuthException;
 use Modules\Auth\Http\Requests\CallbackRequest;
 use Modules\Auth\Services\OAuthCoordinator;
+use Modules\Auth\Logs\Actions\Socialite\CallbackActionLogs;
 use Throwable;
 
 /**
@@ -22,6 +23,7 @@ class CallbackAction
         private readonly OAuthCoordinator $authCoordinator,
         private readonly FrontendService $frontendService,
         private readonly EventDispatcher $eventDispatcher,
+        private readonly CallbackActionLogs $logs,
     ) {
     }
 
@@ -36,6 +38,17 @@ class CallbackAction
             $result = $this->authCoordinator->authenticateCallback(
                 $provider,
                 (string) $request->validated('state', ''),
+            );
+            
+            $user = $result->getUser();
+            
+            $this->logs->callbackSuccess(
+                $provider,
+                $user?->id,
+                $user?->email ?? 'unknown',
+                $result->isStateless(),
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
             );
 
             if ($result->isStateless()) {
@@ -55,11 +68,24 @@ class CallbackAction
                     'message' => $result->getStatus()->value,
                 ],
             );
+        } catch (OAuthException $e) {
+            $this->logs->callbackFailed(
+                $provider,
+                $e->getMessage(),
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+            
+            throw $e;
         } catch (Throwable $e) {
-            if (!$e instanceof OAuthException) {
-                $e = new OAuthException(OAuthStatusEnum::INTERNAL_ERROR, $e);
-            }
-
+            $this->logs->callbackError(
+                $provider,
+                $e->getMessage(),
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+            
+            $e = new OAuthException(OAuthStatusEnum::INTERNAL_ERROR, $e);
             throw $e;
         }
     }

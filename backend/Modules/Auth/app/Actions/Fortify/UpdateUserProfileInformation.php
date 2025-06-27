@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 use Modules\Auth\Rules\EmailRule;
 use Modules\Auth\Rules\NameRule;
+use Modules\Auth\Logs\Actions\Fortify\UpdateUserProfileInformationLogs;
 
 /**
  * Fortify action to update a user's profile information.
@@ -27,8 +28,10 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
     /**
      * Create a new action instance.
      */
-    public function __construct(ValidationFactory $validator)
-    {
+    public function __construct(
+        ValidationFactory $validator,
+        private readonly UpdateUserProfileInformationLogs $logs,
+    ) {
         $this->validator = $validator;
     }
     /**
@@ -38,28 +41,55 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      */
     public function update(User $user, array $input): void
     {
-        // Validate the profile information
-        $validator = $this->validator->make($input, [
-            'name' => ['required', ...NameRule::RULES],
-            // 'email' => [
-            //     'required',
-            //     'string',
-            //     EmailRule::default(),
-            //     Rule::unique('users')->ignore($user->id),
-            // ],
-        ]);
+        $request = request();
+        
+        try {
+            // Validate the profile information
+            $validator = $this->validator->make($input, [
+                'name' => ['required', ...NameRule::RULES],
+                // 'email' => [
+                //     'required',
+                //     'string',
+                //     EmailRule::default(),
+                //     Rule::unique('users')->ignore($user->id),
+                // ],
+            ]);
 
-        $validator->validate();
+            $validator->validate();
 
-        // Handle email verification if email has changed
-        if ($input['email'] !== $user->email) {
-            $this->updateVerifiedUser($user, $input);
-        } else {
-            // Update the user's profile information
-            $user->forceFill([
-                'name'  => $input['name'],
-                'email' => $input['email'],
-            ])->save();
+            // Handle email verification if email has changed
+            if ($input['email'] !== $user->email) {
+                $this->updateVerifiedUser($user, $input);
+                
+                $this->logs->profileUpdateWithEmailChange(
+                    $user->id,
+                    $user->email,
+                    $input['email'],
+                    $request->ip() ?? 'unknown',
+                    $request->userAgent(),
+                );
+            } else {
+                // Update the user's profile information
+                $user->forceFill([
+                    'name'  => $input['name'],
+                    'email' => $input['email'],
+                ])->save();
+                
+                $this->logs->profileUpdateSuccess(
+                    $user->id,
+                    $request->ip() ?? 'unknown',
+                    $request->userAgent(),
+                );
+            }
+        } catch (\Exception $e) {
+            $this->logs->profileUpdateValidationFailed(
+                $user->id,
+                $e->getMessage(),
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+            
+            throw $e;
         }
     }
 

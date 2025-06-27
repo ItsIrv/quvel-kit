@@ -3,6 +3,7 @@
 namespace Modules\Auth\Logs\Actions\User;
 
 use Modules\Core\Logs\BaseLogger;
+use Modules\Core\Logs\SanitizedContext;
 use Illuminate\Log\LogManager;
 
 /**
@@ -29,12 +30,14 @@ class LoginActionLogs extends BaseLogger
      */
     public function loginSuccess(string $email, int $userId, string $ipAddress, ?string $userAgent = null): void
     {
-        $this->info('User login successful', [
+        $this->info('User login successful', new SanitizedContext([
             'email'      => $email,
             'user_id'    => $userId,
             'ip_address' => $ipAddress,
             'user_agent' => $userAgent,
-        ]);
+        ], [
+            'email' => SanitizedContext::HASH,
+        ]));
     }
 
     /**
@@ -42,12 +45,14 @@ class LoginActionLogs extends BaseLogger
      */
     public function loginFailedInvalidCredentials(string $email, string $ipAddress, ?string $userAgent = null): void
     {
-        $this->warning('Login failed: Invalid credentials', [
+        $this->warning('Login failed: Invalid credentials', new SanitizedContext([
             'email'      => $email,
             'ip_address' => $ipAddress,
             'user_agent' => $userAgent,
             'reason'     => 'invalid_credentials',
-        ]);
+        ], [
+            'email' => SanitizedContext::HASH,
+        ]));
     }
 
     /**
@@ -55,12 +60,14 @@ class LoginActionLogs extends BaseLogger
      */
     public function loginFailedUserNotFound(string $email, string $ipAddress, ?string $userAgent = null): void
     {
-        $this->warning('Login failed: User not found', [
+        $this->warning('Login failed: User not found', new SanitizedContext([
             'email'      => $email,
             'ip_address' => $ipAddress,
             'user_agent' => $userAgent,
             'reason'     => 'user_not_found',
-        ]);
+        ], [
+            'email' => SanitizedContext::HASH,
+        ]));
     }
 
     /**
@@ -72,12 +79,14 @@ class LoginActionLogs extends BaseLogger
         string $ipAddress,
         ?string $userAgent = null,
     ): void {
-        $this->warning('Login failed: Account inactive', [
+        $this->warning('Login failed: Account inactive', new SanitizedContext([
             'email'      => $email,
             'user_id'    => $userId,
             'ip_address' => $ipAddress,
             'user_agent' => $userAgent,
             'reason'     => 'account_inactive',
-        ]);
+        ], [
+            'email' => SanitizedContext::HASH,
+        ]));
     }
 }
