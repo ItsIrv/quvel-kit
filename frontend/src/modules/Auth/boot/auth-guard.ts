@@ -1,7 +1,6 @@
 import { defineBoot } from '#q-app/wrappers';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import { QuvelRoutes } from 'src/modules/Quvel/router/constants';
-import { DashboardRoutes } from 'src/modules/Dashboard/router/constants';
 import { RouteMeta } from 'vue-router';
 
 /**
@@ -30,14 +29,12 @@ export default defineBoot(async ({ router, store, urlPath, redirect }) => {
   // Get configuration from environment variables
   const requireAuthByDefault = import.meta.env.VITE_REQUIRE_AUTH_BY_DEFAULT !== 'false';
   const loginRoute = import.meta.env.VITE_AUTH_LOGIN_ROUTE || QuvelRoutes.LANDING;
-  const successRoute = import.meta.env.VITE_AUTH_SUCCESS_ROUTE || DashboardRoutes.DASHBOARD;
 
   /**
    * Centralized auth check logic to avoid duplication
    * Security-first approach: auth is required unless explicitly disabled
    */
   const performAuthCheck = (path: string, routeMeta?: RouteMeta) => {
-    // Security-first: skip auth only if explicitly set to true
     if (routeMeta?.skipAuth === true) {
       return { action: 'continue' };
     }
@@ -45,11 +42,6 @@ export default defineBoot(async ({ router, store, urlPath, redirect }) => {
     // Check if route requires auth (default behavior based on env var)
     const routeRequiresAuth =
       routeMeta?.requiresAuth !== undefined ? routeMeta.requiresAuth : requireAuthByDefault;
-
-    // If user is authenticated and trying to access auth pages, redirect to success route
-    if (sessionStore.isAuthenticated && path.startsWith('/auth/')) {
-      return { action: 'redirect', route: successRoute };
-    }
 
     // For protected routes, check if user is authenticated
     if (routeRequiresAuth && !sessionStore.isAuthenticated) {
