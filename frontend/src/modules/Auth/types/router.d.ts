@@ -1,22 +1,50 @@
 /**
  * Auth Module Route Meta Type Extensions
  *
- * Extends Vue Router's RouteMeta interface to include authentication-specific properties.
+ * Extends Vue Router's RouteMeta interface to include authentication configuration.
  */
+
+import type { AuthMeta } from './auth-meta';
 
 declare module 'vue-router' {
   interface RouteMeta {
     /**
-     * Explicitly require authentication for this route.
-     * If undefined, falls back to VITE_REQUIRE_AUTH_BY_DEFAULT environment variable.
+     * Authentication configuration for this route.
+     * 
+     * Use the helper functions from 'src/modules/Auth/utils/auth-meta' for type safety:
+     * - createGuestOnlyAuth() - for login/signup pages
+     * - createProtectedAuth() - explicitly require authentication  
+     * - createPublicAuth() - explicitly allow public access
+     * - createSkipAuth() - skip all auth logic
+     * - createAuthMeta(options) - custom configuration
+     * 
+     * @example
+     * ```typescript
+     * // Guest-only route (login page)
+     * meta: {
+     *   auth: createGuestOnlyAuth()
+     * }
+     * 
+     * // Protected route
+     * meta: {
+     *   auth: createProtectedAuth()
+     * }
+     * 
+     * // Public route
+     * meta: {
+     *   auth: createPublicAuth()
+     * }
+     * 
+     * // Custom configuration
+     * meta: {
+     *   auth: createAuthMeta({
+     *     guestOnly: true,
+     *     redirectTo: '/custom-dashboard'
+     *   })
+     * }
+     * ```
      */
-    requiresAuth?: boolean;
-
-    /**
-     * Skip all authentication checks for this route.
-     * Useful for static pages that don't need authentication.
-     */
-    skipAuth?: boolean;
+    auth?: AuthMeta;
   }
 }
 

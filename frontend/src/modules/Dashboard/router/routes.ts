@@ -6,7 +6,7 @@ import { DashboardRoutes } from './constants';
  * Dashboard module routes
  * 
  * All dashboard routes require authentication by default.
- * Individual routes can override this with meta.requiresAuth or meta.skipAuth.
+ * Individual routes can override this with custom auth configuration.
  */
 const routes: RouteRecordRaw[] = [
   {
