@@ -139,6 +139,7 @@ import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import UserDropdownMenu from 'src/modules/Auth/components/UserDropdownMenu.vue';
+import { DashboardRoutes } from '../router/constants';
 
 const { t } = useI18n();
 const route = useRoute();
@@ -155,7 +156,7 @@ const navigationItems = computed(() => [
     name: 'dashboard',
     label: t('dashboard.nav.overview'),
     icon: 'eva-home',
-    to: { name: 'dashboard' },
+    to: { name: DashboardRoutes.DASHBOARD },
   },
   {
     header: true,
@@ -165,20 +166,20 @@ const navigationItems = computed(() => [
     name: 'projects',
     label: t('dashboard.nav.projects'),
     icon: 'eva-briefcase',
-    to: { name: 'dashboard-projects' },
+    to: { name: DashboardRoutes.PROJECTS },
     badge: { color: 'primary', label: '3' },
   },
   {
     name: 'tasks',
     label: t('dashboard.nav.tasks'),
     icon: 'eva-checkmark-square-2',
-    to: { name: 'dashboard-tasks' },
+    to: { name: DashboardRoutes.TASKS },
   },
   {
     name: 'calendar',
     label: t('dashboard.nav.calendar'),
     icon: 'eva-calendar',
-    to: { name: 'dashboard-calendar' },
+    to: { name: DashboardRoutes.CALENDAR },
   },
   {
     header: true,
@@ -188,13 +189,13 @@ const navigationItems = computed(() => [
     name: 'reports',
     label: t('dashboard.nav.reports'),
     icon: 'eva-bar-chart-2',
-    to: { name: 'dashboard-reports' },
+    to: { name: DashboardRoutes.REPORTS },
   },
   {
     name: 'analytics',
     label: t('dashboard.nav.analytics'),
     icon: 'eva-trending-up',
-    to: { name: 'dashboard-analytics' },
+    to: { name: DashboardRoutes.ANALYTICS },
   },
   {
     header: true,
@@ -212,7 +213,7 @@ const navigationItems = computed(() => [
 const showBreadcrumbs = computed(() => route.meta.breadcrumbs !== false);
 const breadcrumbs = computed(() => {
   const crumbs: { label: string; to?: object; icon?: string }[] = [
-    { label: t('dashboard.breadcrumbs.home'), to: { name: 'dashboard' }, icon: 'eva-home' },
+    { label: t('dashboard.breadcrumbs.home'), to: { name: DashboardRoutes.DASHBOARD }, icon: 'eva-home' },
   ];
 
   if (route.meta.breadcrumbs && Array.isArray(route.meta.breadcrumbs)) {

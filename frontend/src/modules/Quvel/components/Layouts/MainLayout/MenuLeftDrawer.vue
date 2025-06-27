@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
+import { DashboardRoutes } from 'src/modules/Dashboard/router/constants';
 
 /**
  * Props
@@ -35,8 +36,7 @@ const navigationItems = computed(() => {
   // Add dashboard link if user is authenticated
   if (sessionStore.isAuthenticated) {
     items.push({
-      to: '/dashboard',
-      routeName: 'dashboard',
+      to: { name: DashboardRoutes.DASHBOARD },
       icon: 'eva-home-outline',
       labelKey: 'dashboard.title',
     });
@@ -110,14 +110,14 @@ const logoutTask = task.newTask({
             <!-- Navigation Menu Items Loop -->
             <router-link
               v-for="item in navigationItems"
-              :key="item.routeName"
+              :key="item.to.name"
               :to="item.to"
               custom
               v-slot="{ navigate }"
             >
               <div
                 class="MenuLeftDrawer-MenuItem"
-                :class="{ 'MenuLeftDrawer-MenuItem--active': $route.name === item.routeName }"
+                :class="{ 'MenuLeftDrawer-MenuItem--active': $route.name === item.to.name }"
                 @click="navigate(); emits('update:modelValue', false)"
               >
                 <q-icon

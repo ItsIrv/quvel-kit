@@ -1,5 +1,6 @@
 import { RouteRecordRaw } from 'vue-router';
 import MemberLayout from '../layouts/MemberLayout.vue';
+import { DashboardRoutes } from './constants';
 
 /**
  * Dashboard module routes
@@ -14,7 +15,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: 'dashboard',
+        name: DashboardRoutes.DASHBOARD,
         component: () => import('../pages/DashboardPage.vue'),
         meta: {
           title: 'dashboard.title',
@@ -23,7 +24,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'projects',
-        name: 'dashboard-projects',
+        name: DashboardRoutes.PROJECTS,
         component: () => import('../pages/ProjectsPage.vue'),
         meta: {
           title: 'dashboard.nav.projects',
@@ -31,7 +32,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'tasks',
-        name: 'dashboard-tasks', 
+        name: DashboardRoutes.TASKS, 
         component: () => import('../pages/TasksPage.vue'),
         meta: {
           title: 'dashboard.nav.tasks',
@@ -39,7 +40,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'calendar',
-        name: 'dashboard-calendar',
+        name: DashboardRoutes.CALENDAR,
         component: () => import('../pages/CalendarPage.vue'),
         meta: {
           title: 'dashboard.nav.calendar',
@@ -47,7 +48,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'reports',
-        name: 'dashboard-reports',
+        name: DashboardRoutes.REPORTS,
         component: () => import('../pages/ReportsPage.vue'),
         meta: {
           title: 'dashboard.nav.reports',
@@ -55,7 +56,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'analytics',
-        name: 'dashboard-analytics',
+        name: DashboardRoutes.ANALYTICS,
         component: () => import('../pages/AnalyticsPage.vue'),
         meta: {
           title: 'dashboard.nav.analytics',
