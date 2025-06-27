@@ -1,9 +1,13 @@
 import type { ModuleLoader } from './types/module.types';
-import { getAllServices } from './config/services';
-import { ServiceClass } from './types/service.types';
 import { moduleResource } from '../moduleUtils';
 import enUSTranslations from './i18n/en-US';
 import esMXTranslations from './i18n/es-MX';
+import { ConfigService } from 'src/modules/Core/services/ConfigService';
+import { LogService } from 'src/modules/Core/services/LogService';
+import { ApiService } from 'src/modules/Core/services/ApiService';
+import { TaskService } from 'src/modules/Core/services/TaskService';
+import { ValidationService } from 'src/modules/Core/services/ValidationService';
+import { I18nService } from 'src/modules/Core/services/I18nService';
 
 /**
  * Core Module Loader
@@ -16,14 +20,14 @@ export const CoreModule: ModuleLoader = {
    * Returns Core module services - the only module that should have this
    */
   services: () => {
-    const serviceMap = getAllServices();
-    const services: Record<string, ServiceClass> = {};
-
-    for (const [name, ServiceClass] of serviceMap.entries()) {
-      services[name] = ServiceClass;
-    }
-
-    return services;
+    return {
+      ConfigService,
+      LogService,
+      ApiService,
+      TaskService,
+      ValidationService,
+      I18nService,
+    };
   },
 
   /**

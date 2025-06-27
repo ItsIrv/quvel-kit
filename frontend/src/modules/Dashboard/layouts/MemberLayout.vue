@@ -137,11 +137,11 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { useI18n } from 'vue-i18n';
+import { useContainer } from 'src/modules/Core/composables/useContainer';
 import UserDropdownMenu from 'src/modules/Auth/components/UserDropdownMenu.vue';
 import { DashboardRoutes } from '../router/constants';
 
-const { t } = useI18n();
+const { i18n } = useContainer();
 const route = useRoute();
 
 const leftDrawerOpen = ref(false);
@@ -151,61 +151,21 @@ const toggleLeftDrawer = () => {
 };
 
 // Navigation items with sections
-const navigationItems = computed(() => [
+interface NavigationItem {
+  name?: string;
+  label: string;
+  icon?: string;
+  to?: { name: string };
+  header?: boolean;
+  badge?: { color: string; label: string };
+}
+
+const navigationItems = computed((): NavigationItem[] => [
   {
     name: 'dashboard',
-    label: t('dashboard.nav.overview'),
+    label: i18n.t('dashboard.nav.overview'),
     icon: 'eva-home',
     to: { name: DashboardRoutes.DASHBOARD },
-  },
-  {
-    header: true,
-    label: t('dashboard.nav.sections.workspace'),
-  },
-  {
-    name: 'projects',
-    label: t('dashboard.nav.projects'),
-    icon: 'eva-briefcase',
-    to: { name: DashboardRoutes.PROJECTS },
-    badge: { color: 'primary', label: '3' },
-  },
-  {
-    name: 'tasks',
-    label: t('dashboard.nav.tasks'),
-    icon: 'eva-checkmark-square-2',
-    to: { name: DashboardRoutes.TASKS },
-  },
-  {
-    name: 'calendar',
-    label: t('dashboard.nav.calendar'),
-    icon: 'eva-calendar',
-    to: { name: DashboardRoutes.CALENDAR },
-  },
-  {
-    header: true,
-    label: t('dashboard.nav.sections.analytics'),
-  },
-  {
-    name: 'reports',
-    label: t('dashboard.nav.reports'),
-    icon: 'eva-bar-chart-2',
-    to: { name: DashboardRoutes.REPORTS },
-  },
-  {
-    name: 'analytics',
-    label: t('dashboard.nav.analytics'),
-    icon: 'eva-trending-up',
-    to: { name: DashboardRoutes.ANALYTICS },
-  },
-  {
-    header: true,
-    label: t('dashboard.nav.sections.account'),
-  },
-  {
-    name: 'settings',
-    label: t('dashboard.nav.settings'),
-    icon: 'eva-settings-2',
-    to: { name: 'settings' },
   },
 ]);
 
@@ -213,13 +173,13 @@ const navigationItems = computed(() => [
 const showBreadcrumbs = computed(() => route.meta.breadcrumbs !== false);
 const breadcrumbs = computed(() => {
   const crumbs: { label: string; to?: object; icon?: string }[] = [
-    { label: t('dashboard.breadcrumbs.home'), to: { name: DashboardRoutes.DASHBOARD }, icon: 'eva-home' },
+    { label: i18n.t('dashboard.breadcrumbs.home'), to: { name: DashboardRoutes.DASHBOARD }, icon: 'eva-home' },
   ];
 
   if (route.meta.breadcrumbs && Array.isArray(route.meta.breadcrumbs)) {
     crumbs.push(...route.meta.breadcrumbs);
   } else if (route.meta.title) {
-    crumbs.push({ label: t(route.meta.title as string) });
+    crumbs.push({ label: i18n.t(route.meta.title as string) });
   }
 
   return crumbs;
