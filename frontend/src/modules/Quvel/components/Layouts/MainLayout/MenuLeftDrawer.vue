@@ -29,26 +29,21 @@ const inputValue = computed({
 /**
  * Navigation Menu Items
  */
-const navigationItems = [
-  {
-    to: '/profile',
-    routeName: 'profile',
-    icon: 'eva-person-outline',
-    labelKey: 'quvel.common.profile',
-  },
-  {
-    to: '/settings',
-    routeName: 'settings',
-    icon: 'eva-settings-outline',
-    labelKey: 'quvel.common.settings',
-  },
-  {
-    to: '/notifications',
-    routeName: 'notifications',
-    icon: 'eva-bell-outline',
-    labelKey: 'quvel.common.notifications',
-  },
-];
+const navigationItems = computed(() => {
+  const items = [];
+  
+  // Add dashboard link if user is authenticated
+  if (sessionStore.isAuthenticated) {
+    items.push({
+      to: '/dashboard',
+      routeName: 'dashboard',
+      icon: 'eva-home-outline',
+      labelKey: 'dashboard.title',
+    });
+  }
+  
+  return items;
+});
 
 /**
  * Services

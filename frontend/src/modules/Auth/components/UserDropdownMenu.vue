@@ -105,32 +105,16 @@ const logoutTask = task.newTask({
           clickable
           v-ripple
           class="tw:py-2"
-          to="/profile"
+          to="/dashboard"
           v-close-popup
         >
           <q-item-section avatar>
             <q-icon
-              name="eva-person-outline"
+              name="eva-home-outline"
               size="18px"
             />
           </q-item-section>
-          <q-item-section>{{ $t('quvel.profile.title') }}</q-item-section>
-        </q-item>
-
-        <q-item
-          clickable
-          v-ripple
-          class="tw:py-2"
-          to="/settings"
-          v-close-popup
-        >
-          <q-item-section avatar>
-            <q-icon
-              name="eva-settings-2-outline"
-              size="18px"
-            />
-          </q-item-section>
-          <q-item-section>{{ $t('quvel.settings.title') }}</q-item-section>
+          <q-item-section>{{ $t('dashboard.title') }}</q-item-section>
         </q-item>
 
         <q-separator />
