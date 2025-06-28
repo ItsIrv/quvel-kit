@@ -11,6 +11,8 @@ import EmailField from 'src/modules/Auth/components/Form/EmailField.vue';
 import PasswordField from 'src/modules/Auth/components/Form/PasswordField.vue';
 import TaskErrors from 'src/modules/Core/components/Common/TaskErrors.vue';
 import { useQuasar } from 'quasar';
+import { useRouter } from 'vue-router';
+import { DashboardRoutes } from 'src/modules/Dashboard/router/constants';
 
 /**
  * Emits
@@ -23,7 +25,7 @@ const emit = defineEmits(['success', 'switch-form']);
 const { task, i18n, config } = useContainer();
 const sessionStore = useSessionStore();
 const quasar = useQuasar();
-
+const router = useRouter();
 /**
  * Refs
  */
@@ -44,9 +46,10 @@ const loginTask = task.newTask({
     success: () => i18n.t('auth.status.success.loggedIn'),
   },
   task: async () => await sessionStore.login(email.value, password.value),
-  successHandlers: () => {
+  successHandlers: async () => {
     emit('success');
     resetForm();
+    await router.push(DashboardRoutes.DASHBOARD);
   },
 });
 

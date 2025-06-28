@@ -2,6 +2,68 @@
  * Quasar Component Overrides
  */
 
+/* Typography Reset - Normalize Quasar's aggressive defaults */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+}
+
+h1 {
+  font-size: 2rem !important;
+}
+h2 {
+  font-size: 1.75rem !important;
+}
+h3 {
+  font-size: 1.5rem !important;
+}
+h4 {
+  font-size: 1.25rem !important;
+}
+h5 {
+  font-size: 1.125rem !important;
+}
+h6 {
+  font-size: 1rem !important;
+}
+
+p,
+.text-body1,
+.text-body2 {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+}
+
+.text-subtitle1 {
+  font-size: 0.875rem !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.text-subtitle2 {
+  font-size: 0.75rem !important;
+  line-height: 1.3 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.text-caption {
+  font-size: 0.75rem !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 /* Increase form error text size */
 .q-field__bottom,
 .q-field__messages {

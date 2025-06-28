@@ -97,3 +97,45 @@
 .q-page {
   background: transparent !important;
 }
+
+/* Right drawer styling */
+.q-drawer--right {
+  background-color: white !important;
+  
+  .dark & {
+    background-color: rgb(17 24 39) !important;
+  }
+}
+
+/* User menu items in right drawer */
+.q-drawer--right .q-item {
+  border-radius: 8px;
+  margin: 0 8px 4px 8px;
+  color: rgb(55 65 81);
+  
+  .dark & {
+    color: rgb(209 213 219);
+  }
+  
+  &:hover {
+    background-color: rgb(243 244 246);
+    
+    .dark & {
+      background-color: rgb(31 41 55);
+    }
+  }
+}
+
+/* Clickable user area in header */
+.hover-bg {
+  transition: background-color 0.2s ease;
+  border-radius: 8px;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    
+    .dark & {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useSessionStore } from 'src/modules/Auth/stores/sessionStore';
 import { useContainer } from 'src/modules/Core/composables/useContainer';
 
@@ -45,6 +46,7 @@ watch(() => isOpen.value, (newVal) => {
  * Services
  */
 const { task, i18n } = useContainer();
+const router = useRouter();
 const sessionStore = useSessionStore();
 
 /**
@@ -59,6 +61,7 @@ const logoutTask = task.newTask({
   task: async () => {
     await sessionStore.logout();
     emits('close');
+    await router.push('/');
   },
 });
 </script>
@@ -101,24 +104,6 @@ const logoutTask = task.newTask({
 
       <!-- Menu Items -->
       <q-list padding>
-        <q-item
-          clickable
-          v-ripple
-          class="tw:py-2"
-          to="/dashboard"
-          v-close-popup
-        >
-          <q-item-section avatar>
-            <q-icon
-              name="eva-home-outline"
-              size="18px"
-            />
-          </q-item-section>
-          <q-item-section>{{ $t('dashboard.title') }}</q-item-section>
-        </q-item>
-
-        <q-separator />
-
         <q-item
           clickable
           v-ripple
