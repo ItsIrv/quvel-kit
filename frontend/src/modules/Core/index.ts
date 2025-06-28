@@ -11,13 +11,10 @@ import { I18nService } from 'src/modules/Core/services/I18nService';
 
 /**
  * Core Module Loader
- *
- * Core is the only module that should expose services via services().
- * All other modules use lazy loading - services are created when container.get(Service) is called.
  */
 export const CoreModule: ModuleLoader = {
   /**
-   * Returns Core module services - the only module that should have this
+   * Returns services to be auto-loaded
    */
   services: () => {
     return {
