@@ -25,5 +25,6 @@ export default defineBoot(({ ssrContext, app }) => {
     setClientContainer(container);
   }
 
+  app.config.globalProperties.$container = container;
   app.use(container.i18n.instance);
 });
