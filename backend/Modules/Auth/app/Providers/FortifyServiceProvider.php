@@ -68,6 +68,12 @@ class FortifyServiceProvider extends ServiceProvider
         );
 
         RateLimiter::for(
+            'two-factor',
+            fn (Request $request) =>
+            Limit::perMinute(5)->by($request->ip())
+        );
+
+        RateLimiter::for(
             'user-password.update',
             fn (Request $request) =>
             Limit::perMinute(5)->by($request->ip())

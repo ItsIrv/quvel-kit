@@ -58,6 +58,24 @@ export default {
       backupCodeDescription: 'Enter one of your backup codes.',
     },
   },
+  twoFactor: {
+    title: 'Two-Factor Authentication',
+    description: 'Enter the 6-digit code from your authenticator app.',
+    code: 'Authentication Code',
+    recoveryCode: 'Recovery Code',
+    verify: 'Verify',
+    useRecoveryCode: 'Use a recovery code instead',
+    useAuthenticatorCode: 'Use authenticator code instead',
+    errors: {
+      invalidCode: 'Invalid authentication code. Please try again.',
+      invalidRecoveryCode: 'Invalid recovery code. Please try again.',
+    },
+  },
+  validation: {
+    password: {
+      required: 'Password is required.',
+    },
+  },
   status: {
     errors: {
       activeFlowExists: 'An active flow already exists.',

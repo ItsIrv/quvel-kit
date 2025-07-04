@@ -46,10 +46,10 @@ export class AuthService extends Service implements RegisterService {
    *
    * @param email - The user's email.
    * @param password - The user's password.
-   * @returns The authenticated user data.
+   * @returns The authenticated user data or two-factor challenge indication.
    */
-  async login(email: string, password: string): Promise<{ user: IUser }> {
-    return await this.api.post<{ message: string; user: IUser }>('/auth/login', {
+  async login(email: string, password: string): Promise<{ user?: IUser; two_factor?: boolean }> {
+    return await this.api.post<{ message: string; user?: IUser; two_factor?: boolean }>('/auth/login', {
       email,
       password,
     });

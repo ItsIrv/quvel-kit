@@ -37,7 +37,7 @@ interface SessionActions {
   setSession(data: IUser): void;
   fetchSession(): Promise<IUser | null>;
   logout(): Promise<void>;
-  login(email: string, password: string): Promise<void>;
+  login(email: string, password: string): Promise<{ requiresTwoFactor: boolean }>;
   signUp(
     email: string,
     password: string,
@@ -114,10 +114,18 @@ export const useSessionStore = defineStore<'session', SessionState, SessionGette
       /**
        * Logs in the user and sets the session.
        */
-      async login(email: string, password: string): Promise<void> {
-        const { user } = await this.$container.get(AuthService).login(email, password);
+      async login(email: string, password: string): Promise<{ requiresTwoFactor: boolean }> {
+        const response = await this.$container.get(AuthService).login(email, password);
 
-        this.setSession(user);
+        if (response.two_factor) {
+          return { requiresTwoFactor: true };
+        }
+
+        if (response.user) {
+          this.setSession(response.user);
+        }
+
+        return { requiresTwoFactor: false };
       },
 
       /**

@@ -6,7 +6,6 @@ use Modules\Core\Http\Resources\UserResource;
 use Modules\Core\Services\User\UserFindService;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
-use Laravel\Fortify\Contracts\RedirectsIfTwoFactorAuthenticatable;
 use Modules\Auth\Http\Requests\LoginRequest;
 use Modules\Auth\Enums\AuthStatusEnum;
 use Modules\Auth\Exceptions\LoginActionException;
@@ -23,7 +22,6 @@ class LoginAction
         private readonly UserAuthenticationService $userAuthenticationService,
         private readonly ResponseFactory $responseFactory,
         private readonly LoginActionLogs $logs,
-        private readonly RedirectsIfTwoFactorAuthenticatable $redirectsIfTwoFactorAuthenticatable,
     ) {
     }
 
@@ -73,8 +71,8 @@ class LoginAction
             throw new LoginActionException(AuthStatusEnum::EMAIL_NOT_VERIFIED);
         }
 
-        // Attempt to authenticate the user
-        if (!$this->userAuthenticationService->attempt($email, $password)) {
+        // Validate credentials first (without logging in)
+        if (!$this->userAuthenticationService->validateCredentials($email, $password)) {
             $this->logs->loginFailedInvalidCredentials(
                 $email,
                 $request->ip() ?? 'unknown',
@@ -85,8 +83,8 @@ class LoginAction
         }
 
         // Check if user has two-factor authentication enabled
-        if ($user->hasEnabledTwoFactorAuthentication()) {
-            // Log successful credential validation but pending 2FA
+        if ($user->hasEnabledTwoFactorAuthentication() && $user->provider_id === null) {
+            // Log successful credential validation but pending 2FA (don't log in yet)
             $this->logs->loginSuccess(
                 $email,
                 $user->id,
@@ -94,13 +92,16 @@ class LoginAction
                 $request->userAgent(),
             );
 
-            // Return the two-factor challenge response
-            return $this->redirectsIfTwoFactorAuthenticatable->handle($request, function () use ($user) {
-                return $this->responseFactory->json([
-                    'message' => AuthStatusEnum::LOGIN_SUCCESS->value,
-                    'user'    => new UserResource($user),
-                ], 201);
-            });
+            // Return the two-factor challenge response (without logging in)
+            return $this->responseFactory->json([
+                'two_factor' => true,
+            ], 200);
+        }
+
+        // No 2FA required - proceed with normal login
+        if (!$this->userAuthenticationService->attempt($email, $password)) {
+            // This shouldn't happen since we already validated credentials, but just in case
+            throw new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);
         }
 
         // Log successful login

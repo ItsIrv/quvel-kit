@@ -38,6 +38,18 @@ class UserAuthenticationService
         ]);
     }
 
+    /**
+     * Validate user credentials without logging them in.
+     */
+    public function validateCredentials(string $email, string $password): bool
+    {
+        /** @phpstan-ignore-next-line staticMethod.dynamicCall */
+        return $this->auth->guard()->validate([
+            'email'    => $email,
+            'password' => $password,
+        ]);
+    }
+
     public function logout(): void
     {
         /** @phpstan-ignore-next-line staticMethod.dynamicCall */
