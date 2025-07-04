@@ -75,9 +75,10 @@ const loginTask = task.newTask({
  */
 const twoFactorTask = task.newTask({
   task: async () => {
-    const { user } = await twoFactorChallengeService.submitCode(twoFactorCode.value);
+    await twoFactorChallengeService.submitCode(twoFactorCode.value);
 
-    sessionStore.setSession(user);
+    // Fetch the session after successful 2FA
+    await sessionStore.fetchSession();
 
     emit('success');
     resetForm();
@@ -98,9 +99,10 @@ const twoFactorTask = task.newTask({
  */
 const recoveryCodeTask = task.newTask({
   task: async () => {
-    const { user } = await twoFactorChallengeService.submitRecoveryCode(recoveryCode.value);
+    await twoFactorChallengeService.submitRecoveryCode(recoveryCode.value);
 
-    sessionStore.setSession(user);
+    // Fetch the session after successful 2FA
+    await sessionStore.fetchSession();
 
     emit('success');
     resetForm();

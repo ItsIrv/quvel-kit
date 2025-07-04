@@ -2,7 +2,6 @@ import { Service } from 'src/modules/Core/services/Service';
 import { ApiService } from 'src/modules/Core/services/ApiService';
 import { ServiceContainer } from 'src/modules/Core/services/ServiceContainer';
 import type { RegisterService } from 'src/modules/Core/types/service.types';
-import type { IUser } from 'src/modules/Core/types/user.types';
 
 /**
  * Service for handling two-factor authentication challenges during login.
@@ -20,8 +19,8 @@ export class TwoFactorChallengeService extends Service implements RegisterServic
   /**
    * Submit two-factor authentication code to complete login
    */
-  async submitCode(code: string): Promise<{ user: IUser }> {
-    return await this.api.post<{ message: string; user: IUser }>('/auth/two-factor-challenge', {
+  async submitCode(code: string): Promise<void> {
+    await this.api.post('/auth/two-factor-challenge', {
       code,
     });
   }
@@ -29,8 +28,8 @@ export class TwoFactorChallengeService extends Service implements RegisterServic
   /**
    * Submit recovery code to complete login
    */
-  async submitRecoveryCode(recovery_code: string): Promise<{ user: IUser }> {
-    return await this.api.post<{ message: string; user: IUser }>('/auth/two-factor-challenge', {
+  async submitRecoveryCode(recovery_code: string): Promise<void> {
+    await this.api.post('/auth/two-factor-challenge', {
       recovery_code,
     });
   }

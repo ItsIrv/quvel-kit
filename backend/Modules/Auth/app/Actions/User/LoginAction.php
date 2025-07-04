@@ -72,7 +72,7 @@ class LoginAction
             throw new LoginActionException(AuthStatusEnum::EMAIL_NOT_VERIFIED);
         }
 
-        // Validate credentials first (without logging in)
+        // Validate credentials first
         if (!$this->userAuthenticationService->validateCredentials($email, $password)) {
             $this->logs->loginFailedInvalidCredentials(
                 $email,
@@ -84,7 +84,7 @@ class LoginAction
         }
 
         // Check if user has two-factor authentication enabled
-        if ($user->hasEnabledTwoFactorAuthentication() && $user->provider_id === null) {
+        if ($user->hasEnabledTwoFactorAuthentication()) {
             // Log successful credential validation but pending 2FA (don't log in yet)
             $this->logs->loginSuccess(
                 $email,
@@ -109,10 +109,7 @@ class LoginAction
         }
 
         // No 2FA required - proceed with normal login
-        if (!$this->userAuthenticationService->attempt($email, $password)) {
-            // This shouldn't happen since we already validated credentials, but just in case
-            throw new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);
-        }
+        $this->userAuthenticationService->logInWithId($user->id);
 
         // Log successful login
         $this->logs->loginSuccess(
