@@ -6,6 +6,7 @@ use Modules\Core\Http\Resources\UserResource;
 use Modules\Core\Services\User\UserFindService;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
+use Laravel\Fortify\Contracts\RedirectsIfTwoFactorAuthenticatable;
 use Modules\Auth\Http\Requests\LoginRequest;
 use Modules\Auth\Enums\AuthStatusEnum;
 use Modules\Auth\Exceptions\LoginActionException;
@@ -22,6 +23,7 @@ class LoginAction
         private readonly UserAuthenticationService $userAuthenticationService,
         private readonly ResponseFactory $responseFactory,
         private readonly LoginActionLogs $logs,
+        private readonly RedirectsIfTwoFactorAuthenticatable $redirectsIfTwoFactorAuthenticatable,
     ) {
     }
 
@@ -33,8 +35,8 @@ class LoginAction
     public function __invoke(LoginRequest $request): JsonResponse
     {
         $loginData = $request->validated();
-        $email = (string) $loginData['email'];
-        $password = (string) $loginData['password'];
+        $email     = (string) $loginData['email'];
+        $password  = (string) $loginData['password'];
 
         // Find the user by email
         $user = $this->userFindService->findByEmail($email);
@@ -80,6 +82,28 @@ class LoginAction
             );
 
             throw new LoginActionException(AuthStatusEnum::INVALID_CREDENTIALS);
+        }
+
+        // Check if user has two-factor authentication enabled
+        if (
+            $user->two_factor_secret &&
+            $user->hasEnabledTwoFactorAuthentication()
+        ) {
+            // Log successful credential validation but pending 2FA
+            $this->logs->loginSuccess(
+                $email,
+                $user->id,
+                $request->ip() ?? 'unknown',
+                $request->userAgent(),
+            );
+
+            // Return the two-factor challenge response
+            return $this->redirectsIfTwoFactorAuthenticatable->handle($request, function () use ($user) {
+                return $this->responseFactory->json([
+                    'message' => AuthStatusEnum::LOGIN_SUCCESS->value,
+                    'user'    => new UserResource($user),
+                ], 201);
+            });
         }
 
         // Log successful login

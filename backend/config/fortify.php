@@ -158,11 +158,11 @@ return [
         Features::updatePasswords(),
 
         // Enable two-factor authentication
-        // Features::twoFactorAuthentication([
-        //     'confirm'         => true,
-        //     'confirmPassword' => true,
-        //     // 'window' => 0,
-        // ]),
+        Features::twoFactorAuthentication([
+            'confirm'         => true,
+            'confirmPassword' => true,
+            // 'window' => 0,
+        ]),
     ],
 
 ];
