@@ -5,6 +5,8 @@ export default {
     confirm: 'Confirm',
     back: 'Back',
     close: 'Close',
+    next: 'Next',
+    finish: 'Finish',
   },
   navigation: {
     home: 'Home',
@@ -43,4 +45,5 @@ export default {
   },
   language: 'Language',
   placeholder: 'Placeholder',
+  copied: 'Copied!',
 };

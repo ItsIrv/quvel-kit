@@ -22,6 +22,18 @@ const routes: RouteRecordRaw[] = [
           breadcrumbs: false, // Home breadcrumb only
         },
       },
+      {
+        path: 'settings',
+        name: DashboardRoutes.SETTINGS,
+        component: () => import('../pages/SettingsPage.vue'),
+        meta: {
+          title: 'dashboard.settings.title',
+          breadcrumbs: [
+            { label: 'dashboard.breadcrumbs.home', to: { name: DashboardRoutes.DASHBOARD } },
+            { label: 'dashboard.settings.title' },
+          ],
+        },
+      },
     ],
   },
 ];

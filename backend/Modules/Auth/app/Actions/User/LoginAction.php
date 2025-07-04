@@ -85,10 +85,7 @@ class LoginAction
         }
 
         // Check if user has two-factor authentication enabled
-        if (
-            $user->two_factor_secret &&
-            $user->hasEnabledTwoFactorAuthentication()
-        ) {
+        if ($user->hasEnabledTwoFactorAuthentication()) {
             // Log successful credential validation but pending 2FA
             $this->logs->loginSuccess(
                 $email,

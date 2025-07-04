@@ -65,6 +65,16 @@ const navigationItems = computed((): NavigationItem[] => [
     icon: 'eva-home',
     to: { name: DashboardRoutes.DASHBOARD },
   },
+  {
+    header: true,
+    label: i18n.t('dashboard.nav.sections.account'),
+  },
+  {
+    name: 'settings',
+    label: i18n.t('dashboard.nav.settings'),
+    icon: 'eva-settings-2',
+    to: { name: DashboardRoutes.SETTINGS },
+  },
 ]);
 
 // Breadcrumbs logic
@@ -75,7 +85,12 @@ const breadcrumbs = computed(() => {
   ];
 
   if (route.meta.breadcrumbs && Array.isArray(route.meta.breadcrumbs)) {
-    crumbs.push(...route.meta.breadcrumbs);
+    // Translate labels in breadcrumbs array
+    const translatedBreadcrumbs = route.meta.breadcrumbs.map((breadcrumb: { label: string }) => ({
+      ...breadcrumb,
+      label: i18n.t(breadcrumb.label),
+    }));
+    crumbs.push(...translatedBreadcrumbs);
   } else if (route.meta.title) {
     crumbs.push({ label: i18n.t(route.meta.title as string) });
   }

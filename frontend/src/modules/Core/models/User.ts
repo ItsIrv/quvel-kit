@@ -9,6 +9,7 @@ export class User implements IUser {
   email: string;
   avatar: string | null;
   emailVerifiedAt: string;
+  two_factor_enabled?: boolean;
   createdAt: string;
   updatedAt: string;
 
@@ -22,6 +23,7 @@ export class User implements IUser {
     this.email = data.email ?? '';
     this.avatar = data.avatar ?? '';
     this.emailVerifiedAt = data.emailVerifiedAt ?? '';
+    this.two_factor_enabled = data.two_factor_enabled ?? false;
     this.createdAt = data.createdAt ?? '';
     this.updatedAt = data.updatedAt ?? '';
   }
@@ -37,6 +39,7 @@ export class User implements IUser {
       email: data.email,
       avatar: data.avatar,
       emailVerifiedAt: data.emailVerifiedAt,
+      two_factor_enabled: data.two_factor_enabled ?? false,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     });
