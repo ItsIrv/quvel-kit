@@ -91,6 +91,8 @@ export class TwoFactorService extends Service implements RegisterService {
    * Regenerate recovery codes for two-factor authentication
    */
   async regenerateRecoveryCodes(): Promise<string[]> {
-    return await this.api.post('/auth/user/two-factor-recovery-codes');
+    await this.api.post('/auth/user/two-factor-recovery-codes');
+
+    return await this.api.get('/auth/user/two-factor-recovery-codes');
   }
 }

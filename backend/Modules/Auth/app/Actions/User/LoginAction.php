@@ -11,6 +11,7 @@ use Modules\Auth\Enums\AuthStatusEnum;
 use Modules\Auth\Exceptions\LoginActionException;
 use Modules\Auth\Logs\Actions\User\LoginActionLogs;
 use Modules\Auth\Services\UserAuthenticationService;
+use Laravel\Fortify\Events\TwoFactorAuthenticationChallenged;
 
 /**
  * Action to sign in a user.
@@ -91,6 +92,15 @@ class LoginAction
                 $request->ip() ?? 'unknown',
                 $request->userAgent(),
             );
+
+            // Set session state for two-factor challenge (same as Fortify)
+            $request->session()->put([
+                'login.id'       => $user->getKey(),
+                'login.remember' => $request->boolean('remember'),
+            ]);
+
+            // Dispatch Fortify's event
+            TwoFactorAuthenticationChallenged::dispatch($user);
 
             // Return the two-factor challenge response (without logging in)
             return $this->responseFactory->json([
