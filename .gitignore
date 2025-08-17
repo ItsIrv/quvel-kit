@@ -4,3 +4,4 @@ docker/certs/
 qodana.yaml
 .claude
 CLAUDE.MD
+.quvel-mode

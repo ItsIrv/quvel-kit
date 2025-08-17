@@ -311,19 +311,19 @@ echo ""
 print_header "🌐 Access URLs"
 case "$MODE" in
     "docker")
-        echo "  Frontend: ${SERVICE_URLS[frontend_public]}"
-        echo "  API: ${SERVICE_URLS[api_public]}"
-        echo "  Coverage: ${SERVICE_URLS[coverage_public]}"
-        echo "  Traefik Dashboard: ${SERVICE_URLS[traefik_dashboard]}"
+        echo "  Frontend: $(get_service_url frontend_public)"
+        echo "  API: $(get_service_url api_public)"
+        echo "  Coverage: $(get_service_url coverage_public)"
+        echo "  Traefik Dashboard: $(get_service_url traefik_dashboard)"
         ;;
     "traefik-only"|"minimal")
-        echo "  Frontend: ${SERVICE_URLS[frontend_public]} (after starting local services)"
-        echo "  API: ${SERVICE_URLS[api_public]} (after starting local services)"
-        echo "  Traefik Dashboard: ${SERVICE_URLS[traefik_dashboard]}"
+        echo "  Frontend: $(get_service_url frontend_public) (after starting local services)"
+        echo "  API: $(get_service_url api_public) (after starting local services)"
+        echo "  Traefik Dashboard: $(get_service_url traefik_dashboard)"
         ;;
     "local")
-        echo "  Frontend: ${SERVICE_URLS[frontend_dev]} (local development)"
-        echo "  API: ${SERVICE_URLS[backend_dev]} (local development)"
+        echo "  Frontend: $(get_service_url frontend_dev) (local development)"
+        echo "  API: $(get_service_url backend_dev) (local development)"
         ;;
 esac
 
