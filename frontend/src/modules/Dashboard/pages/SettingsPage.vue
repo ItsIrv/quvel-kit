@@ -13,6 +13,7 @@ import { TwoFactorService } from 'src/modules/Auth/services/TwoFactorService';
 import TaskErrors from 'src/modules/Core/components/Common/TaskErrors.vue';
 import { copyToClipboard } from 'quasar';
 import { showNotification } from 'src/modules/Core/utils/notifyUtil';
+import PasswordConfirmDialog from 'src/modules/Auth/components/Dialogs/PasswordConfirmDialog.vue';
 
 /**
  * Services and composables
@@ -35,6 +36,7 @@ const recoveryCodes = ref<string[]>([]);
 const currentRecoveryCodes = ref<string[]>([]);
 const showDisableDialog = ref(false);
 const showRecoveryDialog = ref(false);
+const showPasswordConfirmForRecovery = ref(false);
 
 /**
  * Task: Confirm password for sensitive operations
@@ -121,6 +123,21 @@ const disableMFATask = task.newTask({
 });
 
 /**
+ * Task: Confirm password for viewing recovery codes
+ */
+const confirmPasswordForRecoveryTask = task.newTask({
+  task: async () => {
+    await twoFactorService.confirmPassword(confirmPassword.value);
+    showPasswordConfirmForRecovery.value = false;
+    confirmPassword.value = '';
+    void viewRecoveryCodesTask.run();
+  },
+  handleLaravelError: {
+    translate: true,
+  },
+});
+
+/**
  * Task: View recovery codes
  */
 const viewRecoveryCodesTask = task.newTask({
@@ -158,18 +175,19 @@ function startEnableMFA() {
 }
 
 /**
- * Confirm password and proceed with MFA setup
+ * Handle password confirmation for MFA enable
  */
-function confirmPasswordAndEnable() {
-  if (!confirmPassword.value) {
-    confirmPasswordTask.errors.value.set(
-      'password',
-      i18n.t('auth.validation.password.required')
-    );
-    return;
-  }
-
+function handlePasswordConfirmForEnable(password: string) {
+  confirmPassword.value = password;
   void confirmPasswordTask.run();
+}
+
+/**
+ * Handle password confirmation for recovery codes
+ */
+function handlePasswordConfirmForRecovery(password: string) {
+  confirmPassword.value = password;
+  void confirmPasswordForRecoveryTask.run();
 }
 
 /**
@@ -205,7 +223,7 @@ function disableMFA() {
  * View recovery codes
  */
 function viewRecoveryCodes() {
-  void viewRecoveryCodesTask.run();
+  showPasswordConfirmForRecovery.value = true;
 }
 
 /**
@@ -590,51 +608,25 @@ function downloadRecoveryCodes() {
       </q-card>
     </q-dialog>
 
-    <!-- Password Confirmation Dialog -->
-    <q-dialog
+    <!-- Password Confirmation Dialog for MFA Enable -->
+    <PasswordConfirmDialog
       v-model="showPasswordConfirm"
-      persistent
-    >
-      <q-card style="min-width: 350px">
-        <q-card-section>
-          <div class="text-h6">{{ $t('dashboard.settings.twoFactor.confirmPassword.title') }}</div>
-        </q-card-section>
+      :title="$t('dashboard.settings.twoFactor.confirmPassword.title')"
+      :message="$t('dashboard.settings.twoFactor.confirmPassword.message')"
+      :loading="confirmPasswordTask.isActive.value"
+      :errors="confirmPasswordTask.errors.value"
+      @confirmed="handlePasswordConfirmForEnable"
+      @cancelled="resetMFAState"
+    />
 
-        <q-card-section>
-          <p class="q-mb-md">{{ $t('dashboard.settings.twoFactor.confirmPassword.message') }}</p>
-
-          <q-form @submit.prevent="confirmPasswordAndEnable">
-            <q-input
-              v-model="confirmPassword"
-              :label="$t('auth.forms.common.password')"
-              type="password"
-              outlined
-              autofocus
-            />
-
-            <!-- Errors -->
-            <TaskErrors
-              class="q-mt-sm"
-              :task-errors="confirmPasswordTask.errors.value"
-            />
-          </q-form>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn
-            flat
-            :label="$t('common.buttons.cancel')"
-            @click="resetMFAState"
-          />
-          <q-btn
-            flat
-            color="primary"
-            :label="$t('common.buttons.confirm')"
-            @click="confirmPasswordAndEnable"
-            :loading="confirmPasswordTask.isActive.value"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+    <!-- Password Confirmation Dialog for Viewing Recovery Codes -->
+    <PasswordConfirmDialog
+      v-model="showPasswordConfirmForRecovery"
+      :title="$t('dashboard.settings.twoFactor.confirmPassword.title')"
+      :loading="confirmPasswordForRecoveryTask.isActive.value"
+      :errors="confirmPasswordForRecoveryTask.errors.value"
+      @confirmed="handlePasswordConfirmForRecovery"
+      @cancelled="() => { showPasswordConfirmForRecovery = false; confirmPassword = ''; }"
+    />
   </q-page>
 </template>
