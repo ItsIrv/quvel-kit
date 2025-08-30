@@ -4,5 +4,6 @@
     "Catalog": true,
     "Notifications": true,
     "Core": true,
-    "TenantAdmin": true
+    "TenantAdmin": true,
+    "Phone": true
 }

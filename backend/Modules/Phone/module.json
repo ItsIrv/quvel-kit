@@ -1,0 +1,11 @@
+{
+    "name": "Phone",
+    "alias": "phone",
+    "description": "Handles phone number management and verification for QuVel Kit. Includes phone verification with OTP.",
+    "keywords": ["phone", "verification", "otp", "sms"],
+    "priority": 0,
+    "providers": [
+        "Modules\\Phone\\Providers\\PhoneServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,30 @@
+{
+    "name": "itsirv/phone",
+    "description": "Handles phone number management and verification for QuVel Kit. Includes phone verification with OTP and SMS capabilities.",
+    "authors": [
+        {
+            "name": "Irving Gomez",
+            "email": "gomirv.work@gmail.com"
+        }
+    ],
+    "require": {
+    },
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Phone\\": "app/",
+            "Modules\\Phone\\Database\\Factories\\": "database/factories/",
+            "Modules\\Phone\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Phone\\Tests\\": "tests/"
+        }
+    }
+}

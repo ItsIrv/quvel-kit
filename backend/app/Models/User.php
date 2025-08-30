@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -16,7 +17,9 @@ use Modules\Auth\Traits\UseAuthModuleNotifications;
  * @property string $public_id
  * @property string $name
  * @property string $email
- * @property string $email_verified_at
+ * @property Carbon|null $email_verified_at
+ * @property string|null $phone
+ * @property Carbon|null $phone_verified_at
  * @property string $password
  * @property string $remember_token
  * @property string $created_at
@@ -44,6 +47,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'phone',
         'provider_id',
         'avatar',
     ];
@@ -67,6 +71,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password'          => 'hashed',
         ];
     }
