@@ -69,6 +69,21 @@ return [
     */
 
     'sms'        => [
-        'provider' => env('PHONE_SMS_PROVIDER', 'log'),
+        'enabled'      => env('SMS_ENABLED', false),
+        'default'      => env('SMS_PROVIDER', 'log'),
+        'otp_template' => 'Your verification code is: :otp',
+
+        'providers'    => [
+            'clicksend' => [
+                'class'    => \Modules\Phone\Providers\Sms\ClickSendSmsProvider::class,
+                'username' => env('CLICKSEND_USERNAME'),
+                'api_key'  => env('CLICKSEND_API_KEY'),
+                'from'     => env('CLICKSEND_FROM', 'Verify'),
+            ],
+
+            'log'       => [
+                'class' => \Modules\Phone\Providers\Sms\LogSmsProvider::class,
+            ],
+        ],
     ],
 ];

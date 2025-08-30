@@ -3,12 +3,13 @@
 namespace Modules\Phone\Actions;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 use Modules\Phone\Enums\PhoneStatusEnum;
 use Modules\Phone\Exceptions\InvalidPhoneNumberException;
 use Modules\Phone\Rules\PhoneNumberRule;
 use Modules\Phone\Services\OtpCacheService;
 use Modules\Phone\Services\PhoneService;
-use Illuminate\Support\Facades\Validator;
+use Modules\Phone\Services\SmsService;
 
 /**
  * Sends OTP verification to a phone number.
@@ -18,6 +19,7 @@ class SendVerificationAction
     public function __construct(
         private readonly PhoneService $phoneService,
         private readonly OtpCacheService $otpCacheService,
+        private readonly SmsService $smsService,
     ) {
     }
 
@@ -57,6 +59,11 @@ class SendVerificationAction
             'phone'             => $otp,
             'phone_verified_at' => null,
         ]);
+
+        $message = config('phone.sms.otp_template', 'Your verification code is: :otp');
+        $message = str_replace(':otp', $otp, $message);
+
+        $this->smsService->send($formattedPhone, $message);
 
         return [
             'status'     => PhoneStatusEnum::VERIFICATION_SENT->value,
