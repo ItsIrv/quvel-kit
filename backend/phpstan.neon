@@ -1,12 +1,10 @@
-includes:
-    - phar://phpstan.phar/conf/bleedingEdge.neon
-
 parameters:
     paths:
         - app
-        - Modules/Tenant/app
         - Modules/Auth/app
         - Modules/Core/app
+        - Modules/Tenant/app
+        - Modules/Phone/app
 
     level: 8
 
@@ -18,6 +16,21 @@ parameters:
         - node_modules/*
         - public/*
         - database/migrations/*
+        - Modules/*/database/migrations/*
+        - Modules/*/resources/*
+        - Modules/*/tests/*
 
     # PHP version
-    phpVersion: 80300
+    phpVersion: 80400
+
+    # Larastan specific settings
+    noModelMake: false
+    noUnnecessaryCollectionCall: false
+    checkModelProperties: true
+    checkOctaneCompatibility: true
+    checkNullables: true
+
+    # Parallel processing
+    parallel:
+        maximumNumberOfProcesses: 4
+        processTimeout: 300.0
