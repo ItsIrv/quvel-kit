@@ -1,21 +1,21 @@
 <?php
 
-namespace Modules\Phone\Providers\Sms;
+namespace Modules\Phone\Drivers;
 
 use Illuminate\Support\Facades\Log;
-use Modules\Phone\Contracts\SmsProviderInterface;
+use Modules\Phone\Contracts\SmsDriverInterface;
 
 /**
- * Log SMS provider for development/testing.
+ * Log SMS driver for development/testing.
  */
-class LogSmsProvider implements SmsProviderInterface
+class LogSmsDriver implements SmsDriverInterface
 {
     /**
      * Log the SMS message instead of sending.
      */
     public function send(string $to, string $message, ?string $from = null): void
     {
-        Log::info('SMS Message (Log Provider)', [
+        Log::info('SMS Message (Log Driver)', [
             'provider'  => static::class,
             'to'        => $to,
             'from'      => $from ?? 'System',

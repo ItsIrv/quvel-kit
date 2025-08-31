@@ -2,16 +2,15 @@
 
 namespace Modules\Phone\Services;
 
-use Illuminate\Support\Facades\Log;
-use Modules\Phone\Contracts\SmsProviderInterface;
+use Modules\Phone\Contracts\SmsDriverInterface;
 
 /**
- * SMS service using configurable providers.
+ * SMS service using configurable drivers.
  */
 class SmsService
 {
     public function __construct(
-        private readonly SmsProviderInterface $provider,
+        private readonly SmsDriverInterface $driver,
     ) {
     }
 
@@ -20,6 +19,6 @@ class SmsService
      */
     public function send(string $phone, string $message, ?string $from = null): void
     {
-        $this->provider->send($phone, $message, $from);
+        $this->driver->send($phone, $message, $from);
     }
 }

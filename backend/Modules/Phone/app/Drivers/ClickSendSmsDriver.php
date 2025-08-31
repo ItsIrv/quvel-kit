@@ -1,16 +1,16 @@
 <?php
 
-namespace Modules\Phone\Providers\Sms;
+namespace Modules\Phone\Drivers;
 
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Modules\Phone\Contracts\SmsProviderInterface;
+use Modules\Phone\Contracts\SmsDriverInterface;
 
 /**
- * ClickSend SMS provider implementation.
+ * ClickSend SMS driver implementation.
  */
-class ClickSendSmsProvider implements SmsProviderInterface
+class ClickSendSmsDriver implements SmsDriverInterface
 {
     private string $username;
     private string $apiKey;
@@ -50,7 +50,9 @@ class ClickSendSmsProvider implements SmsProviderInterface
                     'provider' => static::class,
                     'to'       => $to,
                     'status'   => $response->status(),
+                    'response' => $response->body(),
                 ]);
+
                 return;
             }
 

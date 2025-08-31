@@ -1,5 +1,8 @@
 <?php
 
+use Modules\Phone\Drivers\ClickSendSmsDriver;
+use Modules\Phone\Drivers\LogSmsDriver;
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -60,29 +63,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | SMS Provider Settings
+    | SMS Driver Settings
     |--------------------------------------------------------------------------
     |
-    | Future extensibility for SMS providers. Currently for development,
-    | OTPs will be logged instead of sent via SMS.
+    | Configuration for SMS drivers.
     |
     */
 
     'sms'        => [
         'enabled'      => env('SMS_ENABLED', false),
-        'default'      => env('SMS_PROVIDER', 'log'),
+        'default'      => env('SMS_DRIVER', 'log'),
         'otp_template' => 'Your verification code is: :otp',
 
-        'providers'    => [
+        'drivers'      => [
             'clicksend' => [
-                'class'    => \Modules\Phone\Providers\Sms\ClickSendSmsProvider::class,
+                'class'    => ClickSendSmsDriver::class,
                 'username' => env('CLICKSEND_USERNAME'),
                 'api_key'  => env('CLICKSEND_API_KEY'),
                 'from'     => env('CLICKSEND_FROM', 'Verify'),
             ],
 
             'log'       => [
-                'class' => \Modules\Phone\Providers\Sms\LogSmsProvider::class,
+                'class' => LogSmsDriver::class,
             ],
         ],
     ],

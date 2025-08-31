@@ -5,10 +5,8 @@ namespace Modules\Phone\Actions;
 use App\Models\User;
 use Modules\Phone\Enums\PhoneStatusEnum;
 use Modules\Phone\Exceptions\OtpExpiredException;
-use Modules\Phone\Rules\OtpRule;
 use Modules\Phone\Services\OtpCacheService;
 use Modules\Phone\Services\PhoneService;
-use Illuminate\Support\Facades\Validator;
 
 /**
  * Verifies phone number with OTP code.
@@ -26,17 +24,6 @@ class VerifyPhoneAction
      */
     public function __invoke(User $user, string $otp): array
     {
-        $validator = Validator::make(
-            ['otp' => $otp],
-            ['otp' => [new OtpRule()]],
-        );
-
-        if ($validator->fails()) {
-            throw new OtpExpiredException(
-                $validator->errors()->first('otp'),
-            );
-        }
-
         if (!$user->phone) {
             throw new OtpExpiredException(PhoneStatusEnum::NO_PHONE->value);
         }

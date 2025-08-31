@@ -3,10 +3,8 @@
 namespace Modules\Phone\Actions;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Validator;
 use Modules\Phone\Enums\PhoneStatusEnum;
 use Modules\Phone\Exceptions\InvalidPhoneNumberException;
-use Modules\Phone\Rules\PhoneNumberRule;
 use Modules\Phone\Services\OtpCacheService;
 use Modules\Phone\Services\PhoneService;
 use Modules\Phone\Services\SmsService;
@@ -28,17 +26,6 @@ class SendVerificationAction
      */
     public function __invoke(User $user, string $phoneNumber): array
     {
-        $validator = Validator::make(
-            ['phone' => $phoneNumber],
-            ['phone' => [new PhoneNumberRule()]],
-        );
-
-        if ($validator->fails()) {
-            throw new InvalidPhoneNumberException(
-                $validator->errors()->first('phone'),
-            );
-        }
-
         if ($user->phone_verified_at || !empty($user->phone)) {
             return [
                 'status' => PhoneStatusEnum::ALREADY_VERIFIED->value,

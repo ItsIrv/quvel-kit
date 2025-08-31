@@ -3,9 +3,9 @@
 namespace Modules\Phone\Contracts;
 
 /**
- * Contract for SMS providers.
+ * Contract for SMS drivers.
  */
-interface SmsProviderInterface
+interface SmsDriverInterface
 {
     /**
      * Send an SMS message.
@@ -13,5 +13,4 @@ interface SmsProviderInterface
      * @throws \Exception if sending fails
      */
     public function send(string $to, string $message, ?string $from = null): void;
-
 }
