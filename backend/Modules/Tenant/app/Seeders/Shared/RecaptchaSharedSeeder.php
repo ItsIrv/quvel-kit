@@ -26,10 +26,10 @@ class RecaptchaSharedSeeder implements TenantSharedSeederInterface
         if (isset($baseConfig['recaptcha_site_key'])) {
             $recaptchaConfig['recaptcha_site_key']   = $baseConfig['recaptcha_site_key'];
             $recaptchaConfig['recaptcha_secret_key'] = $baseConfig['recaptcha_secret_key'] ?? '';
-        } elseif (config('services.recaptcha.site_key') !== null) {
-            // Fallback to config for development
-            $recaptchaConfig['recaptcha_site_key']   = config('services.recaptcha.site_key');
-            $recaptchaConfig['recaptcha_secret_key'] = config('services.recaptcha.secret_key', '');
+        } elseif (config('core.recaptcha.recaptcha_site_key') !== null) {
+            // Fallback to core config
+            $recaptchaConfig['recaptcha_site_key']   = config('core.recaptcha.recaptcha_site_key');
+            $recaptchaConfig['recaptcha_secret_key'] = config('core.recaptcha.recaptcha_secret_key', '');
         }
 
         return $recaptchaConfig;

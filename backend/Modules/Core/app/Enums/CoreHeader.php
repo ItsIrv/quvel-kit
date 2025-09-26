@@ -18,11 +18,6 @@ enum CoreHeader: string
     case TRACE_ID = 'X-Trace-ID';
 
     /**
-     * Header for tenant ID in distributed tracing.
-     */
-    case TENANT_ID = 'X-Tenant-ID';
-
-    /**
      * Header for capacitor.
      */
     case CAPACITOR = 'X-Capacitor';

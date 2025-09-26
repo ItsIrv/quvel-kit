@@ -122,7 +122,14 @@ class CoreConfigPipe extends BaseConfigurationPipe
         }
 
         if (isset($tenantConfig['recaptcha_secret_key'])) {
+            // Set both root level (for backward compatibility) and normalized path
             $config->set('recaptcha_secret_key', $tenantConfig['recaptcha_secret_key']);
+            $config->set('core.recaptcha.recaptcha_secret_key', $tenantConfig['recaptcha_secret_key']);
+        }
+        if (isset($tenantConfig['recaptcha_site_key'])) {
+            // Also set site key at normalized path for consistency
+            $config->set('recaptcha_site_key', $tenantConfig['recaptcha_site_key']);
+            $config->set('core.recaptcha.recaptcha_site_key', $tenantConfig['recaptcha_site_key']);
         }
 
         return $next([

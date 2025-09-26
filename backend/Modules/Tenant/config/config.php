@@ -84,8 +84,8 @@ return [
         'prefix' => 'tenant-info',  // Configurable namespace for tenant endpoints
         'routes' => [
             'protected' => 'protected',            // /tenant-info/protected
-            'cache'     => 'cache',       // /tenant-info/cache
             'public'    => 'public',      // /tenant-info/public
+            'cache'     => 'cache',       // /tenant-info/cache
         ],
     ],
 

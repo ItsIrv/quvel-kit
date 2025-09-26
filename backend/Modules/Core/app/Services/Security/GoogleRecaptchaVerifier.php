@@ -16,8 +16,8 @@ class GoogleRecaptchaVerifier implements CaptchaVerifierInterface
 
     public function verify(string $token, ?string $ip = null): bool
     {
-        // Get secret key from tenant config
-        $secretKey = config('recaptcha_secret_key');
+        // Get secret key from tenant config or core config
+        $secretKey = config('recaptcha_secret_key') ?? config('core.recaptcha.recaptcha_secret_key');
 
         // If no secret key is configured, validation fails
         if ($secretKey === null || $secretKey === '' || $secretKey === '0') {
