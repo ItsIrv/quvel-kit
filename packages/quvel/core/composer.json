@@ -1,0 +1,35 @@
+{
+    "name": "quvel/core",
+    "description": "Core foundation package for Quvel framework",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Quvel Team"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/contracts": "^10.0|^11.0",
+        "illuminate/support": "^10.0|^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Quvel\\Core\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Quvel\\Core\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Quvel\\Core\\CoreServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
