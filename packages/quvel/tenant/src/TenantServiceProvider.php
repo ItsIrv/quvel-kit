@@ -14,6 +14,14 @@ class TenantServiceProvider extends ServiceProvider
             __DIR__.'/../config/tenant.php',
             'tenant'
         );
+
+        $this->app->singleton(TenantConfigManager::class, function ($app) {
+            $handlers = config('tenant.config_handlers', []);
+            $manager = new TenantConfigManager();
+            $manager->registerHandlers($handlers);
+
+            return $manager;
+        });
     }
 
     public function boot(): void
