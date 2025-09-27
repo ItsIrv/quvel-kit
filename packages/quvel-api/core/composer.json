@@ -5,11 +5,11 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Quvel Team"
+            "name": "Irving Gomez <gomirv.work@gmail.com>"
         }
     ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.4",
         "illuminate/contracts": "^10.0|^11.0",
         "illuminate/support": "^10.0|^11.0"
     },
@@ -26,7 +26,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Quvel\\Core\\CoreServiceProvider"
+                "Quvel\\Core\\Providers\\CoreServiceProvider"
             ]
         }
     },

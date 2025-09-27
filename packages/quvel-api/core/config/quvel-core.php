@@ -7,7 +7,7 @@ return [
     'captcha' => [
         /**
          * Default captcha provider to use.
-         * Available: 'recaptcha_v3'
+         * Currently only 'recaptcha_v3' is supported.
          */
         'provider' => env('CAPTCHA_PROVIDER', 'recaptcha_v3'),
 
@@ -16,9 +16,24 @@ return [
          */
         'providers' => [
             'recaptcha_v3' => [
+                /**
+                 * reCAPTCHA site key (public)
+                 */
                 'site_key' => env('RECAPTCHA_SITE_KEY'),
+
+                /**
+                 * reCAPTCHA secret key (private)
+                 */
                 'secret_key' => env('RECAPTCHA_SECRET_KEY'),
+
+                /**
+                 * Google verification endpoint
+                 */
                 'verify_url' => 'https://www.google.com/recaptcha/api/siteverify',
+
+                /**
+                 * Minimum score for reCAPTCHA v3 (0.0-1.0)
+                 */
                 'score_threshold' => env('RECAPTCHA_SCORE_THRESHOLD', 0.5),
             ],
         ],
@@ -26,7 +41,15 @@ return [
         /**
          * Global captcha settings
          */
+
+        /**
+         * HTTP timeout in seconds for captcha verification
+         */
         'timeout' => env('CAPTCHA_TIMEOUT', 30),
+
+        /**
+         * Whether captcha verification is enabled globally
+         */
         'enabled' => env('CAPTCHA_ENABLED', true),
     ],
 
@@ -41,10 +64,10 @@ return [
         'trace_id' => env('HEADER_TRACE_ID'),
 
         /**
-         * Custom header for mobile framework detection.
-         * Set to null to use the default 'X-Capacitor'
+         * Custom header for platform detection.
+         * Set to null to use the default 'X-Platform'
          */
-        'capacitor' => env('HEADER_CAPACITOR'),
+        'platform' => env('HEADER_PLATFORM'),
 
         /**
          * Custom header for SSR API key.
@@ -61,9 +84,24 @@ return [
          * Internal request validation settings
          */
         'internal_requests' => [
+            /**
+             * List of trusted IP addresses for internal requests
+             */
             'trusted_ips' => explode(',', env('SECURITY_TRUSTED_IPS', '127.0.0.1,::1')),
+
+            /**
+             * API key required for internal requests
+             */
             'api_key' => env('SECURITY_API_KEY'),
+
+            /**
+             * Bypass IP validation (not recommended for production)
+             */
             'disable_ip_check' => env('SECURITY_DISABLE_IP_CHECK', false),
+
+            /**
+             * Bypass API key validation (not recommended for production)
+             */
             'disable_key_check' => env('SECURITY_DISABLE_KEY_CHECK', false),
         ],
     ],
@@ -86,7 +124,14 @@ return [
          * Context enrichment settings
          */
         'context_enrichment' => [
+            /**
+             * Enable automatic context enrichment
+             */
             'enabled' => env('LOG_CONTEXT_ENRICHMENT', true),
+
+            /**
+             * Sanitize PII in log data
+             */
             'sanitize_sensitive_data' => env('LOG_SANITIZE_SENSITIVE', true),
         ],
     ],
@@ -96,39 +141,19 @@ return [
      */
     'locale' => [
         /**
-         * Locale detection strategy
-         */
-        'strategy' => env('LOCALE_STRATEGY', 'header_with_fallback'),
-
-        /**
-         * Allowed application locales
+         * Allowed application locales (comma-separated list)
          */
         'allowed_locales' => explode(',', env('LOCALE_ALLOWED', 'en')),
 
         /**
-         * Fallback locale
+         * Default locale when detection fails
          */
         'fallback_locale' => env('LOCALE_FALLBACK', 'en'),
 
         /**
-         * Whether to normalize locales (en-US -> en)
+         * Convert region-specific locales to base language (en-US -> en)
          */
         'normalize_locales' => env('LOCALE_NORMALIZE', true),
-    ],
-
-    /**
-     * Middleware Configuration
-     */
-    'middleware' => [
-        /**
-         * Whether to automatically register middleware
-         */
-        'auto_register' => env('CORE_MIDDLEWARE_AUTO_REGISTER', true),
-
-        /**
-         * Middleware groups to apply locale middleware to
-         */
-        'locale_groups' => explode(',', env('CORE_LOCALE_MIDDLEWARE_GROUPS', 'web,api')),
     ],
 
     /**
@@ -136,13 +161,13 @@ return [
      */
     'frontend' => [
         /**
-         * Base frontend URL for redirects
+         * Base URL for frontend application
          */
         'url' => env('FRONTEND_URL', 'http://localhost:3000'),
 
         /**
-         * Custom URL scheme for deep linking (mobile/desktop apps)
-         * Use '_deep' for standard deep links, null to disable, or custom scheme
+         * Custom URL scheme for mobile/desktop deep links (e.g., 'myapp')
+         * Use null to disable deep linking
          */
         'custom_scheme' => env('FRONTEND_CUSTOM_SCHEME'),
 
@@ -157,7 +182,7 @@ return [
      */
     'tracing' => [
         /**
-         * Whether tracing is enabled
+         * Enable distributed tracing with UUID generation
          */
         'enabled' => env('TRACING_ENABLED', true),
     ],
