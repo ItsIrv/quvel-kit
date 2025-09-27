@@ -7,7 +7,7 @@ return [
     'captcha' => [
         /**
          * Default captcha provider to use.
-         * Available: 'recaptcha_v2', 'recaptcha_v3', 'hcaptcha', 'turnstile'
+         * Available: 'recaptcha_v3'
          */
         'provider' => env('CAPTCHA_PROVIDER', 'recaptcha_v3'),
 
@@ -15,29 +15,11 @@ return [
          * Provider-specific configurations
          */
         'providers' => [
-            'recaptcha_v2' => [
-                'site_key' => env('RECAPTCHA_SITE_KEY'),
-                'secret_key' => env('RECAPTCHA_SECRET_KEY'),
-                'verify_url' => 'https://www.google.com/recaptcha/api/siteverify',
-            ],
-
             'recaptcha_v3' => [
                 'site_key' => env('RECAPTCHA_SITE_KEY'),
                 'secret_key' => env('RECAPTCHA_SECRET_KEY'),
                 'verify_url' => 'https://www.google.com/recaptcha/api/siteverify',
                 'score_threshold' => env('RECAPTCHA_SCORE_THRESHOLD', 0.5),
-            ],
-
-            'hcaptcha' => [
-                'site_key' => env('HCAPTCHA_SITE_KEY'),
-                'secret_key' => env('HCAPTCHA_SECRET_KEY'),
-                'verify_url' => 'https://hcaptcha.com/siteverify',
-            ],
-
-            'turnstile' => [
-                'site_key' => env('TURNSTILE_SITE_KEY'),
-                'secret_key' => env('TURNSTILE_SECRET_KEY'),
-                'verify_url' => 'https://challenges.cloudflare.com/turnstile/v0/siteverify',
             ],
         ],
 
@@ -76,12 +58,13 @@ return [
      */
     'security' => [
         /**
-         * Request validation settings for internal request detection
+         * Internal request validation settings
          */
-        'request_validation' => [
-            'strategy' => env('SECURITY_VALIDATION_STRATEGY', 'strict'), // strict, ip_only, key_only, disabled
+        'internal_requests' => [
             'trusted_ips' => explode(',', env('SECURITY_TRUSTED_IPS', '127.0.0.1,::1')),
             'api_key' => env('SECURITY_API_KEY'),
+            'disable_ip_check' => env('SECURITY_DISABLE_IP_CHECK', false),
+            'disable_key_check' => env('SECURITY_DISABLE_KEY_CHECK', false),
         ],
     ],
 
@@ -164,14 +147,9 @@ return [
         'custom_scheme' => env('FRONTEND_CUSTOM_SCHEME'),
 
         /**
-         * Internal API URL for server-side requests to frontend
+         * Internal API URL for server-side requests from SSR
          */
         'internal_api_url' => env('FRONTEND_INTERNAL_API_URL'),
-
-        /**
-         * Allowed application locales
-         */
-        'allowed_locales' => explode(',', env('FRONTEND_ALLOWED_LOCALES', 'en')),
     ],
 
     /**
@@ -182,15 +160,5 @@ return [
          * Whether tracing is enabled
          */
         'enabled' => env('TRACING_ENABLED', true),
-
-        /**
-         * Trace ID format: uuid, ulid, random
-         */
-        'id_format' => env('TRACING_ID_FORMAT', 'uuid'),
-
-        /**
-         * Whether to require validation for incoming trace headers
-         */
-        'require_validation' => env('TRACING_REQUIRE_VALIDATION', false),
     ],
 ];

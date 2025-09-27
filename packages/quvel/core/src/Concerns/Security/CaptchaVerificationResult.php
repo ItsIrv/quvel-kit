@@ -10,6 +10,13 @@ namespace Quvel\Core\Concerns\Security;
  */
 readonly class CaptchaVerificationResult
 {
+    /**
+     * Captcha error codes
+     */
+    public const string ERROR_MISSING_SECRET = 'missing-input-secret';
+    public const string ERROR_INVALID_RESPONSE = 'invalid-input-response';
+    public const string ERROR_NETWORK_ERROR = 'network-error';
+
     public function __construct(
         public bool $success,
         public ?float $score = null,

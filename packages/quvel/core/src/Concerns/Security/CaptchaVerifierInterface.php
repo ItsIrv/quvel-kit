@@ -21,13 +21,6 @@ interface CaptchaVerifierInterface
     public function verify(string $token, ?string $ip = null, ?string $action = null): CaptchaVerificationResult;
 
     /**
-     * Get the name of the captcha provider.
-     *
-     * @return string Provider name (e.g., 'recaptcha_v3', 'hcaptcha')
-     */
-    public function getProviderName(): string;
-
-    /**
      * Check if the provider supports scoring.
      *
      * @return bool True if provider supports scoring (like reCAPTCHA v3)

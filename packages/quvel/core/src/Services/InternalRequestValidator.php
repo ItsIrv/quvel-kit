@@ -43,12 +43,12 @@ class InternalRequestValidator
      */
     public function isValidIp(Request $request): bool
     {
-        if (config('core.security.internal_requests.disable_ip_check', false)) {
+        if (config('quvel-core.security.internal_requests.disable_ip_check', false)) {
             return true;
         }
 
         $ip = $request->ip();
-        $trustedIps = config('core.security.internal_requests.trusted_ips', ['127.0.0.1', '::1']);
+        $trustedIps = config('quvel-core.security.internal_requests.trusted_ips', ['127.0.0.1', '::1']);
 
         return in_array($ip, $trustedIps, true);
     }
@@ -58,11 +58,11 @@ class InternalRequestValidator
      */
     public function isValidApiKey(Request $request): bool
     {
-        if (config('core.security.internal_requests.disable_key_check', false)) {
+        if (config('quvel-core.security.internal_requests.disable_key_check', false)) {
             return true;
         }
 
-        $expectedKey = config('core.security.internal_requests.api_key');
+        $expectedKey = config('quvel-core.security.internal_requests.api_key');
 
         if (!$expectedKey) {
             return false;

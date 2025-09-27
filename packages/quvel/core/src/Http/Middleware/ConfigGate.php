@@ -84,7 +84,7 @@ class ConfigGate
      */
     private function denyResponse(Request $request, string $configKey, ?string $customMessage): Response
     {
-        $message = $customMessage ?? 'Feature not available';
+        $message = $customMessage ?? __('quvel-core::messages.config_gate.feature_not_available');
 
         if ($request->wantsJson()) {
             return response()->json([

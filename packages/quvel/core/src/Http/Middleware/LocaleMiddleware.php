@@ -37,7 +37,7 @@ class LocaleMiddleware
         $headerValue = $request->header(HttpHeader::ACCEPT_LANGUAGE->getValue());
 
         if (!$headerValue) {
-            return config('core.locale.fallback_locale', 'en');
+            return config('quvel-core.locale.fallback_locale', 'en');
         }
 
         if (str_contains($headerValue, ',')) {
@@ -65,7 +65,7 @@ class LocaleMiddleware
         }
 
         if (empty($locales)) {
-            return config('core.locale.fallback_locale', 'en');
+            return config('quvel-core.locale.fallback_locale', 'en');
         }
 
         arsort($locales);
@@ -78,13 +78,13 @@ class LocaleMiddleware
      */
     private function isAllowedLocale(string $locale): bool
     {
-        $allowedLocales = config('core.locale.allowed_locales', ['en']);
+        $allowedLocales = config('quvel-core.locale.allowed_locales', ['en']);
 
         if (in_array($locale, $allowedLocales, true)) {
             return true;
         }
 
-        if (config('core.locale.normalize_locales', true)) {
+        if (config('quvel-core.locale.normalize_locales', true)) {
             $normalized = $this->normalizeLocale($locale);
             $normalizedAllowed = array_map([$this, 'normalizeLocale'], $allowedLocales);
 
