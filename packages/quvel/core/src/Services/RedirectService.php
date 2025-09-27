@@ -9,15 +9,9 @@ use Quvel\Core\Enums\HttpHeader;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 
-use function app;
-use function http_build_query;
-use function ltrim;
-use function preg_replace;
-use function rtrim;
 
 /**
  * Service for redirecting users back to the frontend application.
- * Handles platform-specific URL schemes and query parameter building.
  */
 class RedirectService
 {
@@ -49,7 +43,6 @@ class RedirectService
     {
         $url = $this->buildUrl($path, $queryParams);
 
-        // For platforms that need custom schemes, use a redirect view
         if ($this->shouldUseCustomScheme()) {
             return app('response')->view('redirect', [
                 'url' => $url,
@@ -140,7 +133,6 @@ class RedirectService
     private function shouldUseCustomScheme(): bool
     {
         return $this->customScheme !== null
-            && $this->customScheme !== '_deep'
             && $this->getPlatform() !== 'web';
     }
 }

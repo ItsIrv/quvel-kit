@@ -9,10 +9,6 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use function config;
-use function is_numeric;
-use function response;
-use function strtolower;
 
 /**
  * Middleware to gate features based on configuration values.

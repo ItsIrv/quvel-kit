@@ -173,4 +173,24 @@ return [
          */
         'allowed_locales' => explode(',', env('FRONTEND_ALLOWED_LOCALES', 'en')),
     ],
+
+    /**
+     * Distributed Tracing Configuration
+     */
+    'tracing' => [
+        /**
+         * Whether tracing is enabled
+         */
+        'enabled' => env('TRACING_ENABLED', true),
+
+        /**
+         * Trace ID format: uuid, ulid, random
+         */
+        'id_format' => env('TRACING_ID_FORMAT', 'uuid'),
+
+        /**
+         * Whether to require validation for incoming trace headers
+         */
+        'require_validation' => env('TRACING_REQUIRE_VALIDATION', false),
+    ],
 ];
