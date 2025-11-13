@@ -1,7 +1,0 @@
-@import 'tailwindcss' prefix(tw);
-
-@custom-variant dark (&:where(.dark, .dark *));
-
-@theme {
-  --font-family-sans: 'var(--q-font-family)';
-}

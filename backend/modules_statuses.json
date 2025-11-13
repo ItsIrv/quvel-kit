@@ -1,9 +1,0 @@
-{
-    "Auth": true,
-    "Tenant": true,
-    "Catalog": true,
-    "Notifications": true,
-    "Core": true,
-    "TenantAdmin": true,
-    "Phone": true
-}

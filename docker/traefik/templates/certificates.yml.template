@@ -1,4 +1,0 @@
-tls:
-  certificates:
-    - certFile: "${CERT_PATH}/selfsigned.crt"
-      keyFile: "${CERT_PATH}/selfsigned.key"
