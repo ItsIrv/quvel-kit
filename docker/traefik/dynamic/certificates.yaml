@@ -1,0 +1,5 @@
+# Generated from template certificates.yml.template on Tue Jun 24 20:08:03 PDT 2025
+tls:
+  certificates:
+    - certFile: "/certs/selfsigned.crt"
+      keyFile: "/certs/selfsigned.key"

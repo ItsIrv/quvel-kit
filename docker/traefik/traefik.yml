@@ -1,0 +1,38 @@
+# Generated from template traefik.yml.template on Tue Jun 24 20:08:03 PDT 2025
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+log:
+  level: INFO
+
+accessLog: {}
+
+api:
+  dashboard: true
+  insecure: true # Accessible at http://localhost:8080
+
+entryPoints:
+  web:
+    address: ':80'
+
+  websecure:
+    address: ':443'
+    http:
+      tls: {}
+
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: '/certs/selfsigned.crt'
+        keyFile: '/certs/selfsigned.key'
+
+providers:
+  file:
+    directory: /traefik
+    watch: true
+
+serversTransports:
+  insecureTransport:
+    insecureSkipVerify: true
